@@ -1,0 +1,57 @@
+{
+ "exit_code": 0,
+ "started": true,
+ "total": 6,
+ "collected": 6,
+ "won": true,
+ "win_time": 9.23,
+ "falls": 0,
+ "errors": [],
+ "events": [
+  {
+   "total": 6,
+   "type": "start"
+  },
+  {
+   "collected": 1,
+   "t": 2.65,
+   "total": 6,
+   "type": "collect"
+  },
+  {
+   "collected": 2,
+   "t": 3.85,
+   "total": 6,
+   "type": "collect"
+  },
+  {
+   "collected": 3,
+   "t": 5.22,
+   "total": 6,
+   "type": "collect"
+  },
+  {
+   "collected": 4,
+   "t": 6.6,
+   "total": 6,
+   "type": "collect"
+  },
+  {
+   "collected": 5,
+   "t": 7.98,
+   "total": 6,
+   "type": "collect"
+  },
+  {
+   "collected": 6,
+   "t": 9.23,
+   "total": 6,
+   "type": "collect"
+  },
+  {
+   "falls": 0,
+   "t": 9.23,
+   "type": "win"
+  }
+ ]
+}

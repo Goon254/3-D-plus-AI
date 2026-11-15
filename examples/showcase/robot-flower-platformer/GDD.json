@@ -1,0 +1,20 @@
+{
+ "title": "a 2D platformer where a robot collects flowers",
+ "genre": "platformer_2d",
+ "hero": "robot",
+ "hero_color": "#D9822B",
+ "collectible": "flower",
+ "collectible_color": "#FF5C8A",
+ "count": 6,
+ "speed": 230.0,
+ "jump_velocity": -460.0,
+ "gravity": 980.0,
+ "palette": {
+  "sky": "#7EC8E3",
+  "ground": "#5B8C3A",
+  "platform": "#8B5A3C"
+ },
+ "win": "collect all flowers",
+ "lose": "fall off the world (respawn at start)",
+ "seed": 10394
+}
