@@ -13,6 +13,7 @@ import math
 from typing import TYPE_CHECKING, Any
 
 from ..core.llm import scripted
+from ..knowledge import lookup
 from .asset import sun_direction
 from .base import Agent
 
@@ -92,7 +93,7 @@ class CameraLighting(Agent):
     system_prompt = SYSTEM
 
     def plan_cameras(self, ctx: Context) -> dict[str, Any]:
-        out = self.ask(ctx, {"plan": ctx.plan.model_dump(mode="json")})
+        out = self.ask(ctx, {"plan": ctx.plan.model_dump(mode="json"), "knowledge": lookup(f"{ctx.plan.setting.time_of_day} lighting shot sizes framing moves")})
         for sid, adj in ctx.state.tuning.get("camera", {}).items():  # critic-driven corrections
             if sid in out.get("shots", {}):
                 for k, v in adj.items():

@@ -173,7 +173,12 @@ class Studio:
 
         g.add("director", do_director)
         g.add("voice", lambda: voice.run(ctx), ["director"])
-        g.add("asset", lambda: ctx.results.__setitem__("asset_info", asset.run(ctx)) or "ok", ["director"])
+        def do_asset() -> Any:
+            ctx.results["asset_info"] = asset.run(ctx)
+            ctx.state.artifacts["asset_info"] = ctx.results["asset_info"]
+            return "ok"
+
+        g.add("asset", do_asset, ["director"])
         g.add("animator", lambda: ctx.results.__setitem__("anim", animator.run(ctx)) or "ok", ["asset", "voice"])
         g.add("camera", lambda: camera.run(ctx, ctx.results["asset_info"], ctx.results["anim"]), ["animator"])
         g.add("review", lambda: self._critic_loop(ctx, critic, camera, animator, voice), ["camera"], retries=0)

@@ -49,3 +49,11 @@ def test_filter_locked_keeps_artist_edits(tmp_path):
     assert out[0]["targets"] == ["hero_head"]
     assert [o["op"] for o in out] == ["set_material", "transform"]
     assert out[1]["target"] == "hero_body"
+
+
+def test_knowledge_lookup():
+    from animatica.knowledge import lookup
+
+    hits = lookup("sunset lighting key fill")
+    assert hits and "Lighting" in hits[0]["section"]
+    assert lookup("fcurves channelbags")[0]["doc"] == "blender_api"

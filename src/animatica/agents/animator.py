@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 from ..core.llm import scripted
+from ..knowledge import lookup
 from .base import Agent
 
 if TYPE_CHECKING:
@@ -223,8 +224,10 @@ class Animator(Agent):
 
     def run(self, ctx: Context) -> dict[str, Any]:
         plan = ctx.plan
-        perf = self.ask(ctx, {"plan": plan.model_dump(mode="json")})
+        perf = self.ask(ctx, {"plan": plan.model_dump(mode="json"), "knowledge": lookup("anticipation overshoot follow-through secondary motion dialogue acting")})
         perf_shots = perf.get("shots", {})
+        for sid, override in ctx.state.tuning.get("performance", {}).items():  # artist revisions win
+            perf_shots.setdefault(sid, {}).update(override)
         rig, notes = self.build_rig(ctx, perf_shots)
         tune = ctx.state.tuning.get("animator", {})
         fps, end_f = plan.fps, plan.frame_end

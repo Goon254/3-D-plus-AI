@@ -831,6 +831,7 @@ class Executor:
     # ------------------------------------------------------------------ query / inspect
     def op_query(self, op: dict, res: dict) -> None:
         fields = op.get("fields") or ["type", "transform"]
+        bpy.context.view_layer.update()  # matrix_world is stale until the depsgraph updates
         out = {}
         for o in bpy.data.objects:
             oid = o.get(ID_PROP, o.name)
@@ -859,6 +860,7 @@ class Executor:
         s = self.scene
         report = {"frames": {}, "subjects": op["subjects"]}
         floor = op.get("floor_z", 0.0)
+        bpy.context.view_layer.update()
         prev_centers: dict[str, mathutils.Vector] = {}
         motion = {sid: 0.0 for sid in op["subjects"]}
         frame0 = s.frame_current
@@ -988,8 +990,11 @@ def describe(o, fields: list[str], tags: list[str]) -> dict:
         d["bbox"] = [[round(min(p[i] for p in pts), 3) for i in range(3)], [round(max(p[i] for p in pts), 3) for i in range(3)]]
     if "material" in fields and getattr(o, "active_material", None):
         m = o.active_material
-        c = m.diffuse_color
-        d["material"] = {"name": m.name, "base_color": rgb_to_hex(c[:3])}
+        c = m.diffuse_color[:3]
+        bsdf = m.node_tree.nodes.get("Principled BSDF") if m.use_nodes and m.node_tree else None
+        if bsdf is not None and not bsdf.inputs["Base Color"].is_linked:
+            c = bsdf.inputs["Base Color"].default_value[:3]  # what an artist edits in the UI
+        d["material"] = {"name": m.name, "base_color": rgb_to_hex(c)}
     if "shape_keys" in fields and o.type == "MESH" and o.data.shape_keys:
         d["shape_keys"] = [kb.name for kb in o.data.shape_keys.key_blocks]
     if "animation" in fields:
