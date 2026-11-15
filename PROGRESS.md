@@ -130,4 +130,4 @@ All are in [docs/DECISIONS.md](docs/DECISIONS.md). These are worth a look:
 <!-- CI_STATUS -->
 Checked 11:33 UTC via the Actions API: runs #29–#33 (`5f068e4` … `027a733`) all **success**, including the
 new `ruff format --check` step (#32 onward). Run #34 (`5fca91a`, critter hops) was still queued at writing time;
-62 passed + 1 skipped locally on that SHA. Later SHAs: see [Actions](https://github.com/Goon254/3-D-plus-AI/actions).
+63 passed + 1 skipped locally on that SHA. Later SHAs: see [Actions](https://github.com/Goon254/3-D-plus-AI/actions).
