@@ -17,6 +17,12 @@ used as **external dependencies** — installed separately and called as librari
 | numpy | https://numpy.org | BSD-3-Clause | audio synthesis, mixing | pip |
 | pydantic | https://docs.pydantic.dev | MIT | protocol models & validation | pip |
 | Pillow | https://python-pillow.org | HPND | image utilities | pip |
+| soundfile | https://github.com/bastibe/python-soundfile | BSD-3-Clause | WAV I/O | pip, TTS worker |
+| ONNX Runtime | https://github.com/microsoft/onnxruntime | MIT | runs the Kokoro model | pip (dependency of kokoro-onnx), TTS worker |
+| Godot Engine 4.5.1 | https://godotengine.org | MIT | games track: build, run and playtest generated projects | official release binary, external program (setup script `--godot`) |
+| Xvfb (`xvfb-run`) | https://www.x.org | MIT/X11 | virtual display for Godot screenshots | external program (optional) |
+| MCP Python SDK (`mcp`) | https://github.com/modelcontextprotocol/python-sdk | MIT | `animatica-mcp` server | pip, optional extra `mcp` |
+| Anthropic Python SDK (`anthropic`) | https://github.com/anthropics/anthropic-sdk-python | MIT | LLM provider | pip, optional extra `anthropic` |
 
 ## Generated content
 

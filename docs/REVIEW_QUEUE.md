@@ -33,12 +33,27 @@ that raised it.
   nothing. Add checks that would have caught the items above (mouth on-screen size during dialogue,
   shot-type fill vs. intent, empty-frame ratio, horizon edge visible) and show a before/after in the log.
 
+## P1.5 — research 05 integrations (after the P1 quality items) — [review 08:45](reviews/2026-11-15T0845Z.md)
+
+- [ ] **Editor → MLT timeline** (`melt` subprocess, LGPL/GPL, separate process): write an MLT XML edit
+  (cuts, crossfades, title card, dialogue/music/ambience tracks) and also save it as a Kdenlive/Shotcut
+  project in `output/<project>/edit/` so artists can re-cut the AI's edit. Keep the ffmpeg path as fallback.
+- [ ] **Title & credit cards via SVG** (Inkscape CLI, or resvg/CairoSVG fallback): Director-chosen title,
+  rendered in the film's palette, added to the edit. Also usable for Godot sprites (fixes the flat-rectangle look).
+- [ ] TRIAL **Real-ESRGAN** upscaling (upstream xinntao BSD-3 code/weights only — never Upscayl or
+  `upscayl-ncnn`, AGPL): benchmark 480×270→960×540 vs native Cycles on 4 frames (quality + CPU time).
+- [ ] TRIAL **MuseScore CLI** music render (headless, `QT_QPA_PLATFORM=offscreen`) as an optional upgrade
+  over the numpy bed; record in THIRD_PARTY when added.
+
 ## P2 — correctness / docs / hygiene
 
 - [ ] `cli/main.py:151,161`: add `kokoro` to `--tts` choices.
-- [ ] `THIRD_PARTY.md`: add Godot 4.5.1 (MIT), `mcp` SDK (MIT), `anthropic` SDK (MIT), xvfb (X11/MIT).
-- [ ] `pyproject.toml`: the `tts` extra should be `kokoro-onnx` + `soundfile`; keep `piper-tts` as an
-  opt-in `tts-piper` extra (GPL, worker only).
+- [x] `THIRD_PARTY.md`: add Godot 4.5.1 (MIT), `mcp` SDK (MIT), `anthropic` SDK (MIT), xvfb (X11/MIT).
+  *Done by reviewer 08:45 (+ ONNX Runtime, soundfile).* — [review 08:45](reviews/2026-11-15T0845Z.md)
+- [x] `pyproject.toml`: the `tts` extra should be `kokoro-onnx` + `soundfile`; keep `piper-tts` as an
+  opt-in `tts-piper` extra (GPL, worker only). *Done by reviewer 08:45, DECISIONS #25.*
+- [ ] Apply `ruff format` repo-wide in one mechanical commit (38 files differ) and add
+  `ruff format --check` to CI — only when no build session is active, to avoid conflicts.
 - [ ] PROGRESS: only state "CI green" after checking the latest run for the pushed SHA.
 - [ ] Split `adapters/blender/animatica_blender/executor.py` (1 038 lines) by op family.
 - [ ] Run the Anthropic provider path once against the live API (when a key is available) and record

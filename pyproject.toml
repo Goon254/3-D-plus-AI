@@ -17,7 +17,9 @@ dependencies = [
 
 [project.optional-dependencies]
 blender = ["bpy"]
-tts = ["piper-tts>=1.2"]
+tts = ["kokoro-onnx>=0.4", "soundfile>=0.12"]
+# GPL-3.0 fallback TTS: opt-in only; runs solely inside the GPL TTS worker process (DECISIONS #25).
+tts-piper = ["piper-tts>=1.2"]
 anthropic = ["anthropic>=0.40"]
 mcp = ["mcp>=1.0"]
 dev = ["pytest>=8", "ruff>=0.6", "jsonschema>=4"]
