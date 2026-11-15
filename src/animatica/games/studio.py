@@ -69,7 +69,7 @@ def build_level(d: dict[str, Any], safety: float = 0.6) -> dict[str, Any]:
     plats = [{"x": 0, "y": 500, "w": 520, "h": 40}]  # start ground
     flowers = []
     x, y = 520, 500
-    for i in range(d["count"]):
+    for _ in range(d["count"]):
         gap = rng.uniform(0.25, 1.0) * xmax * safety * 0.6
         dy = rng.choice([-1, -1, 0, 1]) * rng.uniform(0.3, 1.0) * hmax * safety
         y = max(260, min(560, y + dy))
