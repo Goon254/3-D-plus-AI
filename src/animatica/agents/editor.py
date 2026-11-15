@@ -59,6 +59,10 @@ class Editor(Agent):
             srt = mux.write_srt([(v["start_s"], v["start_s"] + v["duration"] + 0.4, d.text) for d in plan.dialogue
                                  if (v := lines.get(d.id))], root / "final.srt")
         mux.encode(frames_dir, plan.fps, mix, out, crf=int(ctx.options.get("crf", 23)), subtitles=srt)
+        from ..audio.timeline import write_mlt
+
+        mlt = write_mlt(root, plan, ctx.state.artifacts, res)
+        ctx.state.artifacts["edit_mlt"] = str(mlt)
         sheet = root / "log" / "contact_sheet.jpg"
         try:
             mux.contact_sheet(out, sheet)

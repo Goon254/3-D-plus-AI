@@ -42,3 +42,23 @@ def test_music_bed_is_not_muddy():
     bed = music.generate_bed(8.0, "warm", seed="mud")
     assert music.band_energy_ratio(bed, 120.0) < 0.05  # high-passed: almost nothing below 120 Hz
     assert music.band_energy_ratio(bed, 250.0) < 0.35
+
+
+def test_mlt_timeline_export(tmp_path):
+    import xml.etree.ElementTree as ET
+
+    from animatica.agents.director import normalize_plan, scripted_plan
+    from animatica.audio.timeline import write_mlt
+    from animatica.core.plan import FilmPlan
+
+    prompt = "A robot finds a flower in a junkyard at sunset. It says: 'Hello there.'"
+    plan = normalize_plan(FilmPlan.model_validate(scripted_plan(prompt)), prompt)
+    arts = {"lines": {"line1": {"path": str(tmp_path / "audio/line1.wav"), "duration": 1.2, "start_s": 12.0}},
+            "music": str(tmp_path / "audio/music_bed.wav")}
+    out = write_mlt(tmp_path, plan, arts, (960, 540))
+    doc = ET.parse(out).getroot()
+    v1 = doc.find("playlist[@id='V1']")
+    assert len(v1.findall("entry")) == len(plan.shots)
+    a1 = doc.find("playlist[@id='A1']")
+    assert a1.find("blank").get("length") == str(12 * plan.fps)
+    assert doc.find("producer[@id='line1']/property[@name='resource']").text == "audio/line1.wav"
