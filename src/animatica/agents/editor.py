@@ -53,7 +53,12 @@ class Editor(Agent):
         ctx.log.event("render", self.role, f"rendered in {secs:.0f}s ({secs / max(plan.frame_end, 1):.2f}s/frame)",
                       render_seconds=secs)
         out = root / "final.mp4"
-        mux.encode(frames_dir, plan.fps, mix, out, crf=int(ctx.options.get("crf", 23)))
+        lines = ctx.state.artifacts.get("lines", {})
+        srt = None
+        if lines:
+            srt = mux.write_srt([(v["start_s"], v["start_s"] + v["duration"] + 0.4, d.text) for d in plan.dialogue
+                                 if (v := lines.get(d.id))], root / "final.srt")
+        mux.encode(frames_dir, plan.fps, mix, out, crf=int(ctx.options.get("crf", 23)), subtitles=srt)
         sheet = root / "log" / "contact_sheet.jpg"
         try:
             mux.contact_sheet(out, sheet)

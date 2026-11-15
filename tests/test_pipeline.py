@@ -22,7 +22,7 @@ def test_offline_film_end_to_end(tmp_path):
 
     info = probe(final)
     kinds = {s["codec_type"] for s in info["streams"]}
-    assert kinds == {"video", "audio"}
+    assert kinds == {"video", "audio", "subtitle"}  # captions from the script
     assert 15 <= float(info["format"]["duration"]) <= 31
     events = [json.loads(line) for line in (root / "log/production.jsonl").read_text().splitlines()]
     agents = {e["agent"] for e in events}
