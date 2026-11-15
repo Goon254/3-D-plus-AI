@@ -66,3 +66,20 @@ def test_exit_verbs_and_locomotion():
 def test_celebrate_verb_fits_the_hero():
     assert "bounces for joy" in plan("A happy robot plays with a ball on the beach.").shots[-1].description
     assert "hops for joy" in plan("A happy fox plays with a ball on the beach.").shots[-1].description
+
+
+def test_set_dressing_pebbles_and_heap_silhouettes():
+    from animatica.agents.asset import set_ops
+
+    p = plan(NORTH_STAR)
+    ops = set_ops(p, 1.0, 7, [])
+    pebbles = [o for o in ops if o.get("id", "").startswith("set_pebble_")]
+    assert len(pebbles) >= 30
+    # never on the hero's travel lane (wheels and feet would cut through them)
+    assert all(not (-9.5 < o["location"][0] < 4.5 and abs(o["location"][1]) < 0.7) for o in pebbles)
+    piles = [o for o in ops if o.get("id", "").startswith("set_pile_") and "_junk" not in o["id"]]
+    assert piles and all(o.get("smooth") and o["segments"] >= 64 for o in piles)
+    junk = [o for o in ops if o.get("id", "").startswith("set_pile_") and "_junk" in o["id"]]
+    assert len(junk) == 5 * len(piles)
+    ground = next(o for o in ops if o["op"] == "set_material" and o["targets"] == ["set_ground"])
+    assert ground["material"]["grain"] > 0 and ground["material"]["bump"] > 0

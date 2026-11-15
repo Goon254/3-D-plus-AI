@@ -46,6 +46,37 @@ class MaterialOps:
             links.new(tc.outputs["Object"], noise.inputs["Vector"])
             links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
             color_out = ramp.outputs["Color"]
+        if spec.get("grain") or spec.get("bump"):
+            # fine grit: small-scale noise multiplies the colour (dark specks) and drives a bump map, so a
+            # ground plane reads as a surface up close instead of a smooth gradient
+            tc2 = nodes.new("ShaderNodeTexCoord")
+            fine = nodes.new("ShaderNodeTexNoise")
+            fine.inputs["Scale"].default_value = spec.get("grain_scale", 40.0)
+            fine.inputs["Detail"].default_value = 8.0
+            fine.inputs["Roughness"].default_value = 0.65
+            links.new(tc2.outputs["Object"], fine.inputs["Vector"])
+            if spec.get("grain"):
+                gr = nodes.new("ShaderNodeValToRGB")
+                gr.color_ramp.elements[0].position, gr.color_ramp.elements[1].position = 0.35, 0.6
+                g = 1 - spec["grain"]
+                gr.color_ramp.elements[0].color = (g, g, g, 1)
+                gr.color_ramp.elements[1].color = (1, 1, 1, 1)
+                links.new(fine.outputs["Fac"], gr.inputs["Fac"])
+                mul = nodes.new("ShaderNodeMix")
+                mul.data_type, mul.blend_type = "RGBA", "MULTIPLY"
+                mul.inputs["Factor"].default_value = 1.0
+                if color_out is not None:
+                    links.new(color_out, mul.inputs["A"])
+                else:
+                    mul.inputs["A"].default_value = (*rgb, 1)
+                links.new(gr.outputs["Color"], mul.inputs["B"])
+                color_out = mul.outputs["Result"]
+            if spec.get("bump"):
+                bump = nodes.new("ShaderNodeBump")
+                bump.inputs["Strength"].default_value = spec["bump"]
+                bump.inputs["Distance"].default_value = 0.02
+                links.new(fine.outputs["Fac"], bump.inputs["Height"])
+                links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
         if spec.get("fade_to"):
             geo = nodes.new("ShaderNodeNewGeometry")
             length = nodes.new("ShaderNodeVectorMath")

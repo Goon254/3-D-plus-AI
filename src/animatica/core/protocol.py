@@ -70,6 +70,10 @@ class MaterialSpec(BaseModel):
     fade_start: float = Field(15.0, ge=0)
     fade_end: float = Field(90.0, gt=0)
     radial_glow: bool = False  # emission fades to transparent at the edges (sun/moon halos)
+    # fine surface detail: a second, small-scale noise darkens specks (grit, gravel) and drives a bump
+    grain: float = Field(0.0, ge=0, le=1)
+    grain_scale: float = Field(40.0, gt=0, le=10000)
+    bump: float = Field(0.0, ge=0, le=1)
 
     @field_validator("base_color", "emission", "fade_to")
     @classmethod

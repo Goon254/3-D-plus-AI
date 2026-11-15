@@ -939,6 +939,40 @@ def _scatter_positions(
     return pts
 
 
+def pebble_ops(plan: FilmPlan, seed: int, n: int = 36) -> list[dict[str, Any]]:
+    """Small stones scattered around the stage: foreground scale cues so the ground isn't an empty plane.
+
+    They stay off the hero's travel lane (|y| < 0.7 along x in -9..4) so wheels and feet never cut them.
+    """
+    rng = random.Random(seed * 7 + 3)
+    ops: list[dict[str, Any]] = []
+    ids: list[str] = []
+    while len(ids) < n:
+        x, y = rng.uniform(-9, 7), rng.uniform(-3.2, 4.5)
+        if -9.5 < x < 4.5 and abs(y) < 0.7:
+            continue
+        r = rng.uniform(0.025, 0.09) * (1.6 if abs(y) > 2.5 else 1.0)
+        pid = f"set_pebble_{len(ids)}"
+        ops.append(
+            {
+                "op": "create_primitive",
+                "id": pid,
+                "shape": "ico_sphere",
+                "radius": round(r, 3),
+                "segments": 32,
+                "scale": [round(rng.uniform(1.0, 1.6), 2), 1.0, round(rng.uniform(0.45, 0.7), 2)],
+                "location": [round(x, 3), round(y, 3), round(r * 0.15, 3)],
+                "rotation": [0, 0, round(rng.uniform(0, 360), 1)],
+                "smooth": True,
+                "tags": ["set", "pebble"],
+            }
+        )
+        ids.append(pid)
+    tone = shade(plan.style.palette.ground, -0.07 if plan.setting.kind != "snow" else -0.35)
+    ops.append({"op": "set_material", "targets": ids, "material": mat(tone, 0, 0.85, name="set_pebble")})
+    return ops
+
+
 def set_ops(plan: FilmPlan, density: float, seed: int, landmarks: list[str]) -> list[dict[str, Any]]:
     kind = plan.setting.kind
     pal = plan.style.palette
@@ -952,6 +986,12 @@ def set_ops(plan: FilmPlan, density: float, seed: int, landmarks: list[str]) -> 
         "specular": 0.1,
         "noise": 0.5,
         "noise_scale": 0.3,
+        # fine grit + bump so the ground reads as dirt/snow up close (review: "featureless ground")
+        **(
+            {"grain": 0.12 if kind == "snow" else 0.3, "grain_scale": 5.0, "bump": 0.25}
+            if kind not in ("room", "space")
+            else {}
+        ),
         **haze,
     }
     ops: list[dict[str, Any]] = [
@@ -964,6 +1004,8 @@ def set_ops(plan: FilmPlan, density: float, seed: int, landmarks: list[str]) -> 
         },
         {"op": "set_material", "targets": ["set_ground"], "material": ground},
     ]
+    if kind not in ("room", "space"):
+        ops += pebble_ops(plan, seed)
     n = int(round(28 * density))
     pieces: dict[str, list[str]] = {}
 
@@ -1058,10 +1100,45 @@ def set_ops(plan: FilmPlan, density: float, seed: int, landmarks: list[str]) -> 
                     "radius": s,
                     "scale": [1.3, 1, 0.7],
                     "location": [x, y, -s * 0.07],
-                    "segments": 48,
+                    "segments": 64,  # 4 subdivisions: the displaced dome no longer shows facets
                     "rotation": [0, 0, rng.uniform(0, 360)],
+                    "smooth": True,
                 },
             )
+            # junk poking out of the heap breaks its dome silhouette (beams, panels, a drum)
+            jr = random.Random(seed * 31 + i)
+            k = s / 3.0
+            for j, shape in enumerate(("beam", "panel", "drum", "beam", "panel")):
+                # biased toward the crest, where the pieces break the dome's silhouette against the sky
+                a, e = jr.uniform(0, 2 * math.pi), jr.uniform(0.75, 1.45)
+                px = x + 1.3 * s * math.cos(e) * math.cos(a)
+                py = y + s * math.cos(e) * math.sin(a)
+                pz = -s * 0.07 + 0.7 * s * math.sin(e)
+                piece: dict[str, Any] = {
+                    "op": "create_primitive",
+                    "shape": "cylinder" if shape == "drum" else "cube",
+                    "location": [round(px, 3), round(py, 3), round(pz, 3)],
+                    "rotation": [
+                        round(jr.uniform(-40, 40), 1),
+                        round(jr.uniform(-40, 40), 1),
+                        round(math.degrees(a), 1),
+                    ],
+                }
+                if shape == "beam":  # a girder or pipe end jutting up
+                    piece["size"] = [
+                        round(0.18 * k, 2),
+                        round(0.18 * k, 2),
+                        round(jr.uniform(1.4, 2.4) * k, 2),
+                    ]
+                elif shape == "panel":
+                    piece["size"] = [
+                        round(jr.uniform(0.9, 1.5) * k, 2),
+                        round(0.07 * k, 2),
+                        round(jr.uniform(0.6, 1.0) * k, 2),
+                    ]
+                else:
+                    piece.update({"radius": round(0.3 * k, 2), "depth": round(0.8 * k, 2)})
+                add(f"set_pile_{i}_junk{j}", f"rust{jr.randrange(len(rust))}", piece)
             ops.append(
                 {
                     "op": "add_modifier",
