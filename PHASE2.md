@@ -1,5 +1,7 @@
 # PHASE2.md — Showcase, website, hosted service, sponsorship
 
+> **⏸ ON HOLD (owner decision, 2026-11-15 09:17 ET):** do not start any Phase 2 track until the latest hourly review scores **every Phase 1 area ≥ 9/10** (functionality, visuals, animation, audio, code & tests, architecture, docs, license compliance) and docs/REVIEW_QUEUE.md has no open high-priority items. Until then, all work goes into Phase 1 quality.
+
 > Read PLAN.md, docs/research/, PROGRESS.md and docs/REVIEW_QUEUE.md first. PHASE2 builds on them; all PLAN.md rules (licensing §7, forbidden list §10, batching, critic loop, artist-in-the-loop, quality bar) still apply.
 > Owner's goal: turn Animatica into (a) a hosted service people can use in minutes and (b) a sponsored open-source project, with a showcase that proves it can do **films, reels, games and website visuals**. Quality over speed — every deliverable must look premium.
 
