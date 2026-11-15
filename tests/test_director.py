@@ -39,3 +39,10 @@ def test_frames_contiguous():
     for (_a0, a1), (b0, _) in zip(fr, fr[1:]):
         assert b0 == a1 + 1
     assert p.frame_end == fr[-1][1]
+
+
+def test_story_arcs_vary_with_the_prompt():
+    lonely = plan("A lonely robot sits in a junkyard at dusk until a flower blooms. It says: 'You came back.' Then it heads home.")
+    assert [s.beat for s in lonely.shots] == ["idle", "discover", "speak", "exit"]
+    playful = plan("A happy robot plays with a ball on the beach.")
+    assert playful.shots[-1].beat == "celebrate"

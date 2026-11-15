@@ -122,9 +122,16 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
     subject = {"robot": "little robot", "critter": "small creature"}[kind]
     first_sentence = re.split(r"(?<=[.!?])\s", prompt.strip())[0]
 
+    # story arc: openings and endings vary with the prompt's verbs/mood (not one fixed template)
+    lonely = re.search(r"\b(sits?|sitting|waits?|waiting|alone|lonely|sleepy|rests?|resting|bored|sad)\b", text)
+    leaves = re.search(r"\b(leaves?|goes home|walks? away|rolls? away|heads? home|says goodbye|farewell)\b", text)
+    opening = ({"id": "s1", "type": "wide", "duration": 5.0, "beat": "idle", "camera_move": "orbit", "subject": "hero",
+                "description": f"Establishing: {name} sits alone in the {setting} at {tod}, looking around, then sighs."}
+               if lonely else
+               {"id": "s1", "type": "wide", "duration": 5.5, "beat": "enter", "camera_move": "track", "subject": "hero",
+                "description": f"Establishing: the {subject} rolls into the {setting} at {tod}."})
     shots = [
-        {"id": "s1", "type": "wide", "duration": 5.5, "beat": "enter", "camera_move": "track", "subject": "hero",
-         "description": f"Establishing: the {subject} rolls into the {setting} at {tod}."},
+        opening,
         {"id": "s2", "type": "medium", "duration": 5.0, "beat": "discover", "camera_move": "dolly_in", "subject": "both",
          "description": f"{name} notices the {prop}, hesitates (anticipation), then approaches and leans in."},
     ]
@@ -140,7 +147,10 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
     else:
         shots.append({"id": "s3", "type": "closeup", "duration": 4.5, "beat": "react", "camera_move": "dolly_in",
                       "subject": "hero", "description": f"Close-up: {name}'s eyes light up with delight."})
-    if mood == "playful":
+    if leaves:
+        shots.append({"id": "s4", "type": "wide", "duration": 5.5, "beat": "exit", "camera_move": "crane_up", "subject": "both",
+                      "description": f"{name} turns, looks back at the {prop} once, and heads home."})
+    elif mood == "playful":
         shots.append({"id": "s4", "type": "wide", "duration": 5.0, "beat": "celebrate", "camera_move": "orbit", "subject": "both",
                       "description": f"{name} hops for joy around the {prop}."})
     else:

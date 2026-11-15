@@ -134,7 +134,7 @@ class Animator(Agent):
         prop_x = plan.prop.location[0] if plan.prop else 1.3
         reach_gap = 0.95 if plan.hero.kind == "robot" else 0.75
         stand_x = prop_x - reach_gap * plan.hero.scale
-        start_x = -5.5
+        start_x = -5.5 if plan.shots[0].beat == "enter" else stand_x - 1.5
         x = start_x
         notes: dict[str, Any] = {"stand_x": stand_x}
         rig.root_x.key(0, start_x)
@@ -214,10 +214,25 @@ class Animator(Agent):
                 rig.eye_open.key(t0 + 1.5, 1.0).key(t0 + 2.6, 0.55, "inout")
                 rig.arm_L.key(t0 + 0.5, -20).key(t0 + 1.8, -8)
                 rig.blinks += [t0 + 0.5]
+            elif shot.beat == "idle":
+                # alone: slow look around, a sigh (dip + head drop + droopy eyes), blinks; no travel
+                rig.root_x.key(t0, x, "hold")
+                rig.head_turn.key(t0 + 0.6, 0).key(t0 + 1.6, -35, "inout").key(t0 + 2.4, -35, "hold").key(t0 + 3.3, 25, "inout")
+                sigh = t0 + dur * 0.62
+                rig.dip.key(sigh - 0.3, 0).key(sigh + 0.4, -0.05, "inout").key(sigh + 1.4, -0.02, "inout")
+                rig.head_nod.key(sigh - 0.2, 0).key(sigh + 0.5, 18, "inout")
+                rig.eye_open.key(sigh, 1.0).key(sigh + 0.5, 0.65, "inout")
+                rig.head_turn.key(t1, -30, "inout")  # looking away: sets up the "notice"
+                rig.eye_open.key(t1 - 0.1, 0.7)
+                rig.blinks += [t0 + 1.0, t0 + 3.0]
             elif shot.beat == "exit":
-                rig.root_yaw.key(t0 + 0.3, 90).key(t0 + 1.2, 200, "inout")
-                rig.root_x.key(t0 + 1.0, x, "hold").key(t1, x - 4, "inout")
-                x = x - 4
+                # anticipation, turn back the way it came, a last look over the shoulder, roll away
+                rig.lean.key(t0 + 0.3, 0).key(t0 + 0.6, -6, "out").key(t0 + 1.0, 0)
+                rig.root_yaw.key(t0 + 0.5, 90).key(t0 + 1.5, 270, "back")
+                rig.head_turn.key(t0 + 1.6, 0).key(t0 + 2.3, -150, "inout").key(t0 + 3.0, -150, "hold").key(t0 + 3.5, 0, "inout")
+                rig.root_x.key(t0 + 3.4, x, "hold").key(t1, x - 3.5, "in")
+                rig.lean.key(t0 + 3.6, 8, "out")
+                x = x - 3.5
         end_t = frames[plan.shots[-1].id][1] / fps
         notes["end_t"] = end_t
         return rig, notes
@@ -316,6 +331,14 @@ class Animator(Agent):
             ops.append({"op": "insert_keyframes", "target": "prop_pivot", "property": "rotation",
                         "keys": [[f, [r(3.5 * math.sin(2 * math.pi * (f / fps) / 3.3), 2), r(5 * math.sin(2 * math.pi * (f / fps) / 4.1 + 1), 2), 0.0],
                                   "BEZIER"] for f in range(1, end_f + 1, 6)]})
+        # "until a flower blooms": in the idle arc the prop grows in at the start of the discover beat
+        grow = plan.prop and plan.shots[0].beat == "idle" and any(
+            w in plan.prompt.lower() for w in ("bloom", "grow", "sprout", "appear", "lands", "falls"))
+        if grow and len(plan.shots) > 1:
+            g0 = plan.shot_frames()[plan.shots[1].id][0]
+            ops.append({"op": "insert_keyframes", "target": "prop", "property": "scale",
+                        "keys": [[1, [0.01, 0.01, 0.01], "CONSTANT"], [g0, [0.01, 0.01, 0.01], "BACK"],
+                                 [g0 + int(0.8 * fps), [1.0, 1.0, 1.0], "BEZIER"]]})
         # lip sync
         mouth_keys = ctx.state.artifacts.get("mouth_keys") or {}
         for key, keys in mouth_keys.items():
