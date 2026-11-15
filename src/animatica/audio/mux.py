@@ -35,7 +35,7 @@ def encode(frames_dir: str | Path, fps: int, audio: str | Path | None, out: str 
     if audio:
         if loudnorm:
             cmd += ["-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", "48000"]
-        cmd += ["-c:a", "aac", "-b:a", "160k", "-shortest"]
+        cmd += ["-c:a", "aac", "-b:a", "160k"]  # no -shortest: the subtitle stream would end the file early
     cmd.append(str(out))
     subprocess.run(cmd, check=True, timeout=3600)
     return out
