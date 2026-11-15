@@ -56,6 +56,7 @@ class MaterialSpec(BaseModel):
     base_color: str = "#CCCCCC"
     metallic: float = Field(0.0, ge=0, le=1)
     roughness: float = Field(0.5, ge=0, le=1)
+    specular: float | None = Field(None, ge=0, le=1)  # Principled "Specular IOR Level" (0.5 = Blender default)
     emission: str | None = None
     emission_strength: float = Field(0.0, ge=0, le=1000)
     alpha: float = Field(1.0, ge=0, le=1)

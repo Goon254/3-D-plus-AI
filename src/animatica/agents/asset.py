@@ -350,7 +350,9 @@ def set_ops(plan: FilmPlan, density: float, seed: int, landmarks: list[str]) -> 
     rng = random.Random(seed)
     # aerial perspective: distant surfaces dissolve into the horizon colour (no hard ground edge)
     haze = {"fade_to": pal.sky_horizon, "fade_start": 14.0, "fade_end": 85.0} if kind not in ("room",) else {}
-    ground = {**mat(pal.ground, 0, 0.92, name="set_ground"), "noise": 0.5, "noise_scale": 0.3, **haze}
+    # fully rough, low specular: a grazing-angle sheen made a bright band at the horizon that cut distant
+    # junk piles off from the ground (they read as floating roofs — review 10:36)
+    ground = {**mat(pal.ground, 0, 1.0, name="set_ground"), "specular": 0.1, "noise": 0.5, "noise_scale": 0.3, **haze}
     ops: list[dict[str, Any]] = [
         {"op": "create_primitive", "id": "set_ground", "shape": "plane", "size": [400, 400, 1], "tags": ["set", "ground"]},
         {"op": "set_material", "targets": ["set_ground"], "material": ground},
@@ -387,10 +389,13 @@ def set_ops(plan: FilmPlan, density: float, seed: int, landmarks: list[str]) -> 
                 add(f"set_junk_{i}", f"rust{c}", {"op": "create_primitive", "shape": "cylinder", "radius": 0.09, "depth": rng.uniform(1, 2.2),
                                                   "location": [x, y, 0.09], "rotation": [90, 0, rot[2]], "segments": 12})
         for i, (x, y) in enumerate(_scatter_positions(rng, max(4, n // 4), 12, 30)):
+            # distant scrap heaps: smooth, lumpy mounds (a 20-face icosahedron read as a pitched roof)
             s = rng.uniform(2.5, 5.5)
             add(f"set_pile_{i}", f"rust{rng.randrange(len(rust))}", {"op": "create_primitive", "shape": "ico_sphere", "radius": s,
-                                                                      "scale": [1.3, 1, 0.45], "location": [x, y, -s * 0.12], "segments": 16,
+                                                                      "scale": [1.3, 1, 0.7], "location": [x, y, -s * 0.07], "segments": 48,
                                                                       "rotation": [0, 0, rng.uniform(0, 360)]})
+            ops.append({"op": "add_modifier", "target": f"set_pile_{i}", "type": "displace",
+                        "params": {"noise_scale": 1.5, "strength": 0.8}})
         mats = {f"rust{i}": mat(c, 0.5, 0.7) for i, c in enumerate(rust)}
         mats["tire"] = mat("#1E1E20", 0, 0.8)
         # a broken car silhouette

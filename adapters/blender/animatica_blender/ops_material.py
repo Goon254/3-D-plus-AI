@@ -24,6 +24,8 @@ class MaterialOps:
         bsdf.inputs["Base Color"].default_value = (*rgb, 1.0)
         bsdf.inputs["Metallic"].default_value = spec.get("metallic", 0.0)
         bsdf.inputs["Roughness"].default_value = spec.get("roughness", 0.5)
+        if spec.get("specular") is not None:
+            bsdf.inputs["Specular IOR Level"].default_value = spec["specular"]
         if spec.get("emission"):
             bsdf.inputs["Emission Color"].default_value = (*hex_to_rgb(spec["emission"]), 1.0)
             bsdf.inputs["Emission Strength"].default_value = spec.get("emission_strength", 1.0)
