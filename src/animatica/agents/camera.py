@@ -223,6 +223,8 @@ class CameraLighting(Agent):
             _t0, _t1 = (f0 - 1) / fps, f1 / fps
             hx0 = x_track((f0 - 1) / fps) if x_track else stand_x
             hx1 = x_track(f1 / fps) if x_track else stand_x
+            if shot.beat == "exit":
+                hx1 = hx0  # the camera holds on where the hero stood; the hero leaves the frame
             two_shot = False
             if shot.type == "closeup" and shot.beat == "speak" and plan.prop:
                 # dialogue close-up: the face fills the frame (lip sync must read) with the prop's

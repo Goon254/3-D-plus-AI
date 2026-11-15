@@ -247,7 +247,7 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
             {
                 "id": "s4",
                 "type": "wide",
-                "duration": 5.5,
+                "duration": 6.5,
                 "beat": "exit",
                 "camera_move": "crane_up",
                 "subject": "both",

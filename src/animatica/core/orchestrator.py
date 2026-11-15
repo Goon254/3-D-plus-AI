@@ -320,6 +320,11 @@ class Studio:
                 L["exposure"] = round(L.get("exposure", 0.0) + float(i.fix.get("exposure_add", 0.0)), 2)
                 redo_camera = True
             elif k == "animator":
+                if "exit_speed_mul" in i.fix:
+                    A = tuning.setdefault("animator", {})
+                    A["exit_speed_mul"] = round(
+                        A.get("exit_speed_mul", 1.0) * float(i.fix["exit_speed_mul"]), 3
+                    )
                 redo_anim = True
             elif k == "voice":
                 redo_voice = redo_anim = True

@@ -34,6 +34,9 @@ big moves, and holds so the audience can read emotions."""
 
 
 # ------------------------------------------------------------------------------------------ easing
+EXIT_CRUISE = 2.2  # m/s: a brisk "heads home" (robot wheels roll by distance; a critter's hops lengthen)
+
+
 def ease(kind: str, u: float) -> float:
     u = min(1.0, max(0.0, u))
     if kind == "linear":
@@ -145,7 +148,8 @@ def hop_locomotion(
         dist = xs[k1] - xs[k0]
         if abs(dist) < 0.02:  # standing: no hop
             continue
-        h = height * min(1.0, abs(dist) / 0.35)
+        # short shuffles stay low; long bounds (a critter running off) arc higher, up to 2x
+        h = height * min(1.0, abs(dist) / 0.35) * min(2.0, max(1.0, abs(dist) / 0.45))
         for i in range(k0, min(k0 + p, n)):
             u = i - k0
             if u <= a:
@@ -325,9 +329,23 @@ class Animator(Agent):
                 rig.head_turn.key(t0 + 1.6, 0).key(t0 + 2.3, -150, "inout").key(t0 + 3.0, -150, "hold").key(
                     t0 + 3.5, 0, "inout"
                 )
-                rig.root_x.key(t0 + 3.4, x, "hold").key(t1, x - 3.5, "in")
-                rig.lean.key(t0 + 3.6, 8, "out")
-                x = x - 3.5
+                # ...and really leave: accelerate for 1 s, then cruise out of frame while the camera holds
+                # on the prop (the shot's last second is the empty set). The critic checks the hero is gone.
+                depart = t0 + min(3.2, dur * 0.5)
+                accel = 1.0
+                cruise = (
+                    EXIT_CRUISE
+                    * plan.hero.scale
+                    * float(ctx.state.tuning.get("animator", {}).get("exit_speed_mul", 1.0))
+                )
+                d_acc = cruise * accel / 3  # a cubic ease-in ends at 3x its average speed
+                end_x = x - d_acc - cruise * max(0.0, t1 - depart - accel)
+                rig.root_x.key(depart, x, "hold").key(depart + accel, x - d_acc, "in").key(
+                    t1, end_x, "linear"
+                )
+                rig.lean.key(depart, 0, "hold").key(depart + 0.4, 8, "out")  # lean into the run, not before
+                notes["exit"] = {"shot": shot.id, "depart_t": round(depart, 3), "from_x": round(x, 3)}
+                x = end_x
         end_t = frames[plan.shots[-1].id][1] / fps
         notes["end_t"] = end_t
         return rig, notes
@@ -379,8 +397,11 @@ class Animator(Agent):
                 amp * wave if robot else 0.0
             )  # treads rattle; a critter's travel is real hops (hop_locomotion)
 
-        body_base_z = 0.55 if plan.hero.kind == "robot" else 0.33
-        body_half = 0.25 if plan.hero.kind == "robot" else 0.306  # squash is anchored at the contact point
+        # squash is anchored at the contact point: body_half is the body's half-height *as animated* (the
+        # critter's scale keys are ~1, so its sphere is 0.36 tall-half, not the asset's 0.85-scaled 0.306),
+        # and the base sits the body's bottom a few mm above the floor (it used to rest 3.4 cm inside it)
+        body_base_z = 0.55 if plan.hero.kind == "robot" else 0.365
+        body_half = 0.25 if plan.hero.kind == "robot" else 0.36
         robot = plan.hero.kind == "robot"
         dip_scale = 1.0 if robot else 0.0  # a critter has no treads to sink into: its dips become squash
 

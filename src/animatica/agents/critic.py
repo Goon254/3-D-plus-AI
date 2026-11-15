@@ -115,11 +115,25 @@ class Critic(Agent):
             previews[s.id] = p["path"]
             stats[s.id] = p["stats"]
 
+        exit_note = (ctx.results.get("anim") or {}).get("exit") or {}
         for s in plan.shots:
             rep = reports.get(s.id, {})
             fr = rep.get("frames", {})
             subj_main = "hero_head" if s.type == "closeup" else "hero_root"
-            vis = [f["subjects"][subj_main] for f in fr.values() if subj_main in f.get("subjects", {})]
+            if exit_note.get("shot") == s.id:
+                # an exit: framing rules hold until the hero departs; after that it must leave the frame
+                depart_f = int(float(exit_note["depart_t"]) * plan.fps) + 1
+                issues += exit_issues(s.id, fr, depart_f, subj_main)
+                framing = {k: f for k, f in fr.items() if int(k) <= depart_f}
+                # floor contact still matters while any of the hero is on screen
+                fr = {
+                    k: f
+                    for k, f in fr.items()
+                    if f.get("subjects", {}).get(subj_main, {}).get("visible_fraction", 1) > 0
+                }
+            else:
+                framing = fr
+            vis = [f["subjects"][subj_main] for f in framing.values() if subj_main in f.get("subjects", {})]
             if vis:
                 worst = min(v.get("visible_fraction", 1) for v in vis)
                 heights = [v.get("screen_height", 0) for v in vis]
@@ -193,7 +207,7 @@ class Critic(Agent):
             if s.subject in ("both", "prop") and plan.prop and s.type != "closeup":
                 pv = [
                     f["subjects"]["prop"].get("visible_fraction", 1)
-                    for f in fr.values()
+                    for f in rep.get("frames", {}).values()
                     if "prop" in f.get("subjects", {})
                 ]
                 if pv and min(pv) < 0.8:
@@ -287,6 +301,29 @@ class Critic(Agent):
                 report=_compact(reports.get(s.id, {})),
             )
         return issues, {"previews": previews, "stats": stats}
+
+
+def exit_issues(shot_id: str, frames: dict[str, Any], depart_f: int, subj: str = "hero_root") -> list[Issue]:
+    """An exit beat must read as leaving: by the shot's last sampled frame the hero is out of frame."""
+    after = sorted(
+        (int(k), f) for k, f in frames.items() if int(k) > depart_f and subj in f.get("subjects", {})
+    )
+    if not after:
+        return []
+    last_f, last = after[-1]
+    v = last["subjects"][subj]
+    seen = 0.0 if v.get("behind_camera") else float(v.get("visible_fraction", 0))
+    if seen > 0.05:
+        return [
+            Issue(
+                shot_id,
+                "exit_in_frame",
+                "blocker",
+                f"the hero is still {seen:.0%} in frame at f{last_f}: the exit doesn't read as leaving",
+                {"kind": "animator", "exit_speed_mul": 1.3},
+            )
+        ]
+    return []
 
 
 def dialogue_framing_issues(

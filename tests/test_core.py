@@ -131,3 +131,48 @@ def test_critter_hops_instead_of_gliding():
     assert max(land) > 0.5
     # standing still: no hops
     assert max(lift[50:]) == 0.0 and max(land[50:]) == 0.0
+
+
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "A lonely robot sits in a junkyard at dusk until a flower blooms. It says: 'You came back.' Then it heads home.",
+        "A small fox finds a lantern in a snowy forest at night and then hops away.",
+    ],
+)
+def test_exit_beat_leaves_and_camera_holds(tmp_path, prompt):
+    from animatica.agents.animator import Animator, default_performance
+    from animatica.agents.director import normalize_plan, scripted_plan
+    from animatica.core.plan import FilmPlan
+    from animatica.core.state import ProjectState
+
+    plan = normalize_plan(FilmPlan.model_validate(scripted_plan(prompt)), prompt)
+    st = ProjectState(root=tmp_path, plan=plan)
+    ctx = Context(st, None, _Log(), ScriptedProvider(), None)
+    perf = default_performance(plan.model_dump(mode="json"))
+    rig, notes = Animator(ScriptedProvider()).build_rig(ctx, perf)
+    ex = notes["exit"]
+    f0, f1 = plan.shot_frames()[ex["shot"]]
+    t1 = f1 / plan.fps
+    # holds still (turn + look back) until it departs, then travels well clear of the departure point
+    assert rig.root_x(ex["depart_t"]) == pytest.approx(ex["from_x"])
+    assert ex["from_x"] - rig.root_x(t1) > 5.0
+    # it is still moving at the end (it doesn't stop just outside the frame line)
+    assert rig.root_x(t1 - 0.5) - rig.root_x(t1) > 0.8
+    # artist/critic tuning makes it leave faster
+    st.tuning = {"animator": {"exit_speed_mul": 1.3}}
+    rig2, _ = Animator(ScriptedProvider()).build_rig(ctx, perf)
+    assert rig2.root_x(t1) < rig.root_x(t1) - 1.0
+
+
+def test_critic_exit_must_leave_the_frame():
+    from animatica.agents.critic import exit_issues
+
+    def fr(vis):
+        return {"subjects": {"hero_root": {"visible_fraction": vis, "behind_camera": False}}}
+
+    still_there = {"400": fr(1.0), "450": fr(1.0), "500": fr(0.6)}
+    issues = exit_issues("s4", still_there, 420)
+    assert [i.check for i in issues] == ["exit_in_frame"] and issues[0].fix["exit_speed_mul"] > 1
+    gone = {"400": fr(1.0), "450": fr(0.5), "500": fr(0.0)}
+    assert exit_issues("s4", gone, 420) == []
