@@ -23,6 +23,8 @@ def _studio(args: argparse.Namespace):
         opts["preview_engine"] = args.preview_engine
     if getattr(args, "keep_frames", False):
         opts["keep_frames"] = True
+    if getattr(args, "style", None):
+        opts["style"] = args.style
     return Studio(provider=args.llm, options=opts)
 
 
@@ -114,6 +116,15 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     return 0 if checks["blender"] and checks["ffmpeg"] else 1
 
 
+def cmd_study(args: argparse.Namespace) -> int:
+    from ..core.llm import get_provider
+    from ..knowledge.study import study
+
+    notes = study(args.sources, args.name, args.license, provider=get_provider(args.llm))
+    print(json.dumps({k: v for k, v in notes.items() if k != "sources"}, indent=1))
+    return 0
+
+
 def cmd_game(args: argparse.Namespace) -> int:
     from ..games.studio import make_game
 
@@ -140,6 +151,7 @@ def build_parser() -> argparse.ArgumentParser:
     f.add_argument("--tts", default=None, choices=["auto", "piper", "espeak", "synth"])
     f.add_argument("--preview-engine", default=None, choices=["workbench", "eevee", "cycles"])
     f.add_argument("--keep-frames", action="store_true")
+    f.add_argument("--style", default=None, help="apply a style learned with `animatica study`")
     common(f)
     f.set_defaults(fn=cmd_film)
 
@@ -178,6 +190,13 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--name", default=None)
     g.add_argument("--llm", default="auto", choices=["auto", "scripted", "anthropic"])
     g.set_defaults(fn=cmd_game)
+
+    st = sub.add_parser("study", help="learn style notes from LOCAL reference media you may use (CC-BY/CC0/own); no URLs")
+    st.add_argument("sources", nargs="+")
+    st.add_argument("--name", required=True)
+    st.add_argument("--license", required=True, help='e.g. "CC-BY 4.0, Blender Foundation" or "own render"')
+    st.add_argument("--llm", default="auto", choices=["auto", "scripted", "anthropic"])
+    st.set_defaults(fn=cmd_study)
 
     dev = sub.add_parser("dev", help="developer tools")
     dsub = dev.add_subparsers(dest="dev_cmd", required=True)

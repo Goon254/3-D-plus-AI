@@ -188,6 +188,21 @@ class Director(Agent):
         raw["prompt"] = prompt
         plan = FilmPlan.model_validate(raw)
         plan = normalize_plan(plan, prompt)
+        style_name = ctx.options.get("style")
+        if style_name:
+            from ..knowledge.study import load_style
+
+            style = load_style(style_name)
+            if style is None:
+                ctx.log.event("warning", self.role, f"style '{style_name}' not found in knowledge/styles")
+            else:
+                h = style["director_hints"]
+                pal = plan.style.palette
+                pal.sky_zenith, pal.sky_horizon, pal.ground = h["sky_zenith"], h["sky_horizon"], h["ground"]
+                plan.style.mood = h["mood"]
+                plan.style.notes.append(f"style reference '{style_name}' ({style.get('license', '?')})")
+                ctx.log.event("decision", self.role, f"applied style '{style_name}': mood {h['mood']}, sky {h['sky_zenith']}"
+                              f"->{h['sky_horizon']}, ground {h['ground']}", style=h)
         ctx.log.event("decision", self.role,
                       f"'{plan.title}': {len(plan.shots)} shots, {plan.duration:.1f}s, {plan.setting.kind} at "
                       f"{plan.setting.time_of_day}, {plan.hero.kind} '{plan.hero.name}', prop {plan.prop.kind if plan.prop else '-'}",
