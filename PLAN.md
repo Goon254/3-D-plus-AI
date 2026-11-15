@@ -1,5 +1,10 @@
 # PLAN.md — Animatica: The AI-Native Animation & Game Studio
 
+> **📌 UPDATE (added 2026-11-15, 01:55 ET) — every session, read this first:**
+> 1. **Read `docs/research/README.md` and the four reports in `docs/research/` before choosing any tool, library, model, asset source, or API.** They are verified, current research with ADOPT / AVOID verdicts and license traps (e.g., Blender 5.x removed `action.fcurves`; never `import bpy` in the Apache core; Piper is now GPL; use Kokoro, Rhubarb, Workbench previews). Where this plan and the research disagree on a tool, the research wins.
+> 2. **Before starting each milestone, re-read `docs/REVIEW_QUEUE.md` (if it exists) and fix its open high-priority items first.** An hourly reviewer session scores the project and adds fixes there.
+> 3. If you already chose a tool the research marks AVOID, replace it and log the change in `docs/DECISIONS.md`.
+
 > **Working title:** Animatica (rename freely — search-and-replace is fine).
 > **Read this entire file before writing any code.** This is your mission brief. You are working autonomously overnight. The owner will review the repository in the morning. Make it count.
 
