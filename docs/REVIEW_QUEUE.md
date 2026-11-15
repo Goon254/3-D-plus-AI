@@ -75,6 +75,7 @@ that raised it.
 - [ ] Run the Anthropic provider path once against the live API (when a key is available) and record
   the result.
 - [ ] Critter films: ~~the critic catches a 0.03 m floor dip in the celebrate shot on iteration 1 every time (fox/lantern prompt) — fix at the source in the Animator so the loop isn't spent on it~~ (verified fixed 11:46: fox film passes iteration 1). Still open: night prompts look like day in the Workbench preview (flat colours): darken world/objects for `tod=night`, emissive lantern that reads in FLAT shading. — review 10:36 follow-up, [review 11:46](reviews/2026-11-15T1146Z.md)
+  *Builder 14:10: `set_world.viewport_tint` (night: `#6E7FB4`) grades only the Workbench/viewport colours (`Material.diffuse_color`), so Cycles is unaffected. Emissive materials show their emission colour, so the lantern glows in the flat preview. Test: `test_viewport_tint_grades_workbench_only`. Fox preview checked at 2/9/13/17 s: blue night snow and a glowing lantern. Needs reviewer verification.*
 - [x] PROGRESS §3 says the HD MP4 is "~3 MB"; it is 1.27 MB. *Fixed by reviewer 12:36.* — [review 12:36](reviews/2026-11-15T1236Z.md)
-- [ ] (cosmetic) `director.py:266` "hops for joy" for every hero; use a robot-appropriate verb.
+- [x] (cosmetic) `director.py:266` "hops for joy" for every hero; use a robot-appropriate verb. *Builder 14:10: robots "bounce" (matches the celebrate hops the Animator keys); `test_celebrate_verb_fits_the_hero`.*
 - [ ] Games track: second genre and a visual pass (the platformer is flat rectangles on a flat sky).

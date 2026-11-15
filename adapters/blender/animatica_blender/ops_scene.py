@@ -9,7 +9,7 @@ import os
 import bpy
 import mathutils
 
-from .common import ID_PROP, OpError, hex_to_rgb, rad
+from .common import ID_PROP, OpError, apply_viewport_tint, hex_to_rgb, rad
 
 
 class SceneOps:
@@ -351,6 +351,11 @@ class SceneOps:
         )
         bg.inputs["Strength"].default_value = op.get("strength", 1.0)
         world.color = hex_to_rgb(op.get("horizon", "#F2B880"))
+        if op.get("viewport_tint"):
+            s["animatica_viewport_tint"] = list(hex_to_rgb(op["viewport_tint"]))
+        elif "animatica_viewport_tint" in s:
+            del s["animatica_viewport_tint"]
+        apply_viewport_tint(s)
         if op.get("mist"):
             s.render.use_motion_blur = False
             world.mist_settings.start, world.mist_settings.depth = 5, 60 * (1.01 - op["mist"])

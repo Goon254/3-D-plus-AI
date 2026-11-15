@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import bpy
 
-from .common import OpError, hex_to_rgb
+from .common import OpError, apply_viewport_tint, hex_to_rgb
 
 
 class MaterialOps:
@@ -103,6 +103,13 @@ class MaterialOps:
             except Exception:  # noqa: BLE001
                 pass
         mat.diffuse_color = (*rgb, alpha)  # workbench / viewport colour
+        if "animatica_wb_base" in mat:
+            del mat["animatica_wb_base"]
+        if spec.get("emission") and spec.get("emission_strength", 1.0) >= 1.0:
+            mat["animatica_emissive"] = list(hex_to_rgb(spec["emission"]))
+        elif "animatica_emissive" in mat:
+            del mat["animatica_emissive"]
+        apply_viewport_tint(self.scene, [mat])
         mat.metallic = spec.get("metallic", 0.0)
         mat.roughness = spec.get("roughness", 0.5)
         mat["animatica_spec"] = str(spec)

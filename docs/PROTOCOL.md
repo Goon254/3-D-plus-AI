@@ -69,7 +69,7 @@ Source of truth: `src/animatica/core/protocol.py` (Pydantic models + semantic va
 | `add_shape_keys` | named shape keys from absolute vertex positions | `target, keys{name: [[x,y,z]…]}` |
 | `import_asset` | glTF/GLB/OBJ/FBX/USD under a root empty with `id` | `id, path, format?` |
 | `add_sound_strip` | audio on the VSE (artists hear the soundtrack in Blender) | `id, path, frame_start, channel, volume` |
-| `set_world` | sky gradient (zenith/glow/horizon/ground) + strength | |
+| `set_world` | sky gradient (zenith/glow/horizon/ground) + strength; optional `viewport_tint` grades Workbench/viewport colours only (night previews) | |
 | `set_render` | engine (workbench/eevee/cycles), resolution, samples, fps, look, exposure | |
 | `set_property` | escape hatch for a simple data path | `target, path, value` |
 | `render_preview` | one still | `camera ("auto" frames everything), frame, resolution, engine` |

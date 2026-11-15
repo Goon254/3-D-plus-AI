@@ -61,3 +61,8 @@ def test_exit_verbs_and_locomotion():
     fox = plan("A small fox finds a lantern in a meadow.")
     assert "hops into" in fox.shots[0].description
     assert "rolls into" in plan("A robot finds a ball.").shots[0].description
+
+
+def test_celebrate_verb_fits_the_hero():
+    assert "bounces for joy" in plan("A happy robot plays with a ball on the beach.").shots[-1].description
+    assert "hops for joy" in plan("A happy fox plays with a ball on the beach.").shots[-1].description

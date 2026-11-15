@@ -36,6 +36,25 @@ def workbench_setup(s) -> None:
     sh.show_cavity = True
 
 
+def apply_viewport_tint(s, mats=None) -> None:
+    """Grade the Workbench/viewport colours (``Material.diffuse_color``) by the scene's viewport tint.
+
+    Only the viewport colour changes, so Cycles/EEVEE renders are untouched. Emissive materials show their
+    emission colour instead (a lantern glows in the flat preview). Idempotent: the ungraded colour is kept.
+    """
+    tint = s.get("animatica_viewport_tint")
+    for m in mats if mats is not None else bpy.data.materials:
+        if "animatica_wb_base" not in m:
+            m["animatica_wb_base"] = list(m.diffuse_color)
+        base = list(m["animatica_wb_base"])
+        if m.get("animatica_emissive"):
+            m.diffuse_color = (*m["animatica_emissive"], base[3]) if tint else tuple(base)
+        elif tint:
+            m.diffuse_color = (base[0] * tint[0], base[1] * tint[1], base[2] * tint[2], base[3])
+        else:
+            m.diffuse_color = tuple(base)
+
+
 def glow_visibility(s, visible: bool) -> None:
     """Workbench can't render transparent halos: hide radial-glow objects there, show them otherwise."""
     for o in s.objects:

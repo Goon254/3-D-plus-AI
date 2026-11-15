@@ -323,6 +323,9 @@ class SetWorld(_Op):
     glow: str | None = None  # optional band between horizon and zenith (sunset pinks, etc.)
     strength: float = Field(1.0, ge=0, le=100)
     mist: float = Field(0.0, ge=0, le=1)
+    # Workbench/viewport-only colour grade (multiplies every non-emissive material's viewport colour;
+    # Cycles/EEVEE are unaffected). Night scenes use it so the flat-colour preview reads as night.
+    viewport_tint: str | None = None
 
 
 class SetRender(_Op):

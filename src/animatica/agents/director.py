@@ -263,7 +263,7 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
                 "beat": "celebrate",
                 "camera_move": "orbit",
                 "subject": "both",
-                "description": f"{name} hops for joy around the {prop}.",
+                "description": f"{name} {'bounces' if kind == 'robot' else 'hops'} for joy around the {prop}.",
             }
         )
     else:

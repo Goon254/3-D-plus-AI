@@ -151,3 +151,45 @@ def test_inspect_frustum_and_floor(fresh):
     sub = res.data["inspect"]["frames"]["1"]["subjects"]
     assert sub["box"]["visible_fraction"] == 1.0 and abs(sub["box"]["min_z"]) < 1e-3
     assert sub["far"]["visible_fraction"] < 0.5 and sub["far"]["min_z"] < 0
+
+
+def test_viewport_tint_grades_workbench_only(fresh, tmp_path):
+    """Night grade: Workbench (flat material colours) darkens, emissive materials keep glowing."""
+    res = run(
+        fresh,
+        {"op": "create_primitive", "id": "wall", "shape": "cube", "size": [8, 0.2, 8], "location": [0, 0, 0]},
+        {"op": "set_material", "targets": ["wall"], "material": {"base_color": "#F0F0F0"}},
+        {"op": "add_camera", "id": "cam", "location": [0, -4, 0], "look_at": [0, 0, 0], "lens": 30},
+        {"op": "set_world", "horizon": "#202040"},
+    )
+    assert res.ok, res.errors
+
+    def mean(tag):
+        r = run(
+            fresh,
+            {
+                "op": "render_preview",
+                "camera": "cam",
+                "frame": 1,
+                "path": str(tmp_path / f"{tag}.png"),
+                "resolution": [64, 36],
+                "engine": "workbench",
+            },
+            bid=tag,
+        )
+        assert r.ok, r.errors
+        return r.data["previews"][0]["stats"]["mean"]
+
+    day = mean("day")
+    assert run(fresh, {"op": "set_world", "horizon": "#202040", "viewport_tint": "#5060A0"}, bid="n").ok
+    night = mean("night")
+    assert night < day * 0.75
+    # an emissive material created after the grade shows its emission colour at full strength
+    glow = {"base_color": "#202020", "emission": "#FFE0A0", "emission_strength": 4}
+    assert run(fresh, {"op": "set_material", "targets": ["wall"], "material": glow}, bid="g").ok
+    assert mean("glow") > night
+    # removing the tint restores the ungraded colours (idempotent, reversible)
+    white = {"base_color": "#F0F0F0"}
+    assert run(fresh, {"op": "set_material", "targets": ["wall"], "material": white}, bid="w").ok
+    assert run(fresh, {"op": "set_world", "horizon": "#202040"}, bid="d").ok
+    assert mean("day2") == pytest.approx(day, abs=0.02)

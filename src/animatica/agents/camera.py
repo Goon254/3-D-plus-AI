@@ -35,6 +35,7 @@ DEFAULTS = {
     "medium": {"azimuth": 18, "height": 1.15, "lens": 40, "fill": 0.55},
     "closeup": {"azimuth": 42, "height": 1.15, "lens": 55, "fill": 0.6},
 }
+VIEWPORT_TINT = {"night": "#6E7FB4"}  # Workbench-only grade (Cycles is lit by the night rig)
 SKY_GLOW = {"sunset": "#C8607A", "dawn": "#E8A0B8", "day": "#8EC5F0", "night": "#16224A"}
 LIGHTING = {
     "sunset": {
@@ -161,6 +162,8 @@ class CameraLighting(Agent):
                 "ground": pal.ground,
                 "glow": SKY_GLOW.get(tod),
                 "strength": L.get("world_strength", 1.0),
+                # the flat-colour Workbench preview has no lights: grade it so night reads as night
+                **({"viewport_tint": VIEWPORT_TINT[tod]} if tod in VIEWPORT_TINT else {}),
             },
             {
                 "op": "add_light",
