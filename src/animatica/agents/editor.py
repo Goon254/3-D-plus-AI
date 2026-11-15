@@ -59,6 +59,13 @@ class Editor(Agent):
             srt = mux.write_srt([(v["start_s"], v["start_s"] + v["duration"] + 0.4, d.text) for d in plan.dialogue
                                  if (v := lines.get(d.id))], root / "final.srt")
         mux.encode(frames_dir, plan.fps, mix, out, crf=int(ctx.options.get("crf", 23)), subtitles=srt)
+        if not ctx.options.get("no_title"):
+            card = mux.make_title_png(plan.title, f"an Animatica short · {plan.hero.name}", res, root / "log" / "title.png",
+                                      accent=plan.style.palette.sun)
+            titled = root / "final_titled.mp4"
+            mux.overlay_title(out, card, titled, crf=int(ctx.options.get("crf", 23)))
+            titled.replace(out)
+            ctx.log.event("render", self.role, f"title overlay '{plan.title}' over the opening shot")
         from ..audio.timeline import write_mlt
 
         mlt = write_mlt(root, plan, ctx.state.artifacts, res)

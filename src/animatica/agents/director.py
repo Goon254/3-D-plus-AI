@@ -120,7 +120,6 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
     quotes = [q.strip() for q in quotes if len(q.split()) >= 2 or q.endswith(("!", "?", "."))]
     name = NAMES[kind][seed % len(NAMES[kind])]
     subject = {"robot": "little robot", "critter": "small creature"}[kind]
-    first_sentence = re.split(r"(?<=[.!?])\s", prompt.strip())[0]
 
     # story arc: openings and endings vary with the prompt's verbs/mood (not one fixed template)
     lonely = re.search(r"\b(sits?|sitting|waits?|waiting|alone|lonely|sleepy|rests?|resting|bored|sad)\b", text)
@@ -160,7 +159,7 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
     voice = {"voice": "am_puck", "speaker": 20, "pitch": 1.1, "rate": 0.88, "robot": 0.18} if kind == "robot" else \
             {"voice": "af_bella", "speaker": 3, "pitch": 1.15, "rate": 0.92, "robot": 0.0}
     return {
-        "title": first_sentence[:60].rstrip(".") or "Untitled",
+        "title": f"{name} and the {prop.capitalize()}",
         "logline": prompt.strip(),
         "prompt": prompt,
         "style": {
