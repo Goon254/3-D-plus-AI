@@ -52,3 +52,12 @@ def test_story_arcs_vary_with_the_prompt():
     assert [s.beat for s in lonely.shots] == ["idle", "discover", "speak", "exit"]
     playful = plan("A happy robot plays with a ball on the beach.")
     assert playful.shots[-1].beat == "celebrate"
+
+
+def test_exit_verbs_and_locomotion():
+    for verb in ("hops away", "runs off", "flies home", "scampers off", "wanders away", "leaves"):
+        p = plan(f"A small fox finds a lantern in a snowy forest at night and then {verb}.")
+        assert p.shots[-1].beat == "exit", verb
+    fox = plan("A small fox finds a lantern in a meadow.")
+    assert "hops into" in fox.shots[0].description
+    assert "rolls into" in plan("A robot finds a ball.").shots[0].description

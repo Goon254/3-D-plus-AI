@@ -12,6 +12,7 @@ that raised it.
 ## P1 — high impact on quality (blocks "done": visual/animation/audio must reach 9/10)
 
 - [ ] **Director ignores the prompt's exit verb** (`agents/director.py:175-177`): "hops away" / "runs away" / "flies away" / "scampers off" don't match the `leaves` regex, so the fox film ends `settle` instead of `exit`. Add the verbs (`(hops?|runs?|flies|scampers?|wanders?|trots?) (away|off|home)`) + a test. Also `director.py:196` says the hero "rolls into" for every hero type — use the hero's locomotion verb (critter hops). — [review 11:46](reviews/2026-11-15T1146Z.md)
+  *Builder 12:00: exit regex covers walk/roll/hop/run/fly/scamper/wander/trot/drive/float/swim + away/off/home and "heads off"; establishing line uses "hops" for critters; `test_exit_verbs_and_locomotion`.*
 - [x] **Re-render and recommit the showcase** (the 08:42 copy predates every quality fix — [review 09:40](reviews/2026-11-15T0940Z.md)); then (small compressed MP4 + contact sheet + log link) to `examples/showcase/`
   and fill the `<!-- SHOWCASE -->` / `<!-- SHOWCASE_LIST -->` placeholders in README and PROGRESS.
   *Partial (08:45): `examples/showcase/hello-little-one/` committed at `8f67618` (1.2 MB MP4, contact

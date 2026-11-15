@@ -173,8 +173,11 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
         r"\b(sits?|sitting|waits?|waiting|alone|lonely|sleepy|rests?|resting|bored|sad)\b", text
     )
     leaves = re.search(
-        r"\b(leaves?|goes home|walks? away|rolls? away|heads? home|says goodbye|farewell)\b", text
+        r"\b(leaves?|goes home|heads? (?:home|off)|says goodbye|farewell"
+        r"|(?:walks?|rolls?|hops?|runs?|flies|fly|scampers?|wanders?|trots?|drives?|floats?|swims?) (?:away|off|home))\b",
+        text,
     )
+    moves = "rolls" if kind == "robot" else "hops"
     opening = (
         {
             "id": "s1",
@@ -193,7 +196,7 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
             "beat": "enter",
             "camera_move": "track",
             "subject": "hero",
-            "description": f"Establishing: the {subject} rolls into the {setting} at {tod}.",
+            "description": f"Establishing: the {subject} {moves} into the {setting} at {tod}.",
         }
     )
     shots = [
