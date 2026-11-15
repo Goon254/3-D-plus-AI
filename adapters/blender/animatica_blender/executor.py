@@ -531,6 +531,7 @@ class Executor:
             links.new(transp.outputs[0], mixs.inputs[1])
             links.new(emit.outputs[0], mixs.inputs[2])
             links.new(mixs.outputs[0], out.inputs["Surface"])
+            mat["animatica_radial_glow"] = True
             try:
                 mat.surface_render_method = "BLENDED"
             except Exception:  # noqa: BLE001
@@ -776,6 +777,9 @@ class Executor:
                     s.cycles.denoiser = "OPENIMAGEDENOISE"
                 except Exception:  # noqa: BLE001
                     res["warnings"].append("denoiser unavailable")
+        if eng:
+            workbench_setup(s)
+            glow_visibility(s, eng != "workbench")
         if op.get("resolution"):
             s.render.resolution_x, s.render.resolution_y = op["resolution"]
             s.render.resolution_percentage = 100
@@ -844,11 +848,9 @@ class Executor:
                 s.cycles.samples = int(op.get("samples", 12))
                 s.cycles.use_denoising = True
                 s.cycles.device = "CPU"
+            glow_visibility(s, eng != "workbench")
             if eng == "workbench":
-                sh = s.display.shading
-                sh.light, sh.color_type = "STUDIO", "MATERIAL"
-                sh.show_shadows, sh.show_cavity = True, True
-                s.display.shading.background_type = "WORLD" if hasattr(sh, "background_type") else None
+                workbench_setup(s)
             s.render.resolution_x, s.render.resolution_y = op.get("resolution", (480, 270))
             s.render.resolution_percentage = 100
             if op.get("frame") is not None:
@@ -991,6 +993,22 @@ class ScriptHelpers:
         for op in ops:
             getattr(self._ex, "op_" + op["op"])(op, res)
         return res
+
+
+def workbench_setup(s) -> None:
+    """Readable Workbench look: flat material colours + soft shadows + cavity (studio light reads too dark)."""
+    sh = s.display.shading
+    sh.light, sh.color_type = "FLAT", "MATERIAL"
+    sh.show_shadows, sh.shadow_intensity = True, 0.4
+    sh.show_cavity = True
+
+
+def glow_visibility(s, visible: bool) -> None:
+    """Workbench can't render transparent halos: hide radial-glow objects there, show them otherwise."""
+    for o in s.objects:
+        m = getattr(o, "active_material", None)
+        if m is not None and m.get("animatica_radial_glow"):
+            o.hide_render = not visible
 
 
 def fast_cycles(s) -> None:
