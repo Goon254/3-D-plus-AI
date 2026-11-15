@@ -125,6 +125,40 @@ def wheel_spin_degrees(xs: list[float], radius: float, max_step: float = 35.0) -
     return out
 
 
+def hop_locomotion(
+    xs: list[float], fps: int, period_s: float = 0.42, air: float = 0.6, height: float = 0.14
+) -> tuple[list[float], list[float], list[float]]:
+    """Turn a smooth root path into discrete hops (a small critter bounds; it doesn't glide).
+
+    The path is cut into cycles of ``period_s``. In each cycle the hero travels the whole cycle's distance
+    while airborne (first ``air`` of the cycle, eased) and stands still on contact. Returns per-frame
+    ``(x, lift, land)``: the hopped x, the arc height (scaled by the hop length so tiny shuffles stay low),
+    and a 0..1 landing impulse for squash. Cycle boundaries keep the original positions, so the hero still
+    arrives where (and when) the plan wanted, at most one cycle late.
+    """
+    n = len(xs)
+    p = max(4, round(period_s * fps))
+    a = max(2, round(air * p))
+    out_x, lift, land = list(xs), [0.0] * n, [0.0] * n
+    for k0 in range(0, n, p):
+        k1 = min(k0 + p, n - 1)
+        dist = xs[k1] - xs[k0]
+        if abs(dist) < 0.02:  # standing: no hop
+            continue
+        h = height * min(1.0, abs(dist) / 0.35)
+        for i in range(k0, min(k0 + p, n)):
+            u = i - k0
+            if u <= a:
+                w = u / a
+                out_x[i] = xs[k0] + dist * (w * w * (3 - 2 * w))
+                lift[i] = h * math.sin(math.pi * w)
+            else:
+                out_x[i] = xs[k1]
+                c = (u - a) / max(1, p - a)  # contact: squash on landing, recovering
+                land[i] = (1 - c) * min(1.0, abs(dist) / 0.35)
+    return out_x, lift, land
+
+
 def default_performance(plan: dict[str, Any]) -> dict[str, Any]:
     out = {}
     for s in plan["shots"]:
@@ -341,16 +375,29 @@ class Animator(Agent):
         def bob(f: int, t: float) -> float:
             amp = 0.012 * min(1.0, at(f, speed) / 1.2)
             wave = math.sin(2 * math.pi * 5.0 * t)
-            return amp * (wave if robot else abs(wave) * 2.5)  # treads rattle; paws hop
+            return (
+                amp * wave if robot else 0.0
+            )  # treads rattle; a critter's travel is real hops (hop_locomotion)
 
         body_base_z = 0.55 if plan.hero.kind == "robot" else 0.33
         body_half = 0.25 if plan.hero.kind == "robot" else 0.306  # squash is anchored at the contact point
         robot = plan.hero.kind == "robot"
         dip_scale = 1.0 if robot else 0.0  # a critter has no treads to sink into: its dips become squash
 
-        def sq(t: float) -> float:
+        if not robot:  # a critter bounds in discrete hops (every frame keyed: a hop is only ~10 frames)
+            hop_x, hop_lift, hop_land = hop_locomotion(xs, fps)
+            frames = list(range(1, end_f + 1))
+
+        def root_loc(f: int, t: float) -> list[float]:
+            if robot:
+                return [r(rig.root_x(t)), 0.0, r(rig.root_hop(t) + floor_offset)]
+            return [r(at(f, hop_x)), 0.0, r(rig.root_hop(t) + at(f, hop_lift) + floor_offset)]
+
+        def sq(t: float, f: int | None = None) -> float:
             # critter dips are expressed as squash (volume-preserving, anchored at the feet)
-            return rig.squash(t) + (0.0 if robot else 1.6 * rig.dip(t))
+            if robot:
+                return rig.squash(t)
+            return rig.squash(t) + 1.6 * rig.dip(t) - (0.14 * at(f, hop_land) if f else 0.0)
 
         ops: list[dict[str, Any]] = [
             {"op": "set_frame_range", "start": 1, "end": end_f, "fps": fps},
@@ -358,7 +405,7 @@ class Animator(Agent):
                 "op": "insert_keyframes",
                 "target": "hero_root",
                 "property": "location",
-                "keys": sample(lambda f, t: [r(rig.root_x(t)), 0.0, r(rig.root_hop(t) + floor_offset)]),
+                "keys": sample(root_loc),
             },
             {
                 "op": "insert_keyframes",
@@ -377,7 +424,7 @@ class Animator(Agent):
                         r(
                             body_base_z
                             + dip_scale * rig.dip(t)
-                            - body_half * (1 - sq(t))
+                            - body_half * (1 - sq(t, f))
                             + breathe(t)
                             + bob(f, t)
                         ),
@@ -405,7 +452,11 @@ class Animator(Agent):
                 "target": "hero_body",
                 "property": "scale",
                 "keys": sample(
-                    lambda f, t: [r(1 + (1 - sq(t)) * 0.5), r(1 + (1 - sq(t)) * 0.5), r(sq(t) + breathe(t))]
+                    lambda f, t: [
+                        r(1 + (1 - sq(t, f)) * 0.5),
+                        r(1 + (1 - sq(t, f)) * 0.5),
+                        r(sq(t, f) + breathe(t)),
+                    ]
                 ),
             },
             {

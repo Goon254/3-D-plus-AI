@@ -112,3 +112,22 @@ def test_wheel_spin_rolls_by_distance_without_skating():
                 f"hero_spoke_{side}{j}",
                 f"hero_bolt_{side}{j}",
             } <= ids
+
+
+def test_critter_hops_instead_of_gliding():
+    from animatica.agents.animator import hop_locomotion
+
+    fps = 24
+    xs = [min(2.0, 0.05 * i) for i in range(80)]  # glides 2 m at 1.2 m/s, then stands
+    hx, lift, land = hop_locomotion(xs, fps)
+    p = round(0.42 * fps)
+    # cycle boundaries keep the planned positions; the end position is unchanged
+    assert all(hx[k] == pytest.approx(xs[k]) for k in range(0, 40, p))
+    assert hx[-1] == pytest.approx(2.0)
+    # there are stationary contact frames while moving (no gliding) and airborne frames with lift
+    still = [i for i in range(1, 40) if hx[i] == hx[i - 1]]
+    assert still and max(lift[:40]) > 0.1
+    assert all(lift[i] == 0.0 for i in still)
+    assert max(land) > 0.5
+    # standing still: no hops
+    assert max(lift[50:]) == 0.0 and max(land[50:]) == 0.0

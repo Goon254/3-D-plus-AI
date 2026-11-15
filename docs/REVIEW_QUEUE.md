@@ -35,7 +35,7 @@ that raised it.
 - [ ] **Animation depth:** bone rig (Rigify-lite or simple armature) with arms/head that gesture during
   the line; hero should *react* (lean in, head tilt) on the discovery beat rather than glide. Vary the
   story arc beyond the fixed 4 beats in the scripted Director.
-  *Builder 09:10 (`172ff47`, earlier arcs commit): jointed arms (elbows) with overlapping lag, camera-side arm reaches during the line; arcs vary (idle/lonely opening, exit ending, prop blooms). Still no bone rig.* *Builder 10:45 (`5f068e4`): robot wheels roll by distance travelled (spoke + bolt, anti-strobe cap) — no more skating. Still open: bone rig, critter locomotion, acting beats.*
+  *Builder 09:10 (`172ff47`, earlier arcs commit): jointed arms (elbows) with overlapping lag, camera-side arm reaches during the line; arcs vary (idle/lonely opening, exit ending, prop blooms). Still no bone rig.* *Builder 10:45 (`5f068e4`): robot wheels roll by distance travelled (spoke + bolt, anti-strobe cap) — no more skating. Builder 11:35: critter now bounds in discrete hops (`hop_locomotion`: ~0.42 s cycles, airborne travel + still contact frames with landing squash; tested). Still open: bone rig, acting beats.*
 - [x] **Critic must earn its loop:** in the demo every shot passed on iteration 1, so the loop proves
   nothing. Add checks that would have caught the items above (mouth on-screen size during dialogue,
   shot-type fill vs. intent, empty-frame ratio, horizon edge visible) and show a before/after in the log.
@@ -70,4 +70,5 @@ that raised it.
   *Builder 09:14 (`b50f7fb`): split into executor + ops_scene/material/anim/render + common.* *Verified 09:40 (largest module now 361 lines; CI run #21 was red on lint, fixed by `74209ea`).*
 - [ ] Run the Anthropic provider path once against the live API (when a key is available) and record
   the result.
+- [ ] Critter films: the critic catches a 0.03 m floor dip in the celebrate shot on iteration 1 every time (fox/lantern prompt) — fix at the source in the Animator so the loop isn't spent on it. Night prompts look like day in the Workbench preview (flat colours). — review 10:36 follow-up
 - [ ] Games track: second genre and a visual pass (the platformer is flat rectangles on a flat sky).

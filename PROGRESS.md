@@ -20,7 +20,7 @@
   editable `scene.blend` and an `edit.mlt` timeline for Shotcut/Kdenlive.
 
 Hand edits survive `animatica continue` / `revise`. An **MCP server** exposes the batched tools. A
-**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **63 tests**
+**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **64 tests**
 (`pytest -q`) pass locally. GitHub CI runs ruff, unit, bpy adapter and offline pipeline tests; status
 for the final SHA is at the bottom of this report. An hourly reviewer session scored the project, and
 its queue is in [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md).
@@ -40,7 +40,7 @@ animatica film "A lonely robot sits in a junkyard at dusk until a flower blooms.
 animatica revise output/hello-little-one "make the robot blue and slow down shot 2" --quality preview
 animatica game "a 2D platformer where a robot collects flowers" && godot --path output/game-*/godot
 animatica-mcp                        # MCP server (stdio) for Claude Desktop / Claude Code
-pytest -q                            # 63 tests (Blender/Godot/MCP tests skip if those are missing)
+pytest -q                            # 64 tests (Blender/Godot/MCP tests skip if those are missing)
 ```
 
 Each film writes `output/<project>/final.mp4` (video + audio + captions), `scene.blend`, `edit.mlt`,
@@ -84,7 +84,7 @@ audio 8, code 8, architecture 9, docs 8, licenses 9 (≈7.9/10).
   in Cycles, but there are no real textures (only procedural grime) and no volumetrics. The critter
   reads a bit like a chick.
 * **The rig is object-level** (empties + parenting, elbows added tonight). There's no walk cycle (the
-  robot drives on wheels that now roll by distance; the critter glides with a hop-bob) and no bone rig. That's the biggest visible upgrade
+  robot drives on wheels that now roll by distance; the critter now bounds in real hops) and no bone rig. That's the biggest visible upgrade
   left.
 * **Story variety is template-driven offline.** Arcs vary with the prompt, but the scripted Director is
   a keyword parser. The Anthropic path (plans, performance, camera, vision critic) is implemented and
