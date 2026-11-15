@@ -1,0 +1,2506 @@
+{
+ "format": "animatica-project/0.1",
+ "prompt": "A curious little robot discovers a flower growing in a junkyard at sunset. It says: 'Hello, little one.'",
+ "provider": "scripted",
+ "plan": {
+  "title": "A curious little robot discovers a flower growing in a junky",
+  "logline": "A curious little robot discovers a flower growing in a junkyard at sunset. It says: 'Hello, little one.'",
+  "prompt": "A curious little robot discovers a flower growing in a junkyard at sunset. It says: 'Hello, little one.'",
+  "style": {
+   "palette": {
+    "primary": "#D9822B",
+    "secondary": "#3E4A59",
+    "accent": "#7FE7FF",
+    "ground": "#6B5646",
+    "sky_zenith": "#2E3A73",
+    "sky_horizon": "#F59E5B",
+    "sun": "#FFB36B"
+   },
+   "mood": "wonder",
+   "shape_language": "rounded, chunky, friendly; bevelled edges; big readable silhouettes",
+   "lighting": "low warm golden key from behind-left, cool blue fill",
+   "notes": [
+    "keep Pip the warmest saturated object on screen",
+    "the flower is the visual focal point"
+   ]
+  },
+  "setting": {
+   "kind": "junkyard",
+   "time_of_day": "sunset",
+   "density": 1.0
+  },
+  "characters": [
+   {
+    "id": "hero",
+    "kind": "robot",
+    "name": "Pip",
+    "color": "#D9822B",
+    "eye_color": "#7FE7FF",
+    "scale": 1.0,
+    "voice": {
+     "voice": "am_puck",
+     "speaker": 20,
+     "pitch": 1.1,
+     "rate": 0.88,
+     "robot": 0.18
+    }
+   }
+  ],
+  "props": [
+   {
+    "id": "prop",
+    "kind": "flower",
+    "color": "#FF5C8A",
+    "location": [
+     1.3,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "shots": [
+   {
+    "id": "s1",
+    "type": "wide",
+    "duration": 5.5,
+    "beat": "enter",
+    "description": "Establishing: the little robot rolls into the junkyard at sunset.",
+    "camera_move": "track",
+    "subject": "hero"
+   },
+   {
+    "id": "s2",
+    "type": "medium",
+    "duration": 5.0,
+    "beat": "discover",
+    "description": "Pip notices the flower, hesitates (anticipation), then approaches and leans in.",
+    "camera_move": "dolly_in",
+    "subject": "both"
+   },
+   {
+    "id": "s3",
+    "type": "closeup",
+    "duration": 5.0,
+    "beat": "speak",
+    "description": "Close-up: Pip speaks softly to the flower.",
+    "camera_move": "dolly_in",
+    "subject": "hero"
+   },
+   {
+    "id": "s4",
+    "type": "wide",
+    "duration": 5.5,
+    "beat": "settle",
+    "description": "Pip settles beside the flower; the camera rises as the light fades.",
+    "camera_move": "crane_up",
+    "subject": "both"
+   }
+  ],
+  "dialogue": [
+   {
+    "id": "line1",
+    "character": "hero",
+    "text": "Hello, little one.",
+    "shot": "s3",
+    "at": 1.2
+   }
+  ],
+  "fps": 24
+ },
+ "scene": {
+  "prims": {
+   "set_ground": {
+    "id": "set_ground",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#6B5646",
+    "animated": [],
+    "tags": [
+     "set",
+     "ground"
+    ]
+   },
+   "set_junk_0": {
+    "id": "set_junk_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.931,
+     -3.403,
+     0.12
+    ],
+    "rotate": [
+     5.0346759785825395,
+     -1.4636249304870557,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#1E1E20",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_1": {
+    "id": "set_junk_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -4.394,
+     1.691,
+     0.35
+    ],
+    "rotate": [
+     -0.37999263825227203,
+     -7.504927781470094,
+     23.131492014453677
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#4F5B62",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_2": {
+    "id": "set_junk_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -10.665,
+     0.774,
+     0.42
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     308.5609854828373
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#7A6A4F",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_3": {
+    "id": "set_junk_3",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.355,
+     5.856,
+     0.35
+    ],
+    "rotate": [
+     12.822580875855024,
+     6.0448493830508525,
+     184.99086079722792
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#7A6A4F",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_4": {
+    "id": "set_junk_4",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.767,
+     3.374,
+     0.09
+    ],
+    "rotate": [
+     90.0,
+     0.0,
+     315.8588771638684
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A0522D",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_5": {
+    "id": "set_junk_5",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -11.903,
+     -0.649,
+     0.35
+    ],
+    "rotate": [
+     18.539369641117368,
+     -20.20990490603442,
+     270.1727952241554
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#8C4A2F",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_6": {
+    "id": "set_junk_6",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     2.669,
+     4.122,
+     0.42
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     270.5387833114572
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#7A6A4F",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_7": {
+    "id": "set_junk_7",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -2.427,
+     5.337,
+     0.09
+    ],
+    "rotate": [
+     90.0,
+     0.0,
+     226.70461314833656
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#6E6A64",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_8": {
+    "id": "set_junk_8",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.382,
+     -5.747,
+     0.35
+    ],
+    "rotate": [
+     2.911987568107719,
+     11.326503664387616,
+     171.3924335507481
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#8C4A2F",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_9": {
+    "id": "set_junk_9",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     1.764,
+     3.237,
+     0.35
+    ],
+    "rotate": [
+     -5.2324084092428755,
+     -2.491722365530226,
+     128.6059355584403
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#4F5B62",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_10": {
+    "id": "set_junk_10",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -10.897,
+     1.176,
+     0.35
+    ],
+    "rotate": [
+     -11.793097062961362,
+     -15.444332722277759,
+     310.3211051416809
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#4F5B62",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_11": {
+    "id": "set_junk_11",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.528,
+     4.031,
+     0.09
+    ],
+    "rotate": [
+     90.0,
+     0.0,
+     157.12523519912463
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#6E6A64",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_12": {
+    "id": "set_junk_12",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     10.73,
+     2.741,
+     0.09
+    ],
+    "rotate": [
+     90.0,
+     0.0,
+     40.88448060985768
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#7A6A4F",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_13": {
+    "id": "set_junk_13",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -3.629,
+     2.9,
+     0.35
+    ],
+    "rotate": [
+     26.357119392640186,
+     18.951099905517154,
+     170.45968298659403
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A0522D",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_14": {
+    "id": "set_junk_14",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -0.732,
+     9.153,
+     0.2551300083134827
+    ],
+    "rotate": [
+     2.9843394236506104,
+     3.4208808864121467,
+     155.2971125374585
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#6E6A64",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_15": {
+    "id": "set_junk_15",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     9.056,
+     4.375,
+     0.35
+    ],
+    "rotate": [
+     26.804301639238886,
+     18.5112843373673,
+     259.2436631600889
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#6E6A64",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_16": {
+    "id": "set_junk_16",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.907,
+     3.158,
+     0.2233147136281894
+    ],
+    "rotate": [
+     1.761858512471813,
+     1.0628177650534163,
+     69.3719730992783
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#8C4A2F",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_17": {
+    "id": "set_junk_17",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     2.509,
+     13.527,
+     0.1771320269736095
+    ],
+    "rotate": [
+     -2.916182008350051,
+     3.1186967735532574,
+     238.97744607535324
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#7A6A4F",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_18": {
+    "id": "set_junk_18",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.439,
+     12.496,
+     0.09
+    ],
+    "rotate": [
+     90.0,
+     0.0,
+     261.9029758778171
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#6E6A64",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_19": {
+    "id": "set_junk_19",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     13.088,
+     4.596,
+     0.09
+    ],
+    "rotate": [
+     90.0,
+     0.0,
+     230.98784391642724
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#6E6A64",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_20": {
+    "id": "set_junk_20",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -3.173,
+     6.777,
+     0.09
+    ],
+    "rotate": [
+     90.0,
+     0.0,
+     235.72438466631706
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#4F5B62",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_21": {
+    "id": "set_junk_21",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     5.069,
+     4.753,
+     0.42
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     176.8821768220042
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#4F5B62",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_22": {
+    "id": "set_junk_22",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     13.392,
+     2.11,
+     0.42
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     119.69734012308244
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#9C7A3C",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_23": {
+    "id": "set_junk_23",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -8.333,
+     10.803,
+     0.2310596812298154
+    ],
+    "rotate": [
+     -3.2425052944299284,
+     3.6808745960248275,
+     147.60272661123417
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#9C7A3C",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_24": {
+    "id": "set_junk_24",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -2.346,
+     2.177,
+     0.35
+    ],
+    "rotate": [
+     28.563052578925628,
+     16.032281209589023,
+     26.3699974741783
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#9C7A3C",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_25": {
+    "id": "set_junk_25",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -6.333,
+     3.27,
+     0.42
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     316.28909085996975
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#8C4A2F",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_26": {
+    "id": "set_junk_26",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     7.841,
+     10.906,
+     0.42
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     235.35185000466603
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#4F5B62",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_junk_27": {
+    "id": "set_junk_27",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.427,
+     7.03,
+     0.42
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     335.0850384564144
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#8C4A2F",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_pile_0": {
+    "id": "set_pile_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     22.141,
+     -13.2,
+     -0.3767960885566955
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     111.48185658032223
+    ],
+    "scale": [
+     1.3,
+     1.0,
+     0.45
+    ],
+    "material": "#4F5B62",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_pile_1": {
+    "id": "set_pile_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.522,
+     25.883,
+     -0.4745103033297886
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     114.1786790357346
+    ],
+    "scale": [
+     1.3,
+     1.0,
+     0.45
+    ],
+    "material": "#7A6A4F",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_pile_2": {
+    "id": "set_pile_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.31,
+     24.476,
+     -0.4179450567234565
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     228.06123878977488
+    ],
+    "scale": [
+     1.3,
+     1.0,
+     0.45
+    ],
+    "material": "#4F5B62",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_pile_3": {
+    "id": "set_pile_3",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -12.234,
+     3.36,
+     -0.37889144090013227
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     127.36004737660443
+    ],
+    "scale": [
+     1.3,
+     1.0,
+     0.45
+    ],
+    "material": "#9C7A3C",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_pile_4": {
+    "id": "set_pile_4",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -14.014,
+     -7.387,
+     -0.36491201171865506
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     18.81282478580927
+    ],
+    "scale": [
+     1.3,
+     1.0,
+     0.45
+    ],
+    "material": "#9C7A3C",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_pile_5": {
+    "id": "set_pile_5",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.329,
+     24.74,
+     -0.6251862578891904
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     1.506297194115911
+    ],
+    "scale": [
+     1.3,
+     1.0,
+     0.45
+    ],
+    "material": "#4F5B62",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_pile_6": {
+    "id": "set_pile_6",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -20.246,
+     2.137,
+     -0.35820416062030724
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     35.900131522526124
+    ],
+    "scale": [
+     1.3,
+     1.0,
+     0.45
+    ],
+    "material": "#9C7A3C",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_car": {
+    "id": "set_car",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.8,
+     4.0,
+     0.5
+    ],
+    "rotate": [
+     0.0,
+     6.0,
+     25.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#6E6A64",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_car_top": {
+    "id": "set_car_top",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.6,
+     4.1,
+     1.1
+    ],
+    "rotate": [
+     0.0,
+     6.0,
+     25.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#6E6A64",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_sun_disc": {
+    "id": "set_sun_disc",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -44.89,
+     77.75,
+     6.28
+    ],
+    "rotate": [
+     90.0,
+     0.0,
+     30.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#FFB36B",
+    "animated": [],
+    "tags": [
+     "set",
+     "sky"
+    ]
+   },
+   "hero_root": {
+    "id": "hero_root",
+    "type": "empty",
+    "parent": null,
+    "translate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location",
+     "rotation"
+    ],
+    "tags": [
+     "hero",
+     "rig"
+    ]
+   },
+   "hero_body": {
+    "id": "hero_body",
+    "type": "mesh",
+    "parent": "hero_root",
+    "translate": [
+     0.0,
+     0.0,
+     0.55
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#D9822B",
+    "animated": [
+     "location",
+     "rotation",
+     "scale"
+    ],
+    "tags": [
+     "hero"
+    ]
+   },
+   "hero_belly": {
+    "id": "hero_belly",
+    "type": "mesh",
+    "parent": "hero_body",
+    "translate": [
+     0.0,
+     -0.235,
+     -0.04
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A9631E",
+    "animated": [],
+    "tags": []
+   },
+   "hero_chest_light": {
+    "id": "hero_chest_light",
+    "type": "mesh",
+    "parent": "hero_body",
+    "translate": [
+     0.12,
+     -0.255,
+     -0.04
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#FF4D4D",
+    "animated": [],
+    "tags": []
+   },
+   "hero_tread_L": {
+    "id": "hero_tread_L",
+    "type": "mesh",
+    "parent": "hero_root",
+    "translate": [
+     0.34,
+     0.0,
+     0.14
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#3E4A59",
+    "animated": [],
+    "tags": [
+     "hero"
+    ]
+   },
+   "hero_cog_L0": {
+    "id": "hero_cog_L0",
+    "type": "mesh",
+    "parent": "hero_root",
+    "translate": [
+     0.43,
+     -0.2,
+     0.14
+    ],
+    "rotate": [
+     0.0,
+     90.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A9631E",
+    "animated": [],
+    "tags": []
+   },
+   "hero_cog_L1": {
+    "id": "hero_cog_L1",
+    "type": "mesh",
+    "parent": "hero_root",
+    "translate": [
+     0.43,
+     0.0,
+     0.14
+    ],
+    "rotate": [
+     0.0,
+     90.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A9631E",
+    "animated": [],
+    "tags": []
+   },
+   "hero_cog_L2": {
+    "id": "hero_cog_L2",
+    "type": "mesh",
+    "parent": "hero_root",
+    "translate": [
+     0.43,
+     0.2,
+     0.14
+    ],
+    "rotate": [
+     0.0,
+     90.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A9631E",
+    "animated": [],
+    "tags": []
+   },
+   "hero_arm_pivot_L": {
+    "id": "hero_arm_pivot_L",
+    "type": "empty",
+    "parent": "hero_body",
+    "translate": [
+     0.37,
+     0.0,
+     0.12
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "rotation"
+    ],
+    "tags": []
+   },
+   "hero_arm_L": {
+    "id": "hero_arm_L",
+    "type": "mesh",
+    "parent": "hero_arm_pivot_L",
+    "translate": [
+     0.03,
+     0.0,
+     -0.15
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#3E4A59",
+    "animated": [],
+    "tags": []
+   },
+   "hero_hand_L": {
+    "id": "hero_hand_L",
+    "type": "mesh",
+    "parent": "hero_arm_pivot_L",
+    "translate": [
+     0.03,
+     0.0,
+     -0.32
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A9631E",
+    "animated": [],
+    "tags": []
+   },
+   "hero_tread_R": {
+    "id": "hero_tread_R",
+    "type": "mesh",
+    "parent": "hero_root",
+    "translate": [
+     -0.34,
+     0.0,
+     0.14
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#3E4A59",
+    "animated": [],
+    "tags": [
+     "hero"
+    ]
+   },
+   "hero_cog_R0": {
+    "id": "hero_cog_R0",
+    "type": "mesh",
+    "parent": "hero_root",
+    "translate": [
+     -0.43,
+     -0.2,
+     0.14
+    ],
+    "rotate": [
+     0.0,
+     90.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A9631E",
+    "animated": [],
+    "tags": []
+   },
+   "hero_cog_R1": {
+    "id": "hero_cog_R1",
+    "type": "mesh",
+    "parent": "hero_root",
+    "translate": [
+     -0.43,
+     0.0,
+     0.14
+    ],
+    "rotate": [
+     0.0,
+     90.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A9631E",
+    "animated": [],
+    "tags": []
+   },
+   "hero_cog_R2": {
+    "id": "hero_cog_R2",
+    "type": "mesh",
+    "parent": "hero_root",
+    "translate": [
+     -0.43,
+     0.2,
+     0.14
+    ],
+    "rotate": [
+     0.0,
+     90.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A9631E",
+    "animated": [],
+    "tags": []
+   },
+   "hero_arm_pivot_R": {
+    "id": "hero_arm_pivot_R",
+    "type": "empty",
+    "parent": "hero_body",
+    "translate": [
+     -0.37,
+     0.0,
+     0.12
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "rotation"
+    ],
+    "tags": []
+   },
+   "hero_arm_R": {
+    "id": "hero_arm_R",
+    "type": "mesh",
+    "parent": "hero_arm_pivot_R",
+    "translate": [
+     -0.03,
+     0.0,
+     -0.15
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#3E4A59",
+    "animated": [],
+    "tags": []
+   },
+   "hero_hand_R": {
+    "id": "hero_hand_R",
+    "type": "mesh",
+    "parent": "hero_arm_pivot_R",
+    "translate": [
+     -0.03,
+     0.0,
+     -0.32
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A9631E",
+    "animated": [],
+    "tags": []
+   },
+   "hero_neck": {
+    "id": "hero_neck",
+    "type": "mesh",
+    "parent": "hero_body",
+    "translate": [
+     0.0,
+     0.0,
+     0.3
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#3E4A59",
+    "animated": [],
+    "tags": []
+   },
+   "hero_head_pivot": {
+    "id": "hero_head_pivot",
+    "type": "empty",
+    "parent": "hero_body",
+    "translate": [
+     0.0,
+     0.0,
+     0.33
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "rotation"
+    ],
+    "tags": []
+   },
+   "hero_head": {
+    "id": "hero_head",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.0,
+     0.0,
+     0.22
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#D9822B",
+    "animated": [],
+    "tags": [
+     "hero"
+    ]
+   },
+   "hero_face": {
+    "id": "hero_face",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.0,
+     -0.225,
+     0.22
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#1B1F27",
+    "animated": [],
+    "tags": []
+   },
+   "hero_eye_L": {
+    "id": "hero_eye_L",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.11,
+     -0.243,
+     0.26
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     0.35,
+     1.25
+    ],
+    "material": "#7FE7FF",
+    "animated": [
+     "scale"
+    ],
+    "tags": []
+   },
+   "hero_ear_L": {
+    "id": "hero_ear_L",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.31,
+     0.0,
+     0.22
+    ],
+    "rotate": [
+     0.0,
+     90.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A9631E",
+    "animated": [],
+    "tags": []
+   },
+   "hero_eye_R": {
+    "id": "hero_eye_R",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     -0.11,
+     -0.243,
+     0.26
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     0.35,
+     1.25
+    ],
+    "material": "#7FE7FF",
+    "animated": [
+     "scale"
+    ],
+    "tags": []
+   },
+   "hero_ear_R": {
+    "id": "hero_ear_R",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     -0.31,
+     0.0,
+     0.22
+    ],
+    "rotate": [
+     0.0,
+     90.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#A9631E",
+    "animated": [],
+    "tags": []
+   },
+   "hero_mouth": {
+    "id": "hero_mouth",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.0,
+     -0.245,
+     0.14
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#7FE7FF",
+    "animated": [
+     "shape_key:open",
+     "shape_key:wide",
+     "shape_key:round"
+    ],
+    "tags": [
+     "hero",
+     "mouth"
+    ]
+   },
+   "hero_antenna_pivot": {
+    "id": "hero_antenna_pivot",
+    "type": "empty",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.0,
+     0.0,
+     0.41
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "rotation"
+    ],
+    "tags": []
+   },
+   "hero_antenna": {
+    "id": "hero_antenna",
+    "type": "mesh",
+    "parent": "hero_antenna_pivot",
+    "translate": [
+     0.0,
+     0.0,
+     0.11
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#3E4A59",
+    "animated": [],
+    "tags": []
+   },
+   "hero_antenna_tip": {
+    "id": "hero_antenna_tip",
+    "type": "mesh",
+    "parent": "hero_antenna_pivot",
+    "translate": [
+     0.0,
+     0.0,
+     0.24
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#FF4D4D",
+    "animated": [],
+    "tags": []
+   },
+   "prop": {
+    "id": "prop",
+    "type": "empty",
+    "parent": null,
+    "translate": [
+     1.3,
+     0.0,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": [
+     "prop",
+     "rig"
+    ]
+   },
+   "prop_pivot": {
+    "id": "prop_pivot",
+    "type": "empty",
+    "parent": "prop",
+    "translate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "rotation"
+    ],
+    "tags": []
+   },
+   "prop_stem": {
+    "id": "prop_stem",
+    "type": "mesh",
+    "parent": "prop_pivot",
+    "translate": [
+     0.0,
+     0.0,
+     0.21
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#3F8F3A",
+    "animated": [],
+    "tags": []
+   },
+   "prop_leaf_1": {
+    "id": "prop_leaf_1",
+    "type": "mesh",
+    "parent": "prop_pivot",
+    "translate": [
+     0.07,
+     0.0,
+     0.13
+    ],
+    "rotate": [
+     0.0,
+     -30.0,
+     0.0
+    ],
+    "scale": [
+     1.4,
+     0.25,
+     0.5
+    ],
+    "material": "#3F8F3A",
+    "animated": [],
+    "tags": []
+   },
+   "prop_leaf_2": {
+    "id": "prop_leaf_2",
+    "type": "mesh",
+    "parent": "prop_pivot",
+    "translate": [
+     -0.06,
+     0.0,
+     0.22
+    ],
+    "rotate": [
+     0.0,
+     35.0,
+     0.0
+    ],
+    "scale": [
+     1.4,
+     0.25,
+     0.5
+    ],
+    "material": "#3F8F3A",
+    "animated": [],
+    "tags": []
+   },
+   "prop_head": {
+    "id": "prop_head",
+    "type": "empty",
+    "parent": "prop_pivot",
+    "translate": [
+     0.0,
+     0.0,
+     0.42
+    ],
+    "rotate": [
+     -15.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": []
+   },
+   "prop_center": {
+    "id": "prop_center",
+    "type": "mesh",
+    "parent": "prop_head",
+    "translate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     0.6,
+     1.0
+    ],
+    "material": "#FFD23F",
+    "animated": [],
+    "tags": []
+   },
+   "prop_petal_0": {
+    "id": "prop_petal_0",
+    "type": "mesh",
+    "parent": "prop_head",
+    "translate": [
+     0.075,
+     0.01,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     -0.0,
+     0.0
+    ],
+    "scale": [
+     1.25,
+     0.25,
+     0.6
+    ],
+    "material": "#FF5C8A",
+    "animated": [],
+    "tags": []
+   },
+   "prop_petal_1": {
+    "id": "prop_petal_1",
+    "type": "mesh",
+    "parent": "prop_head",
+    "translate": [
+     0.04676173513940502,
+     0.01,
+     0.05863736118510223
+    ],
+    "rotate": [
+     0.0,
+     -51.42857142857143,
+     0.0
+    ],
+    "scale": [
+     1.25,
+     0.25,
+     0.6
+    ],
+    "material": "#FF5C8A",
+    "animated": [],
+    "tags": []
+   },
+   "prop_petal_2": {
+    "id": "prop_petal_2",
+    "type": "mesh",
+    "parent": "prop_head",
+    "translate": [
+     -0.016689070046723573,
+     0.01,
+     0.07311959341363677
+    ],
+    "rotate": [
+     0.0,
+     -102.85714285714286,
+     0.0
+    ],
+    "scale": [
+     1.25,
+     0.25,
+     0.6
+    ],
+    "material": "#FF5C8A",
+    "animated": [],
+    "tags": []
+   },
+   "prop_petal_3": {
+    "id": "prop_petal_3",
+    "type": "mesh",
+    "parent": "prop_head",
+    "translate": [
+     -0.06757266509268142,
+     0.01,
+     0.03254128043381686
+    ],
+    "rotate": [
+     0.0,
+     -154.28571428571428,
+     0.0
+    ],
+    "scale": [
+     1.25,
+     0.25,
+     0.6
+    ],
+    "material": "#FF5C8A",
+    "animated": [],
+    "tags": []
+   },
+   "prop_petal_4": {
+    "id": "prop_petal_4",
+    "type": "mesh",
+    "parent": "prop_head",
+    "translate": [
+     -0.06757266509268144,
+     0.01,
+     -0.03254128043381685
+    ],
+    "rotate": [
+     0.0,
+     -205.71428571428572,
+     0.0
+    ],
+    "scale": [
+     1.25,
+     0.25,
+     0.6
+    ],
+    "material": "#FF5C8A",
+    "animated": [],
+    "tags": []
+   },
+   "prop_petal_5": {
+    "id": "prop_petal_5",
+    "type": "mesh",
+    "parent": "prop_head",
+    "translate": [
+     -0.016689070046723528,
+     0.01,
+     -0.07311959341363677
+    ],
+    "rotate": [
+     0.0,
+     -257.14285714285717,
+     0.0
+    ],
+    "scale": [
+     1.25,
+     0.25,
+     0.6
+    ],
+    "material": "#FF5C8A",
+    "animated": [],
+    "tags": []
+   },
+   "prop_petal_6": {
+    "id": "prop_petal_6",
+    "type": "mesh",
+    "parent": "prop_head",
+    "translate": [
+     0.046761735139405,
+     0.01,
+     -0.05863736118510224
+    ],
+    "rotate": [
+     0.0,
+     -308.57142857142856,
+     0.0
+    ],
+    "scale": [
+     1.25,
+     0.25,
+     0.6
+    ],
+    "material": "#FF5C8A",
+    "animated": [],
+    "tags": []
+   },
+   "light_key": {
+    "id": "light_key",
+    "type": "light",
+    "parent": null,
+    "translate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rotate": [
+     78.0,
+     0.0,
+     30.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "light.energy"
+    ],
+    "tags": [
+     "light"
+    ]
+   },
+   "light_fill": {
+    "id": "light_fill",
+    "type": "light",
+    "parent": null,
+    "translate": [
+     2.5,
+     -5.0,
+     3.2
+    ],
+    "rotate": [
+     55.0,
+     0.0,
+     25.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": [
+     "light"
+    ]
+   },
+   "light_rim": {
+    "id": "light_rim",
+    "type": "light",
+    "parent": null,
+    "translate": [
+     -2.0,
+     3.5,
+     2.8
+    ],
+    "rotate": [
+     -55.0,
+     0.0,
+     -30.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": [
+     "light"
+    ]
+   },
+   "cam_s1_aim": {
+    "id": "cam_s1_aim",
+    "type": "empty",
+    "parent": null,
+    "translate": [
+     -2.188,
+     -0.16,
+     0.775
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location"
+    ],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s1": {
+    "id": "cam_s1",
+    "type": "camera",
+    "parent": null,
+    "translate": [
+     -4.118,
+     -5.639,
+     1.5
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location"
+    ],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s2_aim": {
+    "id": "cam_s2_aim",
+    "type": "empty",
+    "parent": null,
+    "translate": [
+     0.075,
+     0.0,
+     0.698
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s2": {
+    "id": "cam_s2",
+    "type": "camera",
+    "parent": null,
+    "translate": [
+     1.79,
+     -5.277,
+     1.15
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location"
+    ],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s3_aim": {
+    "id": "cam_s3_aim",
+    "type": "empty",
+    "parent": null,
+    "translate": [
+     0.825,
+     0.0,
+     0.845
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s3": {
+    "id": "cam_s3",
+    "type": "camera",
+    "parent": null,
+    "translate": [
+     4.302,
+     -3.862,
+     1.15
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location"
+    ],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s4_aim": {
+    "id": "cam_s4_aim",
+    "type": "empty",
+    "parent": null,
+    "translate": [
+     0.825,
+     0.0,
+     0.698
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location"
+    ],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s4": {
+    "id": "cam_s4",
+    "type": "camera",
+    "parent": null,
+    "translate": [
+     -1.304,
+     -5.27,
+     1.5
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location"
+    ],
+    "tags": [
+     "camera"
+    ]
+   }
+  }
+ },
+ "history": [
+  {
+   "task": "director",
+   "ok": true,
+   "seconds": 0.01
+  },
+  {
+   "task": "voice",
+   "ok": true,
+   "seconds": 5.77
+  },
+  {
+   "task": "asset",
+   "ok": true,
+   "seconds": 0.57
+  },
+  {
+   "task": "animator",
+   "ok": true,
+   "seconds": 0.1
+  },
+  {
+   "task": "camera",
+   "ok": true,
+   "seconds": 0.02
+  },
+  {
+   "task": "review",
+   "ok": true,
+   "seconds": 10.13
+  },
+  {
+   "task": "edit",
+   "ok": true,
+   "seconds": 5484.06
+  }
+ ],
+ "locked": {},
+ "artifacts": {
+  "lines": {
+   "line1": {
+    "path": "output/hello-little-one/audio/line1.wav",
+    "engine": "kokoro",
+    "duration": 1.131,
+    "lipsync": "rhubarb",
+    "start_s": 11.708,
+    "cues": 9
+   }
+  },
+  "music": "output/hello-little-one/audio/music_bed.wav",
+  "mix": "output/hello-little-one/audio/mix.wav",
+  "hero_parts": 30,
+  "critic_history": [
+   {
+    "iteration": 1,
+    "issues": 0,
+    "blockers": 0,
+    "messages": []
+   }
+  ],
+  "final": "examples/showcase/hello-little-one/final.mp4",
+  "contact_sheet": "examples/showcase/hello-little-one/log/contact_sheet.jpg",
+  "render_seconds": 5475.2,
+  "quality": "final",
+  "llm_usage": {
+   "provider": "scripted",
+   "calls": 4,
+   "tokens": 0
+  },
+  "usda": "output/hello-little-one/scene.usda"
+ },
+ "tuning": {}
+}

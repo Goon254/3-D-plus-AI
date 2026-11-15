@@ -8,7 +8,17 @@ leaves you a **normal, editable `.blend`** you can open, change by hand, and han
 animatica film "A curious little robot discovers a flower growing in a junkyard at sunset. It says: 'Hello, little one.'"
 ```
 
-<!-- SHOWCASE -->
+**Showcase** — made by the command above, fully offline (scripted planner, Kokoro voice, Rhubarb lip sync,
+procedural music, Cycles 960×540), no human edits:
+
+[![contact sheet](examples/showcase/hello-little-one/contact_sheet.jpg)](examples/showcase/hello-little-one/final.mp4)
+
+▶ [`examples/showcase/hello-little-one/final.mp4`](examples/showcase/hello-little-one/final.mp4) (21 s, with sound and captions) ·
+[production log](examples/showcase/hello-little-one/log/index.html) ·
+[editable .blend](examples/showcase/hello-little-one/scene.blend) ·
+games track: [robot-flower-platformer](examples/showcase/robot-flower-platformer/) (screenshot below)
+
+<img src="examples/showcase/robot-flower-platformer/screenshot.png" width="480" alt="generated Godot platformer">
 
 ## Quickstart (fresh clone, Linux/macOS, Python 3.13)
 

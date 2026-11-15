@@ -31,7 +31,7 @@ def main() -> None:
                             str(dst / "final.mp4")], check=True)
             if (dst / "final.mp4").stat().st_size / 1e6 < MAX_MB:
                 break
-    for f in ("final.srt", "scene.usda", "GDD.json", "PLAYTEST.json", "README.md", "screenshot.png"):
+    for f in ("final.srt", "scene.blend", "scene.usda", "GDD.json", "PLAYTEST.json", "README.md", "screenshot.png"):
         if (src / f).exists():
             shutil.copy2(src / f, dst / f)
     if (src / "audio" / "audio_manifest.json").exists():
