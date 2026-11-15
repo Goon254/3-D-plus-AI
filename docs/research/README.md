@@ -8,6 +8,7 @@ Deep research on open-source tools for this project, done on 2026-11-15. Every b
 | [02-animation-rigging-motion.md](02-animation-rigging-motion.md) | Rigging, keyframing APIs, stock motion data, text-to-motion, mocap from video, lip sync |
 | [03-voice-music-sound.md](03-voice-music-sound.md) | Text-to-speech, music, sound effects, mixing, the final audio/video pipeline |
 | [04-agents-infra-language.md](04-agents-infra-language.md) | Language choice, agent orchestration, MCP, Godot, critic design, infrastructure |
+| [05-desktop-creative-tools.md](05-desktop-creative-tools.md) | Desktop apps (MLT/Kdenlive, Inkscape, Krita, MuseScore, Real-ESRGAN, etc.): what to run as tools, what to skip |
 
 ## Key decisions at a glance
 
