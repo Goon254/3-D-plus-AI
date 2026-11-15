@@ -63,7 +63,7 @@ that raised it.
   *Done by reviewer 08:45 (+ ONNX Runtime, soundfile).* — [review 08:45](reviews/2026-11-15T0845Z.md)
 - [x] `pyproject.toml`: the `tts` extra should be `kokoro-onnx` + `soundfile`; keep `piper-tts` as an
   opt-in `tts-piper` extra (GPL, worker only). *Done by reviewer 08:45, DECISIONS #25.*
-- [ ] Apply `ruff format` repo-wide in one mechanical commit (44 files differ at 09:40, growing) and add
+- [x] Apply `ruff format` repo-wide in one mechanical commit (44 files differ at 09:40, growing) and add
   `ruff format --check` to CI — only when no build session is active, to avoid conflicts.
 - [ ] PROGRESS: only state "CI green" after checking the latest run for the pushed SHA. Fill the empty `<!-- SHOWCASE_LIST -->` / `<!-- CI_STATUS -->` placeholders (empty on main at 10:36).
 - [x] Split `adapters/blender/animatica_blender/executor.py` (1 038 lines) by op family.
