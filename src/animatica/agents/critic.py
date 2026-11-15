@@ -65,6 +65,8 @@ class Critic(Agent):
                 subj.append("prop")
             if dialogue_frames.get(s.id) and "hero_face" in ctx.engine.known_ids:
                 subj.append("hero_face")  # lip sync must be readable on screen
+                if plan.prop and "prop" not in subj:
+                    subj.append("prop")  # ...and the one being addressed should be in the shot
             sample = set(self.sample_frames(f0, f1))
             for a, b in dialogue_frames.get(s.id, []):
                 sample |= set(range(a, b + 1, 3))
@@ -119,18 +121,7 @@ class Critic(Agent):
                 if pv and min(pv) < 0.8:
                     issues.append(Issue(s.id, "prop_off_frame", "blocker", f"the {plan.prop.kind} leaves the frame",
                                         {"kind": "camera", "fill_mul": 0.85}))
-            faces = [f["subjects"]["hero_face"] for k, f in fr.items() if "hero_face" in f.get("subjects", {})
-                     and any(a <= int(k) <= b for a, b in dialogue_frames.get(s.id, []))]
-            if faces:
-                fh = min(v.get("screen_height", 0) for v in faces)
-                fv = min(v.get("visible_fraction", 1) for v in faces)
-                if fh < 0.2:
-                    issues.append(Issue(s.id, "face_too_small", "blocker",
-                                        f"face is {fh:.0%} of frame height while speaking (min 20%): lip sync unreadable",
-                                        {"kind": "camera", "fill_mul": round(min(1.6, 0.22 / max(fh, 0.02)), 3)}))
-                if fv < 0.95:
-                    issues.append(Issue(s.id, "face_cut", "blocker", f"face only {fv:.0%} in frame while speaking",
-                                        {"kind": "camera", "fill_mul": 0.9}))
+            issues += dialogue_framing_issues(s.id, fr, dialogue_frames.get(s.id, []), plan.prop.kind if plan.prop else None)
             for a, b in dialogue_frames.get(s.id, []):
                 inside = [f for k, f in fr.items() if a <= int(k) <= b]
                 mouth_vals = [f.get("mouth", 0) for f in inside]
@@ -168,6 +159,31 @@ class Critic(Agent):
                           iteration=iteration, shot=s.id, verdict=verdict, issues=[asdict(i) for i in mine],
                           preview=previews.get(s.id), stats=stats.get(s.id), report=_compact(reports.get(s.id, {})))
         return issues, {"previews": previews, "stats": stats}
+
+
+def dialogue_framing_issues(shot: str, frames: dict[str, Any], windows: list[tuple[int, int]],
+                            prop_kind: str | None) -> list[Issue]:
+    """Lip-sync readability and addressee checks over the inspected frames inside dialogue windows."""
+    issues: list[Issue] = []
+    inside = [f for k, f in frames.items() if any(a <= int(k) <= b for a, b in windows)]
+    faces = [f["subjects"]["hero_face"] for f in inside if "hero_face" in f.get("subjects", {})]
+    if faces:
+        fh = min(v.get("screen_height", 0) for v in faces)
+        fv = min(v.get("visible_fraction", 1) for v in faces)
+        if fh < 0.2:
+            issues.append(Issue(shot, "face_too_small", "blocker",
+                                f"face is {fh:.0%} of frame height while speaking (min 20%): lip sync unreadable",
+                                {"kind": "camera", "fill_mul": round(min(1.6, 0.22 / max(fh, 0.02)), 3)}))
+        if fv < 0.95:
+            issues.append(Issue(shot, "face_cut", "blocker", f"face only {fv:.0%} in frame while speaking",
+                                {"kind": "camera", "fill_mul": 0.9}))
+    props = [f["subjects"]["prop"] for f in inside if "prop" in f.get("subjects", {})]
+    if prop_kind and props:
+        pv = min(v.get("visible_fraction", 1) for v in props)
+        if pv < 0.6:
+            issues.append(Issue(shot, "addressee_cut", "minor", f"the {prop_kind} being spoken to is only {pv:.0%} in frame",
+                                {"kind": "camera", "fill_mul": 0.92}))
+    return issues
 
 
 def _compact(rep: dict[str, Any]) -> dict[str, Any]:

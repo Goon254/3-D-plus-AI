@@ -4,6 +4,7 @@ so an artist opening the project hears the same soundtrack."""
 from __future__ import annotations
 
 import shutil
+import subprocess
 from typing import TYPE_CHECKING, Any
 
 from ..audio import mux
@@ -59,6 +60,10 @@ class Editor(Agent):
             srt = mux.write_srt([(v["start_s"], v["start_s"] + v["duration"] + 0.4, d.text) for d in plan.dialogue
                                  if (v := lines.get(d.id))], root / "final.srt")
         mux.encode(frames_dir, plan.fps, mix, out, crf=int(ctx.options.get("crf", 23)), subtitles=srt)
+        picture = root / "edit" / "picture.mp4"  # clean picture-only source for the editable timeline
+        picture.parent.mkdir(exist_ok=True)
+        subprocess.run([mux.ffmpeg_bin(), "-y", "-loglevel", "error", "-i", str(out), "-map", "0:v", "-c:v", "copy",
+                        str(picture)], check=True, timeout=600)
         if not ctx.options.get("no_title"):
             card = mux.make_title_png(plan.title, f"an Animatica short · {plan.hero.name}", res, root / "log" / "title.png",
                                       accent=plan.style.palette.sun)

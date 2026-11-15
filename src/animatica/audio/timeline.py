@@ -17,7 +17,8 @@ def _frames(seconds: float, fps: int) -> int:
 
 
 def write_mlt(project_root: Path, plan: Any, artifacts: dict[str, Any], resolution: tuple[int, int],
-              out_name: str = "edit.mlt") -> Path:
+              out_name: str = "edit.mlt", picture: str = "edit/picture.mp4") -> Path:
+    """``picture`` is a clean, picture-only render (no title, no baked mix) so a re-cut stays clean."""
     fps = plan.fps
     total = plan.frame_end
     w, h = resolution
@@ -31,10 +32,10 @@ def write_mlt(project_root: Path, plan: Any, artifacts: dict[str, Any], resoluti
             return str(p)
 
     x = ['<?xml version="1.0" encoding="utf-8"?>',
-         f'<mlt LC_NUMERIC="C" version="7.0.0" title={quoteattr(plan.title)} producer="main_bin" root={quoteattr(str(root.resolve()))}>',
+         f'<mlt LC_NUMERIC="C" version="7.0.0" title={quoteattr(plan.title)} producer="main_bin">',
          f'  <profile description="Animatica {w}x{h} {fps}fps" width="{w}" height="{h}" progressive="1" sample_aspect_num="1" '
          f'sample_aspect_den="1" display_aspect_num="{w}" display_aspect_den="{h}" frame_rate_num="{fps}" frame_rate_den="1" colorspace="709"/>',
-         f'  <producer id="picture" in="0" out="{total - 1}"><property name="resource">final.mp4</property>'
+         f'  <producer id="picture" in="0" out="{total - 1}"><property name="resource">{picture}</property>'
          '<property name="mlt_service">avformat</property></producer>']
     lines = artifacts.get("lines", {})
     for lid, info in lines.items():

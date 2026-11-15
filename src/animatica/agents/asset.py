@@ -341,7 +341,7 @@ def set_ops(plan: FilmPlan, density: float, seed: int, landmarks: list[str]) -> 
     rng = random.Random(seed)
     # aerial perspective: distant surfaces dissolve into the horizon colour (no hard ground edge)
     haze = {"fade_to": pal.sky_horizon, "fade_start": 14.0, "fade_end": 85.0} if kind not in ("room",) else {}
-    ground = {**mat(pal.ground, 0, 0.92, name="set_ground"), "noise": 0.35, "noise_scale": 0.35, **haze}
+    ground = {**mat(pal.ground, 0, 0.92, name="set_ground"), "noise": 0.5, "noise_scale": 0.3, **haze}
     ops: list[dict[str, Any]] = [
         {"op": "create_primitive", "id": "set_ground", "shape": "plane", "size": [400, 400, 1], "tags": ["set", "ground"]},
         {"op": "set_material", "targets": ["set_ground"], "material": ground},
@@ -453,7 +453,7 @@ def set_ops(plan: FilmPlan, density: float, seed: int, landmarks: list[str]) -> 
 
     for key, ids in pieces.items():
         if key in mats:
-            grime = {} if mats[key].get("emission") or key in ("sea", "window") else {"noise": 0.45, "noise_scale": 3.0}
+            grime = {} if mats[key].get("emission") or key in ("sea", "window") else {"noise": 0.6, "noise_scale": 2.2}
             ops.append({"op": "set_material", "targets": ids, "material": {**mats[key], **grime, **haze, "name": f"set_{key}"}})
     if plan.setting.time_of_day in ("sunset", "dawn") and kind not in ("room", "space"):
         ops += sun_disc_ops(plan)

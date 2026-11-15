@@ -37,7 +37,7 @@ class MaterialOps:
             noise.inputs["Scale"].default_value = spec.get("noise_scale", 2.0)
             noise.inputs["Detail"].default_value = 6.0
             ramp = nodes.new("ShaderNodeValToRGB")
-            ramp.color_ramp.elements[0].position, ramp.color_ramp.elements[1].position = 0.35, 0.7
+            ramp.color_ramp.elements[0].position, ramp.color_ramp.elements[1].position = 0.42, 0.62
             dark = [c * (1 - spec["noise"]) for c in rgb]
             ramp.color_ramp.elements[0].color = (*dark, 1)
             ramp.color_ramp.elements[1].color = (*rgb, 1)

@@ -154,7 +154,10 @@ class RenderOps:
     def op_save(self, op: dict, res: dict) -> None:
         path = os.path.abspath(op["path"])
         os.makedirs(os.path.dirname(path), exist_ok=True)
+        # artists get the full look: halos hidden for a Workbench render are visible in the saved file
+        glow_visibility(self.scene, True)
         bpy.ops.wm.save_as_mainfile(filepath=path, compress=True)
+        glow_visibility(self.scene, self.scene.render.engine != "BLENDER_WORKBENCH")
         res["data"]["saved"] = path
 
 

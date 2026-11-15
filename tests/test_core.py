@@ -57,3 +57,19 @@ def test_knowledge_lookup():
     hits = lookup("sunset lighting key fill")
     assert hits and "Lighting" in hits[0]["section"]
     assert lookup("fcurves channelbags")[0]["doc"] == "blender_api"
+
+
+def test_critic_dialogue_framing_checks():
+    from animatica.agents.critic import dialogue_framing_issues
+
+    def frame(face_h, face_vis, prop_vis):
+        return {"subjects": {"hero_face": {"screen_height": face_h, "visible_fraction": face_vis},
+                             "prop": {"visible_fraction": prop_vis}}}
+
+    frames = {"100": frame(0.12, 1.0, 1.0), "110": frame(0.3, 0.8, 0.3), "300": frame(0.01, 0.0, 0.0)}
+    issues = dialogue_framing_issues("s3", frames, [(95, 120)], "flower")
+    checks = {i.check: i for i in issues}
+    assert set(checks) == {"face_too_small", "face_cut", "addressee_cut"}
+    assert checks["face_too_small"].fix["fill_mul"] > 1.5  # zoom in
+    assert checks["face_cut"].fix["fill_mul"] < 1
+    assert dialogue_framing_issues("s3", {"100": frame(0.3, 1.0, 1.0)}, [(95, 120)], "flower") == []

@@ -109,12 +109,13 @@ def make_title_png(title: str, subtitle: str, size: tuple[int, int], out: str | 
     while size_big > 14 and probe.textlength(title, font=big) > w * 0.6:  # fit: at most 60% of the width
         size_big -= 2
         big = _font(size_big)
-    small = _font(max(12, h // 30))
+    small = _font(max(13, h // 26))
     x, y = int(w * 0.06), int(h * 0.08)  # upper-left: sits in the sky, away from the action
     shadow = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     sd = ImageDraw.Draw(shadow)
     sd.text((x + 3, y + 3), title, font=big, fill=(0, 0, 0, 170))
-    sd.text((x + 2, y + int(h * 0.12) + 2), subtitle, font=small, fill=(0, 0, 0, 150))
+    sd.text((x + 2, y + int(h * 0.12) + 2), subtitle, font=small, fill=(0, 0, 0, 230))
+    sd.text((x + 1, y + int(h * 0.12) + 1), subtitle, font=small, fill=(0, 0, 0, 230))
     img = Image.alpha_composite(img, shadow.filter(ImageFilter.GaussianBlur(4)))
     d = ImageDraw.Draw(img)
     r, g, b = (int(accent[i : i + 2], 16) for i in (1, 3, 5))
