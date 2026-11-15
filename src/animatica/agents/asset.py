@@ -95,9 +95,17 @@ def robot_ops(color: str, eye: str, trim: str, antenna: bool = True, scale: floa
             {"op": "add_modifier", "target": f"hero_tread_{side}", "type": "bevel", "params": {"width": 0.1, "segments": 6}},
         ]
         for j, y in enumerate((-0.2, 0.0, 0.2)):
-            ops.append({"op": "create_primitive", "id": f"hero_cog_{side}{j}", "shape": "cylinder", "radius": 0.075,
-                        "depth": 0.03, "rotation": [0, 90, 0], "location": [0.43 * x, y, 0.14], "parent": "hero_root",
-                        "segments": 16})
+            # wheel = un-rotated pivot (spins about local X, the axle) -> hub disc + spoke + off-centre bolt, so the
+            # Animator can roll it by distance travelled and the eye reads "driving", not "gliding"
+            ops += [
+                {"op": "create_empty", "id": f"hero_wheel_{side}{j}", "location": [0.43 * x, y, 0.14], "parent": "hero_root"},
+                {"op": "create_primitive", "id": f"hero_cog_{side}{j}", "shape": "cylinder", "radius": 0.075,
+                 "depth": 0.03, "rotation": [0, 90, 0], "parent": f"hero_wheel_{side}{j}", "segments": 16},
+                {"op": "create_primitive", "id": f"hero_spoke_{side}{j}", "shape": "cube", "size": [0.012, 0.13, 0.022],
+                 "location": [0.017 * x, 0, 0], "parent": f"hero_wheel_{side}{j}"},
+                {"op": "create_primitive", "id": f"hero_bolt_{side}{j}", "shape": "uv_sphere", "radius": 0.016,
+                 "location": [0.02 * x, 0, 0.048], "parent": f"hero_wheel_{side}{j}", "segments": 12, "smooth": True},
+            ]
         ops += [
             # two-segment arm: shoulder pivot -> upper arm -> elbow pivot -> forearm + hand (arms can bend)
             {"op": "create_empty", "id": f"hero_arm_pivot_{side}", "location": [0.37 * x, 0, 0.12], "parent": "hero_body"},
@@ -148,7 +156,8 @@ def robot_ops(color: str, eye: str, trim: str, antenna: bool = True, scale: floa
     ops += [
         {"op": "set_material", "targets": body, "material": mat(color, 0.35, 0.38, name="hero_paint")},
         {"op": "set_material", "targets": ["hero_tread_L", "hero_tread_R", "hero_neck", "hero_arm_L", "hero_arm_R",
-                                           "hero_forearm_L", "hero_forearm_R"],
+                                           "hero_forearm_L", "hero_forearm_R"]
+                                          + [f"hero_{k}_{s}{j}" for k in ("spoke", "bolt") for s in "LR" for j in range(3)],
          "material": mat(trim, 0.6, 0.45, name="hero_trim")},
         {"op": "set_material", "targets": [f"hero_cog_{s}{j}" for s in "LR" for j in range(3)] + ["hero_ear_L", "hero_ear_R",
                                                                                                     "hero_hand_L", "hero_hand_R", "hero_belly",

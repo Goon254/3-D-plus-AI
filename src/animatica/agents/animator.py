@@ -105,6 +105,22 @@ def spring(drive: list[float], dt: float, k: float = 90.0, c: float = 7.0, gain:
 
 
 # ------------------------------------------------------------------------------------------ performance
+def wheel_spin_degrees(xs: list[float], radius: float, max_step: float = 35.0) -> list[float]:
+    """Cumulative wheel rotation (degrees, about the axle) for a root path sampled per frame.
+
+    The hero always drives forward (it yaws to face its direction of travel), so the wheel turns by the
+    absolute distance covered: angle = arc length / radius. Without motion blur a wheel turning more than
+    ~45 deg per frame strobes (wagon-wheel effect: it reads as still or backwards), so the per-frame step
+    is capped at ``max_step`` -- the usual cartoon cheat; a spinning wheel still reads as driving.
+    """
+    out, acc = [], 0.0
+    for i, x in enumerate(xs):
+        if i:
+            acc += min(max_step, math.degrees(abs(x - xs[i - 1]) / radius))
+        out.append(acc)
+    return out
+
+
 def default_performance(plan: dict[str, Any]) -> dict[str, Any]:
     out = {}
     for s in plan["shots"]:
@@ -322,6 +338,12 @@ class Animator(Agent):
             for side, curve in (("L", rig.elbow_L), ("R", rig.elbow_R)):
                 ops.append({"op": "insert_keyframes", "target": f"hero_elbow_{side}", "property": "rotation",
                             "keys": sample(lambda f, t, c=curve: [r(c(t) + math.degrees(at(f, arm_lag)) * 0.8, 2), 0.0, 0.0])})
+        if robot and "hero_wheel_L0" in ctx.engine.known_ids:  # wheels roll by distance travelled (no skating)
+            spin = wheel_spin_degrees(xs, 0.075 * plan.hero.scale)
+            for side in ("L", "R"):
+                for j in range(3):
+                    ops.append({"op": "insert_keyframes", "target": f"hero_wheel_{side}{j}", "property": "rotation",
+                                "keys": sample(lambda f, t: [r(at(f, spin), 1), 0.0, 0.0])})
         # eyes: blink = fast scale-Z dip (2 frames down, 3 up), multiplied with eye size and openness
         def eye_z(t: float) -> float:
             b = 1.0

@@ -73,3 +73,26 @@ def test_critic_dialogue_framing_checks():
     assert checks["face_too_small"].fix["fill_mul"] > 1.5  # zoom in
     assert checks["face_cut"].fix["fill_mul"] < 1
     assert dialogue_framing_issues("s3", {"100": frame(0.3, 1.0, 1.0)}, [(95, 120)], "flower") == []
+
+
+def test_wheel_spin_rolls_by_distance_without_skating():
+    import math
+
+    from animatica.agents.animator import wheel_spin_degrees
+    from animatica.agents.asset import robot_ops
+
+    r = 0.075
+    xs = [0.0, 0.01, 0.03, 0.03, 0.02]  # forward, faster, stop, then drive back (hero yaws to face travel)
+    spin = wheel_spin_degrees(xs, r)
+    assert spin[0] == 0.0
+    assert spin[2] == pytest.approx(math.degrees(0.03 / r))  # slow: physically exact
+    assert spin[3] == spin[2]  # standing still: wheels don't turn
+    assert spin[4] > spin[3]  # always rolls forward
+    assert all(b >= a for a, b in zip(spin, spin[1:]))
+    fast = wheel_spin_degrees([0.0, 0.5, 1.0], r)  # 0.5 m/frame would strobe: capped
+    assert max(b - a for a, b in zip(fast, fast[1:])) <= 35.0
+    # every wheel is an animatable pivot with a spoke + off-centre bolt so the rotation is visible
+    ids = {o["id"] for o in robot_ops("#E08A2E", "#BFF4FF", "#2B3A55") if "id" in o}
+    for side in "LR":
+        for j in range(3):
+            assert {f"hero_wheel_{side}{j}", f"hero_cog_{side}{j}", f"hero_spoke_{side}{j}", f"hero_bolt_{side}{j}"} <= ids
