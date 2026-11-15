@@ -77,8 +77,9 @@ is the production log viewer: every agent decision, every batch, every critique 
 
 ## 5. Known issues & honest quality assessment
 
-Reviewer scores at 10:36 ([review](docs/reviews/2026-11-15T1036Z.md)): functionality 8, visual 7, animation 6,
-audio 8, code 8, architecture 9, docs 8, licenses 9 (≈7.9/10).
+Reviewer scores at 11:46 ([review](docs/reviews/2026-11-15T1146Z.md)): functionality 8, visual 7, animation 6,
+audio 8, code 9, architecture 9, docs 9, licenses 9 (≈8.1/10). Top open item: the scripted Director ignores
+exit verbs like "hops away" (fox film ends on `settle`).
 
 * **It's a lit toy, not cinema.** Characters are bevelled primitives. They're readable and charming
   in Cycles, but there are no real textures (only procedural grime) and no volumetrics. The critter

@@ -11,6 +11,7 @@ that raised it.
 
 ## P1 — high impact on quality (blocks "done": visual/animation/audio must reach 9/10)
 
+- [ ] **Director ignores the prompt's exit verb** (`agents/director.py:175-177`): "hops away" / "runs away" / "flies away" / "scampers off" don't match the `leaves` regex, so the fox film ends `settle` instead of `exit`. Add the verbs (`(hops?|runs?|flies|scampers?|wanders?|trots?) (away|off|home)`) + a test. Also `director.py:196` says the hero "rolls into" for every hero type — use the hero's locomotion verb (critter hops). — [review 11:46](reviews/2026-11-15T1146Z.md)
 - [x] **Re-render and recommit the showcase** (the 08:42 copy predates every quality fix — [review 09:40](reviews/2026-11-15T0940Z.md)); then (small compressed MP4 + contact sheet + log link) to `examples/showcase/`
   and fill the `<!-- SHOWCASE -->` / `<!-- SHOWCASE_LIST -->` placeholders in README and PROGRESS.
   *Partial (08:45): `examples/showcase/hello-little-one/` committed at `8f67618` (1.2 MB MP4, contact
@@ -23,7 +24,7 @@ that raised it.
   shader nodes), a ground that doesn't end in a hard edge at the horizon (larger plane or curved
   backdrop/fog), volumetric haze or mist for depth, and a sun with glow (compositor glare/bloom or an
   emissive gradient). (`agents/asset.py`, `agents/camera.py` lighting)
-  *Builder 09:00 (`c1d167d`): noise grime on ground/junk, aerial-perspective fade to the horizon colour on all set materials, 400 m ground, radial-glow sun halo. No volumetrics (CPU cost).* *Reviewer 09:40: aerial fade + soft horizon verified; still open — sun glow is `hide_render` in the saved .blend (`common.py:38` `glow_visibility` never restored after Workbench), grime too faint to read, junk needs 2–3 material variants.* *Reviewer 10:36: sun glow saved visible ✔, junk grime now reads ✔; still open — featureless ground, and the distant flattened junk piles read as a floating pitched "roof" (f60/f200) — [review 10:36](reviews/2026-11-15T1036Z.md).*
+  *Builder 09:00 (`c1d167d`): noise grime on ground/junk, aerial-perspective fade to the horizon colour on all set materials, 400 m ground, radial-glow sun halo. No volumetrics (CPU cost).* *Reviewer 09:40: aerial fade + soft horizon verified; still open — sun glow is `hide_render` in the saved .blend (`common.py:38` `glow_visibility` never restored after Workbench), grime too faint to read, junk needs 2–3 material variants.* *Reviewer 10:36: sun glow saved visible ✔, junk grime now reads ✔; still open — featureless ground, and the distant flattened junk piles read as a floating pitched "roof" (f60/f200) — [review 10:36](reviews/2026-11-15T1036Z.md).* *Reviewer 11:46: floating slab gone in the re-rendered showcase ✔; still open — featureless ground, scrap mound is a visibly faceted low-poly dome (showcase 18 s): smooth/displace it and break its silhouette — [review 11:46](reviews/2026-11-15T1146Z.md).*
 - [x] **Preview preset looks bad:** Workbench output (dark brown ground, flat sky, translucent sun) is
   what new users see first. Use studio lighting + scene-world colour + object colours from materials, or
   make `draft` (Cycles 640×360) the documented quick path with a frame-step option.
@@ -35,7 +36,7 @@ that raised it.
 - [ ] **Animation depth:** bone rig (Rigify-lite or simple armature) with arms/head that gesture during
   the line; hero should *react* (lean in, head tilt) on the discovery beat rather than glide. Vary the
   story arc beyond the fixed 4 beats in the scripted Director.
-  *Builder 09:10 (`172ff47`, earlier arcs commit): jointed arms (elbows) with overlapping lag, camera-side arm reaches during the line; arcs vary (idle/lonely opening, exit ending, prop blooms). Still no bone rig.* *Builder 10:45 (`5f068e4`): robot wheels roll by distance travelled (spoke + bolt, anti-strobe cap) — no more skating. Builder 11:35: critter now bounds in discrete hops (`hop_locomotion`: ~0.42 s cycles, airborne travel + still contact frames with landing squash; tested). Still open: bone rig, acting beats.*
+  *Builder 09:10 (`172ff47`, earlier arcs commit): jointed arms (elbows) with overlapping lag, camera-side arm reaches during the line; arcs vary (idle/lonely opening, exit ending, prop blooms). Still no bone rig.* *Builder 10:45 (`5f068e4`): robot wheels roll by distance travelled (spoke + bolt, anti-strobe cap) — no more skating. Builder 11:35: critter now bounds in discrete hops (`hop_locomotion`: ~0.42 s cycles, airborne travel + still contact frames with landing squash; tested). Still open: bone rig, acting beats.* *Reviewer 11:46: hops verified in the fox film (shadow detaches, landing squash) ✔. Remaining: bone rig, limbs on the critter, an acting/reaction beat.*
 - [x] **Critic must earn its loop:** in the demo every shot passed on iteration 1, so the loop proves
   nothing. Add checks that would have caught the items above (mouth on-screen size during dialogue,
   shot-type fill vs. intent, empty-frame ratio, horizon edge visible) and show a before/after in the log.
@@ -65,10 +66,10 @@ that raised it.
   opt-in `tts-piper` extra (GPL, worker only). *Done by reviewer 08:45, DECISIONS #25.*
 - [x] Apply `ruff format` repo-wide in one mechanical commit (44 files differ at 09:40, growing) and add
   `ruff format --check` to CI — only when no build session is active, to avoid conflicts.
-- [ ] PROGRESS: only state "CI green" after checking the latest run for the pushed SHA. Fill the empty `<!-- SHOWCASE_LIST -->` / `<!-- CI_STATUS -->` placeholders (empty on main at 10:36). *Filled 11:33 (both, with run numbers).*
+- [x] PROGRESS: only state "CI green" after checking the latest run for the pushed SHA. Fill the empty `<!-- SHOWCASE_LIST -->` / `<!-- CI_STATUS -->` placeholders (empty on main at 10:36). *Filled 11:33 (both, with run numbers).* *Verified 11:46 against the Actions API (#34–#36 success).*
 - [x] Split `adapters/blender/animatica_blender/executor.py` (1 038 lines) by op family.
   *Builder 09:14 (`b50f7fb`): split into executor + ops_scene/material/anim/render + common.* *Verified 09:40 (largest module now 361 lines; CI run #21 was red on lint, fixed by `74209ea`).*
 - [ ] Run the Anthropic provider path once against the live API (when a key is available) and record
   the result.
-- [ ] Critter films: the critic catches a 0.03 m floor dip in the celebrate shot on iteration 1 every time (fox/lantern prompt) — fix at the source in the Animator so the loop isn't spent on it. Night prompts look like day in the Workbench preview (flat colours). — review 10:36 follow-up
+- [ ] Critter films: ~~the critic catches a 0.03 m floor dip in the celebrate shot on iteration 1 every time (fox/lantern prompt) — fix at the source in the Animator so the loop isn't spent on it~~ (verified fixed 11:46: fox film passes iteration 1). Still open: night prompts look like day in the Workbench preview (flat colours): darken world/objects for `tod=night`, emissive lantern that reads in FLAT shading. — review 10:36 follow-up, [review 11:46](reviews/2026-11-15T1146Z.md)
 - [ ] Games track: second genre and a visual pass (the platformer is flat rectangles on a flat sky).
