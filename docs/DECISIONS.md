@@ -22,3 +22,7 @@ One line per decision: what + why. Newest at the bottom.
 18. **Two-shot close-up for dialogue**: the "speak" close-up frames the hero's face *and* the prop it addresses (no rule-of-thirds offset), because the emotional beat is the relationship.
 19. **Sun disc sits lower (4°) than the key light (12°)** — classic cheat so the sun reads on the horizon while the light still rakes the set.
 20. **Quality presets**: `ci` (Workbench 192×108), `preview` (Workbench 480×270), `draft` (Cycles 640×360 8 spp), `final` (Cycles 960×540 16 spp), `high` (Cycles 1280×720 48 spp).
+21. **Godot 4.5.1 from the official GitHub release** (research mentions 4.7 as current; 4.5.1 was the first URL that resolved and it runs headless fine). The runner is a `SceneTree` script (`-s runner.gd -- batch.json result.json`): transactional because the scene/project are only written by `save_scene` and at the end.
+22. **Games track scripts come from parameterised GDScript templates** (player, collectible, level controller); the LLM/scripted designer picks physics feel, theme and counts; the level builder checks reachability against jump physics before building.
+23. **Playtester = a bot inside the game** (`--playtest`): steers to the nearest collectible, jumps at walls/gaps/higher targets; runs headless at `--fixed-fps 60` (a 10 s run takes ~0.3 s). Screenshots via `xvfb-run` + `--rendering-driver opengl3` because `--headless` can't render.
+24. **No game export tonight**: export templates are ~1 GB; the deliverable is a runnable Godot project (`godot --path …`).

@@ -27,4 +27,10 @@ if [ ! -x "$CACHE/rhubarb/Rhubarb-Lip-Sync-1.14.0-Linux/rhubarb" ]; then
   unzip -q "$tmp/r.zip" -d "$CACHE/rhubarb"
   rm -rf "$tmp"
 fi
+if [ "${1:-}" = "--godot" ] && [ ! -x "$CACHE/godot/Godot_v4.5.1-stable_linux.x86_64" ]; then
+  echo "downloading Godot 4.5.1"
+  mkdir -p "$CACHE/godot"; tmp=$(mktemp -d)
+  curl -fsSL -o "$tmp/g.zip" https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_linux.x86_64.zip
+  unzip -q "$tmp/g.zip" -d "$CACHE/godot"; rm -rf "$tmp"
+fi
 echo "assets ready in $CACHE"
