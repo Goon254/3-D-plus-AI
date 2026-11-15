@@ -49,7 +49,7 @@ that raised it.
 
 ## P2 — correctness / docs / hygiene
 
-- [ ] `cli/main.py:151,161`: add `kokoro` to `--tts` choices.
+- [x] `cli/main.py:151,161`: add `kokoro` to `--tts` choices. *(builder: done)*
 - [x] `THIRD_PARTY.md`: add Godot 4.5.1 (MIT), `mcp` SDK (MIT), `anthropic` SDK (MIT), xvfb (X11/MIT).
   *Done by reviewer 08:45 (+ ONNX Runtime, soundfile).* — [review 08:45](reviews/2026-11-15T0845Z.md)
 - [x] `pyproject.toml`: the `tts` extra should be `kokoro-onnx` + `soundfile`; keep `piper-tts` as an

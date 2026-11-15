@@ -36,3 +36,9 @@ def test_wav_roundtrip(tmp_path):
     p = tts.write_wav(tmp_path / "x.wav", x)
     y, sr = tts.read_wav(p)
     assert sr == tts.SAMPLE_RATE and np.allclose(x, y, atol=1e-3)
+
+
+def test_music_bed_is_not_muddy():
+    bed = music.generate_bed(8.0, "warm", seed="mud")
+    assert music.band_energy_ratio(bed, 120.0) < 0.05  # high-passed: almost nothing below 120 Hz
+    assert music.band_energy_ratio(bed, 250.0) < 0.35

@@ -156,10 +156,12 @@ class CameraLighting(Agent):
             hx1 = x_track(f1 / fps) if x_track else stand_x
             two_shot = False
             if shot.type == "closeup" and shot.beat == "speak" and plan.prop:
-                # two-shot close-up: the hero's face and the prop it talks to
-                top, bottom = head_z + 0.3, max(0.0, prop_h - 0.25)
-                center = ((hx1 + prop_x) / 2, 0.0, (top + bottom) / 2)
-                sub_h, sub_w = top - bottom, abs(prop_x - hx1) + 0.6
+                # dialogue close-up: the face fills the frame (lip sync must read) with the prop's
+                # blossom entering from below — head and shoulders, not a medium shot
+                top, bottom = head_z + 0.3, max(0.0, prop_h - 0.12)
+                center = ((hx1 * 2 + prop_x) / 3, 0.0, (top + bottom) / 2)
+                sub_h, sub_w = top - bottom, abs(prop_x - hx1) * 0.8 + 0.5
+                c["fill"] = round(0.98 * ctx.state.tuning.get("camera", {}).get(shot.id, {}).get("fill_mul", 1.0), 3)
                 two_shot = True
             elif shot.type == "closeup":
                 center, sub_h, sub_w = (hx1 + 0.1, 0.0, head_z - 0.1), 0.75, 0.7

@@ -53,7 +53,7 @@ def mat(color: str, metallic: float = 0.0, roughness: float = 0.5, emission: str
 
 
 # ------------------------------------------------------------------------------------------ mouth
-def mouth_mesh(half_w: float = 0.07, half_h: float = 0.009, n: int = 20) -> tuple[list, list, dict[str, list]]:
+def mouth_mesh(half_w: float = 0.07, half_h: float = 0.009, n: int = 20, open_mul: float = 7.0) -> tuple[list, list, dict[str, list]]:
     """Ellipse fan in the XZ plane (faces -Y). Shape keys: open, wide, round (absolute positions)."""
 
     def ring(hw: float, hh: float, pinch: float = 0.0) -> list[tuple[float, float, float]]:
@@ -68,7 +68,7 @@ def mouth_mesh(half_w: float = 0.07, half_h: float = 0.009, n: int = 20) -> tupl
 
     verts = ring(half_w, half_h)
     faces = [[0, 1 + i, 1 + (i + 1) % n] for i in range(n)]
-    keys = {"open": ring(half_w * 0.85, half_h * 7.0, pinch=0.35),
+    keys = {"open": ring(half_w * 0.85, half_h * open_mul, pinch=0.35),
             "wide": ring(half_w * 1.4, half_h * 2.2),
             "round": ring(half_w * 0.5, half_h * 5.0)}
     return verts, faces, keys
@@ -112,20 +112,21 @@ def robot_ops(color: str, eye: str, trim: str, antenna: bool = True, scale: floa
         {"op": "create_primitive", "id": "hero_head", "shape": "cube", "size": [0.58, 0.46, 0.4],
          "location": [0, 0, 0.22], "parent": "hero_head_pivot", "tags": ["hero"]},
         {"op": "add_modifier", "target": "hero_head", "type": "bevel", "params": {"width": 0.1, "segments": 5}},
-        {"op": "create_primitive", "id": "hero_face", "shape": "cube", "size": [0.46, 0.03, 0.28],
+        {"op": "create_primitive", "id": "hero_face", "shape": "cube", "size": [0.48, 0.03, 0.32],
          "location": [0, -0.225, 0.22], "parent": "hero_head_pivot"},
         {"op": "add_modifier", "target": "hero_face", "type": "bevel", "params": {"width": 0.06, "segments": 4}},
     ]
     for side, x in (("L", 1), ("R", -1)):
         ops.append({"op": "create_primitive", "id": f"hero_eye_{side}", "shape": "uv_sphere", "radius": 0.05,
-                    "scale": [1.0, 0.35, 1.25], "location": [0.11 * x, -0.243, 0.26], "parent": "hero_head_pivot",
+                    "scale": [1.0, 0.35, 1.25], "location": [0.115 * x, -0.243, 0.285], "parent": "hero_head_pivot",
                     "smooth": True, "segments": 24})
         ops.append({"op": "create_primitive", "id": f"hero_ear_{side}", "shape": "cylinder", "radius": 0.08,
                     "depth": 0.06, "rotation": [0, 90, 0], "location": [0.31 * x, 0, 0.22], "parent": "hero_head_pivot",
                     "segments": 20})
-    verts, faces, keys = mouth_mesh()
+    # a big, readable mouth: lip sync is the emotional centre of the dialogue close-up
+    verts, faces, keys = mouth_mesh(0.105, 0.011, open_mul=5.5)
     ops += [
-        {"op": "create_mesh", "id": "hero_mouth", "vertices": verts, "faces": faces, "location": [0, -0.245, 0.14],
+        {"op": "create_mesh", "id": "hero_mouth", "vertices": verts, "faces": faces, "location": [0, -0.246, 0.145],
          "parent": "hero_head_pivot", "tags": ["hero", "mouth"]},
         {"op": "add_shape_keys", "target": "hero_mouth", "keys": keys},
         {"op": "create_empty", "id": "hero_antenna_pivot", "location": [0, 0, 0.41], "parent": "hero_head_pivot"},
@@ -183,7 +184,7 @@ def critter_ops(color: str, eye: str, trim: str, scale: float = 1.0, **_: Any) -
             {"op": "create_primitive", "id": f"hero_arm_{side}", "shape": "uv_sphere", "radius": 0.07,
              "scale": [0.8, 0.8, 1.6], "location": [0.02 * x, 0, -0.08], "parent": f"hero_arm_pivot_{side}", "smooth": True},
         ]
-    verts, faces, keys = mouth_mesh(0.055, 0.008)
+    verts, faces, keys = mouth_mesh(0.075, 0.01, open_mul=6.0)
     ops += [
         {"op": "create_mesh", "id": "hero_mouth", "vertices": verts, "faces": faces, "location": [0, -0.29, 0.13],
          "parent": "hero_head_pivot", "tags": ["hero", "mouth"]},
@@ -330,9 +331,12 @@ def set_ops(plan: FilmPlan, density: float, seed: int, landmarks: list[str]) -> 
     kind = plan.setting.kind
     pal = plan.style.palette
     rng = random.Random(seed)
+    # aerial perspective: distant surfaces dissolve into the horizon colour (no hard ground edge)
+    haze = {"fade_to": pal.sky_horizon, "fade_start": 14.0, "fade_end": 85.0} if kind not in ("room",) else {}
+    ground = {**mat(pal.ground, 0, 0.92, name="set_ground"), "noise": 0.35, "noise_scale": 0.35, **haze}
     ops: list[dict[str, Any]] = [
-        {"op": "create_primitive", "id": "set_ground", "shape": "plane", "size": [120, 120, 1], "tags": ["set", "ground"]},
-        {"op": "set_material", "targets": ["set_ground"], "material": mat(pal.ground, 0, 0.92, name="set_ground")},
+        {"op": "create_primitive", "id": "set_ground", "shape": "plane", "size": [400, 400, 1], "tags": ["set", "ground"]},
+        {"op": "set_material", "targets": ["set_ground"], "material": ground},
     ]
     n = int(round(28 * density))
     pieces: dict[str, list[str]] = {}
@@ -441,7 +445,8 @@ def set_ops(plan: FilmPlan, density: float, seed: int, landmarks: list[str]) -> 
 
     for key, ids in pieces.items():
         if key in mats:
-            ops.append({"op": "set_material", "targets": ids, "material": {**mats[key], "name": f"set_{key}"}})
+            grime = {} if mats[key].get("emission") or key in ("sea", "window") else {"noise": 0.45, "noise_scale": 3.0}
+            ops.append({"op": "set_material", "targets": ids, "material": {**mats[key], **grime, **haze, "name": f"set_{key}"}})
     if plan.setting.time_of_day in ("sunset", "dawn") and kind not in ("room", "space"):
         ops += sun_disc_ops(plan)
     if plan.setting.time_of_day == "night" and kind != "room":
@@ -477,6 +482,13 @@ def sun_disc_ops(plan: FilmPlan) -> list[dict[str, Any]]:
          "rotation": [90, 0, round(yaw, 2)], "tags": ["set", "sky"]},
         {"op": "set_material", "targets": ["set_sun_disc"],
          "material": mat(plan.style.palette.sun, 0, 0.5, emission=plan.style.palette.sun, strength=2.2, name="set_sun")},
+        # soft halo behind the disc (an emissive radial falloff — cheap "bloom" without compositing)
+        {"op": "create_primitive", "id": "set_sun_glow", "shape": "circle", "radius": 22, "segments": 48,
+         "location": [round(sx * (dist + 2), 2), round(sy * (dist + 2), 2), round(sz * (dist + 2), 2)],
+         "rotation": [90, 0, round(yaw, 2)], "tags": ["set", "sky"]},
+        {"op": "set_material", "targets": ["set_sun_glow"],
+         "material": {**mat(plan.style.palette.sun, 0, 0.5, emission=plan.style.palette.sun, strength=2.5, name="set_sun_glow"),
+                      "radial_glow": True}},
     ]
 
 

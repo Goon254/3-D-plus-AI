@@ -47,7 +47,7 @@ class VoiceSound(Agent):
         music_path = tts.write_wav(audio_dir / "music_bed.wav", bed, music.SR)
         mix_path = music.mix(dur, bed, [(v["start_s"], v["path"]) for v in lines.values()], audio_dir / "mix.wav")
         ctx.log.event("audio", self.role, f"music bed: mood '{plan.style.mood}', {dur:.1f}s; mixed with dialogue "
-                      f"ducking -9 dB -> {mix_path.name}")
+                      f"ducking -12 dB -> {mix_path.name}")
         manifest = {"assets": [
             *[{"file": v["path"], "kind": "dialogue", "generator": v["engine"],
                "model": {"kokoro": "Kokoro-82M (Apache-2.0)", "piper": "Piper voice (CC0/CC-BY dataset, see THIRD_PARTY.md)",

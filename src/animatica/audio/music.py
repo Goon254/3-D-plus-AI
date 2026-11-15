@@ -15,18 +15,38 @@ from .tts import read_wav, resample, write_wav
 
 SR = 44100
 MOODS = {
+    # pads sit above the voice's fundamental (~100-250 Hz) so dialogue stays clear
     # name: (root midi, scale intervals, progression degrees, bpm, brightness)
-    "warm": (57, [0, 2, 4, 5, 7, 9, 11], [0, 5, 3, 4], 72, 0.6),
-    "wonder": (60, [0, 2, 4, 6, 7, 9, 11], [0, 4, 5, 3], 66, 0.75),  # lydian sparkle
-    "melancholy": (57, [0, 2, 3, 5, 7, 8, 10], [0, 5, 2, 6], 60, 0.4),
-    "playful": (62, [0, 2, 4, 5, 7, 9, 11], [0, 3, 4, 0], 96, 0.8),
-    "mysterious": (55, [0, 1, 3, 5, 7, 8, 10], [0, 5, 6, 0], 58, 0.35),
-    "tense": (52, [0, 2, 3, 5, 7, 8, 11], [0, 1, 0, 4], 84, 0.45),
+    "warm": (64, [0, 2, 4, 5, 7, 9, 11], [0, 5, 3, 4], 72, 0.6),
+    "wonder": (64, [0, 2, 4, 6, 7, 9, 11], [0, 4, 5, 3], 66, 0.75),  # lydian sparkle
+    "melancholy": (62, [0, 2, 3, 5, 7, 8, 10], [0, 5, 2, 6], 60, 0.4),
+    "playful": (65, [0, 2, 4, 5, 7, 9, 11], [0, 3, 4, 0], 96, 0.8),
+    "mysterious": (62, [0, 1, 3, 5, 7, 8, 10], [0, 5, 6, 0], 58, 0.35),
+    "tense": (59, [0, 2, 3, 5, 7, 8, 11], [0, 1, 0, 4], 84, 0.45),
 }
 
 
 def midi_hz(m: float) -> float:
     return 440.0 * 2 ** ((m - 69) / 12)
+
+
+def highpass(x: np.ndarray, cutoff: float, sr: int = SR, slope_hz: float = 40.0) -> np.ndarray:
+    """Zero-phase FFT high-pass with a smooth (raised-cosine) transition band."""
+    spec = np.fft.rfft(x, axis=0)
+    f = np.fft.rfftfreq(x.shape[0], 1 / sr)
+    lo = cutoff - slope_hz
+    gain = np.clip((f - lo) / slope_hz, 0, 1)
+    gain = 0.5 - 0.5 * np.cos(np.pi * gain)
+    spec *= gain[:, None] if x.ndim == 2 else gain
+    return np.fft.irfft(spec, n=x.shape[0], axis=0).astype(np.float32)
+
+
+def band_energy_ratio(x: np.ndarray, below: float = 120.0, sr: int = SR) -> float:
+    """Fraction of spectral energy below ``below`` Hz (used to keep the bed from getting muddy)."""
+    mono = x.mean(axis=1) if x.ndim == 2 else x
+    p = np.abs(np.fft.rfft(mono)) ** 2
+    f = np.fft.rfftfreq(len(mono), 1 / sr)
+    return float(p[f < below].sum() / max(p.sum(), 1e-12))
 
 
 def generate_bed(duration: float, mood: str = "warm", seed: str = "", ambience: str = "wind") -> np.ndarray:
@@ -64,7 +84,7 @@ def generate_bed(duration: float, mood: str = "warm", seed: str = "", ambience: 
         # bass
         fb = midi_hz(deg(d, -1))
         benv = np.exp(-tt / 2.5) * np.minimum(1, tt / 0.05)
-        b = 0.09 * np.sin(2 * np.pi * fb * tt) * benv
+        b = 0.035 * (np.sin(2 * np.pi * fb * tt) + 0.5 * np.sin(4 * np.pi * fb * tt)) * benv  # light bass; 2nd harmonic carries on small speakers
         out[s0:s1, :] += b[:, None].astype(np.float32)
 
     # plucked arpeggio (starts after an intro bar, eighth notes)
@@ -95,8 +115,11 @@ def generate_bed(duration: float, mood: str = "warm", seed: str = "", ambience: 
         kernel = np.ones(k, np.float32) / k
         for c in range(2):
             noise[:, c] = np.convolve(noise[:, c], kernel, mode="same")
+        noise = highpass(noise, 350.0, slope_hz=150.0)  # airy wind, not rumble
         gust = 0.5 + 0.5 * np.sin(2 * np.pi * t / 7.0 + 1.0) * np.sin(2 * np.pi * t / 3.1)
         out += (noise * (0.05 + 0.08 * gust[:, None])).astype(np.float32)
+
+    out = highpass(out, 120.0)  # keep the low end clear for dialogue and small speakers
 
     # fades + simple stereo reverb-ish smear
     fade = np.minimum(1, t / 2.0) * np.minimum(1, (duration - t) / 2.5)
@@ -109,7 +132,7 @@ def generate_bed(duration: float, mood: str = "warm", seed: str = "", ambience: 
 
 
 def mix(duration: float, bed: np.ndarray | None, dialogue: list[tuple[float, str]], out_path: str | Path,
-        duck_db: float = -9.0, sfx: list[tuple[float, str, float]] | None = None) -> Path:
+        duck_db: float = -12.0, sfx: list[tuple[float, str, float]] | None = None) -> Path:
     """Mix dialogue clips (start_seconds, wav) over the bed, ducking the bed under speech."""
     n = int(duration * SR)
     master = np.zeros((n, 2), np.float32)

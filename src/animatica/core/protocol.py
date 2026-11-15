@@ -59,8 +59,14 @@ class MaterialSpec(BaseModel):
     emission: str | None = None
     emission_strength: float = Field(0.0, ge=0, le=1000)
     alpha: float = Field(1.0, ge=0, le=1)
+    noise: float = Field(0.0, ge=0, le=1)  # procedural grime/variation amount (darker patches)
+    noise_scale: float = Field(2.0, gt=0, le=1000)
+    fade_to: str | None = None  # aerial perspective: blend toward this colour with distance from origin
+    fade_start: float = Field(15.0, ge=0)
+    fade_end: float = Field(90.0, gt=0)
+    radial_glow: bool = False  # emission fades to transparent at the edges (sun/moon halos)
 
-    @field_validator("base_color", "emission")
+    @field_validator("base_color", "emission", "fade_to")
     @classmethod
     def _hex(cls, v: str | None) -> str | None:
         if v is not None and not re.fullmatch(r"#[0-9A-Fa-f]{6}", v):
