@@ -1,0 +1,18 @@
+{
+  "batch_id": "b-0042",
+  "agent": "asset",
+  "intent": "Build the robot's body and head",
+  "mode": "ops",
+  "ops": [
+    {"op": "create_primitive", "id": "ground", "shape": "plane", "size": [8, 8, 1]},
+    {"op": "set_material", "targets": ["ground"], "material": {"base_color": "#6B5A4A", "roughness": 0.9}},
+    {"op": "create_primitive", "id": "robot_body", "shape": "cube", "size": [0.6, 0.4, 0.8], "location": [0, 0, 0.4]},
+    {"op": "create_primitive", "id": "robot_head", "shape": "uv_sphere", "radius": 0.25, "location": [0, 0, 0.65], "parent": "robot_body", "smooth": true},
+    {"op": "add_modifier", "target": "robot_body", "type": "bevel", "params": {"width": 0.05, "segments": 3}},
+    {"op": "set_material", "targets": ["robot_body", "robot_head"], "material": {"base_color": "#D9822B", "metallic": 0.6, "roughness": 0.35}},
+    {"op": "add_light", "id": "sun", "light_type": "sun", "energy": 3, "rotation": [50, 0, 30]},
+    {"op": "add_camera", "id": "cam", "location": [2.5, -3, 1.6], "look_at": [0, 0, 0.6], "lens": 40},
+    {"op": "save", "path": "output/dev/robot.blend"}
+  ],
+  "verify": {"preview": true, "camera": "cam", "resolution": [480, 270]}
+}

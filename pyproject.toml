@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "animatica"
+version = "0.1.0"
+description = "AI-native animation & game studio: a team of agents builds editable Blender/Godot projects from a prompt."
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.10"
+dependencies = [
+  "pydantic>=2.5",
+  "numpy>=1.26",
+  "pillow>=10",
+]
+
+[project.optional-dependencies]
+blender = ["bpy"]
+tts = ["piper-tts>=1.2"]
+anthropic = ["anthropic>=0.40"]
+mcp = ["mcp>=1.0"]
+dev = ["pytest>=8", "ruff>=0.6", "jsonschema>=4"]
+
+[project.scripts]
+animatica = "animatica.cli.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+animatica = ["knowledge/*.md", "knowledge/*.json", "core/schema/*.json"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+src = ["src", "adapters/blender", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501", "B008", "UP007", "B905"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "blender: needs bpy (Blender as a Python module)",
+  "slow: slow end-to-end tests",
+]
