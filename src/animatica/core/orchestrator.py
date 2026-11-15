@@ -228,11 +228,17 @@ class Studio:
                 L["exposure"] = round(L.get("exposure", 0.0) + float(i.fix.get("exposure_add", 0.0)), 2)
                 redo_camera = True
             elif k == "animator":
-                A = tuning.setdefault("animator", {})
-                A["floor_offset"] = round(A.get("floor_offset", 0.0) + float(i.fix.get("floor_offset_add", 0.0)), 3)
                 redo_anim = True
             elif k == "voice":
                 redo_voice = redo_anim = True
+        floor = [float(i.fix["floor_offset_add"]) for i in issues if "floor_offset_add" in i.fix]
+        if floor:
+            # one global correction (the root offset is shared by every shot): use the smallest move that
+            # fixes the worst intersection, or the smallest float, never the sum of per-shot reports
+            dips = [f for f in floor if f > 0]
+            add = max(dips) if dips else max(floor)
+            A = tuning.setdefault("animator", {})
+            A["floor_offset"] = round(A.get("floor_offset", 0.0) + add, 3)
         ctx.log.event("fix", "orchestr.", f"applying fixes: camera={redo_camera} animation={redo_anim} voice={redo_voice}; "
                       f"tuning={json.dumps(tuning)}")
         if redo_voice:

@@ -44,7 +44,7 @@ SETTING_WORDS = {
     "meadow": ["meadow", "field", "garden", "park", "hill", "grass"],
     "beach": ["beach", "shore", "ocean", "sea", "island"],
     "desert": ["desert", "dune", "sand", "canyon", "mars"],
-    "snow": ["snow", "winter", "ice", "arctic", "frozen", "tundra"],
+    "snow": ["snowy", "snow", "winter", "ice", "arctic", "frozen", "tundra"],
     "city": ["city", "street", "rooftop", "alley", "town"],
     "space": ["space", "moon", "asteroid", "planet", "stars", "orbit"],
     "room": ["room", "kitchen", "bedroom", "workshop", "attic", "house", "lab"],
@@ -140,8 +140,12 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
     else:
         shots.append({"id": "s3", "type": "closeup", "duration": 4.5, "beat": "react", "camera_move": "dolly_in",
                       "subject": "hero", "description": f"Close-up: {name}'s eyes light up with delight."})
-    shots.append({"id": "s4", "type": "wide", "duration": 5.5, "beat": "settle", "camera_move": "crane_up", "subject": "both",
-                  "description": f"{name} settles beside the {prop}; the camera rises as the light fades."})
+    if mood == "playful":
+        shots.append({"id": "s4", "type": "wide", "duration": 5.0, "beat": "celebrate", "camera_move": "orbit", "subject": "both",
+                      "description": f"{name} hops for joy around the {prop}."})
+    else:
+        shots.append({"id": "s4", "type": "wide", "duration": 5.5, "beat": "settle", "camera_move": "crane_up", "subject": "both",
+                      "description": f"{name} settles beside the {prop}; the camera rises as the light fades."})
 
     voice = {"voice": "am_puck", "speaker": 20, "pitch": 1.1, "rate": 0.88, "robot": 0.18} if kind == "robot" else \
             {"voice": "af_bella", "speaker": 3, "pitch": 1.15, "rate": 0.92, "robot": 0.0}

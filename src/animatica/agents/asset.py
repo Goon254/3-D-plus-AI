@@ -167,7 +167,7 @@ def critter_ops(color: str, eye: str, trim: str, scale: float = 1.0, **_: Any) -
         {"op": "create_empty", "id": "hero_head_pivot", "location": [0, 0, 0.24], "parent": "hero_body"},
         {"op": "create_primitive", "id": "hero_head", "shape": "uv_sphere", "radius": 0.3, "location": [0, 0, 0.22],
          "parent": "hero_head_pivot", "smooth": True, "tags": ["hero"]},
-        {"op": "create_empty", "id": "hero_antenna_pivot", "location": [0, 0.3, -0.2], "parent": "hero_body"},
+        {"op": "create_empty", "id": "hero_antenna_pivot", "location": [0, 0.3, -0.02], "parent": "hero_body"},
         {"op": "create_primitive", "id": "hero_tail", "shape": "uv_sphere", "radius": 0.11, "scale": [0.8, 1.4, 0.8],
          "location": [0, 0.1, 0.05], "parent": "hero_antenna_pivot", "smooth": True},
     ]

@@ -970,7 +970,13 @@ def hierarchy_bbox_points(o) -> list:
     while stack:
         cur = stack.pop()
         if cur.type == "MESH" and not cur.hide_render:
-            pts.extend(cur.matrix_world @ mathutils.Vector(c) for c in cur.bound_box)
+            mw = cur.matrix_world
+            verts = cur.data.vertices
+            if len(verts) <= 4000:  # exact extents (a rotated bbox overestimates round shapes)
+                step = max(1, len(verts) // 400)
+                pts.extend(mw @ verts[i].co for i in range(0, len(verts), step))
+            else:
+                pts.extend(mw @ mathutils.Vector(c) for c in cur.bound_box)
         stack.extend(cur.children)
     return pts
 

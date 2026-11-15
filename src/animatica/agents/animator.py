@@ -255,8 +255,18 @@ class Animator(Agent):
             return round(v, n)
 
         breathe = lambda t: 0.006 * math.sin(2 * math.pi * t / 2.6)  # noqa: E731
-        bob = lambda f, t: 0.012 * min(1.0, at(f, speed) / 1.2) * math.sin(2 * math.pi * 5.0 * t)  # noqa: E731
+        def bob(f: int, t: float) -> float:
+            amp = 0.012 * min(1.0, at(f, speed) / 1.2)
+            wave = math.sin(2 * math.pi * 5.0 * t)
+            return amp * (wave if robot else abs(wave) * 2.5)  # treads rattle; paws hop
         body_base_z = 0.55 if plan.hero.kind == "robot" else 0.33
+        body_half = 0.25 if plan.hero.kind == "robot" else 0.306  # squash is anchored at the contact point
+        robot = plan.hero.kind == "robot"
+        dip_scale = 1.0 if robot else 0.0  # a critter has no treads to sink into: its dips become squash
+
+        def sq(t: float) -> float:
+            # critter dips are expressed as squash (volume-preserving, anchored at the feet)
+            return rig.squash(t) + (0.0 if robot else 1.6 * rig.dip(t))
 
         ops: list[dict[str, Any]] = [
             {"op": "set_frame_range", "start": 1, "end": end_f, "fps": fps},
@@ -265,12 +275,13 @@ class Animator(Agent):
             {"op": "insert_keyframes", "target": "hero_root", "property": "rotation",
              "keys": sample(lambda f, t: [0.0, 0.0, r(rig.root_yaw(t), 2)])},
             {"op": "insert_keyframes", "target": "hero_body", "property": "location",
-             "keys": sample(lambda f, t: [0.0, 0.0, r(body_base_z + rig.dip(t) + breathe(t) + bob(f, t))])},
+             "keys": sample(lambda f, t: [0.0, 0.0, r(body_base_z + dip_scale * rig.dip(t) - body_half * (1 - sq(t))
+                                                    + breathe(t) + bob(f, t))])},
             {"op": "insert_keyframes", "target": "hero_body", "property": "rotation",
              "keys": sample(lambda f, t: [r(rig.lean(t) + 2.5 * math.sin(2 * math.pi * 2.5 * t) * min(1.0, at(f, speed) / 1.2), 2),
                                           r(1.2 * math.sin(2 * math.pi * t / 3.1), 2), 0.0])},
             {"op": "insert_keyframes", "target": "hero_body", "property": "scale",
-             "keys": sample(lambda f, t: [r(1 + (1 - rig.squash(t)) * 0.5), r(1 + (1 - rig.squash(t)) * 0.5), r(rig.squash(t) + breathe(t))])},
+             "keys": sample(lambda f, t: [r(1 + (1 - sq(t)) * 0.5), r(1 + (1 - sq(t)) * 0.5), r(sq(t) + breathe(t))])},
             {"op": "insert_keyframes", "target": "hero_head_pivot", "property": "rotation",
              "keys": sample(lambda f, t: [r(rig.head_nod(t) + 1.5 * math.sin(2 * math.pi * t / 2.6 + 0.6), 2),
                                           r(rig.head_tilt(t), 2), r(rig.head_turn(t), 2)])},
