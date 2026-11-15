@@ -4,7 +4,9 @@ from animatica.audio import lipsync, music, tts
 
 
 def test_synth_tts_and_amplitude_lipsync(tmp_path):
-    res = tts.synthesize("Hello, little one.", tmp_path / "a.wav", tts.VoiceSpec(engine="synth", pitch=1.1, robot=0.2))
+    res = tts.synthesize(
+        "Hello, little one.", tmp_path / "a.wav", tts.VoiceSpec(engine="synth", pitch=1.1, robot=0.2)
+    )
     assert res["engine"] == "synth" and res["duration"] > 0.5
     cues = lipsync.amplitude_cues(res["path"])
     assert cues and all(c.value in lipsync.VISEME_WEIGHTS for c in cues)
@@ -12,7 +14,12 @@ def test_synth_tts_and_amplitude_lipsync(tmp_path):
 
 
 def test_cues_to_keyframes_strictly_increasing():
-    cues = [lipsync.Cue(0.0, 0.1, "X"), lipsync.Cue(0.1, 0.2, "D"), lipsync.Cue(0.2, 0.21, "B"), lipsync.Cue(0.21, 0.5, "F")]
+    cues = [
+        lipsync.Cue(0.0, 0.1, "X"),
+        lipsync.Cue(0.1, 0.2, "D"),
+        lipsync.Cue(0.2, 0.21, "B"),
+        lipsync.Cue(0.21, 0.5, "F"),
+    ]
     keys = lipsync.cues_to_keyframes(cues, 24, 100)
     for name in lipsync.SHAPE_KEYS:
         frames = [k[0] for k in keys[name]]
@@ -53,8 +60,10 @@ def test_mlt_timeline_export(tmp_path):
 
     prompt = "A robot finds a flower in a junkyard at sunset. It says: 'Hello there.'"
     plan = normalize_plan(FilmPlan.model_validate(scripted_plan(prompt)), prompt)
-    arts = {"lines": {"line1": {"path": str(tmp_path / "audio/line1.wav"), "duration": 1.2, "start_s": 12.0}},
-            "music": str(tmp_path / "audio/music_bed.wav")}
+    arts = {
+        "lines": {"line1": {"path": str(tmp_path / "audio/line1.wav"), "duration": 1.2, "start_s": 12.0}},
+        "music": str(tmp_path / "audio/music_bed.wav"),
+    }
     out = write_mlt(tmp_path, plan, arts, (960, 540))
     doc = ET.parse(out).getroot()
     v1 = doc.find("playlist[@id='V1']")

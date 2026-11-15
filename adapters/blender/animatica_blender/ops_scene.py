@@ -61,7 +61,6 @@ class SceneOps:
         o = self._new_object(op, mesh)
         res["created"].append(o.name)
 
-
     @staticmethod
     def _torus(bm, major: float, minor: float, seg: int) -> None:
         ring = max(8, seg // 2)
@@ -78,8 +77,14 @@ class SceneOps:
             verts.append(row)
         for i in range(seg):
             for j in range(ring):
-                bm.faces.new((verts[i][j], verts[(i + 1) % seg][j], verts[(i + 1) % seg][(j + 1) % ring], verts[i][(j + 1) % ring]))
-
+                bm.faces.new(
+                    (
+                        verts[i][j],
+                        verts[(i + 1) % seg][j],
+                        verts[(i + 1) % seg][(j + 1) % ring],
+                        verts[i][(j + 1) % ring],
+                    )
+                )
 
     def op_create_mesh(self, op: dict, res: dict) -> None:
         mesh = bpy.data.meshes.new(op["id"] + "_mesh")
@@ -91,13 +96,11 @@ class SceneOps:
         o = self._new_object(op, mesh)
         res["created"].append(o.name)
 
-
     def op_create_empty(self, op: dict, res: dict) -> None:
         o = self._new_object(op, None)
         o.empty_display_type = op.get("display", "PLAIN_AXES")
         o.empty_display_size = op.get("display_size", 0.2)
         res["created"].append(o.name)
-
 
     def op_add_light(self, op: dict, res: dict) -> None:
         lt = op.get("light_type", "point").upper()
@@ -114,7 +117,6 @@ class SceneOps:
             light.spot_size = math.radians(op.get("spot_angle", 45.0))
         o = self._new_object(op, light)
         res["created"].append(o.name)
-
 
     def op_add_camera(self, op: dict, res: dict) -> None:
         cam = bpy.data.cameras.new(op["id"] + "_cam")
@@ -136,12 +138,10 @@ class SceneOps:
             self.scene.camera = o
         res["created"].append(o.name)
 
-
     @staticmethod
     def _aim(o, target):
         direction = target - o.location
         o.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
-
 
     def op_create_armature(self, op: dict, res: dict) -> None:
         arm = bpy.data.armatures.new(op["id"] + "_arm")
@@ -165,7 +165,6 @@ class SceneOps:
             bpy.ops.object.mode_set(mode="OBJECT")
         res["created"].append(o.name)
 
-
     def op_bind_mesh_to_armature(self, op: dict, res: dict) -> None:
         mesh, arm = self.obj(op["mesh"]), self.obj(op["armature"])
         if arm.type != "ARMATURE":
@@ -187,7 +186,6 @@ class SceneOps:
             bpy.context.view_layer.objects.active = arm
             bpy.ops.object.parent_set(type="ARMATURE_AUTO")
         res["modified"].append(mesh.name)
-
 
     def op_import_asset(self, op: dict, res: dict) -> None:
         path = op["path"]
@@ -220,14 +218,12 @@ class SceneOps:
             root.parent = self.obj(op["parent"])
         res["created"].append(op["id"])
 
-
     # ------------------------------------------------------------------ edit ops
     def op_delete(self, op: dict, res: dict) -> None:
         for t in op["targets"]:
             o = self.obj(t)
             bpy.data.objects.remove(o, do_unlink=True)
             res["deleted"].append(t)
-
 
     def op_transform(self, op: dict, res: dict) -> None:
         o = self.obj(op["target"])
@@ -239,7 +235,6 @@ class SceneOps:
             o.scale = op["scale"]
         res["modified"].append(op["target"])
 
-
     def op_parent(self, op: dict, res: dict) -> None:
         child = self.obj(op["child"])
         mw = child.matrix_world.copy()
@@ -249,11 +244,17 @@ class SceneOps:
             child.matrix_world = mw
         res["modified"].append(op["child"])
 
-
-    MOD_TYPES = {"bevel": "BEVEL", "subsurf": "SUBSURF", "array": "ARRAY", "solidify": "SOLIDIFY",
-                 "displace": "DISPLACE", "mirror": "MIRROR", "smooth": "SMOOTH", "wireframe": "WIREFRAME",
-                 "decimate": "DECIMATE"}
-
+    MOD_TYPES = {
+        "bevel": "BEVEL",
+        "subsurf": "SUBSURF",
+        "array": "ARRAY",
+        "solidify": "SOLIDIFY",
+        "displace": "DISPLACE",
+        "mirror": "MIRROR",
+        "smooth": "SMOOTH",
+        "wireframe": "WIREFRAME",
+        "decimate": "DECIMATE",
+    }
 
     def op_add_modifier(self, op: dict, res: dict) -> None:
         o = self.obj(op["target"])
@@ -277,7 +278,6 @@ class SceneOps:
             setattr(m, k, v)
         res["modified"].append(op["target"])
 
-
     def op_set_camera_active(self, op: dict, res: dict) -> None:
         cam = self.obj(op["id"])
         if cam.type != "CAMERA":
@@ -286,15 +286,20 @@ class SceneOps:
             self.scene.camera = cam
         else:
             name = f"cut_{op['id']}_{op['frame']}"
-            m = self.scene.timeline_markers.get(name) or self.scene.timeline_markers.new(name, frame=op["frame"])
+            m = self.scene.timeline_markers.get(name) or self.scene.timeline_markers.new(
+                name, frame=op["frame"]
+            )
             m.camera = cam
             if op["frame"] <= self.scene.frame_start:
                 self.scene.camera = cam
 
-
-    CONSTRAINTS = {"track_to": "TRACK_TO", "damped_track": "DAMPED_TRACK", "copy_location": "COPY_LOCATION",
-                   "child_of": "CHILD_OF", "limit_location": "LIMIT_LOCATION"}
-
+    CONSTRAINTS = {
+        "track_to": "TRACK_TO",
+        "damped_track": "DAMPED_TRACK",
+        "copy_location": "COPY_LOCATION",
+        "child_of": "CHILD_OF",
+        "limit_location": "LIMIT_LOCATION",
+    }
 
     def op_add_constraint(self, op: dict, res: dict) -> None:
         o = self.obj(op["target"])
@@ -309,7 +314,6 @@ class SceneOps:
             else:
                 res["warnings"].append(f"constraint has no param {k!r}")
         res["modified"].append(op["target"])
-
 
     def op_set_world(self, op: dict, res: dict) -> None:
         s = self.scene
@@ -341,13 +345,15 @@ class SceneOps:
         mid.color = (*hex_to_rgb(op.get("horizon", "#F2B880")), 1)
         glow = el.new(0.545)
         hz, zn = hex_to_rgb(op.get("horizon", "#F2B880")), hex_to_rgb(op.get("zenith", "#4A6FA5"))
-        glow.color = (*(hex_to_rgb(op["glow"]) if op.get("glow") else [0.6 * a + 0.4 * b for a, b in zip(hz, zn)]), 1)
+        glow.color = (
+            *(hex_to_rgb(op["glow"]) if op.get("glow") else [0.6 * a + 0.4 * b for a, b in zip(hz, zn)]),
+            1,
+        )
         bg.inputs["Strength"].default_value = op.get("strength", 1.0)
         world.color = hex_to_rgb(op.get("horizon", "#F2B880"))
         if op.get("mist"):
             s.render.use_motion_blur = False
             world.mist_settings.start, world.mist_settings.depth = 5, 60 * (1.01 - op["mist"])
-
 
     def op_set_property(self, op: dict, res: dict) -> None:
         o = self.obj(op["target"])

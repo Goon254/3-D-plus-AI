@@ -127,7 +127,9 @@ def lipsync(wav: str | Path, transcript: str | None = None, engine: str = "auto"
     return amplitude_cues(wav), "amplitude"
 
 
-def cues_to_keyframes(cues: list[Cue], fps: int, offset_frame: int, transition: float = 0.06) -> dict[str, list]:
+def cues_to_keyframes(
+    cues: list[Cue], fps: int, offset_frame: int, transition: float = 0.06
+) -> dict[str, list]:
     """Convert cues to batched keyframes per shape key: {"open": [[frame, value, interp], ...], ...}.
 
     Each cue gets a key at its start (reached ``transition`` seconds after the previous shape) so the

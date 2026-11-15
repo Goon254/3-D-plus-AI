@@ -26,16 +26,28 @@ from ..core.log import ProductionLog
 from ..core.state import slugify
 from . import godot
 
-COLLECTIBLES = {"flower": ["flower", "flowers", "rose", "daisy", "blossom"], "coin": ["coin", "coins", "gold"],
-                "star": ["star", "stars"], "gem": ["gem", "gems", "crystal", "crystals", "diamond"],
-                "battery": ["battery", "batteries", "bolt", "bolts"]}
-COLLECTIBLE_COLORS = {"flower": "#FF5C8A", "coin": "#FFD23F", "star": "#FFE066", "gem": "#7FE7FF", "battery": "#7CFC7C"}
+COLLECTIBLES = {
+    "flower": ["flower", "flowers", "rose", "daisy", "blossom"],
+    "coin": ["coin", "coins", "gold"],
+    "star": ["star", "stars"],
+    "gem": ["gem", "gems", "crystal", "crystals", "diamond"],
+    "battery": ["battery", "batteries", "bolt", "bolts"],
+}
+COLLECTIBLE_COLORS = {
+    "flower": "#FF5C8A",
+    "coin": "#FFD23F",
+    "star": "#FFE066",
+    "gem": "#7FE7FF",
+    "battery": "#7CFC7C",
+}
 
 
 @scripted("game.design")
 def scripted_design(payload: dict[str, Any]) -> dict[str, Any]:
     text = payload["prompt"].lower()
-    item = next((k for k, ws in COLLECTIBLES.items() if any(re.search(rf"\b{w}\b", text) for w in ws)), "star")
+    item = next(
+        (k for k, ws in COLLECTIBLES.items() if any(re.search(rf"\b{w}\b", text) for w in ws)), "star"
+    )
     hero = "robot" if re.search(r"\b(robot|bot|droid)\b", text) else "critter"
     seed = zlib.crc32(payload["prompt"].encode()) % 100000
     return {
@@ -279,8 +291,10 @@ def hero_polygons(kind: str, color: str) -> list[dict[str, Any]]:
             {"id": "P_antenna", "points": [[-1, -44], [1, -44], [1, -34], [-1, -34]], "color": "#FF4D4D"},
         ]
     pts = [[18 * math.cos(a) * 1.0, 18 * math.sin(a) * 1.1 - 2] for a in [i * math.pi / 8 for i in range(16)]]
-    return [{"id": "P_body", "points": [[round(x, 1), round(y, 1)] for x, y in pts], "color": color},
-            {"id": "P_eye", "points": [[6, -8], [10, -8], [10, -3], [6, -3]], "color": "#151515"}]
+    return [
+        {"id": "P_body", "points": [[round(x, 1), round(y, 1)] for x, y in pts], "color": color},
+        {"id": "P_eye", "points": [[6, -8], [10, -8], [10, -3], [6, -3]], "color": "#151515"},
+    ]
 
 
 def collectible_polygon(kind: str, color: str) -> list[list[float]]:
@@ -292,8 +306,13 @@ def collectible_polygon(kind: str, color: str) -> list[list[float]]:
             pts.append([round(r * math.cos(a), 1), round(r * math.sin(a), 1)])
         return pts
     if kind == "star":
-        return [[round((12 if i % 2 == 0 else 5) * math.cos(-math.pi / 2 + i * math.pi / 5), 1),
-                 round((12 if i % 2 == 0 else 5) * math.sin(-math.pi / 2 + i * math.pi / 5), 1)] for i in range(10)]
+        return [
+            [
+                round((12 if i % 2 == 0 else 5) * math.cos(-math.pi / 2 + i * math.pi / 5), 1),
+                round((12 if i % 2 == 0 else 5) * math.sin(-math.pi / 2 + i * math.pi / 5), 1),
+            ]
+            for i in range(10)
+        ]
     return [[0, -12], [10, 0], [0, 12], [-10, 0]]
 
 
@@ -308,51 +327,127 @@ def scene_batch(d: dict[str, Any], level: dict[str, Any]) -> dict[str, Any]:
     for i, p in enumerate(level["platforms"]):
         pid = f"Platform{i}"
         ops += [
-            {"op": "create_node", "id": pid, "type": "StaticBody2D", "parent": "Main",
-             "props": {"position": [p["x"] + p["w"] / 2, p["y"] + p["h"] / 2]}},
+            {
+                "op": "create_node",
+                "id": pid,
+                "type": "StaticBody2D",
+                "parent": "Main",
+                "props": {"position": [p["x"] + p["w"] / 2, p["y"] + p["h"] / 2]},
+            },
             {"op": "add_shape", "target": pid, "shape": "rect", "size": [p["w"], p["h"]]},
-            {"op": "add_polygon", "target": pid, "id": f"{pid}_top", "color": pal["ground"],
-             "points": [[-p["w"] / 2, -p["h"] / 2], [p["w"] / 2, -p["h"] / 2], [p["w"] / 2, -p["h"] / 2 + 10], [-p["w"] / 2, -p["h"] / 2 + 10]]},
-            {"op": "add_polygon", "target": pid, "id": f"{pid}_dirt", "color": pal["platform"],
-             "points": [[-p["w"] / 2, -p["h"] / 2 + 10], [p["w"] / 2, -p["h"] / 2 + 10], [p["w"] / 2, p["h"] / 2], [-p["w"] / 2, p["h"] / 2]]},
+            {
+                "op": "add_polygon",
+                "target": pid,
+                "id": f"{pid}_top",
+                "color": pal["ground"],
+                "points": [
+                    [-p["w"] / 2, -p["h"] / 2],
+                    [p["w"] / 2, -p["h"] / 2],
+                    [p["w"] / 2, -p["h"] / 2 + 10],
+                    [-p["w"] / 2, -p["h"] / 2 + 10],
+                ],
+            },
+            {
+                "op": "add_polygon",
+                "target": pid,
+                "id": f"{pid}_dirt",
+                "color": pal["platform"],
+                "points": [
+                    [-p["w"] / 2, -p["h"] / 2 + 10],
+                    [p["w"] / 2, -p["h"] / 2 + 10],
+                    [p["w"] / 2, p["h"] / 2],
+                    [-p["w"] / 2, p["h"] / 2],
+                ],
+            },
         ]
     sx, sy = level["spawn"]
     ops += [
-        {"op": "create_node", "id": "Player", "type": "CharacterBody2D", "parent": "Main", "props": {"position": [sx, sy]}},
+        {
+            "op": "create_node",
+            "id": "Player",
+            "type": "CharacterBody2D",
+            "parent": "Main",
+            "props": {"position": [sx, sy]},
+        },
         {"op": "add_shape", "target": "Player", "shape": "rect", "size": [32, 56], "offset": [0, -4]},
     ]
     for poly in hero_polygons(d["hero"], d["hero_color"]):
         ops.append({"op": "add_polygon", "target": "Player", **poly})
     ops += [
-        {"op": "create_node", "id": "Camera", "type": "Camera2D", "parent": "Player", "props": {"position": [0, -80]}},
+        {
+            "op": "create_node",
+            "id": "Camera",
+            "type": "Camera2D",
+            "parent": "Player",
+            "props": {"position": [0, -80]},
+        },
         {"op": "attach_script", "target": "Player", "path": "res://scripts/player.gd"},
     ]
     shape = collectible_polygon(d["collectible"], d["collectible_color"])
     for i, c in enumerate(level["collectibles"]):
         cid = f"Item{i}"
         ops += [
-            {"op": "create_node", "id": cid, "type": "Area2D", "parent": "Main", "props": {"position": [c["x"], c["y"]]}},
+            {
+                "op": "create_node",
+                "id": cid,
+                "type": "Area2D",
+                "parent": "Main",
+                "props": {"position": [c["x"], c["y"]]},
+            },
             {"op": "add_shape", "target": cid, "shape": "circle", "radius": 16},
-            {"op": "add_polygon", "target": cid, "id": f"{cid}_art", "points": shape, "color": d["collectible_color"]},
-            {"op": "add_polygon", "target": cid, "id": f"{cid}_core", "points": [[-4, -4], [4, -4], [4, 4], [-4, 4]], "color": "#FFD23F"},
+            {
+                "op": "add_polygon",
+                "target": cid,
+                "id": f"{cid}_art",
+                "points": shape,
+                "color": d["collectible_color"],
+            },
+            {
+                "op": "add_polygon",
+                "target": cid,
+                "id": f"{cid}_core",
+                "points": [[-4, -4], [4, -4], [4, 4], [-4, 4]],
+                "color": "#FFD23F",
+            },
             {"op": "attach_script", "target": cid, "path": "res://scripts/collectible.gd"},
             {"op": "set_property", "target": cid, "path": "monitoring", "value": True},
         ]
     ops += [
         {"op": "create_node", "id": "HUD", "type": "CanvasLayer", "parent": "Main"},
-        {"op": "create_node", "id": "Score", "type": "Label", "parent": "HUD", "props": {"position": [24, 16]}},
-        {"op": "create_node", "id": "Message", "type": "Label", "parent": "HUD", "props": {"position": [560, 320]}},
+        {
+            "op": "create_node",
+            "id": "Score",
+            "type": "Label",
+            "parent": "HUD",
+            "props": {"position": [24, 16]},
+        },
+        {
+            "op": "create_node",
+            "id": "Message",
+            "type": "Label",
+            "parent": "HUD",
+            "props": {"position": [560, 320]},
+        },
         {"op": "attach_script", "target": "Main", "path": "res://scripts/main.gd"},
         {"op": "save_scene", "path": "res://main.tscn", "main": True},
     ]
-    return {"batch_id": "game-scene", "agent": "level_builder", "intent": "assemble level, player, collectibles, HUD", "ops": ops}
+    return {
+        "batch_id": "game-scene",
+        "agent": "level_builder",
+        "intent": "assemble level, player, collectibles, HUD",
+        "ops": ops,
+    }
 
 
 def write_scripts(project: Path, d: dict[str, Any], level: dict[str, Any]) -> list[str]:
     (project / "scripts").mkdir(parents=True, exist_ok=True)
     files = {
-        "player.gd": PLAYER_GD.format(speed=f"{d['speed']:.1f}", jump_velocity=f"{d['jump_velocity']:.1f}",
-                                      gravity=f"{d['gravity']:.1f}", kill_y=level["kill_y"]),
+        "player.gd": PLAYER_GD.format(
+            speed=f"{d['speed']:.1f}",
+            jump_velocity=f"{d['jump_velocity']:.1f}",
+            gravity=f"{d['gravity']:.1f}",
+            kill_y=level["kill_y"],
+        ),
         "collectible.gd": COLLECTIBLE_GD,
         "main.gd": MAIN_GD.replace("{label}", d["collectible"].capitalize() + "s"),
     }
@@ -366,14 +461,22 @@ def playtest(project: Path, seconds: int = 60) -> dict[str, Any]:
     events = []
     for line in out.splitlines():
         if line.startswith("ANIMATICA_EVENT "):
-            events.append(json.loads(line[len("ANIMATICA_EVENT "):]))
+            events.append(json.loads(line[len("ANIMATICA_EVENT ") :]))
     start = next((e for e in events if e["type"] == "start"), {"total": 0})
     win = next((e for e in events if e["type"] == "win"), None)
     collected = max([e["collected"] for e in events if e["type"] == "collect"], default=0)
     errors = godot.script_errors(err + out)
-    return {"exit_code": code, "started": bool(events), "total": start.get("total", 0), "collected": collected,
-            "won": win is not None, "win_time": win["t"] if win else None,
-            "falls": sum(1 for e in events if e["type"] == "fell"), "errors": errors, "events": events[-12:]}
+    return {
+        "exit_code": code,
+        "started": bool(events),
+        "total": start.get("total", 0),
+        "collected": collected,
+        "won": win is not None,
+        "win_time": win["t"] if win else None,
+        "falls": sum(1 for e in events if e["type"] == "fell"),
+        "errors": errors,
+        "events": events[-12:],
+    }
 
 
 def screenshot(project: Path, out: Path) -> Path | None:
@@ -384,8 +487,24 @@ def screenshot(project: Path, out: Path) -> Path | None:
     exe, xvfb = godot.godot_bin(), shutil.which("xvfb-run")
     if not exe or not xvfb:
         return None
-    cmd = [xvfb, "-a", "-s", "-screen 0 1280x720x24", exe, "--path", str(project), "--rendering-driver", "opengl3",
-           "--fixed-fps", "60", "--quit-after", "200", "--", "--playtest", f"--screenshot={out.resolve()}"]
+    cmd = [
+        xvfb,
+        "-a",
+        "-s",
+        "-screen 0 1280x720x24",
+        exe,
+        "--path",
+        str(project),
+        "--rendering-driver",
+        "opengl3",
+        "--fixed-fps",
+        "60",
+        "--quit-after",
+        "200",
+        "--",
+        "--playtest",
+        f"--screenshot={out.resolve()}",
+    ]
     try:
         subprocess.run(cmd, capture_output=True, text=True, timeout=180)
     except subprocess.TimeoutExpired:
@@ -393,56 +512,100 @@ def screenshot(project: Path, out: Path) -> Path | None:
     return out if out.exists() else None
 
 
-def make_game(prompt: str, out_root: str | Path = "output", name: str | None = None,
-              provider: str | Provider = "auto", max_attempts: int = 3) -> dict[str, Any]:
+def make_game(
+    prompt: str,
+    out_root: str | Path = "output",
+    name: str | None = None,
+    provider: str | Provider = "auto",
+    max_attempts: int = 3,
+) -> dict[str, Any]:
     prov = provider if isinstance(provider, Provider) else get_provider(provider)
     root = Path(out_root) / (name or ("game-" + slugify(prompt)))
     project = root / "godot"
     project.mkdir(parents=True, exist_ok=True)
     log = ProductionLog(root)
-    log.event("start", "orchestr.", f"new game from prompt: {prompt!r} (provider {prov.name}, Godot {godot.godot_bin()})")
+    log.event(
+        "start",
+        "orchestr.",
+        f"new game from prompt: {prompt!r} (provider {prov.name}, Godot {godot.godot_bin()})",
+    )
     try:
-        d = prov.complete_json("game.design", "You are a game designer. Return a compact GDD JSON.", {"prompt": prompt})
+        d = prov.complete_json(
+            "game.design", "You are a game designer. Return a compact GDD JSON.", {"prompt": prompt}
+        )
     except Exception as e:  # noqa: BLE001
         log.event("fallback", "designer", f"LLM GDD unusable ({e}); using scripted design")
         d = ScriptedProvider().complete_json("game.design", "", {"prompt": prompt})
-    log.event("decision", "designer", f"GDD: {d['genre']}, hero {d['hero']}, collect {d['count']} {d['collectible']}s; "
-              f"win: {d['win']}; lose: {d['lose']}", gdd=d)
-    (project / "project.godot").write_text(PROJECT_GODOT.format(title=d["title"].replace('"', "'"), sky=_color_tuple(d["palette"]["sky"])))
+    log.event(
+        "decision",
+        "designer",
+        f"GDD: {d['genre']}, hero {d['hero']}, collect {d['count']} {d['collectible']}s; "
+        f"win: {d['win']}; lose: {d['lose']}",
+        gdd=d,
+    )
+    (project / "project.godot").write_text(
+        PROJECT_GODOT.format(title=d["title"].replace('"', "'"), sky=_color_tuple(d["palette"]["sky"]))
+    )
     (root / "GDD.json").write_text(json.dumps(d, indent=1))
     report: dict[str, Any] = {}
     safety = 0.6
     for attempt in range(1, max_attempts + 1):
         level = build_level(d, safety)
         issues = check_reachability(d, level)
-        log.event("decision", "level", f"attempt {attempt}: {len(level['platforms'])} platforms, {len(level['collectibles'])} items, "
-                  f"reachability issues: {issues or 'none'}", level=level)
+        log.event(
+            "decision",
+            "level",
+            f"attempt {attempt}: {len(level['platforms'])} platforms, {len(level['collectibles'])} items, "
+            f"reachability issues: {issues or 'none'}",
+            level=level,
+        )
         scripts = write_scripts(project, d, level)
         log.event("code", "programmer", f"wrote {', '.join(s.split('/')[-1] for s in scripts)}")
         batch = scene_batch(d, level)
         res = godot.run_batch(project, batch)
-        log.event("batch", "level", f"{batch['intent']} ({len(batch['ops'])} ops) -> ok={res['ok']} "
-                  f"created {len(res.get('created', []))} errors {res.get('errors') or res.get('engine_errors') or []}",
-                  ok=res["ok"], errors=res.get("errors"))
+        log.event(
+            "batch",
+            "level",
+            f"{batch['intent']} ({len(batch['ops'])} ops) -> ok={res['ok']} "
+            f"created {len(res.get('created', []))} errors {res.get('errors') or res.get('engine_errors') or []}",
+            ok=res["ok"],
+            errors=res.get("errors"),
+        )
         if not res["ok"]:
             raise godot.GodotError(f"scene batch failed: {res.get('errors')}")
         report = playtest(project)
         verdict = "PASS" if report["won"] and not report["errors"] else "FAIL"
-        log.event("critique", "playtester", f"attempt {attempt}: {verdict} — collected {report['collected']}/{report['total']}, "
-                  f"falls {report['falls']}, win time {report['win_time']}, script errors {len(report['errors'])}",
-                  verdict=verdict, report=report)
+        log.event(
+            "critique",
+            "playtester",
+            f"attempt {attempt}: {verdict} — collected {report['collected']}/{report['total']}, "
+            f"falls {report['falls']}, win time {report['win_time']}, script errors {len(report['errors'])}",
+            verdict=verdict,
+            report=report,
+        )
         if verdict == "PASS":
             break
         safety *= 0.75  # critic fix: make gaps/steps easier and rebuild
-        log.event("fix", "critic", f"level too hard or broken; reducing gap/step safety factor to {safety:.2f}")
+        log.event(
+            "fix", "critic", f"level too hard or broken; reducing gap/step safety factor to {safety:.2f}"
+        )
     shot = screenshot(project, root / "screenshot.png")
-    log.event("render", "playtester", f"screenshot: {shot or 'unavailable (needs xvfb-run + OpenGL)'}", preview=str(shot) if shot else None)
+    log.event(
+        "render",
+        "playtester",
+        f"screenshot: {shot or 'unavailable (needs xvfb-run + OpenGL)'}",
+        preview=str(shot) if shot else None,
+    )
     (root / "PLAYTEST.json").write_text(json.dumps(report, indent=1))
-    readme = (f"# {d['title']}\n\nGenerated by Animatica from: _{prompt}_\n\nRun: `godot --path godot` (Godot 4.5+).\n"
-              f"Controls: A/D or arrows to move, Space/W/Up to jump. Goal: {d['win']}.\n\n"
-              f"Playtest: {'won' if report.get('won') else 'did not win'} — collected {report.get('collected')}/"
-              f"{report.get('total')} in {report.get('win_time')} s, falls {report.get('falls')}, script errors "
-              f"{len(report.get('errors', []))}.\n")
+    readme = (
+        f"# {d['title']}\n\nGenerated by Animatica from: _{prompt}_\n\nRun: `godot --path godot` (Godot 4.5+).\n"
+        f"Controls: A/D or arrows to move, Space/W/Up to jump. Goal: {d['win']}.\n\n"
+        f"Playtest: {'won' if report.get('won') else 'did not win'} — collected {report.get('collected')}/"
+        f"{report.get('total')} in {report.get('win_time')} s, falls {report.get('falls')}, script errors "
+        f"{len(report.get('errors', []))}.\n"
+    )
     (root / "README.md").write_text(readme)
-    log.event("done", "orchestr.", f"game project at {project}; playtest {'PASS' if report.get('won') else 'FAIL'}")
+    log.event(
+        "done", "orchestr.", f"game project at {project}; playtest {'PASS' if report.get('won') else 'FAIL'}"
+    )
     return {"project": str(project), "playtest": report}

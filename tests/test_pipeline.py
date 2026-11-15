@@ -10,10 +10,22 @@ pytestmark = [pytest.mark.blender, pytest.mark.slow]
 
 
 def test_offline_film_end_to_end(tmp_path):
-    studio = Studio(provider="scripted", options={"quality": "ci", "tts_engine": "synth", "preview_engine": "workbench",
-                                                  "critic_iterations": 2}, echo=False)
-    state = studio.film("A curious little robot discovers a flower growing in a junkyard at sunset. "
-                        "It says: 'Hello, little one.'", tmp_path, "smoke")
+    studio = Studio(
+        provider="scripted",
+        options={
+            "quality": "ci",
+            "tts_engine": "synth",
+            "preview_engine": "workbench",
+            "critic_iterations": 2,
+        },
+        echo=False,
+    )
+    state = studio.film(
+        "A curious little robot discovers a flower growing in a junkyard at sunset. "
+        "It says: 'Hello, little one.'",
+        tmp_path,
+        "smoke",
+    )
     root = tmp_path / "smoke"
     assert (root / "scene.blend").exists()
     final = root / "final.mp4"

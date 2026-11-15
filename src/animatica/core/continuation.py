@@ -29,8 +29,18 @@ from .log import ProductionLog
 from .orchestrator import HERO_ANIMATED, Context, Studio, TaskGraph
 from .state import ProjectState
 
-HERO_PAINT = {"robot": ["hero_body", "hero_head"], "critter": ["hero_body", "hero_head", "hero_ear_L", "hero_ear_R",
-                                                               "hero_tail", "hero_arm_L", "hero_arm_R"]}
+HERO_PAINT = {
+    "robot": ["hero_body", "hero_head"],
+    "critter": [
+        "hero_body",
+        "hero_head",
+        "hero_ear_L",
+        "hero_ear_R",
+        "hero_tail",
+        "hero_arm_L",
+        "hero_arm_R",
+    ],
+}
 
 
 def _open(project: str | Path, provider: str | Provider, options: dict[str, Any] | None, kind: str):
@@ -44,8 +54,14 @@ def _open(project: str | Path, provider: str | Provider, options: dict[str, Any]
 
 
 def detect_artist_edits(ctx: Context) -> dict[str, list[str]]:
-    q = ctx.engine.run_batch({"batch_id": "continue-query", "agent": "orchestrator", "intent": "read the artist's scene",
-                              "ops": [{"op": "query", "fields": ["type", "transform", "material", "parent"], "limit": 10000}]})
+    q = ctx.engine.run_batch(
+        {
+            "batch_id": "continue-query",
+            "agent": "orchestrator",
+            "intent": "read the artist's scene",
+            "ops": [{"op": "query", "fields": ["type", "transform", "material", "parent"], "limit": 10000}],
+        }
+    )
     objects = q.data["objects"]
     changes = ctx.state.scene.diff_snapshot(objects)
     for oid, aspects in changes.items():
@@ -62,7 +78,11 @@ def downstream(ctx: Context, studio: Studio, redo_voice: bool = False) -> None:
     prov = studio.provider
     voice, animator, camera = VoiceSound(prov), Animator(prov), CameraLighting(prov)
     critic, editor = Critic(prov), Editor(prov)
-    asset_info = ctx.state.artifacts.get("asset_info") or {"hero_height": 1.55, "head_z": 1.12, "prop_height": 0.52}
+    asset_info = ctx.state.artifacts.get("asset_info") or {
+        "hero_height": 1.55,
+        "head_z": 1.12,
+        "prop_height": 0.52,
+    }
     ctx.results["asset_info"] = asset_info
 
     def do_voice() -> Any:
@@ -72,15 +92,32 @@ def downstream(ctx: Context, studio: Studio, redo_voice: bool = False) -> None:
 
     def do_anim() -> Any:
         ids = [t for t in HERO_ANIMATED if t in ctx.engine.known_ids]
-        ctx.engine.run_batch(ctx.filter_locked({"batch_id": "continue-clear-anim", "agent": "animator",
-                                                "ops": [{"op": "clear_animation", "targets": ids}]}))
+        ctx.engine.run_batch(
+            ctx.filter_locked(
+                {
+                    "batch_id": "continue-clear-anim",
+                    "agent": "animator",
+                    "ops": [{"op": "clear_animation", "targets": ids}],
+                }
+            )
+        )
         ctx.results["anim"] = animator.run(ctx)
         return "ok"
 
     def do_camera() -> Any:
-        ids = sorted(i for i in ctx.engine.known_ids if (i.startswith("cam_") or i.startswith("light_")) and i not in ctx.state.locked)
+        ids = sorted(
+            i
+            for i in ctx.engine.known_ids
+            if (i.startswith("cam_") or i.startswith("light_")) and i not in ctx.state.locked
+        )
         if ids:
-            ctx.engine.run_batch({"batch_id": "continue-clear-cams", "agent": "camera", "ops": [{"op": "delete", "targets": ids}]})
+            ctx.engine.run_batch(
+                {
+                    "batch_id": "continue-clear-cams",
+                    "agent": "camera",
+                    "ops": [{"op": "delete", "targets": ids}],
+                }
+            )
             for i in ids:
                 ctx.state.scene.prims.pop(i, None)
         return camera.run(ctx, asset_info, ctx.results["anim"])
@@ -91,21 +128,33 @@ def downstream(ctx: Context, studio: Studio, redo_voice: bool = False) -> None:
     g.add("camera", do_camera, ["animator"])
     g.add("review", lambda: studio._critic_loop(ctx, critic, camera, animator, voice), ["camera"], retries=0)
     if ctx.options.get("no_render"):
-        g.add("save", lambda: ctx.engine.run_batch({"batch_id": "save", "agent": "editor",
-                                                    "ops": [{"op": "save", "path": str(ctx.state.blend)}]}), ["review"])
+        g.add(
+            "save",
+            lambda: ctx.engine.run_batch(
+                {"batch_id": "save", "agent": "editor", "ops": [{"op": "save", "path": str(ctx.state.blend)}]}
+            ),
+            ["review"],
+        )
     else:
         g.add("edit", lambda: editor.run(ctx), ["review"])
     g.run(ctx)
 
 
-def continue_project(project: str | Path, provider: str | Provider = "auto", options: dict[str, Any] | None = None) -> ProjectState:
+def continue_project(
+    project: str | Path, provider: str | Provider = "auto", options: dict[str, Any] | None = None
+) -> ProjectState:
     root, state, studio, log = _open(project, provider, options, "continue")
     with BlenderSession(workdir=root / "log") as engine:
         engine.open(state.blend, workdir=root / "log")
         ctx = Context(state, engine, log, studio.provider, studio.budget, dict(studio.options))
         changes = detect_artist_edits(ctx)
-        log.event("decision", "orchestr.", f"artist edits detected on {len(changes)} objects; locked as authoritative: "
-                  + ", ".join(f"{k}({'/'.join(v)})" for k, v in list(changes.items())[:12]), changes=changes)
+        log.event(
+            "decision",
+            "orchestr.",
+            f"artist edits detected on {len(changes)} objects; locked as authoritative: "
+            + ", ".join(f"{k}({'/'.join(v)})" for k, v in list(changes.items())[:12]),
+            changes=changes,
+        )
         state.save()
         downstream(ctx, studio)
     studio._finish(ctx)
@@ -120,18 +169,36 @@ COLOR_WORDS = {**CHARACTER_COLORS, "pink": "#E87AA8", "orange": "#D9822B", "cyan
 def scripted_revise(payload: dict[str, Any]) -> dict[str, Any]:
     text = payload["instruction"].lower()
     plan = payload["plan"]
-    hero_words = ["robot", "cat", "critter", "creature", "hero", "character", plan["characters"][0]["name"].lower(),
-                  plan["characters"][0]["kind"]]
+    hero_words = [
+        "robot",
+        "cat",
+        "critter",
+        "creature",
+        "hero",
+        "character",
+        plan["characters"][0]["name"].lower(),
+        plan["characters"][0]["kind"],
+    ]
     edits: list[dict[str, Any]] = []
     for clause in re.split(r"\band\b|,|;", text):
         clause = clause.strip()
-        m = re.search(r"(?:make|paint|colou?r|turn)\s+(?:the\s+)?(\w+)\s+(?:\w+\s+)?(" + "|".join(COLOR_WORDS) + r")\b", clause)
+        m = re.search(
+            r"(?:make|paint|colou?r|turn)\s+(?:the\s+)?(\w+)\s+(?:\w+\s+)?(" + "|".join(COLOR_WORDS) + r")\b",
+            clause,
+        )
         if m:
-            target = "hero" if m.group(1) in hero_words else "prop" if plan.get("props") and m.group(1) in (
-                plan["props"][0]["kind"], "prop") else "hero"
+            target = (
+                "hero"
+                if m.group(1) in hero_words
+                else "prop"
+                if plan.get("props") and m.group(1) in (plan["props"][0]["kind"], "prop")
+                else "hero"
+            )
             edits.append({"type": "recolor", "target": target, "color": COLOR_WORDS[m.group(2)]})
             continue
-        m = re.search(r"(slow down|speed up|slower|faster)\s+(?:in\s+)?(?:shot\s*(\d+)|the\s+(\w+)\s+shot)?", clause)
+        m = re.search(
+            r"(slow down|speed up|slower|faster)\s+(?:in\s+)?(?:shot\s*(\d+)|the\s+(\w+)\s+shot)?", clause
+        )
         if m:
             factor = 0.7 if m.group(1) in ("slow down", "slower") else 1.35
             shot = f"s{m.group(2)}" if m.group(2) else None
@@ -139,8 +206,13 @@ def scripted_revise(payload: dict[str, Any]) -> dict[str, Any]:
             continue
         m = re.search(r"(closer|tighter|wider|further)\s*(?:in\s+)?(?:on\s+)?(?:shot\s*(\d+))?", clause)
         if m and ("shot" in clause or "camera" in clause):
-            edits.append({"type": "framing", "shot": f"s{m.group(2)}" if m.group(2) else None,
-                          "fill_mul": 1.25 if m.group(1) in ("closer", "tighter") else 0.8})
+            edits.append(
+                {
+                    "type": "framing",
+                    "shot": f"s{m.group(2)}" if m.group(2) else None,
+                    "fill_mul": 1.25 if m.group(1) in ("closer", "tighter") else 0.8,
+                }
+            )
             continue
         m = re.search(r"\b(night|sunset|dawn|day)\b", clause)
         if m and any(w in clause for w in ("make it", "set it", "time", "change", "at ")):
@@ -158,8 +230,12 @@ REVISE_SYSTEM = """Turn an artist's revision note into typed edits. Return JSON 
 · {"type":"dialogue","text":str}"""
 
 
-def revise_project(project: str | Path, instruction: str, provider: str | Provider = "auto",
-                   options: dict[str, Any] | None = None) -> ProjectState:
+def revise_project(
+    project: str | Path,
+    instruction: str,
+    provider: str | Provider = "auto",
+    options: dict[str, Any] | None = None,
+) -> ProjectState:
     root, state, studio, log = _open(project, provider, options, "revise")
     assert state.plan is not None
     from ..agents.base import Agent
@@ -171,8 +247,12 @@ def revise_project(project: str | Path, instruction: str, provider: str | Provid
         ctx = Context(state, engine, log, studio.provider, studio.budget, dict(studio.options))
         changes = detect_artist_edits(ctx)
         if changes:
-            log.event("decision", "orchestr.", f"preserving {len(changes)} artist edits: {list(changes)[:10]}")
-        edits = parser.ask(ctx, {"instruction": instruction, "plan": state.plan.model_dump(mode="json")}).get("edits", [])
+            log.event(
+                "decision", "orchestr.", f"preserving {len(changes)} artist edits: {list(changes)[:10]}"
+            )
+        edits = parser.ask(ctx, {"instruction": instruction, "plan": state.plan.model_dump(mode="json")}).get(
+            "edits", []
+        )
         log.event("decision", "director", f"revision '{instruction}' -> {edits}", edits=edits)
         if not edits:
             log.event("warning", "director", "no actionable edits understood; nothing changed")
@@ -183,7 +263,12 @@ def revise_project(project: str | Path, instruction: str, provider: str | Provid
             if t == "recolor":
                 color = e["color"].upper()
                 if e.get("target") == "prop":
-                    ids = [i for i in ctx.engine.known_ids if i.startswith("prop_petal") or i in ("prop_body", "prop_gem", "prop_cap", "prop_star")]
+                    ids = [
+                        i
+                        for i in ctx.engine.known_ids
+                        if i.startswith("prop_petal")
+                        or i in ("prop_body", "prop_gem", "prop_cap", "prop_star")
+                    ]
                     if state.plan.prop:
                         state.plan.prop.color = color
                 else:
@@ -193,8 +278,14 @@ def revise_project(project: str | Path, instruction: str, provider: str | Provid
                 for i in ids:
                     if "material" in state.locked.get(i, []):
                         continue
-                    spec["objects"][i] = {"material": {"base_color": color, "metallic": 0.35, "roughness": 0.38,
-                                                       "name": f"revised_{e.get('target', 'hero')}"}}
+                    spec["objects"][i] = {
+                        "material": {
+                            "base_color": color,
+                            "metallic": 0.35,
+                            "roughness": 0.38,
+                            "name": f"revised_{e.get('target', 'hero')}",
+                        }
+                    }
             elif t == "speed":
                 f = float(e.get("factor", 1.0))
                 for s in state.plan.shots:
@@ -227,10 +318,25 @@ def revise_project(project: str | Path, instruction: str, provider: str | Provid
             for i, want in spec["objects"].items():
                 if i not in have:
                     ops.append({"op": "set_material", "targets": [i], "material": want["material"]})
-            res = ctx.engine.run_batch(ctx.filter_locked({"batch_id": "revise-spec", "agent": "asset", "mode": "ops",
-                                                          "intent": f"spec delta for: {instruction}", "ops": ops}))
-            log.event("batch", "asset", f"spec-mode revision -> {res.summary()}", batch_id=res.batch_id, ok=res.ok,
-                      n_ops=len(ops))
+            res = ctx.engine.run_batch(
+                ctx.filter_locked(
+                    {
+                        "batch_id": "revise-spec",
+                        "agent": "asset",
+                        "mode": "ops",
+                        "intent": f"spec delta for: {instruction}",
+                        "ops": ops,
+                    }
+                )
+            )
+            log.event(
+                "batch",
+                "asset",
+                f"spec-mode revision -> {res.summary()}",
+                batch_id=res.batch_id,
+                ok=res.ok,
+                n_ops=len(ops),
+            )
             from .protocol import Batch
 
             state.scene.apply(Batch.model_validate({"batch_id": "revise-spec", "ops": ops}))

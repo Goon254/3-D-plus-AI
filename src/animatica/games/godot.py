@@ -14,8 +14,16 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ADDON = REPO_ROOT / "adapters" / "godot" / "addons" / "animatica"
 CACHE = Path(os.environ.get("ANIMATICA_CACHE", Path.home() / ".cache" / "animatica"))
-GODOT_OPS = {"load_scene", "create_node", "add_shape", "add_polygon", "attach_script", "set_property",
-             "add_input_action", "save_scene"}
+GODOT_OPS = {
+    "load_scene",
+    "create_node",
+    "add_shape",
+    "add_polygon",
+    "attach_script",
+    "set_property",
+    "add_input_action",
+    "save_scene",
+}
 ID_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,62}$")
 
 
@@ -58,7 +66,10 @@ def validate_godot_batch(batch: dict[str, Any], existing: set[str] | None = None
             if has_root:
                 errors.append(f"{p}: scene already has a root")
             has_root = True
-        elif kind in ("create_node", "add_shape", "add_polygon", "attach_script", "set_property") and parent not in known:
+        elif (
+            kind in ("create_node", "add_shape", "add_polygon", "attach_script", "set_property")
+            and parent not in known
+        ):
             errors.append(f"{p}: unknown id {parent!r}")
         if kind == "load_scene":
             has_root = True
@@ -80,8 +91,22 @@ def run_batch(project: Path, batch: dict[str, Any], timeout: float = 120) -> dic
     with tempfile.TemporaryDirectory() as td:
         bpath, rpath = Path(td) / "batch.json", Path(td) / "result.json"
         bpath.write_text(json.dumps(batch))
-        proc = subprocess.run([exe, "--headless", "--path", str(project), "-s", "res://addons/animatica/runner.gd", "--",
-                               str(bpath), str(rpath)], capture_output=True, text=True, timeout=timeout)
+        proc = subprocess.run(
+            [
+                exe,
+                "--headless",
+                "--path",
+                str(project),
+                "-s",
+                "res://addons/animatica/runner.gd",
+                "--",
+                str(bpath),
+                str(rpath),
+            ],
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
         if not rpath.exists():
             raise GodotError(f"runner produced no result: {proc.stderr[-800:]}")
         res = json.loads(rpath.read_text())
@@ -104,11 +129,24 @@ def script_errors(text: str) -> list[str]:
     return out[:20]
 
 
-def run_game(project: Path, frames: int = 3600, args: list[str] | None = None, timeout: float = 300) -> tuple[int, str, str]:
+def run_game(
+    project: Path, frames: int = 3600, args: list[str] | None = None, timeout: float = 300
+) -> tuple[int, str, str]:
     exe = godot_bin()
     if not exe:
         raise GodotError("Godot 4 not found")
-    cmd = [exe, "--headless", "--path", str(project), "--fixed-fps", "60", "--quit-after", str(frames), "--", *(args or [])]
+    cmd = [
+        exe,
+        "--headless",
+        "--path",
+        str(project),
+        "--fixed-fps",
+        "60",
+        "--quit-after",
+        str(frames),
+        "--",
+        *(args or []),
+    ]
     p = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
     return p.returncode, p.stdout, p.stderr
 
@@ -117,7 +155,11 @@ def check_scripts(project: Path, scripts: list[str]) -> list[str]:
     exe = godot_bin()
     errs: list[str] = []
     for s in scripts:
-        p = subprocess.run([exe, "--headless", "--path", str(project), "--check-only", "-s", s], capture_output=True,
-                           text=True, timeout=120)
+        p = subprocess.run(
+            [exe, "--headless", "--path", str(project), "--check-only", "-s", s],
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
         errs += script_errors(p.stderr + p.stdout)
     return errs

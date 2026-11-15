@@ -40,11 +40,18 @@ def test_filter_locked_keeps_artist_edits(tmp_path):
 
     st = ProjectState(root=tmp_path, locked={"hero_body": ["material"], "rock": ["transform"]})
     ctx = Context(st, None, _Log(), ScriptedProvider(), None)
-    batch = {"agent": "asset", "ops": [
-        {"op": "set_material", "targets": ["hero_body", "hero_head"], "material": {"base_color": "#FF0000"}},
-        {"op": "transform", "target": "rock", "location": [0, 0, 0]},
-        {"op": "transform", "target": "hero_body", "location": [0, 0, 1]},
-    ]}
+    batch = {
+        "agent": "asset",
+        "ops": [
+            {
+                "op": "set_material",
+                "targets": ["hero_body", "hero_head"],
+                "material": {"base_color": "#FF0000"},
+            },
+            {"op": "transform", "target": "rock", "location": [0, 0, 0]},
+            {"op": "transform", "target": "hero_body", "location": [0, 0, 1]},
+        ],
+    }
     out = ctx.filter_locked(batch)["ops"]
     assert out[0]["targets"] == ["hero_head"]
     assert [o["op"] for o in out] == ["set_material", "transform"]
@@ -63,8 +70,12 @@ def test_critic_dialogue_framing_checks():
     from animatica.agents.critic import dialogue_framing_issues
 
     def frame(face_h, face_vis, prop_vis):
-        return {"subjects": {"hero_face": {"screen_height": face_h, "visible_fraction": face_vis},
-                             "prop": {"visible_fraction": prop_vis}}}
+        return {
+            "subjects": {
+                "hero_face": {"screen_height": face_h, "visible_fraction": face_vis},
+                "prop": {"visible_fraction": prop_vis},
+            }
+        }
 
     frames = {"100": frame(0.12, 1.0, 1.0), "110": frame(0.3, 0.8, 0.3), "300": frame(0.01, 0.0, 0.0)}
     issues = dialogue_framing_issues("s3", frames, [(95, 120)], "flower")
@@ -95,4 +106,9 @@ def test_wheel_spin_rolls_by_distance_without_skating():
     ids = {o["id"] for o in robot_ops("#E08A2E", "#BFF4FF", "#2B3A55") if "id" in o}
     for side in "LR":
         for j in range(3):
-            assert {f"hero_wheel_{side}{j}", f"hero_cog_{side}{j}", f"hero_spoke_{side}{j}", f"hero_bolt_{side}{j}"} <= ids
+            assert {
+                f"hero_wheel_{side}{j}",
+                f"hero_cog_{side}{j}",
+                f"hero_spoke_{side}{j}",
+                f"hero_bolt_{side}{j}",
+            } <= ids

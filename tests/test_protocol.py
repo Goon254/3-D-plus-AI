@@ -16,9 +16,26 @@ def test_valid_batch_parses():
 
 
 def test_minimum_op_set_present():
-    required = {"create_primitive", "delete", "transform", "parent", "add_modifier", "set_material", "add_light",
-                "add_camera", "set_camera_active", "insert_keyframes", "set_frame_range", "create_armature",
-                "bind_mesh_to_armature", "import_asset", "add_sound_strip", "render_preview", "render_final", "query"}
+    required = {
+        "create_primitive",
+        "delete",
+        "transform",
+        "parent",
+        "add_modifier",
+        "set_material",
+        "add_light",
+        "add_camera",
+        "set_camera_active",
+        "insert_keyframes",
+        "set_frame_range",
+        "create_armature",
+        "bind_mesh_to_armature",
+        "import_asset",
+        "add_sound_strip",
+        "render_preview",
+        "render_final",
+        "query",
+    }
     assert required <= set(OP_NAMES)
 
 
@@ -30,11 +47,53 @@ def test_minimum_op_set_present():
         ([{**CUBE, "id": "1bad id"}], "invalid id"),
         ([{"op": "explode"}], "op"),
         ([CUBE, {"op": "set_material", "targets": ["a"], "material": {"base_color": "red"}}], "#RRGGBB"),
-        ([CUBE, {"op": "insert_keyframes", "target": "a", "property": "location",
-                 "keys": [[10, [0, 0, 0], "LINEAR"], [5, [1, 0, 0], "LINEAR"]]}], "strictly increasing"),
-        ([CUBE, {"op": "insert_keyframes", "target": "a", "property": "location", "keys": [[1, 2.0, "LINEAR"]]}], "vector values"),
-        ([CUBE, {"op": "insert_keyframes", "target": "a", "property": "warp_drive", "keys": [[1, 2.0, "LINEAR"]]}], "unsupported property"),
-        ([{"op": "create_mesh", "id": "m", "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0]], "faces": [[0, 1, 7]]}], "out of range"),
+        (
+            [
+                CUBE,
+                {
+                    "op": "insert_keyframes",
+                    "target": "a",
+                    "property": "location",
+                    "keys": [[10, [0, 0, 0], "LINEAR"], [5, [1, 0, 0], "LINEAR"]],
+                },
+            ],
+            "strictly increasing",
+        ),
+        (
+            [
+                CUBE,
+                {
+                    "op": "insert_keyframes",
+                    "target": "a",
+                    "property": "location",
+                    "keys": [[1, 2.0, "LINEAR"]],
+                },
+            ],
+            "vector values",
+        ),
+        (
+            [
+                CUBE,
+                {
+                    "op": "insert_keyframes",
+                    "target": "a",
+                    "property": "warp_drive",
+                    "keys": [[1, 2.0, "LINEAR"]],
+                },
+            ],
+            "unsupported property",
+        ),
+        (
+            [
+                {
+                    "op": "create_mesh",
+                    "id": "m",
+                    "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+                    "faces": [[0, 1, 7]],
+                }
+            ],
+            "out of range",
+        ),
         ([{**CUBE, "location": [float("nan"), 0, 0]}], "finite"),
         ([{"op": "set_frame_range", "start": 50, "end": 10}], "end 10 < start 50"),
     ],
@@ -51,12 +110,20 @@ def test_existing_ids_are_known():
 
 def test_delete_then_reference_fails():
     with pytest.raises(BatchValidationError):
-        validate_batch(b(CUBE, {"op": "delete", "targets": ["a"]}, {"op": "transform", "target": "a", "scale": [1, 1, 1]}))
+        validate_batch(
+            b(
+                CUBE,
+                {"op": "delete", "targets": ["a"]},
+                {"op": "transform", "target": "a", "scale": [1, 1, 1]},
+            )
+        )
 
 
 def test_locked_ids_cannot_be_modified():
     with pytest.raises(BatchValidationError) as exc:
-        validate_batch(b({"op": "transform", "target": "hero", "location": [0, 0, 1]}, locked=["hero"]), {"hero"})
+        validate_batch(
+            b({"op": "transform", "target": "hero", "location": [0, 0, 1]}, locked=["hero"]), {"hero"}
+        )
     assert "locked" in exc.value.errors[0]
 
 
@@ -66,7 +133,10 @@ def test_script_mode_requires_script():
 
 
 def test_300_op_batch_validates_fast():
-    ops = [{"op": "create_primitive", "id": f"o{i}", "shape": "cube", "location": [i * 0.1, 0, 0]} for i in range(300)]
+    ops = [
+        {"op": "create_primitive", "id": f"o{i}", "shape": "cube", "location": [i * 0.1, 0, 0]}
+        for i in range(300)
+    ]
     batch = validate_batch(b(*ops))
     assert len(batch.ops) == 300
 
@@ -78,5 +148,15 @@ def test_schema_exports():
 
 
 def test_scalar_keyframes_with_index():
-    validate_batch(b(CUBE, {"op": "insert_keyframes", "target": "a", "property": "location", "index": 2,
-                            "keys": [[1, 0.0, "LINEAR"], [10, 1.0, "BEZIER"]]}))
+    validate_batch(
+        b(
+            CUBE,
+            {
+                "op": "insert_keyframes",
+                "target": "a",
+                "property": "location",
+                "index": 2,
+                "keys": [[1, 0.0, "LINEAR"], [10, 1.0, "BEZIER"]],
+            },
+        )
+    )

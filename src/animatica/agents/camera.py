@@ -37,10 +37,34 @@ DEFAULTS = {
 }
 SKY_GLOW = {"sunset": "#C8607A", "dawn": "#E8A0B8", "day": "#8EC5F0", "night": "#16224A"}
 LIGHTING = {
-    "sunset": {"key_energy": 4.0, "fill_energy": 220, "rim_energy": 300, "world_strength": 1.4, "exposure": 0.0},
-    "dawn": {"key_energy": 3.5, "fill_energy": 220, "rim_energy": 250, "world_strength": 1.3, "exposure": 0.0},
-    "day": {"key_energy": 4.5, "fill_energy": 150, "rim_energy": 150, "world_strength": 1.0, "exposure": -0.3},
-    "night": {"key_energy": 0.6, "fill_energy": 120, "rim_energy": 250, "world_strength": 0.35, "exposure": 0.4},
+    "sunset": {
+        "key_energy": 4.0,
+        "fill_energy": 220,
+        "rim_energy": 300,
+        "world_strength": 1.4,
+        "exposure": 0.0,
+    },
+    "dawn": {
+        "key_energy": 3.5,
+        "fill_energy": 220,
+        "rim_energy": 250,
+        "world_strength": 1.3,
+        "exposure": 0.0,
+    },
+    "day": {
+        "key_energy": 4.5,
+        "fill_energy": 150,
+        "rim_energy": 150,
+        "world_strength": 1.0,
+        "exposure": -0.3,
+    },
+    "night": {
+        "key_energy": 0.6,
+        "fill_energy": 120,
+        "rim_energy": 250,
+        "world_strength": 0.35,
+        "exposure": 0.4,
+    },
 }
 
 
@@ -67,8 +91,14 @@ def _vfov(lens: float) -> float:
     return 2 * math.atan(SENSOR_W / ASPECT / 2 / lens)
 
 
-def frame_shot(subject_center: tuple[float, float, float], subject_h: float, subject_w: float, cam: dict[str, Any],
-               facing: float = 1.0, thirds: bool = True) -> tuple[list[float], list[float]]:
+def frame_shot(
+    subject_center: tuple[float, float, float],
+    subject_h: float,
+    subject_w: float,
+    cam: dict[str, Any],
+    facing: float = 1.0,
+    thirds: bool = True,
+) -> tuple[list[float], list[float]]:
     """Return (camera_location, aim_point) so the subject fills ``fill`` of the frame."""
     lens, fill = cam["lens"], cam["fill"]
     need_h = subject_h / fill
@@ -82,7 +112,9 @@ def frame_shot(subject_center: tuple[float, float, float], subject_h: float, sub
     if thirds:
         frame_w = 2 * dist * math.tan(_hfov(lens) / 2)
         right = (math.cos(az), math.sin(az))  # camera right vector on the ground plane
-        shift = facing * frame_w / 6  # aim right of the subject when it looks right -> subject on the left third
+        shift = (
+            facing * frame_w / 6
+        )  # aim right of the subject when it looks right -> subject on the left third
         aim = [cx + right[0] * shift, cy + right[1] * shift, cz]
     return [round(v, 3) for v in loc], [round(v, 3) for v in aim]
 
@@ -93,7 +125,13 @@ class CameraLighting(Agent):
     system_prompt = SYSTEM
 
     def plan_cameras(self, ctx: Context) -> dict[str, Any]:
-        out = self.ask(ctx, {"plan": ctx.plan.model_dump(mode="json"), "knowledge": lookup(f"{ctx.plan.setting.time_of_day} lighting shot sizes framing moves")})
+        out = self.ask(
+            ctx,
+            {
+                "plan": ctx.plan.model_dump(mode="json"),
+                "knowledge": lookup(f"{ctx.plan.setting.time_of_day} lighting shot sizes framing moves"),
+            },
+        )
         for sid, adj in ctx.state.tuning.get("camera", {}).items():  # critic-driven corrections
             if sid in out.get("shots", {}):
                 for k, v in adj.items():
@@ -116,22 +154,53 @@ class CameraLighting(Agent):
         az = math.degrees(math.atan2(-sx, sy))
         elev = math.degrees(math.asin(sz))
         ops: list[dict[str, Any]] = [
-            {"op": "set_world", "zenith": pal.sky_zenith, "horizon": pal.sky_horizon, "ground": pal.ground,
-             "glow": SKY_GLOW.get(tod),
-             "strength": L.get("world_strength", 1.0)},
-            {"op": "add_light", "id": "light_key", "light_type": "sun", "energy": L.get("key_energy", 4.0),
-             "color": pal.sun, "rotation": [round(90 - elev, 2), 0, round(az, 2)], "size": 0.08, "tags": ["light"]},
-            {"op": "add_light", "id": "light_fill", "light_type": "area", "energy": L.get("fill_energy", 200),
-             "color": "#C9D6FF" if tod in ("sunset", "night") else "#FFF1DD", "size": 4.0,
-             "location": [2.5, -5.0, 3.2], "rotation": [55, 0, 25], "tags": ["light"]},
-            {"op": "add_light", "id": "light_rim", "light_type": "area", "energy": L.get("rim_energy", 250),
-             "color": pal.sun if tod != "night" else "#A9C2FF", "size": 2.5,
-             "location": [-2.0, 3.5, 2.8], "rotation": [-55, 0, -30], "tags": ["light"]},
+            {
+                "op": "set_world",
+                "zenith": pal.sky_zenith,
+                "horizon": pal.sky_horizon,
+                "ground": pal.ground,
+                "glow": SKY_GLOW.get(tod),
+                "strength": L.get("world_strength", 1.0),
+            },
+            {
+                "op": "add_light",
+                "id": "light_key",
+                "light_type": "sun",
+                "energy": L.get("key_energy", 4.0),
+                "color": pal.sun,
+                "rotation": [round(90 - elev, 2), 0, round(az, 2)],
+                "size": 0.08,
+                "tags": ["light"],
+            },
+            {
+                "op": "add_light",
+                "id": "light_fill",
+                "light_type": "area",
+                "energy": L.get("fill_energy", 200),
+                "color": "#C9D6FF" if tod in ("sunset", "night") else "#FFF1DD",
+                "size": 4.0,
+                "location": [2.5, -5.0, 3.2],
+                "rotation": [55, 0, 25],
+                "tags": ["light"],
+            },
+            {
+                "op": "add_light",
+                "id": "light_rim",
+                "light_type": "area",
+                "energy": L.get("rim_energy", 250),
+                "color": pal.sun if tod != "night" else "#A9C2FF",
+                "size": 2.5,
+                "location": [-2.0, 3.5, 2.8],
+                "rotation": [-55, 0, -30],
+                "tags": ["light"],
+            },
             {"op": "set_render", "exposure": L.get("exposure", 0.0), "look": "AgX - Medium High Contrast"},
         ]
         return ops
 
-    def run(self, ctx: Context, asset_info: dict[str, Any], anim_notes: dict[str, Any] | None = None) -> dict[str, Any]:
+    def run(
+        self, ctx: Context, asset_info: dict[str, Any], anim_notes: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         plan = ctx.plan
         cp = self.plan_cameras(ctx)
         L = cp.get("lighting", LIGHTING[plan.setting.time_of_day])
@@ -161,7 +230,9 @@ class CameraLighting(Agent):
                 top, bottom = head_z + 0.3, max(0.0, prop_h - 0.3)  # keep the whole blossom in frame
                 center = ((hx1 * 2 + prop_x) / 3, 0.0, (top + bottom) / 2)
                 sub_h, sub_w = top - bottom, abs(prop_x - hx1) * 0.8 + 0.5
-                c["fill"] = round(0.98 * ctx.state.tuning.get("camera", {}).get(shot.id, {}).get("fill_mul", 1.0), 3)
+                c["fill"] = round(
+                    0.98 * ctx.state.tuning.get("camera", {}).get(shot.id, {}).get("fill_mul", 1.0), 3
+                )
                 two_shot = True
             elif shot.type == "closeup":
                 center, sub_h, sub_w = (hx1 + 0.1, 0.0, head_z - 0.1), 0.75, 0.7
@@ -178,13 +249,22 @@ class CameraLighting(Agent):
                 sub_h, sub_w = hero_h, abs(hx1 - hx0) + 1.6
             else:
                 center, sub_h, sub_w = ((hx0 + hx1) / 2, 0.0, hero_h * 0.5), hero_h, 1.2
-            thirds = (shot.type != "wide" or shot.subject == "hero") and not two_shot and shot.subject != "both"
+            thirds = (
+                (shot.type != "wide" or shot.subject == "hero") and not two_shot and shot.subject != "both"
+            )
             loc, aim = frame_shot(center, sub_h, sub_w, c, facing=1.0, thirds=thirds)
             cid, aid = f"cam_{shot.id}", f"cam_{shot.id}_aim"
             ops += [
                 {"op": "create_empty", "id": aid, "location": aim, "tags": ["camera"]},
-                {"op": "add_camera", "id": cid, "location": loc, "lens": c["lens"], "look_at": aid, "tags": ["camera"],
-                 **({"dof_target": "hero_head_pivot", "fstop": 2.2} if shot.type == "closeup" else {})},
+                {
+                    "op": "add_camera",
+                    "id": cid,
+                    "location": loc,
+                    "lens": c["lens"],
+                    "look_at": aid,
+                    "tags": ["camera"],
+                    **({"dof_target": "hero_head_pivot", "fstop": 2.2} if shot.type == "closeup" else {}),
+                },
                 {"op": "set_camera_active", "id": cid, "frame": f0},
             ]
             loc0, loc1, aim0, aim1 = list(loc), list(loc), list(aim), list(aim)
@@ -202,8 +282,16 @@ class CameraLighting(Agent):
             elif move == "orbit":
                 a = math.radians(10)
                 dx, dy = loc[0] - aim[0], loc[1] - aim[1]
-                loc0 = [aim[0] + dx * math.cos(-a) - dy * math.sin(-a), aim[1] + dx * math.sin(-a) + dy * math.cos(-a), loc[2]]
-                loc1 = [aim[0] + dx * math.cos(a) - dy * math.sin(a), aim[1] + dx * math.sin(a) + dy * math.cos(a), loc[2]]
+                loc0 = [
+                    aim[0] + dx * math.cos(-a) - dy * math.sin(-a),
+                    aim[1] + dx * math.sin(-a) + dy * math.cos(-a),
+                    loc[2],
+                ]
+                loc1 = [
+                    aim[0] + dx * math.cos(a) - dy * math.sin(a),
+                    aim[1] + dx * math.sin(a) + dy * math.cos(a),
+                    loc[2],
+                ]
             elif move == "crane_up":
                 loc0 = list(loc)
                 loc1 = [aim[0] + (loc[0] - aim[0]) * 1.25, aim[1] + (loc[1] - aim[1]) * 1.25, loc[2] + 1.6]
@@ -214,18 +302,51 @@ class CameraLighting(Agent):
                 aim0 = [aim[0] + hx0 - center[0], aim[1], aim[2]]
                 aim1 = [aim[0] + hx1 - center[0], aim[1], aim[2]]
             if loc0 != loc1:
-                ops.append({"op": "insert_keyframes", "target": cid, "property": "location",
-                            "keys": [[f0, [round(v, 3) for v in loc0], "EASE_IN_OUT"], [f1, [round(v, 3) for v in loc1], "EASE_IN_OUT"]]})
+                ops.append(
+                    {
+                        "op": "insert_keyframes",
+                        "target": cid,
+                        "property": "location",
+                        "keys": [
+                            [f0, [round(v, 3) for v in loc0], "EASE_IN_OUT"],
+                            [f1, [round(v, 3) for v in loc1], "EASE_IN_OUT"],
+                        ],
+                    }
+                )
             if aim0 != aim1:
-                ops.append({"op": "insert_keyframes", "target": aid, "property": "location",
-                            "keys": [[f0, [round(v, 3) for v in aim0], "EASE_IN_OUT"], [f1, [round(v, 3) for v in aim1], "EASE_IN_OUT"]]})
-            ctx.log.event("decision", self.role, f"{shot.id} {shot.type}/{move}: lens {c['lens']}mm, az {c['azimuth']}°, "
-                          f"fill {c['fill']:.2f}, camera {loc} -> aim {aim}", shot=shot.id, camera=c)
+                ops.append(
+                    {
+                        "op": "insert_keyframes",
+                        "target": aid,
+                        "property": "location",
+                        "keys": [
+                            [f0, [round(v, 3) for v in aim0], "EASE_IN_OUT"],
+                            [f1, [round(v, 3) for v in aim1], "EASE_IN_OUT"],
+                        ],
+                    }
+                )
+            ctx.log.event(
+                "decision",
+                self.role,
+                f"{shot.id} {shot.type}/{move}: lens {c['lens']}mm, az {c['azimuth']}°, "
+                f"fill {c['fill']:.2f}, camera {loc} -> aim {aim}",
+                shot=shot.id,
+                camera=c,
+            )
         # sunset: the sun sinks and the key dims during the last shot (time passing)
         if plan.setting.time_of_day in ("sunset", "dawn") and len(plan.shots) > 1:
             last = plan.shots[-1]
             f0, f1 = frames[last.id]
-            ops.append({"op": "insert_keyframes", "target": "light_key", "property": "light.energy",
-                        "keys": [[f0, L.get("key_energy", 4.0), "EASE_IN_OUT"], [f1, round(L.get("key_energy", 4.0) * 0.55, 2), "EASE_IN_OUT"]]})
+            ops.append(
+                {
+                    "op": "insert_keyframes",
+                    "target": "light_key",
+                    "property": "light.energy",
+                    "keys": [
+                        [f0, L.get("key_energy", 4.0), "EASE_IN_OUT"],
+                        [f1, round(L.get("key_energy", 4.0) * 0.55, 2), "EASE_IN_OUT"],
+                    ],
+                }
+            )
         self.submit(ctx, self.batch(f"Cameras for {len(plan.shots)} shots with cuts", ops))
         return {"cameras": [f"cam_{s.id}" for s in plan.shots], "lighting": L}

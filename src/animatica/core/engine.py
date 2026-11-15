@@ -43,9 +43,15 @@ def blender_command() -> list[str]:
         return [py, "-m", "animatica_blender.server", "--stdio"]
     blender = os.environ.get("ANIMATICA_BLENDER_BIN") or shutil.which("blender")
     if blender:
-        return [blender, "-b", "--factory-startup", "--python-expr",
-                f"import sys; sys.path.insert(0, {str(ADAPTER_DIR)!r}); import animatica_blender.server as s; s.main()",
-                "--", "--stdio"]
+        return [
+            blender,
+            "-b",
+            "--factory-startup",
+            "--python-expr",
+            f"import sys; sys.path.insert(0, {str(ADAPTER_DIR)!r}); import animatica_blender.server as s; s.main()",
+            "--",
+            "--stdio",
+        ]
     raise EngineError(
         "Blender not found. Install the bpy wheel (`pip install bpy`, matching Python version) or set "
         "ANIMATICA_BLENDER_BIN to a Blender binary. See docs/SETUP.md."
@@ -94,8 +100,15 @@ class BlenderSession(_Session):
         if workdir:
             cmd += ["--workdir", str(workdir)]
         self._log = open(os.devnull, "w") if not os.environ.get("ANIMATICA_DEBUG") else None
-        self.proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                     stderr=self._log, text=True, env=env, bufsize=1)
+        self.proc = subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=self._log,
+            text=True,
+            env=env,
+            bufsize=1,
+        )
         ready = self._readline()
         if not ready.get("ready"):
             raise EngineError(f"adapter failed to start: {ready}")

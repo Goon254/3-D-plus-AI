@@ -32,13 +32,11 @@ from .ops_scene import SceneOps
 READ_ONLY_OPS = {"query", "inspect", "render_preview", "render_final", "save"}
 
 
-
 class Executor(SceneOps, MaterialOps, AnimOps, RenderOps):
     def __init__(self, workdir: str | None = None):
         self.workdir = workdir or tempfile.mkdtemp(prefix="animatica_")
         self._undo_counter = 0
         self.ensure_scene()
-
 
     # ------------------------------------------------------------------ scene helpers
     def ensure_scene(self) -> None:
@@ -46,11 +44,9 @@ class Executor(SceneOps, MaterialOps, AnimOps, RenderOps):
         if "animatica_project" not in scene:
             scene["animatica_project"] = True
 
-
     @property
     def scene(self):
         return bpy.context.scene
-
 
     def obj(self, oid: str):
         o = bpy.data.objects.get(oid)
@@ -61,10 +57,8 @@ class Executor(SceneOps, MaterialOps, AnimOps, RenderOps):
                 return cand
         raise OpError(f"unknown id {oid!r}")
 
-
     def ids(self) -> set[str]:
         return {o.get(ID_PROP, o.name) for o in bpy.data.objects}
-
 
     def _link(self, o, collection: str | None):
         coll = self.scene.collection
@@ -74,7 +68,6 @@ class Executor(SceneOps, MaterialOps, AnimOps, RenderOps):
                 coll = bpy.data.collections.new(collection)
                 self.scene.collection.children.link(coll)
         coll.objects.link(o)
-
 
     def _new_object(self, op: dict, data) -> Any:
         oid = op["id"]
@@ -92,13 +85,20 @@ class Executor(SceneOps, MaterialOps, AnimOps, RenderOps):
         o.scale = op.get("scale", (1, 1, 1))
         return o
 
-
     # ------------------------------------------------------------------ batch entry
     def run_batch(self, batch: dict) -> dict:
         t0 = time.time()
         res: dict[str, Any] = {
-            "batch_id": batch.get("batch_id", "?"), "ok": True, "created": [], "modified": [], "deleted": [],
-            "warnings": [], "errors": [], "preview": None, "undo_token": None, "data": {},
+            "batch_id": batch.get("batch_id", "?"),
+            "ok": True,
+            "created": [],
+            "modified": [],
+            "deleted": [],
+            "warnings": [],
+            "errors": [],
+            "preview": None,
+            "undo_token": None,
+            "data": {},
         }
         ops = batch.get("ops", [])
         mutating = batch.get("mode") == "script" or any(o.get("op") not in READ_ONLY_OPS for o in ops)
@@ -124,8 +124,14 @@ class Executor(SceneOps, MaterialOps, AnimOps, RenderOps):
             if verify.get("preview"):
                 path = os.path.join(self.workdir, "previews", f"{res['batch_id']}.png")
                 self.op_render_preview(
-                    {"path": path, "camera": verify.get("camera", "auto"),
-                     "resolution": verify.get("resolution", (480, 270)), "frame": verify.get("frame")}, res)
+                    {
+                        "path": path,
+                        "camera": verify.get("camera", "auto"),
+                        "resolution": verify.get("resolution", (480, 270)),
+                        "frame": verify.get("frame"),
+                    },
+                    res,
+                )
         except Exception as e:  # noqa: BLE001
             res["ok"] = False
             res["errors"].append(str(e))
@@ -139,7 +145,6 @@ class Executor(SceneOps, MaterialOps, AnimOps, RenderOps):
             res[k] = list(dict.fromkeys(res[k]))
         return res
 
-
     def _snapshot(self) -> str:
         self._undo_counter += 1
         path = os.path.join(self.workdir, "undo", f"u-{self._undo_counter}.blend")
@@ -147,10 +152,8 @@ class Executor(SceneOps, MaterialOps, AnimOps, RenderOps):
         bpy.ops.wm.save_as_mainfile(filepath=path, copy=True, compress=False)
         return path
 
-
     def _restore(self, path: str) -> None:
         bpy.ops.wm.open_mainfile(filepath=path)
-
 
     def undo(self, token: str) -> bool:
         if token and os.path.exists(token):
@@ -158,10 +161,8 @@ class Executor(SceneOps, MaterialOps, AnimOps, RenderOps):
             return True
         return False
 
-
     # ------------------------------------------------------------------ script mode
     SAFE_MODULES = {"math", "random", "mathutils", "bmesh", "bpy", "itertools", "functools", "colorsys"}
-
 
     def _run_script(self, code: str, timeout: float, res: dict) -> None:
         before = self.ids()
@@ -172,11 +173,19 @@ class Executor(SceneOps, MaterialOps, AnimOps, RenderOps):
             return builtins.__import__(name, *args, **kwargs)
 
         banned = {"open", "exec", "eval", "compile", "input", "breakpoint", "__import__", "exit", "quit"}
-        safe_builtins = {k: getattr(builtins, k) for k in dir(builtins) if k not in banned and not k.startswith("_")}
+        safe_builtins = {
+            k: getattr(builtins, k) for k in dir(builtins) if k not in banned and not k.startswith("_")
+        }
         safe_builtins["__import__"] = safe_import
         safe_builtins["__build_class__"] = builtins.__build_class__
-        ns = {"__builtins__": safe_builtins, "bpy": bpy, "mathutils": mathutils, "math": math,
-              "ax": ScriptHelpers(self), "__name__": "animatica_script"}
+        ns = {
+            "__builtins__": safe_builtins,
+            "bpy": bpy,
+            "mathutils": mathutils,
+            "math": math,
+            "ax": ScriptHelpers(self),
+            "__name__": "animatica_script",
+        }
 
         def on_timeout(signum, frame):
             raise TimeoutError(f"script exceeded {timeout}s")
@@ -216,5 +225,3 @@ class ScriptHelpers:
         for op in ops:
             getattr(self._ex, "op_" + op["op"])(op, res)
         return res
-
-

@@ -28,24 +28,58 @@ IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
 
 def _refuse_remote(src: str) -> None:
     if re.match(r"^[a-z]+://", src, re.I):
-        raise ValueError("reference study only accepts local files you have the right to use (no URLs, no downloading)")
+        raise ValueError(
+            "reference study only accepts local files you have the right to use (no URLs, no downloading)"
+        )
 
 
 def extract_frames(video: Path, out_dir: Path, every_s: float = 0.5, width: int = 320) -> list[Path]:
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(video), "-vf", f"fps={1 / every_s},scale={width}:-1",
-                    str(out_dir / "f_%05d.png")], check=True, timeout=1800)
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-y",
+            "-i",
+            str(video),
+            "-vf",
+            f"fps={1 / every_s},scale={width}:-1",
+            str(out_dir / "f_%05d.png"),
+        ],
+        check=True,
+        timeout=1800,
+    )
     return sorted(out_dir.glob("f_*.png"))
 
 
 def detect_cuts(video: Path, threshold: float = 0.3) -> list[float]:
-    p = subprocess.run(["ffmpeg", "-v", "info", "-i", str(video), "-vf", f"select='gt(scene,{threshold})',showinfo",
-                        "-f", "null", "-"], capture_output=True, text=True, timeout=1800)
+    p = subprocess.run(
+        [
+            "ffmpeg",
+            "-v",
+            "info",
+            "-i",
+            str(video),
+            "-vf",
+            f"select='gt(scene,{threshold})',showinfo",
+            "-f",
+            "null",
+            "-",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=1800,
+    )
     return [float(m) for m in re.findall(r"pts_time:([0-9.]+)", p.stderr)]
 
 
 def duration(video: Path) -> float:
-    p = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(video)],
-                       capture_output=True, text=True, timeout=60)
+    p = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(video)],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
     try:
         return float(p.stdout.strip())
     except ValueError:
@@ -64,7 +98,10 @@ def palette(pixels: np.ndarray, k: int = 6, iters: int = 12, seed: int = 0) -> l
                 centers[j] = sel.mean(0)
     counts = np.bincount(labels, minlength=k) / len(labels)
     order = np.argsort(-counts)
-    return [("#{:02X}{:02X}{:02X}".format(*(int(c) for c in centers[j])), round(float(counts[j]), 3)) for j in order]
+    return [
+        ("#{:02X}{:02X}{:02X}".format(*(int(c) for c in centers[j])), round(float(counts[j]), 3))
+        for j in order
+    ]
 
 
 def analyse_frames(frames: list[Path]) -> dict[str, Any]:
@@ -117,9 +154,12 @@ def study(sources: list[str], name: str, license_note: str, provider=None) -> di
             picks = [frames[int(j)] for j in np.linspace(0, len(frames) - 1, num=min(4, len(frames)))]
             try:
                 notes["vision"] = provider.complete_json(
-                    "study.describe", "You are an animation supervisor. Describe the timing, posing, camera language and "
-                    "colour of these reference frames as reusable style notes. JSON: {\"notes\": [str]}", {"name": name},
-                    images=picks).get("notes", [])
+                    "study.describe",
+                    "You are an animation supervisor. Describe the timing, posing, camera language and "
+                    'colour of these reference frames as reusable style notes. JSON: {"notes": [str]}',
+                    {"name": name},
+                    images=picks,
+                ).get("notes", [])
             except Exception as e:  # noqa: BLE001
                 notes["vision_error"] = str(e)[:200]
     notes.update({"name": name, "sources": [Path(s).name for s in sources], "license": license_note})
@@ -137,8 +177,13 @@ def style_hints(notes: dict[str, Any]) -> dict[str, Any]:
         mood = "playful"
     lum = lambda h: sum(int(h[i : i + 2], 16) for i in (1, 3, 5))  # noqa: E731
     by_l = sorted(pal, key=lum)
-    return {"mood": mood, "sky_zenith": by_l[0], "ground": by_l[1], "sky_horizon": by_l[-1],
-            "shot_length_s": notes.get("average_shot_length_s")}
+    return {
+        "mood": mood,
+        "sky_zenith": by_l[0],
+        "ground": by_l[1],
+        "sky_horizon": by_l[-1],
+        "shot_length_s": notes.get("average_shot_length_s"),
+    }
 
 
 def load_style(name: str) -> dict[str, Any] | None:

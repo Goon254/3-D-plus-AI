@@ -18,8 +18,14 @@ class ProductionLog:
         self.t0 = time.time()
 
     def event(self, kind: str, agent: str, message: str, **data: Any) -> dict[str, Any]:
-        rec = {"t": round(time.time() - self.t0, 2), "ts": time.strftime("%Y-%m-%dT%H:%M:%S"),
-               "kind": kind, "agent": agent, "message": message, **data}
+        rec = {
+            "t": round(time.time() - self.t0, 2),
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "kind": kind,
+            "agent": agent,
+            "message": message,
+            **data,
+        }
         with self.path.open("a") as f:
             f.write(json.dumps(rec, default=str) + "\n")
         if self.echo:

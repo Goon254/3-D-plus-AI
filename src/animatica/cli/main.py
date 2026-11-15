@@ -7,8 +7,9 @@ import json
 import sys
 from pathlib import Path
 
-DEMO_PROMPT = ("A curious little robot discovers a flower growing in a junkyard at sunset. "
-               "It says: 'Hello, little one.'")
+DEMO_PROMPT = (
+    "A curious little robot discovers a flower growing in a junkyard at sunset. It says: 'Hello, little one.'"
+)
 
 
 def _studio(args: argparse.Namespace):
@@ -31,7 +32,9 @@ def _studio(args: argparse.Namespace):
 def cmd_film(args: argparse.Namespace) -> int:
     state = _studio(args).film(args.prompt, args.out, args.name)
     final = state.artifacts.get("final")
-    print(f"\nproject: {state.root}\nblend:   {state.blend}\nvideo:   {final or '(not rendered)'}\nlog:     {state.root / 'log' / 'index.html'}")
+    print(
+        f"\nproject: {state.root}\nblend:   {state.blend}\nvideo:   {final or '(not rendered)'}\nlog:     {state.root / 'log' / 'index.html'}"
+    )
     return 0
 
 
@@ -44,18 +47,31 @@ def cmd_demo(args: argparse.Namespace) -> int:
 def cmd_continue(args: argparse.Namespace) -> int:
     from ..core.continuation import continue_project
 
-    continue_project(args.project, provider=args.llm, options={"quality": args.quality,
-                                                               "critic_iterations": args.critic_iterations,
-                                                               **({"no_render": True} if args.no_render else {})})
+    continue_project(
+        args.project,
+        provider=args.llm,
+        options={
+            "quality": args.quality,
+            "critic_iterations": args.critic_iterations,
+            **({"no_render": True} if args.no_render else {}),
+        },
+    )
     return 0
 
 
 def cmd_revise(args: argparse.Namespace) -> int:
     from ..core.continuation import revise_project
 
-    revise_project(args.project, args.instruction, provider=args.llm,
-                   options={"quality": args.quality, "critic_iterations": args.critic_iterations,
-                            **({"no_render": True} if args.no_render else {})})
+    revise_project(
+        args.project,
+        args.instruction,
+        provider=args.llm,
+        options={
+            "quality": args.quality,
+            "critic_iterations": args.critic_iterations,
+            **({"no_render": True} if args.no_render else {}),
+        },
+    )
     return 0
 
 
@@ -137,12 +153,18 @@ def build_parser() -> argparse.ArgumentParser:
     sub = p.add_subparsers(dest="cmd", required=True)
 
     def common(sp: argparse.ArgumentParser, render: bool = True) -> None:
-        sp.add_argument("--llm", default="auto", choices=["auto", "scripted", "anthropic"],
-                        help="LLM provider (auto = anthropic if ANTHROPIC_API_KEY else offline scripted)")
+        sp.add_argument(
+            "--llm",
+            default="auto",
+            choices=["auto", "scripted", "anthropic"],
+            help="LLM provider (auto = anthropic if ANTHROPIC_API_KEY else offline scripted)",
+        )
         if render:
             sp.add_argument("--quality", default="final", choices=["ci", "preview", "draft", "final", "high"])
             sp.add_argument("--critic-iterations", type=int, default=3)
-            sp.add_argument("--no-render", action="store_true", help="build and review the scene, skip the final render")
+            sp.add_argument(
+                "--no-render", action="store_true", help="build and review the scene, skip the final render"
+            )
 
     f = sub.add_parser("film", help="prompt -> animated short (MP4 with sound) + editable .blend")
     f.add_argument("prompt")
@@ -164,7 +186,9 @@ def build_parser() -> argparse.ArgumentParser:
     common(d)
     d.set_defaults(fn=cmd_demo)
 
-    c = sub.add_parser("continue", help="continue a project after hand edits in Blender (edits are preserved)")
+    c = sub.add_parser(
+        "continue", help="continue a project after hand edits in Blender (edits are preserved)"
+    )
     c.add_argument("project")
     common(c)
     c.set_defaults(fn=cmd_continue)
@@ -191,7 +215,9 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--llm", default="auto", choices=["auto", "scripted", "anthropic"])
     g.set_defaults(fn=cmd_game)
 
-    st = sub.add_parser("study", help="learn style notes from LOCAL reference media you may use (CC-BY/CC0/own); no URLs")
+    st = sub.add_parser(
+        "study", help="learn style notes from LOCAL reference media you may use (CC-BY/CC0/own); no URLs"
+    )
     st.add_argument("sources", nargs="+")
     st.add_argument("--name", required=True)
     st.add_argument("--license", required=True, help='e.g. "CC-BY 4.0, Blender Foundation" or "own render"')

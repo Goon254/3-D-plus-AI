@@ -16,11 +16,16 @@ def test_design_and_level_are_reachable():
 
 
 def test_godot_batch_validation_errors():
-    errs = godot.validate_godot_batch({"ops": [
-        {"op": "create_node", "id": "Main", "type": "Node2D", "parent": None},
-        {"op": "create_node", "id": "Main", "type": "Node2D", "parent": "Main"},
-        {"op": "add_shape", "target": "Ghost", "shape": "rect", "size": [1, 1]},
-        {"op": "explode"}]})
+    errs = godot.validate_godot_batch(
+        {
+            "ops": [
+                {"op": "create_node", "id": "Main", "type": "Node2D", "parent": None},
+                {"op": "create_node", "id": "Main", "type": "Node2D", "parent": "Main"},
+                {"op": "add_shape", "target": "Ghost", "shape": "rect", "size": [1, 1]},
+                {"op": "explode"},
+            ]
+        }
+    )
     assert any("duplicate" in e for e in errs) and any("unknown id 'Ghost'" in e for e in errs)
     assert any("unsupported" in e for e in errs)
 

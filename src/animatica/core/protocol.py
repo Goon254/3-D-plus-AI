@@ -22,7 +22,9 @@ MAX_COORD = 10_000.0
 MAX_FRAME = 100_000
 
 Vec3 = tuple[float, float, float]
-Interp = Literal["CONSTANT", "LINEAR", "BEZIER", "EASE_IN", "EASE_OUT", "EASE_IN_OUT", "BACK", "ELASTIC", "BOUNCE"]
+Interp = Literal[
+    "CONSTANT", "LINEAR", "BEZIER", "EASE_IN", "EASE_OUT", "EASE_IN_OUT", "BACK", "ELASTIC", "BOUNCE"
+]
 
 
 class _Op(BaseModel):
@@ -56,7 +58,9 @@ class MaterialSpec(BaseModel):
     base_color: str = "#CCCCCC"
     metallic: float = Field(0.0, ge=0, le=1)
     roughness: float = Field(0.5, ge=0, le=1)
-    specular: float | None = Field(None, ge=0, le=1)  # Principled "Specular IOR Level" (0.5 = Blender default)
+    specular: float | None = Field(
+        None, ge=0, le=1
+    )  # Principled "Specular IOR Level" (0.5 = Blender default)
     emission: str | None = None
     emission_strength: float = Field(0.0, ge=0, le=1000)
     alpha: float = Field(1.0, ge=0, le=1)
@@ -145,7 +149,9 @@ class Parent(_Op):
 class AddModifier(_Op):
     op: Literal["add_modifier"]
     target: str
-    type: Literal["bevel", "subsurf", "array", "solidify", "displace", "mirror", "smooth", "wireframe", "decimate"]
+    type: Literal[
+        "bevel", "subsurf", "array", "solidify", "displace", "mirror", "smooth", "wireframe", "decimate"
+    ]
     name: str | None = None
     params: dict[str, Any] = Field(default_factory=dict)
 
@@ -356,9 +362,9 @@ class Query(_Op):
     ids: list[str] | None = None
     types: list[str] | None = None
     tag: str | None = None
-    fields: list[Literal["transform", "bbox", "material", "parent", "type", "shape_keys", "animation", "tags"]] = Field(
-        default_factory=lambda: ["type", "transform"]
-    )
+    fields: list[
+        Literal["transform", "bbox", "material", "parent", "type", "shape_keys", "animation", "tags"]
+    ] = Field(default_factory=lambda: ["type", "transform"])
     limit: int = Field(200, ge=1, le=10_000)
 
 
@@ -389,10 +395,34 @@ class SetProperty(_Op):
 
 
 OP_CLASSES: tuple[type[_Op], ...] = (
-    CreatePrimitive, CreateMesh, CreateEmpty, Delete, Transform, Parent, AddModifier, SetMaterial,
-    AddLight, AddCamera, SetCameraActive, AddConstraint, InsertKeyframes, ClearAnimation, SetFrameRange, CreateArmature,
-    BindMeshToArmature, AddShapeKeys, ImportAsset, AddSoundStrip, SetWorld, SetRender, RenderPreview,
-    RenderFinal, Save, Query, Inspect, SetProperty,
+    CreatePrimitive,
+    CreateMesh,
+    CreateEmpty,
+    Delete,
+    Transform,
+    Parent,
+    AddModifier,
+    SetMaterial,
+    AddLight,
+    AddCamera,
+    SetCameraActive,
+    AddConstraint,
+    InsertKeyframes,
+    ClearAnimation,
+    SetFrameRange,
+    CreateArmature,
+    BindMeshToArmature,
+    AddShapeKeys,
+    ImportAsset,
+    AddSoundStrip,
+    SetWorld,
+    SetRender,
+    RenderPreview,
+    RenderFinal,
+    Save,
+    Query,
+    Inspect,
+    SetProperty,
 )
 Operation = Annotated[Union[OP_CLASSES], Field(discriminator="op")]  # type: ignore[valid-type]
 OP_NAMES = sorted(c.model_fields["op"].annotation.__args__[0] for c in OP_CLASSES)  # type: ignore[union-attr]

@@ -26,7 +26,11 @@ class AnimOps:
             return o, "hide_render", False, bool
         if prop.startswith("shape_key:"):
             key = prop.split(":", 1)[1]
-            if not o.data or not getattr(o.data, "shape_keys", None) or key not in o.data.shape_keys.key_blocks:
+            if (
+                not o.data
+                or not getattr(o.data, "shape_keys", None)
+                or key not in o.data.shape_keys.key_blocks
+            ):
                 raise OpError(f"{o.name!r} has no shape key {key!r}")
             return o.data.shape_keys, f'key_blocks["{key}"].value', False, None
         if prop == "light.energy":
@@ -39,14 +43,22 @@ class AnimOps:
             mat = o.active_material
             if mat is None:
                 raise OpError(f"{o.name!r} has no material")
-            return mat.node_tree, 'nodes["Principled BSDF"].inputs["Emission Strength"].default_value', False, None
+            return (
+                mat.node_tree,
+                'nodes["Principled BSDF"].inputs["Emission Strength"].default_value',
+                False,
+                None,
+            )
         raise OpError(f"unsupported property {prop!r}")
 
-
-    EASING = {"EASE_IN": ("BEZIER", "EASE_IN"), "EASE_OUT": ("BEZIER", "EASE_OUT"),
-              "EASE_IN_OUT": ("BEZIER", "EASE_IN_OUT"), "BACK": ("BACK", "EASE_OUT"),
-              "ELASTIC": ("ELASTIC", "EASE_OUT"), "BOUNCE": ("BOUNCE", "EASE_OUT")}
-
+    EASING = {
+        "EASE_IN": ("BEZIER", "EASE_IN"),
+        "EASE_OUT": ("BEZIER", "EASE_OUT"),
+        "EASE_IN_OUT": ("BEZIER", "EASE_IN_OUT"),
+        "BACK": ("BACK", "EASE_OUT"),
+        "ELASTIC": ("ELASTIC", "EASE_OUT"),
+        "BOUNCE": ("BOUNCE", "EASE_OUT"),
+    }
 
     def op_insert_keyframes(self, op: dict, res: dict) -> None:
         o = self.obj(op["target"])
@@ -86,7 +98,6 @@ class AnimOps:
             fc.update()
         res["modified"].append(op["target"])
 
-
     @staticmethod
     def _ensure_fcurve(block, action, path: str, index: int):
         # Blender 4.4+ uses layered actions; keyframe_insert creates the slot/channelbag for us.
@@ -110,7 +121,6 @@ class AnimOps:
                 return f
         raise OpError(f"could not create fcurve for {path}")
 
-
     def op_clear_animation(self, op: dict, res: dict) -> None:
         for t in op["targets"]:
             o = self.obj(t)
@@ -123,13 +133,11 @@ class AnimOps:
                 o.data.animation_data_clear()
             res["modified"].append(t)
 
-
     def op_set_frame_range(self, op: dict, res: dict) -> None:
         s = self.scene
         s.frame_start, s.frame_end = op.get("start", 1), op["end"]
         s.render.fps = op.get("fps", 24)
         s.frame_set(s.frame_start)
-
 
     def op_add_shape_keys(self, op: dict, res: dict) -> None:
         o = self.obj(op["target"])
@@ -147,7 +155,6 @@ class AnimOps:
             for i, p in enumerate(positions):
                 kb.data[i].co = p
         res["modified"].append(op["target"])
-
 
     def op_add_sound_strip(self, op: dict, res: dict) -> None:
         s = self.scene

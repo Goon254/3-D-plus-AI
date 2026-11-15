@@ -31,7 +31,9 @@ import numpy as np
 SAMPLE_RATE = 22050
 CACHE = Path(os.environ.get("ANIMATICA_CACHE", Path.home() / ".cache" / "animatica"))
 REPO_ROOT = Path(__file__).resolve().parents[3]
-WORKER = Path(os.environ.get("ANIMATICA_TTS_WORKER", REPO_ROOT / "adapters" / "tts_worker" / "animatica_tts_worker.py"))
+WORKER = Path(
+    os.environ.get("ANIMATICA_TTS_WORKER", REPO_ROOT / "adapters" / "tts_worker" / "animatica_tts_worker.py")
+)
 PIPER_VOICES = ("en-us-kathleen-low", "en-us-libritts-high")  # CC0 / CC BY 4.0 datasets
 
 
@@ -70,8 +72,15 @@ def _worker_python() -> str:
 def _has_module(mod: str) -> bool:
     # probe in a subprocess: never import GPL engines into this process
     try:
-        r = subprocess.run([_worker_python(), "-c", f"import importlib.util,sys; sys.exit(0 if importlib.util.find_spec({mod!r}) else 1)"],
-                           capture_output=True, timeout=60)
+        r = subprocess.run(
+            [
+                _worker_python(),
+                "-c",
+                f"import importlib.util,sys; sys.exit(0 if importlib.util.find_spec({mod!r}) else 1)",
+            ],
+            capture_output=True,
+            timeout=60,
+        )
         return r.returncode == 0
     except (OSError, subprocess.TimeoutExpired):
         return False
@@ -79,7 +88,11 @@ def _has_module(mod: str) -> bool:
 
 def available_engines() -> list[str]:
     engines = []
-    if (kokoro_dir() / "kokoro-v1.0.onnx").exists() and (kokoro_dir() / "voices-v1.0.bin").exists() and _has_module("kokoro_onnx"):
+    if (
+        (kokoro_dir() / "kokoro-v1.0.onnx").exists()
+        and (kokoro_dir() / "voices-v1.0.bin").exists()
+        and _has_module("kokoro_onnx")
+    ):
         engines.append("kokoro")
     if any(find_piper_model(v) for v in PIPER_VOICES) and _has_module("piper"):
         engines.append("piper")
@@ -90,8 +103,13 @@ def available_engines() -> list[str]:
 
 
 def _worker(req: dict) -> dict:
-    out = subprocess.run([_worker_python(), "-I", str(WORKER)], input=json.dumps(req), text=True, capture_output=True,
-                         timeout=600)
+    out = subprocess.run(
+        [_worker_python(), "-I", str(WORKER)],
+        input=json.dumps(req),
+        text=True,
+        capture_output=True,
+        timeout=600,
+    )
     try:
         res = json.loads(out.stdout)
     except json.JSONDecodeError:
@@ -140,17 +158,36 @@ def resample(a: np.ndarray, sr_from: int, sr_to: int) -> np.ndarray:
 
 
 def _kokoro(text: str, out: Path, voice: VoiceSpec) -> None:
-    _worker({"engine": "kokoro", "text": text, "voice": voice.voice, "speed": voice.rate, "out": str(out),
-             "model_dir": str(kokoro_dir())})
+    _worker(
+        {
+            "engine": "kokoro",
+            "text": text,
+            "voice": voice.voice,
+            "speed": voice.rate,
+            "out": str(out),
+            "model_dir": str(kokoro_dir()),
+        }
+    )
 
 
 def _piper(text: str, out: Path, voice: VoiceSpec) -> None:
-    model = find_piper_model(voice.piper_model) or next((m for m in map(find_piper_model, PIPER_VOICES) if m), None)
+    model = find_piper_model(voice.piper_model) or next(
+        (m for m in map(find_piper_model, PIPER_VOICES) if m), None
+    )
     if model is None:
         raise RuntimeError("no piper voice model found; run scripts/setup_assets.sh")
     cfg = json.loads(Path(str(model) + ".json").read_text())
     speaker = voice.speaker if int(cfg.get("num_speakers", 1)) > 1 else None
-    _worker({"engine": "piper", "text": text, "voice": str(model), "speaker": speaker, "speed": voice.rate, "out": str(out)})
+    _worker(
+        {
+            "engine": "piper",
+            "text": text,
+            "voice": str(model),
+            "speaker": speaker,
+            "speed": voice.rate,
+            "out": str(out),
+        }
+    )
 
 
 def _espeak(text: str, out: Path, voice: VoiceSpec) -> None:
@@ -187,10 +224,14 @@ def _synth(text: str, out: Path, voice: VoiceSpec) -> None:
         src = sum(np.sin(k * phase) / k for k in range(1, 12))
         vowel = "aeiou".find(next((c for c in syl if c in "aeiou"), "a"))
         formants = [(730, 1090), (530, 1840), (270, 2290), (570, 840), (300, 870)][max(vowel, 0)]
-        sig = src * (1 + 0.6 * np.sin(2 * np.pi * formants[0] / 8 * t)) + 0.3 * np.sin(2 * np.pi * formants[1] * t)
+        sig = src * (1 + 0.6 * np.sin(2 * np.pi * formants[0] / 8 * t)) + 0.3 * np.sin(
+            2 * np.pi * formants[1] * t
+        )
         env = np.minimum(1, t / 0.02) * np.minimum(1, (dur - t) / 0.04)
         chunks.append((sig * env).astype(np.float32))
-    audio = np.concatenate([np.zeros(int(sr * 0.05), np.float32), *chunks, np.zeros(int(sr * 0.1), np.float32)])
+    audio = np.concatenate(
+        [np.zeros(int(sr * 0.05), np.float32), *chunks, np.zeros(int(sr * 0.1), np.float32)]
+    )
     audio = audio / (np.abs(audio).max() + 1e-6) * 0.6
     write_wav(out, audio, sr)
 

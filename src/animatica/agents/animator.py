@@ -47,7 +47,11 @@ def ease(kind: str, u: float) -> float:
         return 1 + c3 * (u - 1) ** 3 + c1 * (u - 1) ** 2
     if kind == "hold":
         return 0.0 if u < 1 else 1.0
-    return 3 * u * u - 2 * u * u * u if kind == "smooth" else (4 * u**3 if u < 0.5 else 1 - (-2 * u + 2) ** 3 / 2)
+    return (
+        3 * u * u - 2 * u * u * u
+        if kind == "smooth"
+        else (4 * u**3 if u < 0.5 else 1 - (-2 * u + 2) ** 3 / 2)
+    )
 
 
 @dataclass
@@ -126,9 +130,18 @@ def default_performance(plan: dict[str, Any]) -> dict[str, Any]:
     for s in plan["shots"]:
         b = s["beat"]
         out[s["id"]] = {
-            "energy": {"enter": 0.6, "discover": 0.8, "speak": 0.5, "react": 0.9, "celebrate": 1.0, "settle": 0.3}.get(b, 0.5),
-            "speed": 1.0, "head_tilt": 12 if b in ("speak", "settle") else 0,
-            "reach": b == "speak", "bounce": b in ("react", "celebrate") or (b == "speak"),
+            "energy": {
+                "enter": 0.6,
+                "discover": 0.8,
+                "speak": 0.5,
+                "react": 0.9,
+                "celebrate": 1.0,
+                "settle": 0.3,
+            }.get(b, 0.5),
+            "speed": 1.0,
+            "head_tilt": 12 if b in ("speak", "settle") else 0,
+            "reach": b == "speak",
+            "bounce": b in ("react", "celebrate") or (b == "speak"),
             "look_around": b == "enter",
         }
     return {"shots": out}
@@ -168,11 +181,19 @@ class Animator(Agent):
             if shot.beat == "enter":
                 end_x = stand_x - 1.5
                 move_end = t0 + min(dur - 0.5, dur * 0.85 / speed)
-                rig.root_x.key(t0 + 0.2, x, "linear").key(move_end, end_x + 0.08, "inout").key(move_end + 0.35, end_x, "out")
-                rig.lean.key(t0 + 0.2, 0).key(t0 + 0.9, 7 * energy + 3).key(move_end - 0.4, 5).key(move_end + 0.1, -5 * energy, "out").key(move_end + 0.6, 0)
+                rig.root_x.key(t0 + 0.2, x, "linear").key(move_end, end_x + 0.08, "inout").key(
+                    move_end + 0.35, end_x, "out"
+                )
+                rig.lean.key(t0 + 0.2, 0).key(t0 + 0.9, 7 * energy + 3).key(move_end - 0.4, 5).key(
+                    move_end + 0.1, -5 * energy, "out"
+                ).key(move_end + 0.6, 0)
                 if p.get("look_around", True):
-                    rig.head_turn.key(t0 + 1.4, 0).key(t0 + 2.0, -28, "back").key(t0 + 3.0, -28, "hold").key(t0 + 3.5, 18, "back").key(move_end, 18)
-                    rig.head_turn.key(t1, -30, "inout")  # ends looking away towards camera: sets up the "notice"
+                    rig.head_turn.key(t0 + 1.4, 0).key(t0 + 2.0, -28, "back").key(t0 + 3.0, -28, "hold").key(
+                        t0 + 3.5, 18, "back"
+                    ).key(move_end, 18)
+                    rig.head_turn.key(
+                        t1, -30, "inout"
+                    )  # ends looking away towards camera: sets up the "notice"
                 rig.blinks += [t0 + 1.2, t0 + 3.8]
                 x = end_x
             elif shot.beat in ("discover", "approach"):
@@ -181,12 +202,16 @@ class Animator(Agent):
                 rig.head_turn.key(notice, -30, "hold").key(notice + 0.35, 0, "back")
                 rig.head_nod.key(notice, 0).key(notice + 0.3, 8, "back")
                 rig.eye_size.key(notice, 1.0).key(notice + 0.25, 1.35, "back").key(notice + 1.6, 1.15)
-                rig.dip.key(notice + 0.4, 0).key(notice + 0.8, -0.05 * energy - 0.02, "out").key(notice + 1.3, 0.0)
+                rig.dip.key(notice + 0.4, 0).key(notice + 0.8, -0.05 * energy - 0.02, "out").key(
+                    notice + 1.3, 0.0
+                )
                 rig.lean.key(notice + 0.5, 0).key(notice + 1.0, -9 * energy, "out")  # anticipation lean back
                 move_start = notice + 1.15
                 move_end = min(t1 - 0.9, move_start + 2.2 / speed)
                 rig.root_x.key(move_start, x, "hold").key(move_end, stand_x, "inout")
-                rig.lean.key(move_start + 0.25, 6, "out").key(move_end - 0.2, 3).key(move_end + 0.4, 13 * energy + 4, "back")
+                rig.lean.key(move_start + 0.25, 6, "out").key(move_end - 0.2, 3).key(
+                    move_end + 0.4, 13 * energy + 4, "back"
+                )
                 rig.head_nod.key(move_end, 6).key(move_end + 0.5, 16, "inout")
                 rig.blinks += [notice + 1.9]
                 x = stand_x
@@ -204,14 +229,22 @@ class Animator(Agent):
                     if p.get("reach"):
                         reach_t = ts + dur_line + 0.3
                         # the camera-side arm (R: the hero faces +X, cameras sit on -Y) does the acting
-                        rig.arm_R.key(ts + 0.2, 0).key(reach_t, -38, "inout").key(min(t1 - 0.6, reach_t + 1.5), -50).key(t1, -20)
+                        rig.arm_R.key(ts + 0.2, 0).key(reach_t, -38, "inout").key(
+                            min(t1 - 0.6, reach_t + 1.5), -50
+                        ).key(t1, -20)
                         # gentle reach: elbow folds first (anticipation), then the forearm extends toward the prop
-                        rig.elbow_R.key(ts + 0.2, -12).key(reach_t - 0.3, -55, "inout").key(reach_t + 0.5, -20, "out").key(t1, -15)
+                        rig.elbow_R.key(ts + 0.2, -12).key(reach_t - 0.3, -55, "inout").key(
+                            reach_t + 0.5, -20, "out"
+                        ).key(t1, -15)
                     if p.get("bounce"):
                         hop_t = ts + dur_line + 0.15
                         if hop_t + 0.6 < t1:
-                            rig.dip.key(hop_t, 0).key(hop_t + 0.12, -0.04, "out").key(hop_t + 0.3, 0.03, "out").key(hop_t + 0.55, 0, "inout")
-                            rig.squash.key(hop_t, 1.0).key(hop_t + 0.12, 0.93).key(hop_t + 0.3, 1.05).key(hop_t + 0.55, 1.0)
+                            rig.dip.key(hop_t, 0).key(hop_t + 0.12, -0.04, "out").key(
+                                hop_t + 0.3, 0.03, "out"
+                            ).key(hop_t + 0.55, 0, "inout")
+                            rig.squash.key(hop_t, 1.0).key(hop_t + 0.12, 0.93).key(hop_t + 0.3, 1.05).key(
+                                hop_t + 0.55, 1.0
+                            )
                 rig.blinks += [t0 + 0.4, t0 + dur - 1.3]
                 if tilt:
                     rig.head_tilt.key(t1, tilt * 0.6)
@@ -241,7 +274,9 @@ class Animator(Agent):
             elif shot.beat == "idle":
                 # alone: slow look around, a sigh (dip + head drop + droopy eyes), blinks; no travel
                 rig.root_x.key(t0, x, "hold")
-                rig.head_turn.key(t0 + 0.6, 0).key(t0 + 1.6, -35, "inout").key(t0 + 2.4, -35, "hold").key(t0 + 3.3, 25, "inout")
+                rig.head_turn.key(t0 + 0.6, 0).key(t0 + 1.6, -35, "inout").key(t0 + 2.4, -35, "hold").key(
+                    t0 + 3.3, 25, "inout"
+                )
                 sigh = t0 + dur * 0.62
                 rig.dip.key(sigh - 0.3, 0).key(sigh + 0.4, -0.05, "inout").key(sigh + 1.4, -0.02, "inout")
                 rig.head_nod.key(sigh - 0.2, 0).key(sigh + 0.5, 18, "inout")
@@ -253,7 +288,9 @@ class Animator(Agent):
                 # anticipation, turn back the way it came, a last look over the shoulder, roll away
                 rig.lean.key(t0 + 0.3, 0).key(t0 + 0.6, -6, "out").key(t0 + 1.0, 0)
                 rig.root_yaw.key(t0 + 0.5, 90).key(t0 + 1.5, 270, "back")
-                rig.head_turn.key(t0 + 1.6, 0).key(t0 + 2.3, -150, "inout").key(t0 + 3.0, -150, "hold").key(t0 + 3.5, 0, "inout")
+                rig.head_turn.key(t0 + 1.6, 0).key(t0 + 2.3, -150, "inout").key(t0 + 3.0, -150, "hold").key(
+                    t0 + 3.5, 0, "inout"
+                )
                 rig.root_x.key(t0 + 3.4, x, "hold").key(t1, x - 3.5, "in")
                 rig.lean.key(t0 + 3.6, 8, "out")
                 x = x - 3.5
@@ -263,7 +300,13 @@ class Animator(Agent):
 
     def run(self, ctx: Context) -> dict[str, Any]:
         plan = ctx.plan
-        perf = self.ask(ctx, {"plan": plan.model_dump(mode="json"), "knowledge": lookup("anticipation overshoot follow-through secondary motion dialogue acting")})
+        perf = self.ask(
+            ctx,
+            {
+                "plan": plan.model_dump(mode="json"),
+                "knowledge": lookup("anticipation overshoot follow-through secondary motion dialogue acting"),
+            },
+        )
         perf_shots = perf.get("shots", {})
         for sid, override in ctx.state.tuning.get("performance", {}).items():  # artist revisions win
             perf_shots.setdefault(sid, {}).update(override)
@@ -294,10 +337,12 @@ class Animator(Agent):
             return round(v, n)
 
         breathe = lambda t: 0.006 * math.sin(2 * math.pi * t / 2.6)  # noqa: E731
+
         def bob(f: int, t: float) -> float:
             amp = 0.012 * min(1.0, at(f, speed) / 1.2)
             wave = math.sin(2 * math.pi * 5.0 * t)
             return amp * (wave if robot else abs(wave) * 2.5)  # treads rattle; paws hop
+
         body_base_z = 0.55 if plan.hero.kind == "robot" else 0.33
         body_half = 0.25 if plan.hero.kind == "robot" else 0.306  # squash is anchored at the contact point
         robot = plan.hero.kind == "robot"
@@ -309,41 +354,135 @@ class Animator(Agent):
 
         ops: list[dict[str, Any]] = [
             {"op": "set_frame_range", "start": 1, "end": end_f, "fps": fps},
-            {"op": "insert_keyframes", "target": "hero_root", "property": "location",
-             "keys": sample(lambda f, t: [r(rig.root_x(t)), 0.0, r(rig.root_hop(t) + floor_offset)])},
-            {"op": "insert_keyframes", "target": "hero_root", "property": "rotation",
-             "keys": sample(lambda f, t: [0.0, 0.0, r(rig.root_yaw(t), 2)])},
-            {"op": "insert_keyframes", "target": "hero_body", "property": "location",
-             "keys": sample(lambda f, t: [0.0, 0.0, r(body_base_z + dip_scale * rig.dip(t) - body_half * (1 - sq(t))
-                                                    + breathe(t) + bob(f, t))])},
-            {"op": "insert_keyframes", "target": "hero_body", "property": "rotation",
-             "keys": sample(lambda f, t: [r(rig.lean(t) + 2.5 * math.sin(2 * math.pi * 2.5 * t) * min(1.0, at(f, speed) / 1.2), 2),
-                                          r(1.2 * math.sin(2 * math.pi * t / 3.1), 2), 0.0])},
-            {"op": "insert_keyframes", "target": "hero_body", "property": "scale",
-             "keys": sample(lambda f, t: [r(1 + (1 - sq(t)) * 0.5), r(1 + (1 - sq(t)) * 0.5), r(sq(t) + breathe(t))])},
-            {"op": "insert_keyframes", "target": "hero_head_pivot", "property": "rotation",
-             "keys": sample(lambda f, t: [r(rig.head_nod(t) + 1.5 * math.sin(2 * math.pi * t / 2.6 + 0.6), 2),
-                                          r(rig.head_tilt(t), 2), r(rig.head_turn(t), 2)])},
-            {"op": "insert_keyframes", "target": "hero_antenna_pivot", "property": "rotation",
-             "keys": sample(lambda f, t: [r(math.degrees(at(f, antenna)) * 0.9 + 3 * math.sin(2 * math.pi * t / 1.7), 2),
-                                          r(2 * math.sin(2 * math.pi * t / 2.3), 2), 0.0])},
+            {
+                "op": "insert_keyframes",
+                "target": "hero_root",
+                "property": "location",
+                "keys": sample(lambda f, t: [r(rig.root_x(t)), 0.0, r(rig.root_hop(t) + floor_offset)]),
+            },
+            {
+                "op": "insert_keyframes",
+                "target": "hero_root",
+                "property": "rotation",
+                "keys": sample(lambda f, t: [0.0, 0.0, r(rig.root_yaw(t), 2)]),
+            },
+            {
+                "op": "insert_keyframes",
+                "target": "hero_body",
+                "property": "location",
+                "keys": sample(
+                    lambda f, t: [
+                        0.0,
+                        0.0,
+                        r(
+                            body_base_z
+                            + dip_scale * rig.dip(t)
+                            - body_half * (1 - sq(t))
+                            + breathe(t)
+                            + bob(f, t)
+                        ),
+                    ]
+                ),
+            },
+            {
+                "op": "insert_keyframes",
+                "target": "hero_body",
+                "property": "rotation",
+                "keys": sample(
+                    lambda f, t: [
+                        r(
+                            rig.lean(t)
+                            + 2.5 * math.sin(2 * math.pi * 2.5 * t) * min(1.0, at(f, speed) / 1.2),
+                            2,
+                        ),
+                        r(1.2 * math.sin(2 * math.pi * t / 3.1), 2),
+                        0.0,
+                    ]
+                ),
+            },
+            {
+                "op": "insert_keyframes",
+                "target": "hero_body",
+                "property": "scale",
+                "keys": sample(
+                    lambda f, t: [r(1 + (1 - sq(t)) * 0.5), r(1 + (1 - sq(t)) * 0.5), r(sq(t) + breathe(t))]
+                ),
+            },
+            {
+                "op": "insert_keyframes",
+                "target": "hero_head_pivot",
+                "property": "rotation",
+                "keys": sample(
+                    lambda f, t: [
+                        r(rig.head_nod(t) + 1.5 * math.sin(2 * math.pi * t / 2.6 + 0.6), 2),
+                        r(rig.head_tilt(t), 2),
+                        r(rig.head_turn(t), 2),
+                    ]
+                ),
+            },
+            {
+                "op": "insert_keyframes",
+                "target": "hero_antenna_pivot",
+                "property": "rotation",
+                "keys": sample(
+                    lambda f, t: [
+                        r(math.degrees(at(f, antenna)) * 0.9 + 3 * math.sin(2 * math.pi * t / 1.7), 2),
+                        r(2 * math.sin(2 * math.pi * t / 2.3), 2),
+                        0.0,
+                    ]
+                ),
+            },
         ]
         for side, curve in (("L", rig.arm_L), ("R", rig.arm_R)):
             sgn = 1 if side == "L" else -1
-            ops.append({"op": "insert_keyframes", "target": f"hero_arm_pivot_{side}", "property": "rotation",
-                        "keys": sample(lambda f, t, c=curve, s=sgn: [r(c(t) + math.degrees(at(f, arm_lag)) * 0.5
-                                                                         + 2 * math.sin(2 * math.pi * t / 2.6 + s), 2),
-                                                                       r(4 * s, 2), 0.0])})
-        if "hero_elbow_L" in ctx.engine.known_ids:  # jointed arms: elbow bend + overlapping lag behind the shoulder
+            ops.append(
+                {
+                    "op": "insert_keyframes",
+                    "target": f"hero_arm_pivot_{side}",
+                    "property": "rotation",
+                    "keys": sample(
+                        lambda f, t, c=curve, s=sgn: [
+                            r(
+                                c(t)
+                                + math.degrees(at(f, arm_lag)) * 0.5
+                                + 2 * math.sin(2 * math.pi * t / 2.6 + s),
+                                2,
+                            ),
+                            r(4 * s, 2),
+                            0.0,
+                        ]
+                    ),
+                }
+            )
+        if (
+            "hero_elbow_L" in ctx.engine.known_ids
+        ):  # jointed arms: elbow bend + overlapping lag behind the shoulder
             for side, curve in (("L", rig.elbow_L), ("R", rig.elbow_R)):
-                ops.append({"op": "insert_keyframes", "target": f"hero_elbow_{side}", "property": "rotation",
-                            "keys": sample(lambda f, t, c=curve: [r(c(t) + math.degrees(at(f, arm_lag)) * 0.8, 2), 0.0, 0.0])})
-        if robot and "hero_wheel_L0" in ctx.engine.known_ids:  # wheels roll by distance travelled (no skating)
+                ops.append(
+                    {
+                        "op": "insert_keyframes",
+                        "target": f"hero_elbow_{side}",
+                        "property": "rotation",
+                        "keys": sample(
+                            lambda f, t, c=curve: [r(c(t) + math.degrees(at(f, arm_lag)) * 0.8, 2), 0.0, 0.0]
+                        ),
+                    }
+                )
+        if (
+            robot and "hero_wheel_L0" in ctx.engine.known_ids
+        ):  # wheels roll by distance travelled (no skating)
             spin = wheel_spin_degrees(xs, 0.075 * plan.hero.scale)
             for side in ("L", "R"):
                 for j in range(3):
-                    ops.append({"op": "insert_keyframes", "target": f"hero_wheel_{side}{j}", "property": "rotation",
-                                "keys": sample(lambda f, t: [r(at(f, spin), 1), 0.0, 0.0])})
+                    ops.append(
+                        {
+                            "op": "insert_keyframes",
+                            "target": f"hero_wheel_{side}{j}",
+                            "property": "rotation",
+                            "keys": sample(lambda f, t: [r(at(f, spin), 1), 0.0, 0.0]),
+                        }
+                    )
+
         # eyes: blink = fast scale-Z dip (2 frames down, 3 up), multiplied with eye size and openness
         def eye_z(t: float) -> float:
             b = 1.0
@@ -353,33 +492,97 @@ class Animator(Agent):
                     b = min(b, abs(2 * u - 1) ** 1.5 * 0.95 + 0.05)
             return rig.eye_size(t) * rig.eye_open(t) * b
 
-        eye_frames = sorted(set(frames) | {f for bt in rig.blinks for f in
-                                            range(int((bt - 0.12) * fps) + 1, int((bt + 0.2) * fps) + 2) if 1 <= f <= end_f})
+        eye_frames = sorted(
+            set(frames)
+            | {
+                f
+                for bt in rig.blinks
+                for f in range(int((bt - 0.12) * fps) + 1, int((bt + 0.2) * fps) + 2)
+                if 1 <= f <= end_f
+            }
+        )
         base = (1.0, 0.35, 1.25) if plan.hero.kind == "robot" else (1.0, 0.5, 1.3)
         for side in ("L", "R"):
-            ops.append({"op": "insert_keyframes", "target": f"hero_eye_{side}", "property": "scale",
-                        "keys": [[f, [r(base[0] * rig.eye_size((f - 1) / fps)), base[1], r(base[2] * eye_z((f - 1) / fps))], "BEZIER"]
-                                 for f in eye_frames]})
+            ops.append(
+                {
+                    "op": "insert_keyframes",
+                    "target": f"hero_eye_{side}",
+                    "property": "scale",
+                    "keys": [
+                        [
+                            f,
+                            [
+                                r(base[0] * rig.eye_size((f - 1) / fps)),
+                                base[1],
+                                r(base[2] * eye_z((f - 1) / fps)),
+                            ],
+                            "BEZIER",
+                        ]
+                        for f in eye_frames
+                    ],
+                }
+            )
         # flower / prop sway (secondary motion of the world)
         if plan.prop:
-            ops.append({"op": "insert_keyframes", "target": "prop_pivot", "property": "rotation",
-                        "keys": [[f, [r(3.5 * math.sin(2 * math.pi * (f / fps) / 3.3), 2), r(5 * math.sin(2 * math.pi * (f / fps) / 4.1 + 1), 2), 0.0],
-                                  "BEZIER"] for f in range(1, end_f + 1, 6)]})
+            ops.append(
+                {
+                    "op": "insert_keyframes",
+                    "target": "prop_pivot",
+                    "property": "rotation",
+                    "keys": [
+                        [
+                            f,
+                            [
+                                r(3.5 * math.sin(2 * math.pi * (f / fps) / 3.3), 2),
+                                r(5 * math.sin(2 * math.pi * (f / fps) / 4.1 + 1), 2),
+                                0.0,
+                            ],
+                            "BEZIER",
+                        ]
+                        for f in range(1, end_f + 1, 6)
+                    ],
+                }
+            )
         # "until a flower blooms": in the idle arc the prop grows in at the start of the discover beat
-        grow = plan.prop and plan.shots[0].beat == "idle" and any(
-            w in plan.prompt.lower() for w in ("bloom", "grow", "sprout", "appear", "lands", "falls"))
+        grow = (
+            plan.prop
+            and plan.shots[0].beat == "idle"
+            and any(w in plan.prompt.lower() for w in ("bloom", "grow", "sprout", "appear", "lands", "falls"))
+        )
         if grow and len(plan.shots) > 1:
             g0 = plan.shot_frames()[plan.shots[1].id][0]
-            ops.append({"op": "insert_keyframes", "target": "prop", "property": "scale",
-                        "keys": [[1, [0.01, 0.01, 0.01], "CONSTANT"], [g0, [0.01, 0.01, 0.01], "BACK"],
-                                 [g0 + int(0.8 * fps), [1.0, 1.0, 1.0], "BEZIER"]]})
+            ops.append(
+                {
+                    "op": "insert_keyframes",
+                    "target": "prop",
+                    "property": "scale",
+                    "keys": [
+                        [1, [0.01, 0.01, 0.01], "CONSTANT"],
+                        [g0, [0.01, 0.01, 0.01], "BACK"],
+                        [g0 + int(0.8 * fps), [1.0, 1.0, 1.0], "BEZIER"],
+                    ],
+                }
+            )
         # lip sync
         mouth_keys = ctx.state.artifacts.get("mouth_keys") or {}
         for key, keys in mouth_keys.items():
             if keys:
-                ops.append({"op": "insert_keyframes", "target": "hero_mouth", "property": f"shape_key:{key}", "keys": keys})
+                ops.append(
+                    {
+                        "op": "insert_keyframes",
+                        "target": "hero_mouth",
+                        "property": f"shape_key:{key}",
+                        "keys": keys,
+                    }
+                )
         n_keys = sum(len(o.get("keys", [])) for o in ops)
-        res = self.submit(ctx, self.batch(f"Animate {plan.hero.name}: {len(plan.shots)} shots, {n_keys} keys "
-                                          f"(anticipation, overshoot, follow-through, lip sync)", ops))
+        res = self.submit(
+            ctx,
+            self.batch(
+                f"Animate {plan.hero.name}: {len(plan.shots)} shots, {n_keys} keys "
+                f"(anticipation, overshoot, follow-through, lip sync)",
+                ops,
+            ),
+        )
         ctx.log.event("decision", self.role, f"performance per shot: {perf_shots}", performance=perf_shots)
         return {"keys": n_keys, "batch": res.batch_id, "root_x": rig.root_x, **notes}

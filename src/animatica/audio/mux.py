@@ -14,14 +14,33 @@ def ffmpeg_bin() -> str:
     return exe
 
 
-def encode(frames_dir: str | Path, fps: int, audio: str | Path | None, out: str | Path,
-           crf: int = 22, pattern: str = "frame_%04d.png", start_number: int = 1, preset: str = "medium",
-           subtitles: str | Path | None = None, loudnorm: bool = True) -> Path:
+def encode(
+    frames_dir: str | Path,
+    fps: int,
+    audio: str | Path | None,
+    out: str | Path,
+    crf: int = 22,
+    pattern: str = "frame_%04d.png",
+    start_number: int = 1,
+    preset: str = "medium",
+    subtitles: str | Path | None = None,
+    loudnorm: bool = True,
+) -> Path:
     """PNG sequence + audio (+ optional soft subtitles) -> MP4. Audio is loudness-normalised (EBU R128, -16 LUFS)."""
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    cmd = [ffmpeg_bin(), "-y", "-loglevel", "error", "-framerate", str(fps), "-start_number", str(start_number),
-           "-i", str(Path(frames_dir) / pattern)]
+    cmd = [
+        ffmpeg_bin(),
+        "-y",
+        "-loglevel",
+        "error",
+        "-framerate",
+        str(fps),
+        "-start_number",
+        str(start_number),
+        "-i",
+        str(Path(frames_dir) / pattern),
+    ]
     if audio:
         cmd += ["-i", str(audio)]
     if subtitles:
@@ -31,7 +50,18 @@ def encode(frames_dir: str | Path, fps: int, audio: str | Path | None, out: str 
         cmd += ["-map", "1:a"]
     if subtitles:
         cmd += ["-map", f"{2 if audio else 1}:s", "-c:s", "mov_text", "-metadata:s:s:0", "language=eng"]
-    cmd += ["-c:v", "libx264", "-preset", preset, "-crf", str(crf), "-pix_fmt", "yuv420p", "-movflags", "+faststart"]
+    cmd += [
+        "-c:v",
+        "libx264",
+        "-preset",
+        preset,
+        "-crf",
+        str(crf),
+        "-pix_fmt",
+        "yuv420p",
+        "-movflags",
+        "+faststart",
+    ]
     if audio:
         if loudnorm:
             cmd += ["-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", "48000"]
@@ -45,8 +75,21 @@ def probe(path: str | Path) -> dict:
     exe = shutil.which("ffprobe")
     if not exe:
         return {}
-    out = subprocess.run([exe, "-v", "error", "-show_entries", "stream=codec_type,codec_name,width,height:format=duration",
-                          "-of", "json", str(path)], capture_output=True, text=True, check=True)
+    out = subprocess.run(
+        [
+            exe,
+            "-v",
+            "error",
+            "-show_entries",
+            "stream=codec_type,codec_name,width,height:format=duration",
+            "-of",
+            "json",
+            str(path),
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
     import json
 
     return json.loads(out.stdout)
@@ -58,9 +101,23 @@ def contact_sheet(video: str | Path, out: str | Path, cols: int = 4, rows: int =
     dur = float(info.get("format", {}).get("duration", 10))
     n = cols * rows
     fps = n / max(dur, 0.1)
-    subprocess.run([ffmpeg_bin(), "-y", "-loglevel", "error", "-i", str(video), "-vf",
-                    f"fps={fps:.4f},scale={width}:-1,tile={cols}x{rows}", "-frames:v", "1", str(out)],
-                   check=True, timeout=600)
+    subprocess.run(
+        [
+            ffmpeg_bin(),
+            "-y",
+            "-loglevel",
+            "error",
+            "-i",
+            str(video),
+            "-vf",
+            f"fps={fps:.4f},scale={width}:-1,tile={cols}x{rows}",
+            "-frames:v",
+            "1",
+            str(out),
+        ],
+        check=True,
+        timeout=600,
+    )
     return Path(out)
 
 
@@ -97,7 +154,9 @@ def _font(size: int):
         return ImageFont.load_default()
 
 
-def make_title_png(title: str, subtitle: str, size: tuple[int, int], out: str | Path, accent: str = "#FFD9A8") -> Path:
+def make_title_png(
+    title: str, subtitle: str, size: tuple[int, int], out: str | Path, accent: str = "#FFD9A8"
+) -> Path:
     """Transparent title overlay (lower-left third, soft shadow) in the film's palette."""
     from PIL import Image, ImageDraw, ImageFilter
 
@@ -125,14 +184,59 @@ def make_title_png(title: str, subtitle: str, size: tuple[int, int], out: str | 
     return Path(out)
 
 
-def overlay_title(video: str | Path, title_png: str | Path, out: str | Path, start: float = 0.6, end: float = 4.4,
-                  crf: int = 22) -> Path:
+def overlay_title(
+    video: str | Path,
+    title_png: str | Path,
+    out: str | Path,
+    start: float = 0.6,
+    end: float = 4.4,
+    crf: int = 22,
+) -> Path:
     """Fade the title overlay in/out over the opening shot (timing, audio and captions unchanged)."""
     fade = 0.7
-    flt = (f"[1:v]format=rgba,fade=in:st={start}:d={fade}:alpha=1,fade=out:st={end - fade}:d={fade}:alpha=1[t];"
-           f"[0:v][t]overlay=0:0:eof_action=pass[v]")
-    subprocess.run([ffmpeg_bin(), "-y", "-loglevel", "error", "-i", str(video), "-loop", "1", "-t", str(end + 0.1),
-                    "-i", str(title_png), "-filter_complex", flt, "-map", "[v]", "-map", "0:a?", "-map", "0:s?",
-                    "-c:v", "libx264", "-crf", str(crf), "-preset", "medium", "-pix_fmt", "yuv420p",
-                    "-c:a", "copy", "-c:s", "copy", "-movflags", "+faststart", str(out)], check=True, timeout=1800)
+    flt = (
+        f"[1:v]format=rgba,fade=in:st={start}:d={fade}:alpha=1,fade=out:st={end - fade}:d={fade}:alpha=1[t];"
+        f"[0:v][t]overlay=0:0:eof_action=pass[v]"
+    )
+    subprocess.run(
+        [
+            ffmpeg_bin(),
+            "-y",
+            "-loglevel",
+            "error",
+            "-i",
+            str(video),
+            "-loop",
+            "1",
+            "-t",
+            str(end + 0.1),
+            "-i",
+            str(title_png),
+            "-filter_complex",
+            flt,
+            "-map",
+            "[v]",
+            "-map",
+            "0:a?",
+            "-map",
+            "0:s?",
+            "-c:v",
+            "libx264",
+            "-crf",
+            str(crf),
+            "-preset",
+            "medium",
+            "-pix_fmt",
+            "yuv420p",
+            "-c:a",
+            "copy",
+            "-c:s",
+            "copy",
+            "-movflags",
+            "+faststart",
+            str(out),
+        ],
+        check=True,
+        timeout=1800,
+    )
     return Path(out)

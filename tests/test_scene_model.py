@@ -4,12 +4,19 @@ from animatica.core.scene_model import SceneModel
 
 def model():
     m = SceneModel()
-    m.apply(validate_batch({"batch_id": "x", "ops": [
-        {"op": "create_primitive", "id": "box", "shape": "cube", "location": [1, 0, 0]},
-        {"op": "set_material", "targets": ["box"], "material": {"base_color": "#ff0000"}},
-        {"op": "create_empty", "id": "root"},
-        {"op": "parent", "child": "box", "parent": "root"},
-    ]}))
+    m.apply(
+        validate_batch(
+            {
+                "batch_id": "x",
+                "ops": [
+                    {"op": "create_primitive", "id": "box", "shape": "cube", "location": [1, 0, 0]},
+                    {"op": "set_material", "targets": ["box"], "material": {"base_color": "#ff0000"}},
+                    {"op": "create_empty", "id": "root"},
+                    {"op": "parent", "child": "box", "parent": "root"},
+                ],
+            }
+        )
+    )
     return m
 
 
@@ -22,9 +29,17 @@ def test_replay_tracks_prims():
 
 def test_diff_detects_artist_edits():
     m = model()
-    snap = {"box": {"type": "mesh", "location": [2, 0, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1],
-                    "material": {"base_color": "#0000FF"}, "parent": "root"},
-            "lamp": {"type": "light", "location": [0, 0, 3]}}
+    snap = {
+        "box": {
+            "type": "mesh",
+            "location": [2, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "material": {"base_color": "#0000FF"},
+            "parent": "root",
+        },
+        "lamp": {"type": "light", "location": [0, 0, 3]},
+    }
     changes = m.diff_snapshot(snap)
     assert changes["box"] == ["transform", "material"]
     assert changes["lamp"] == ["added"]
@@ -33,9 +48,15 @@ def test_diff_detects_artist_edits():
 
 def test_spec_to_ops_emits_only_deltas():
     m = model()
-    ops = m.spec_to_ops({"objects": {"box": {"location": [1, 0, 0], "scale": [2, 2, 2]},
-                                     "ball": {"create": {"shape": "uv_sphere"}, "location": [0, 0, 1]},
-                                     "root": {"delete": True}}})
+    ops = m.spec_to_ops(
+        {
+            "objects": {
+                "box": {"location": [1, 0, 0], "scale": [2, 2, 2]},
+                "ball": {"create": {"shape": "uv_sphere"}, "location": [0, 0, 1]},
+                "root": {"delete": True},
+            }
+        }
+    )
     kinds = [o["op"] for o in ops]
     assert kinds == ["transform", "create_primitive", "delete"]
     assert "location" not in ops[0]

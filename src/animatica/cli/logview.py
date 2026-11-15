@@ -48,26 +48,42 @@ def write_log_html(project: str | Path) -> Path:
     plan = state.get("plan") or {}
     arts = state.get("artifacts") or {}
     e = html.escape
-    parts = [f"<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
-             f"<title>{e(plan.get('title', 'Animatica'))} — production log</title><style>{CSS}</style></head><body><main>"]
+    parts = [
+        f"<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
+        f"<title>{e(plan.get('title', 'Animatica'))} — production log</title><style>{CSS}</style></head><body><main>"
+    ]
     parts.append(f"<h1>{e(plan.get('title', root.name))}</h1><p class='sub'>{e(state.get('prompt', ''))}</p>")
     vid = _rel(arts.get("final"), root)
     sheet = _rel(arts.get("contact_sheet"), root)
     parts.append("<div class='hero'>")
-    parts.append(f"<div>{f'<video controls src={chr(39)}{e(vid)}{chr(39)}></video>' if vid else '<div class=card>Not rendered yet.</div>'}</div>")
+    parts.append(
+        f"<div>{f'<video controls src={chr(39)}{e(vid)}{chr(39)}></video>' if vid else '<div class=card>Not rendered yet.</div>'}</div>"
+    )
     usage = arts.get("llm_usage", {})
-    rows = [("Provider", usage.get("provider", state.get("provider"))), ("LLM calls / tokens", f"{usage.get('calls', 0)} / {usage.get('tokens', 0)}"),
-            ("Shots", len(plan.get("shots", []))), ("Duration", f"{sum(s.get('duration', 0) for s in plan.get('shots', [])):.1f}s"),
-            ("Render", f"{arts.get('quality', '-')} in {arts.get('render_seconds', 0):.0f}s"),
-            ("Critic iterations", len(arts.get("critic_history", [])))]
-    parts.append("<div class='card'><table>" + "".join(f"<tr><th>{e(str(k))}</th><td>{e(str(v))}</td></tr>" for k, v in rows) + "</table></div></div>")
+    rows = [
+        ("Provider", usage.get("provider", state.get("provider"))),
+        ("LLM calls / tokens", f"{usage.get('calls', 0)} / {usage.get('tokens', 0)}"),
+        ("Shots", len(plan.get("shots", []))),
+        ("Duration", f"{sum(s.get('duration', 0) for s in plan.get('shots', [])):.1f}s"),
+        ("Render", f"{arts.get('quality', '-')} in {arts.get('render_seconds', 0):.0f}s"),
+        ("Critic iterations", len(arts.get("critic_history", []))),
+    ]
+    parts.append(
+        "<div class='card'><table>"
+        + "".join(f"<tr><th>{e(str(k))}</th><td>{e(str(v))}</td></tr>" for k, v in rows)
+        + "</table></div></div>"
+    )
     if sheet and (root / "log" / Path(sheet).name).exists():
         parts.append(f"<h2>Contact sheet</h2><img src='{e(sheet)}' alt='contact sheet'>")
     if plan.get("shots"):
-        parts.append("<h2>Shot list</h2><div class='card'><table><tr><th>Shot</th><th>Type</th><th>Beat</th><th>Camera</th><th>Duration</th><th>Description</th></tr>")
+        parts.append(
+            "<h2>Shot list</h2><div class='card'><table><tr><th>Shot</th><th>Type</th><th>Beat</th><th>Camera</th><th>Duration</th><th>Description</th></tr>"
+        )
         for s in plan["shots"]:
-            parts.append(f"<tr><td>{e(s['id'])}</td><td>{e(s['type'])}</td><td>{e(s['beat'])}</td><td>{e(s['camera_move'])}</td>"
-                         f"<td>{s['duration']:.1f}s</td><td>{e(s.get('description', ''))}</td></tr>")
+            parts.append(
+                f"<tr><td>{e(s['id'])}</td><td>{e(s['type'])}</td><td>{e(s['beat'])}</td><td>{e(s['camera_move'])}</td>"
+                f"<td>{s['duration']:.1f}s</td><td>{e(s.get('description', ''))}</td></tr>"
+            )
         parts.append("</table></div>")
     parts.append("<h2>Production log</h2><div class='card'>")
     for ev in events:
@@ -82,8 +98,10 @@ def write_log_html(project: str | Path) -> Path:
         details = {k: v for k, v in ev.items() if k not in ("t", "ts", "kind", "agent", "message", "preview")}
         if details:
             extra += f"<details><summary>details</summary><pre>{e(json.dumps(details, indent=1, default=str)[:6000])}</pre></details>"
-        parts.append(f"<div class='ev'><div class='t'>{ev.get('t', 0):.1f}s</div><div><div class='ag'>{e(ev.get('agent', ''))}</div>"
-                     f"<div class='k'>{e(ev.get('kind', ''))}</div></div><div>{msg}{extra}</div></div>")
+        parts.append(
+            f"<div class='ev'><div class='t'>{ev.get('t', 0):.1f}s</div><div><div class='ag'>{e(ev.get('agent', ''))}</div>"
+            f"<div class='k'>{e(ev.get('kind', ''))}</div></div><div>{msg}{extra}</div></div>"
+        )
     parts.append("</div></main></body></html>")
     out = root / "log" / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)

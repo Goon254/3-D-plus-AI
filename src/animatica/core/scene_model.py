@@ -29,8 +29,15 @@ class Prim:
     tags: list[str] = field(default_factory=list)
 
 
-_CREATE_TYPES = {"create_primitive": "mesh", "create_mesh": "mesh", "create_empty": "empty", "add_light": "light",
-                 "add_camera": "camera", "create_armature": "armature", "import_asset": "empty"}
+_CREATE_TYPES = {
+    "create_primitive": "mesh",
+    "create_mesh": "mesh",
+    "create_empty": "empty",
+    "add_light": "light",
+    "add_camera": "camera",
+    "create_armature": "armature",
+    "import_asset": "empty",
+}
 
 
 class SceneModel:
@@ -44,9 +51,14 @@ class SceneModel:
             kind = d["op"]
             if kind in _CREATE_TYPES:
                 self.prims[d["id"]] = Prim(
-                    id=d["id"], type=_CREATE_TYPES[kind], parent=d.get("parent"),
-                    translate=list(d.get("location", (0, 0, 0))), rotate=list(d.get("rotation", (0, 0, 0))),
-                    scale=list(d.get("scale", (1, 1, 1))), tags=list(d.get("tags", [])))
+                    id=d["id"],
+                    type=_CREATE_TYPES[kind],
+                    parent=d.get("parent"),
+                    translate=list(d.get("location", (0, 0, 0))),
+                    rotate=list(d.get("rotation", (0, 0, 0))),
+                    scale=list(d.get("scale", (1, 1, 1))),
+                    tags=list(d.get("tags", [])),
+                )
             elif kind == "delete":
                 for t in d["targets"]:
                     self.prims.pop(t, None)
@@ -155,7 +167,9 @@ class SceneModel:
                 if tr:
                     ops.append({"op": "transform", "target": oid, **tr})
             mat = want.get("material")
-            if mat and (p is None or not p.material or p.material.upper() != mat.get("base_color", "").upper()):
+            if mat and (
+                p is None or not p.material or p.material.upper() != mat.get("base_color", "").upper()
+            ):
                 ops.append({"op": "set_material", "targets": [oid], "material": mat})
         return ops
 
@@ -172,21 +186,31 @@ class SceneModel:
 
     def to_usda(self) -> str:
         """Minimal USDA text export (Xforms + display colour) — groundwork for OpenUSD interop."""
-        lines = ["#usda 1.0", '(defaultPrim = "World" upAxis = "Z" metersPerUnit = 1)', "", 'def Xform "World"', "{"]
+        lines = [
+            "#usda 1.0",
+            '(defaultPrim = "World" upAxis = "Z" metersPerUnit = 1)',
+            "",
+            'def Xform "World"',
+            "{",
+        ]
         children: dict[str | None, list[Prim]] = {}
         for p in self.prims.values():
             children.setdefault(p.parent if p.parent in self.prims else None, []).append(p)
 
         def emit(p: Prim, depth: int) -> None:
             ind = "    " * depth
-            usd_type = {"mesh": "Xform", "empty": "Xform", "light": "SphereLight", "camera": "Camera"}.get(p.type, "Xform")
+            usd_type = {"mesh": "Xform", "empty": "Xform", "light": "SphereLight", "camera": "Camera"}.get(
+                p.type, "Xform"
+            )
             name = p.id.replace(".", "_").replace("-", "_")
             lines.append(f'{ind}def {usd_type} "{name}"')
             lines.append(f"{ind}{{")
             lines.append(f"{ind}    double3 xformOp:translate = ({', '.join(f'{v:g}' for v in p.translate)})")
             lines.append(f"{ind}    float3 xformOp:rotateXYZ = ({', '.join(f'{v:g}' for v in p.rotate)})")
             lines.append(f"{ind}    float3 xformOp:scale = ({', '.join(f'{v:g}' for v in p.scale)})")
-            lines.append(f'{ind}    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]')
+            lines.append(
+                f'{ind}    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]'
+            )
             if p.material:
                 r, g, b = (int(p.material[i : i + 2], 16) / 255 for i in (1, 3, 5))
                 lines.append(f"{ind}    color3f[] primvars:displayColor = [({r:.3f}, {g:.3f}, {b:.3f})]")

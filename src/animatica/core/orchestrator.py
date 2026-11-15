@@ -45,16 +45,30 @@ class Context:
         if not self.state.locked:
             return batch
         kept, skipped = [], []
-        aspect_of = {"transform": "transform", "insert_keyframes": "transform", "set_material": "material",
-                     "delete": "deleted", "add_modifier": "transform", "parent": "parent", "clear_animation": "transform"}
+        aspect_of = {
+            "transform": "transform",
+            "insert_keyframes": "transform",
+            "set_material": "material",
+            "delete": "deleted",
+            "add_modifier": "transform",
+            "parent": "parent",
+            "clear_animation": "transform",
+        }
         for op in batch.get("ops", []):
             kind = op.get("op")
             targets = op.get("targets") or [op.get("target") or op.get("child")]
             aspect = aspect_of.get(kind)
-            if aspect and any(t in self.state.locked and (aspect in self.state.locked[t] or "all" in self.state.locked[t])
-                              for t in targets if t):
+            if aspect and any(
+                t in self.state.locked and (aspect in self.state.locked[t] or "all" in self.state.locked[t])
+                for t in targets
+                if t
+            ):
                 if kind in ("set_material",) and len(targets) > 1:
-                    free = [t for t in targets if t not in self.state.locked or "material" not in self.state.locked[t]]
+                    free = [
+                        t
+                        for t in targets
+                        if t not in self.state.locked or "material" not in self.state.locked[t]
+                    ]
                     if free:
                         kept.append({**op, "targets": free})
                 skipped.append(f"{kind}:{','.join(t for t in targets if t)}")
@@ -64,11 +78,23 @@ class Context:
                 continue
             kept.append(op)
         if skipped:
-            self.log.event("locked", batch.get("agent", "?"), f"kept artist edits; skipped {len(skipped)} ops: {skipped[:6]}")
+            self.log.event(
+                "locked",
+                batch.get("agent", "?"),
+                f"kept artist edits; skipped {len(skipped)} ops: {skipped[:6]}",
+            )
         return {**batch, "ops": kept}
 
 
-_CREATE_OPS = {"create_primitive", "create_mesh", "create_empty", "add_light", "add_camera", "create_armature", "import_asset"}
+_CREATE_OPS = {
+    "create_primitive",
+    "create_mesh",
+    "create_empty",
+    "add_light",
+    "add_camera",
+    "create_armature",
+    "import_asset",
+}
 
 
 @dataclass
@@ -111,11 +137,15 @@ class TaskGraph:
             while True:
                 ctx.budget.check(ctx.provider.usage.total_tokens)
                 t0 = time.time()
-                ctx.log.event("task", "orchestr.", f"start {name}" + (f" (retry {attempt})" if attempt else ""))
+                ctx.log.event(
+                    "task", "orchestr.", f"start {name}" + (f" (retry {attempt})" if attempt else "")
+                )
                 try:
                     ctx.results[name] = task.fn()
                     ctx.log.event("task", "orchestr.", f"done {name} in {time.time() - t0:.1f}s")
-                    ctx.state.history.append({"task": name, "ok": True, "seconds": round(time.time() - t0, 2)})
+                    ctx.state.history.append(
+                        {"task": name, "ok": True, "seconds": round(time.time() - t0, 2)}
+                    )
                     ctx.state.save()
                     break
                 except BudgetExceeded:
@@ -129,17 +159,40 @@ class TaskGraph:
         return ctx.results
 
 
-HERO_ANIMATED = ["hero_root", "hero_body", "hero_head_pivot", "hero_antenna_pivot", "hero_arm_pivot_L", "hero_arm_pivot_R",
-                 "hero_eye_L", "hero_eye_R", "hero_mouth", "prop_pivot", "prop", "hero_elbow_L", "hero_elbow_R"]
+HERO_ANIMATED = [
+    "hero_root",
+    "hero_body",
+    "hero_head_pivot",
+    "hero_antenna_pivot",
+    "hero_arm_pivot_L",
+    "hero_arm_pivot_R",
+    "hero_eye_L",
+    "hero_eye_R",
+    "hero_mouth",
+    "prop_pivot",
+    "prop",
+    "hero_elbow_L",
+    "hero_elbow_R",
+]
 
 
 class Studio:
     """High-level entry points: film, continue, revise."""
 
-    def __init__(self, provider: str | Provider = "auto", options: dict[str, Any] | None = None,
-                 budget: Budget | None = None, echo: bool = True):
+    def __init__(
+        self,
+        provider: str | Provider = "auto",
+        options: dict[str, Any] | None = None,
+        budget: Budget | None = None,
+        echo: bool = True,
+    ):
         self.provider = provider if isinstance(provider, Provider) else get_provider(provider)
-        self.options = {"quality": "final", "preview_engine": "cycles", "critic_iterations": 3, **(options or {})}
+        self.options = {
+            "quality": "final",
+            "preview_engine": "cycles",
+            "critic_iterations": 3,
+            **(options or {}),
+        }
         self.budget = budget or Budget(max_critic_iterations=int(self.options["critic_iterations"]))
         self.echo = echo
 
@@ -152,8 +205,12 @@ class Studio:
         root.mkdir(parents=True, exist_ok=True)
         state = ProjectState(root=root, prompt=prompt, provider=self.provider.name)
         log = ProductionLog(root, echo=self.echo)
-        log.event("start", "orchestr.", f"new film from prompt: {prompt!r} (provider: {self.provider.name})",
-                  options=self.options)
+        log.event(
+            "start",
+            "orchestr.",
+            f"new film from prompt: {prompt!r} (provider: {self.provider.name})",
+            options=self.options,
+        )
         with BlenderSession(workdir=root / "log") as engine:
             ctx = Context(state, engine, log, self.provider, self.budget, dict(self.options))
             log.event("info", "orchestr.", f"engine: Blender {engine.blender_version} (headless adapter)")
@@ -162,8 +219,17 @@ class Studio:
         return state
 
     def _build_graph(self, ctx: Context, from_plan: bool = False) -> TaskGraph:
-        director, asset, animator = Director(self.provider), AssetAgent(self.provider), Animator(self.provider)
-        camera, voice, critic, editor = CameraLighting(self.provider), VoiceSound(self.provider), Critic(self.provider), Editor(self.provider)
+        director, asset, animator = (
+            Director(self.provider),
+            AssetAgent(self.provider),
+            Animator(self.provider),
+        )
+        camera, voice, critic, editor = (
+            CameraLighting(self.provider),
+            VoiceSound(self.provider),
+            Critic(self.provider),
+            Editor(self.provider),
+        )
         g = TaskGraph()
 
         def do_director() -> Any:
@@ -173,48 +239,71 @@ class Studio:
 
         g.add("director", do_director)
         g.add("voice", lambda: voice.run(ctx), ["director"])
+
         def do_asset() -> Any:
             ctx.results["asset_info"] = asset.run(ctx)
             ctx.state.artifacts["asset_info"] = ctx.results["asset_info"]
             return "ok"
 
         g.add("asset", do_asset, ["director"])
-        g.add("animator", lambda: ctx.results.__setitem__("anim", animator.run(ctx)) or "ok", ["asset", "voice"])
+        g.add(
+            "animator", lambda: ctx.results.__setitem__("anim", animator.run(ctx)) or "ok", ["asset", "voice"]
+        )
         g.add("camera", lambda: camera.run(ctx, ctx.results["asset_info"], ctx.results["anim"]), ["animator"])
-        g.add("review", lambda: self._critic_loop(ctx, critic, camera, animator, voice), ["camera"], retries=0)
+        g.add(
+            "review", lambda: self._critic_loop(ctx, critic, camera, animator, voice), ["camera"], retries=0
+        )
         if not ctx.options.get("no_render"):
             g.add("edit", lambda: editor.run(ctx), ["review"])
         else:
             g.add("save", lambda: engine_save(ctx), ["review"])
         return g
 
-    def _critic_loop(self, ctx: Context, critic: Critic, camera: CameraLighting, animator: Animator,
-                     voice: VoiceSound) -> dict[str, Any]:
+    def _critic_loop(
+        self, ctx: Context, critic: Critic, camera: CameraLighting, animator: Animator, voice: VoiceSound
+    ) -> dict[str, Any]:
         history = []
         max_it = self.budget.max_critic_iterations
         for it in range(1, max_it + 1):
             issues, info = critic.review(ctx, it)
             blockers = [i for i in issues if i.severity == "blocker"]
             polish = [i for i in issues if i.severity == "minor" and i.fix.get("kind") == "camera"]
-            history.append({"iteration": it, "issues": len(issues), "blockers": len(blockers),
-                            "messages": [f"{i.shot}: {i.message}" for i in issues]})
+            history.append(
+                {
+                    "iteration": it,
+                    "issues": len(issues),
+                    "blockers": len(blockers),
+                    "messages": [f"{i.shot}: {i.message}" for i in issues],
+                }
+            )
             if not blockers and not polish:
-                ctx.log.event("critique", critic.role, f"iteration {it}: all shots pass" +
-                              (f" ({len(issues)} minor notes)" if issues else ""))
+                ctx.log.event(
+                    "critique",
+                    critic.role,
+                    f"iteration {it}: all shots pass" + (f" ({len(issues)} minor notes)" if issues else ""),
+                )
                 break
             if it == max_it:
-                ctx.log.event("critique", critic.role, f"iteration cap ({max_it}) reached with {len(blockers)} blockers, "
-                              f"{len(polish)} minor notes; continuing with best effort")
+                ctx.log.event(
+                    "critique",
+                    critic.role,
+                    f"iteration cap ({max_it}) reached with {len(blockers)} blockers, "
+                    f"{len(polish)} minor notes; continuing with best effort",
+                )
                 break
             if not blockers:
-                ctx.log.event("critique", critic.role, f"iteration {it}: no blockers; polishing {len(polish)} actionable "
-                              "minor camera notes")
+                ctx.log.event(
+                    "critique",
+                    critic.role,
+                    f"iteration {it}: no blockers; polishing {len(polish)} actionable minor camera notes",
+                )
             self._apply_fixes(ctx, blockers + polish, camera, animator, voice)
         ctx.state.artifacts["critic_history"] = history
         return {"iterations": history}
 
-    def _apply_fixes(self, ctx: Context, issues: list[Issue], camera: CameraLighting, animator: Animator,
-                     voice: VoiceSound) -> None:
+    def _apply_fixes(
+        self, ctx: Context, issues: list[Issue], camera: CameraLighting, animator: Animator, voice: VoiceSound
+    ) -> None:
         tuning = ctx.state.tuning
         redo_camera = redo_anim = redo_voice = False
         for i in issues:
@@ -242,29 +331,58 @@ class Studio:
             add = max(dips) if dips else max(floor)
             A = tuning.setdefault("animator", {})
             A["floor_offset"] = round(A.get("floor_offset", 0.0) + add, 3)
-        ctx.log.event("fix", "orchestr.", f"applying fixes: camera={redo_camera} animation={redo_anim} voice={redo_voice}; "
-                      f"tuning={json.dumps(tuning)}")
+        ctx.log.event(
+            "fix",
+            "orchestr.",
+            f"applying fixes: camera={redo_camera} animation={redo_anim} voice={redo_voice}; "
+            f"tuning={json.dumps(tuning)}",
+        )
         if redo_voice:
             voice.run(ctx)
         if redo_anim:
-            ctx.engine.run_batch({"batch_id": f"clear-anim-{time.time():.0f}", "agent": "animator", "intent": "clear hero animation",
-                                  "ops": [{"op": "clear_animation", "targets": [t for t in HERO_ANIMATED if t in ctx.engine.known_ids]}]})
+            ctx.engine.run_batch(
+                {
+                    "batch_id": f"clear-anim-{time.time():.0f}",
+                    "agent": "animator",
+                    "intent": "clear hero animation",
+                    "ops": [
+                        {
+                            "op": "clear_animation",
+                            "targets": [t for t in HERO_ANIMATED if t in ctx.engine.known_ids],
+                        }
+                    ],
+                }
+            )
             ctx.results["anim"] = animator.run(ctx)
         if redo_camera or redo_anim:
             ids = [i for i in ctx.engine.known_ids if i.startswith("cam_") or i.startswith("light_")]
             if ids:
-                ctx.engine.run_batch({"batch_id": f"clear-cams-{time.time():.0f}", "agent": "camera",
-                                      "intent": "remove cameras and lights for re-layout", "ops": [{"op": "delete", "targets": sorted(ids)}]})
+                ctx.engine.run_batch(
+                    {
+                        "batch_id": f"clear-cams-{time.time():.0f}",
+                        "agent": "camera",
+                        "intent": "remove cameras and lights for re-layout",
+                        "ops": [{"op": "delete", "targets": sorted(ids)}],
+                    }
+                )
             camera.run(ctx, ctx.results["asset_info"], ctx.results["anim"])
 
     def _finish(self, ctx: Context) -> None:
         u = self.provider.usage
-        ctx.state.artifacts["llm_usage"] = {"provider": self.provider.name, "calls": u.calls, "tokens": u.total_tokens}
+        ctx.state.artifacts["llm_usage"] = {
+            "provider": self.provider.name,
+            "calls": u.calls,
+            "tokens": u.total_tokens,
+        }
         ctx.state.artifacts["usda"] = str(ctx.state.root / "scene.usda")
         (ctx.state.root / "scene.usda").write_text(ctx.state.scene.to_usda())
         ctx.state.save()
-        ctx.log.event("done", "orchestr.", f"finished in {self.budget.elapsed():.0f}s; LLM calls {u.calls}, tokens {u.total_tokens}",
-                      artifacts={k: v for k, v in ctx.state.artifacts.items() if k not in ("mouth_keys",)})
+        ctx.log.event(
+            "done",
+            "orchestr.",
+            f"finished in {self.budget.elapsed():.0f}s; LLM calls {u.calls}, tokens {u.total_tokens}",
+            artifacts={k: v for k, v in ctx.state.artifacts.items() if k not in ("mouth_keys",)},
+        )
         try:
             from ..cli.logview import write_log_html
 
@@ -274,5 +392,7 @@ class Studio:
 
 
 def engine_save(ctx: Context) -> str:
-    ctx.engine.run_batch({"batch_id": "save", "agent": "editor", "ops": [{"op": "save", "path": str(ctx.state.blend)}]})
+    ctx.engine.run_batch(
+        {"batch_id": "save", "agent": "editor", "ops": [{"op": "save", "path": str(ctx.state.blend)}]}
+    )
     return str(ctx.state.blend)

@@ -108,7 +108,6 @@ class MaterialOps:
         mat["animatica_spec"] = str(spec)
         return mat
 
-
     def op_set_material(self, op: dict, res: dict) -> None:
         spec = op["material"]
         name = spec.get("name") or f"mat_{op['targets'][0]}"

@@ -117,7 +117,10 @@ def describe(o, fields: list[str], tags: list[str]) -> dict:
         d["parent"] = o.parent.get(ID_PROP, o.parent.name) if o.parent else None
     if "bbox" in fields and o.type == "MESH":
         pts = [o.matrix_world @ mathutils.Vector(c) for c in o.bound_box]
-        d["bbox"] = [[round(min(p[i] for p in pts), 3) for i in range(3)], [round(max(p[i] for p in pts), 3) for i in range(3)]]
+        d["bbox"] = [
+            [round(min(p[i] for p in pts), 3) for i in range(3)],
+            [round(max(p[i] for p in pts), 3) for i in range(3)],
+        ]
     if "material" in fields and getattr(o, "active_material", None):
         m = o.active_material
         c = m.diffuse_color[:3]
@@ -156,7 +159,10 @@ def image_stats(path: str) -> dict:
             r, g, b = px[4 * i], px[4 * i + 1], px[4 * i + 2]
             lum.append(0.2126 * r + 0.7152 * g + 0.0722 * b)
         mean = sum(lum) / len(lum)
-        return {"mean": round(mean, 3), "black": round(sum(v < 0.02 for v in lum) / len(lum), 3),
-                "white": round(sum(v > 0.98 for v in lum) / len(lum), 3)}
+        return {
+            "mean": round(mean, 3),
+            "black": round(sum(v < 0.02 for v in lum) / len(lum), 3),
+            "white": round(sum(v > 0.98 for v in lum) / len(lum), 3),
+        }
     finally:
         bpy.data.images.remove(img)

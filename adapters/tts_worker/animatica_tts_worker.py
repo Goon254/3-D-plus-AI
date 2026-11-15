@@ -39,10 +39,20 @@ def kokoro(req: dict) -> dict:
 
     d = req["model_dir"]
     k = Kokoro(os.path.join(d, "kokoro-v1.0.onnx"), os.path.join(d, "voices-v1.0.bin"))
-    samples, sr = k.create(req["text"], voice=req.get("voice") or "af_heart", speed=float(req.get("speed", 1.0)),
-                           lang=req.get("lang", "en-us"))
+    samples, sr = k.create(
+        req["text"],
+        voice=req.get("voice") or "af_heart",
+        speed=float(req.get("speed", 1.0)),
+        lang=req.get("lang", "en-us"),
+    )
     _write_wav(req["out"], samples, sr)
-    return {"ok": True, "path": req["out"], "sample_rate": sr, "duration": len(samples) / sr, "engine": "kokoro"}
+    return {
+        "ok": True,
+        "path": req["out"],
+        "sample_rate": sr,
+        "duration": len(samples) / sr,
+        "engine": "kokoro",
+    }
 
 
 def piper(req: dict) -> dict:

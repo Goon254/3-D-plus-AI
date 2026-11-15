@@ -26,7 +26,10 @@ Characters face -Y at rest; Z is up. Use render_preview to look at your work (on
 For whole films use start_film; for artist hand-offs use continue_project / revise_project."""
 
 server = MCPServer(name="animatica", instructions=INSTRUCTIONS, version="0.1.0")
-_state: dict[str, Any] = {"session": None, "workdir": Path(os.environ.get("ANIMATICA_MCP_WORKDIR", "output/mcp"))}
+_state: dict[str, Any] = {
+    "session": None,
+    "workdir": Path(os.environ.get("ANIMATICA_MCP_WORKDIR", "output/mcp")),
+}
 
 
 def _session() -> BlenderSession:
@@ -36,20 +39,37 @@ def _session() -> BlenderSession:
     return _state["session"]
 
 
-def _batch(ops: list[dict[str, Any]], intent: str = "", batch_id: str | None = None, **kw: Any) -> dict[str, Any]:
+def _batch(
+    ops: list[dict[str, Any]], intent: str = "", batch_id: str | None = None, **kw: Any
+) -> dict[str, Any]:
     s = _session()
     _state["n"] = _state.get("n", 0) + 1
     try:
-        res = s.run_batch({"batch_id": batch_id or f"mcp-{_state['n']:04d}", "agent": "mcp", "intent": intent, "ops": ops, **kw})
+        res = s.run_batch(
+            {
+                "batch_id": batch_id or f"mcp-{_state['n']:04d}",
+                "agent": "mcp",
+                "intent": intent,
+                "ops": ops,
+                **kw,
+            }
+        )
     except BatchValidationError as e:
         return {"ok": False, "errors": e.errors}
     return res.model_dump(exclude_defaults=True)
 
 
-@server.tool(description="Execute one batch of protocol ops (validated as a whole, one undo step). "
-                         "ops: list of {op: ..., ...}; see protocol_schema. Returns a compact result.")
-def run_batch(ops: list[dict[str, Any]], intent: str = "", preview: bool = False, mode: str = "ops",
-              script: str | None = None) -> dict[str, Any]:
+@server.tool(
+    description="Execute one batch of protocol ops (validated as a whole, one undo step). "
+    "ops: list of {op: ..., ...}; see protocol_schema. Returns a compact result."
+)
+def run_batch(
+    ops: list[dict[str, Any]],
+    intent: str = "",
+    preview: bool = False,
+    mode: str = "ops",
+    script: str | None = None,
+) -> dict[str, Any]:
     kw: dict[str, Any] = {"mode": mode}
     if script:
         kw["script"] = script
@@ -58,9 +78,15 @@ def run_batch(ops: list[dict[str, Any]], intent: str = "", preview: bool = False
     return _batch(ops, intent, **kw)
 
 
-@server.tool(description="Compact, filtered scene query. fields: type, transform, bbox, material, parent, shape_keys, animation, tags")
-def query_scene(ids: list[str] | None = None, types: list[str] | None = None,
-                fields: list[str] | None = None, limit: int = 200) -> dict[str, Any]:
+@server.tool(
+    description="Compact, filtered scene query. fields: type, transform, bbox, material, parent, shape_keys, animation, tags"
+)
+def query_scene(
+    ids: list[str] | None = None,
+    types: list[str] | None = None,
+    fields: list[str] | None = None,
+    limit: int = 200,
+) -> dict[str, Any]:
     op: dict[str, Any] = {"op": "query", "fields": fields or ["type", "transform"], "limit": limit}
     if ids:
         op["ids"] = ids
@@ -69,16 +95,30 @@ def query_scene(ids: list[str] | None = None, types: list[str] | None = None,
     return _batch([op], "query")
 
 
-@server.tool(description="Render one low-res still (Workbench by default). Returns the PNG path and exposure stats.")
-def render_preview(camera: str = "auto", frame: int | None = None, engine: str = "workbench",
-                   width: int = 480, height: int = 270) -> dict[str, Any]:
-    op: dict[str, Any] = {"op": "render_preview", "camera": camera, "engine": engine, "resolution": [width, height]}
+@server.tool(
+    description="Render one low-res still (Workbench by default). Returns the PNG path and exposure stats."
+)
+def render_preview(
+    camera: str = "auto",
+    frame: int | None = None,
+    engine: str = "workbench",
+    width: int = 480,
+    height: int = 270,
+) -> dict[str, Any]:
+    op: dict[str, Any] = {
+        "op": "render_preview",
+        "camera": camera,
+        "engine": engine,
+        "resolution": [width, height],
+    }
     if frame is not None:
         op["frame"] = frame
     return _batch([op], "preview")
 
 
-@server.tool(description="Open an existing .blend (e.g. output/<project>/scene.blend) in the MCP session, or a new empty scene if path is empty.")
+@server.tool(
+    description="Open an existing .blend (e.g. output/<project>/scene.blend) in the MCP session, or a new empty scene if path is empty."
+)
 def open_project(path: str = "") -> dict[str, Any]:
     s = _session()
     if path:
@@ -98,17 +138,27 @@ def protocol_schema(full: bool = False) -> dict[str, Any]:
     return {"ops": OP_NAMES, "schema": batch_json_schema() if full else "pass full=true for the JSON Schema"}
 
 
-@server.tool(description="Make a whole short film from a prompt (Director→…→Editor). quality: ci|preview|draft|final. "
-                         "Long-running for draft/final.")
-def start_film(prompt: str, name: str | None = None, quality: str = "preview", out: str = "output") -> dict[str, Any]:
+@server.tool(
+    description="Make a whole short film from a prompt (Director→…→Editor). quality: ci|preview|draft|final. "
+    "Long-running for draft/final."
+)
+def start_film(
+    prompt: str, name: str | None = None, quality: str = "preview", out: str = "output"
+) -> dict[str, Any]:
     from ..core.orchestrator import Studio
 
     st = Studio("auto", {"quality": quality}, echo=False).film(prompt, out, name)
-    return {"project": str(st.root), "blend": str(st.blend), "video": st.artifacts.get("final"),
-            "log": str(st.root / "log" / "index.html")}
+    return {
+        "project": str(st.root),
+        "blend": str(st.blend),
+        "video": st.artifacts.get("final"),
+        "log": str(st.root / "log" / "index.html"),
+    }
 
 
-@server.tool(description="Continue a project after hand edits in Blender; edited aspects are locked and preserved.")
+@server.tool(
+    description="Continue a project after hand edits in Blender; edited aspects are locked and preserved."
+)
 def continue_project(project: str, quality: str = "preview") -> dict[str, Any]:
     from ..core.continuation import continue_project as cont
 
@@ -121,7 +171,10 @@ def revise_project(project: str, instruction: str, quality: str = "preview") -> 
     from ..core.continuation import revise_project as rev
 
     st = rev(project, instruction, options={"quality": quality})
-    return {"plan_shots": [s.model_dump() for s in st.plan.shots] if st.plan else [], "video": st.artifacts.get("final")}
+    return {
+        "plan_shots": [s.model_dump() for s in st.plan.shots] if st.plan else [],
+        "video": st.artifacts.get("final"),
+    }
 
 
 @server.tool(description="Last N production-log events of a project (compact).")

@@ -59,8 +59,14 @@ class Provider:
     def __init__(self) -> None:
         self.usage = Usage()
 
-    def complete_json(self, task: str, system: str, payload: dict[str, Any], images: list[str | Path] | None = None,
-                      max_tokens: int = 4096) -> dict[str, Any]:
+    def complete_json(
+        self,
+        task: str,
+        system: str,
+        payload: dict[str, Any],
+        images: list[str | Path] | None = None,
+        max_tokens: int = 4096,
+    ) -> dict[str, Any]:
         raise NotImplementedError
 
     @property
@@ -71,8 +77,14 @@ class Provider:
 class ScriptedProvider(Provider):
     name = "scripted"
 
-    def complete_json(self, task: str, system: str, payload: dict[str, Any], images: list[str | Path] | None = None,
-                      max_tokens: int = 4096) -> dict[str, Any]:
+    def complete_json(
+        self,
+        task: str,
+        system: str,
+        payload: dict[str, Any],
+        images: list[str | Path] | None = None,
+        max_tokens: int = 4096,
+    ) -> dict[str, Any]:
         fn = _SCRIPTED.get(task)
         if fn is None:
             raise LLMError(f"scripted provider has no handler for task {task!r}")
@@ -119,22 +131,45 @@ class AnthropicProvider(Provider):
             return json.loads(resp.model_dump_json())
         except ImportError:
             req = urllib.request.Request(
-                self.API_URL, data=json.dumps(body).encode(), method="POST",
-                headers={"x-api-key": self.api_key, "anthropic-version": "2023-06-01",
-                         "content-type": "application/json"})
+                self.API_URL,
+                data=json.dumps(body).encode(),
+                method="POST",
+                headers={
+                    "x-api-key": self.api_key,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+            )
             with urllib.request.urlopen(req, timeout=300) as r:  # noqa: S310 - fixed https URL
                 return json.loads(r.read())
 
-    def complete_json(self, task: str, system: str, payload: dict[str, Any], images: list[str | Path] | None = None,
-                      max_tokens: int = 4096) -> dict[str, Any]:
+    def complete_json(
+        self,
+        task: str,
+        system: str,
+        payload: dict[str, Any],
+        images: list[str | Path] | None = None,
+        max_tokens: int = 4096,
+    ) -> dict[str, Any]:
         content: list[dict[str, Any]] = []
         for img in images or []:
             data = base64.b64encode(Path(img).read_bytes()).decode()
-            content.append({"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": data}})
-        content.append({"type": "text", "text": json.dumps(payload, separators=(",", ":"))
-                        + "\n\nRespond with a single JSON object only."})
-        body = {"model": self.model, "max_tokens": max_tokens, "system": system,
-                "messages": [{"role": "user", "content": content}]}
+            content.append(
+                {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": data}}
+            )
+        content.append(
+            {
+                "type": "text",
+                "text": json.dumps(payload, separators=(",", ":"))
+                + "\n\nRespond with a single JSON object only.",
+            }
+        )
+        body = {
+            "model": self.model,
+            "max_tokens": max_tokens,
+            "system": system,
+            "messages": [{"role": "user", "content": content}],
+        }
         last: Exception | None = None
         for attempt in range(self.max_retries):
             t0 = time.time()

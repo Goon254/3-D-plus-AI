@@ -15,6 +15,7 @@ jobs:
           python-version: "3.13"
       - run: pip install -e ".[dev]"
       - run: ruff check src tests adapters
+      - run: ruff format --check src tests adapters
       - run: pytest -q -m "not blender"
 
   blender-and-offline-pipeline:

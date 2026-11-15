@@ -29,7 +29,9 @@ class RenderOps:
         s = self.scene
         eng = op.get("engine")
         if eng:
-            s.render.engine = {"workbench": "BLENDER_WORKBENCH", "eevee": _eevee_id(), "cycles": "CYCLES"}[eng]
+            s.render.engine = {"workbench": "BLENDER_WORKBENCH", "eevee": _eevee_id(), "cycles": "CYCLES"}[
+                eng
+            ]
             if eng == "cycles":
                 s.cycles.device = "CPU"
                 fast_cycles(s)
@@ -61,7 +63,6 @@ class RenderOps:
         if op.get("exposure") is not None:
             s.view_settings.exposure = op["exposure"]
 
-
     # ------------------------------------------------------------------ render / io
     def _auto_camera(self):
         cam = self.scene.camera
@@ -70,20 +71,31 @@ class RenderOps:
         data = bpy.data.cameras.new("__auto_cam")
         cam = bpy.data.objects.new("__auto_cam", data)
         self.scene.collection.objects.link(cam)
-        pts = [o.matrix_world @ mathutils.Vector(c) for o in self.scene.objects if o.type == "MESH" for c in o.bound_box]
+        pts = [
+            o.matrix_world @ mathutils.Vector(c)
+            for o in self.scene.objects
+            if o.type == "MESH"
+            for c in o.bound_box
+        ]
         center = sum(pts, mathutils.Vector()) / max(1, len(pts)) if pts else mathutils.Vector()
         radius = max(((p - center).length for p in pts), default=2.0)
         cam.location = center + mathutils.Vector((1, -1.4, 0.8)).normalized() * radius * 2.4
         self._aim(cam, center)
         return cam, True
 
-
     def op_render_preview(self, op: dict, res: dict) -> None:
         s = self.scene
         path = op.get("path") or os.path.join(self.workdir, "previews", f"{res['batch_id']}.png")
         os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
-        saved = (s.render.engine, s.render.resolution_x, s.render.resolution_y, s.render.resolution_percentage,
-                 s.render.filepath, s.camera, s.frame_current)
+        saved = (
+            s.render.engine,
+            s.render.resolution_x,
+            s.render.resolution_y,
+            s.render.resolution_percentage,
+            s.render.filepath,
+            s.camera,
+            s.frame_current,
+        )
         temp_cam = False
         saved_samples = s.cycles.samples if hasattr(s, "cycles") else None
         try:
@@ -94,7 +106,9 @@ class RenderOps:
                 cam, temp_cam = self._auto_camera()
                 s.camera = cam
             eng = op.get("engine", "workbench")
-            s.render.engine = {"workbench": "BLENDER_WORKBENCH", "eevee": _eevee_id(), "cycles": "CYCLES"}[eng]
+            s.render.engine = {"workbench": "BLENDER_WORKBENCH", "eevee": _eevee_id(), "cycles": "CYCLES"}[
+                eng
+            ]
             if eng == "cycles":
                 fast_cycles(s)
                 s.cycles.samples = int(op.get("samples", 12))
@@ -115,8 +129,15 @@ class RenderOps:
             s.render.image_settings.file_format = "PNG"
             bpy.ops.render.render(write_still=True)
         finally:
-            (s.render.engine, s.render.resolution_x, s.render.resolution_y, s.render.resolution_percentage,
-             s.render.filepath, cam0, frame0) = saved
+            (
+                s.render.engine,
+                s.render.resolution_x,
+                s.render.resolution_y,
+                s.render.resolution_percentage,
+                s.render.filepath,
+                cam0,
+                frame0,
+            ) = saved
             s.camera = cam0
             s.frame_set(frame0)
             if saved_samples is not None:
@@ -127,7 +148,6 @@ class RenderOps:
         st = image_stats(path)
         res.setdefault("data", {})["preview_stats"] = st
         res["data"].setdefault("previews", []).append({"path": path, "stats": st})
-
 
     def op_render_final(self, op: dict, res: dict) -> None:
         s = self.scene
@@ -150,7 +170,6 @@ class RenderOps:
         res["data"]["frames_dir"] = out
         res["data"]["render_seconds"] = round(time.time() - t0, 1)
 
-
     def op_save(self, op: dict, res: dict) -> None:
         path = os.path.abspath(op["path"])
         os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -159,7 +178,6 @@ class RenderOps:
         bpy.ops.wm.save_as_mainfile(filepath=path, compress=True)
         glow_visibility(self.scene, self.scene.render.engine != "BLENDER_WORKBENCH")
         res["data"]["saved"] = path
-
 
     # ------------------------------------------------------------------ query / inspect
     def op_query(self, op: dict, res: dict) -> None:
@@ -183,10 +201,13 @@ class RenderOps:
                 break
         s = self.scene
         res["data"]["objects"] = out
-        res["data"]["scene"] = {"frame_start": s.frame_start, "frame_end": s.frame_end, "fps": s.render.fps,
-                                "camera": s.camera.get(ID_PROP, s.camera.name) if s.camera else None,
-                                "markers": sorted([[m.frame, m.camera.name if m.camera else None] for m in s.timeline_markers])}
-
+        res["data"]["scene"] = {
+            "frame_start": s.frame_start,
+            "frame_end": s.frame_end,
+            "fps": s.render.fps,
+            "camera": s.camera.get(ID_PROP, s.camera.name) if s.camera else None,
+            "markers": sorted([[m.frame, m.camera.name if m.camera else None] for m in s.timeline_markers]),
+        }
 
     def op_inspect(self, op: dict, res: dict) -> None:
         from bpy_extras.object_utils import world_to_camera_view
@@ -216,7 +237,12 @@ class RenderOps:
                 if cam is not None:
                     ndc = [world_to_camera_view(s, cam, p) for p in pts]
                     xs, ys, zs = [n.x for n in ndc], [n.y for n in ndc], [n.z for n in ndc]
-                    info["screen"] = [round(min(xs), 3), round(min(ys), 3), round(max(xs), 3), round(max(ys), 3)]
+                    info["screen"] = [
+                        round(min(xs), 3),
+                        round(min(ys), 3),
+                        round(max(xs), 3),
+                        round(max(ys), 3),
+                    ]
                     info["behind_camera"] = max(zs) < 0
                     vis_x = max(0.0, min(1.0, max(xs)) - max(0.0, min(xs)))
                     vis_y = max(0.0, min(1.0, max(ys)) - max(0.0, min(ys)))

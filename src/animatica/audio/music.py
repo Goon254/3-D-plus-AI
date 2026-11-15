@@ -84,7 +84,9 @@ def generate_bed(duration: float, mood: str = "warm", seed: str = "", ambience: 
         # bass
         fb = midi_hz(deg(d, -1))
         benv = np.exp(-tt / 2.5) * np.minimum(1, tt / 0.05)
-        b = 0.035 * (np.sin(2 * np.pi * fb * tt) + 0.5 * np.sin(4 * np.pi * fb * tt)) * benv  # light bass; 2nd harmonic carries on small speakers
+        b = (
+            0.035 * (np.sin(2 * np.pi * fb * tt) + 0.5 * np.sin(4 * np.pi * fb * tt)) * benv
+        )  # light bass; 2nd harmonic carries on small speakers
         out[s0:s1, :] += b[:, None].astype(np.float32)
 
     # plucked arpeggio (starts after an intro bar, eighth notes)
@@ -101,7 +103,9 @@ def generate_bed(duration: float, mood: str = "warm", seed: str = "", ambience: 
             ln = min(n - s0, int(1.2 * SR))
             tt = np.arange(ln) / SR
             f = midi_hz(note)
-            pl = (np.sin(2 * np.pi * f * tt) + 0.3 * np.sin(6 * np.pi * f * tt)) * np.exp(-tt * (3.5 + 2 * (1 - bright)))
+            pl = (np.sin(2 * np.pi * f * tt) + 0.3 * np.sin(6 * np.pi * f * tt)) * np.exp(
+                -tt * (3.5 + 2 * (1 - bright))
+            )
             pan = 0.5 + 0.35 * np.sin(i * 0.7)
             out[s0 : s0 + ln, 0] += (0.045 * pl * (1 - pan)).astype(np.float32)
             out[s0 : s0 + ln, 1] += (0.045 * pl * pan).astype(np.float32)
@@ -131,8 +135,14 @@ def generate_bed(duration: float, mood: str = "warm", seed: str = "", ambience: 
     return out
 
 
-def mix(duration: float, bed: np.ndarray | None, dialogue: list[tuple[float, str]], out_path: str | Path,
-        duck_db: float = -12.0, sfx: list[tuple[float, str, float]] | None = None) -> Path:
+def mix(
+    duration: float,
+    bed: np.ndarray | None,
+    dialogue: list[tuple[float, str]],
+    out_path: str | Path,
+    duck_db: float = -12.0,
+    sfx: list[tuple[float, str, float]] | None = None,
+) -> Path:
     """Mix dialogue clips (start_seconds, wav) over the bed, ducking the bed under speech."""
     n = int(duration * SR)
     master = np.zeros((n, 2), np.float32)

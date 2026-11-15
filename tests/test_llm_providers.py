@@ -13,8 +13,10 @@ def test_anthropic_provider_parses_and_counts(monkeypatch):
 
     def fake_post(body):
         sent.update(body)
-        return {"content": [{"type": "text", "text": "Here you go:\n```json\n{\"ok\": true}\n```"}],
-                "usage": {"input_tokens": 120, "output_tokens": 30}}
+        return {
+            "content": [{"type": "text", "text": 'Here you go:\n```json\n{"ok": true}\n```'}],
+            "usage": {"input_tokens": 120, "output_tokens": 30},
+        }
 
     monkeypatch.setattr(p, "_post", fake_post)
     assert p.complete_json("director.plan", "sys", {"prompt": "hi"}) == {"ok": True}
@@ -42,7 +44,9 @@ class _Ctx:
     def __init__(self, tmp_path):
         from animatica.core.state import ProjectState
 
-        self.state = ProjectState(root=tmp_path, prompt="A robot finds a flower in a junkyard at sunset. It says: 'Hi.'")
+        self.state = ProjectState(
+            root=tmp_path, prompt="A robot finds a flower in a junkyard at sunset. It says: 'Hi.'"
+        )
         self.log = _Log()
         self.options = {}
 
