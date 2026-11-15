@@ -632,6 +632,8 @@ class Executor:
             if len(positions) != n:
                 raise OpError(f"shape key {name!r}: {len(positions)} positions for {n} vertices")
             kb = o.data.shape_keys.key_blocks.get(name) or o.shape_key_add(name=name, from_mix=False)
+            kb.value = 0.0
+            kb.slider_min, kb.slider_max = 0.0, 1.0
             for i, p in enumerate(positions):
                 kb.data[i].co = p
         res["modified"].append(op["target"])
@@ -643,7 +645,7 @@ class Executor:
         if s.sequence_editor is None:
             s.sequence_editor_create()
         se = s.sequence_editor
-        strips = getattr(se, "strips", None) or se.sequences
+        strips = se.strips if hasattr(se, "strips") else se.sequences
         old = strips.get(op["id"])
         if old is not None:
             strips.remove(old)

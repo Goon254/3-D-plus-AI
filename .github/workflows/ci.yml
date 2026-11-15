@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-and-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -e ".[dev]"
+      - run: ruff check src tests adapters
+      - run: pytest -q -m "not blender"
+
+  blender-and-offline-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"   # the bpy 5.3 wheel needs exactly Python 3.13
+      - name: System packages
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg libxi6 libxxf86vm1 libxfixes3 libxrender1 libgl1 libegl1 libsm6
+      - run: pip install -e ".[dev]" bpy==5.3.0
+      - name: Adapter tests
+        run: pytest -q -m blender
+      - name: Offline pipeline smoke test (scripted LLM, synth voice, tiny Workbench render)
+        run: |
+          animatica dev doctor || true
+          pytest -q tests/test_pipeline.py

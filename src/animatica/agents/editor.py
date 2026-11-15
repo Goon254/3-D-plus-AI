@@ -14,9 +14,10 @@ if TYPE_CHECKING:
 
 QUALITY = {
     # name: engine, resolution, samples
+    "ci": ("workbench", (192, 108), 1),
     "preview": ("workbench", (480, 270), 1),
     "draft": ("cycles", (640, 360), 8),
-    "final": ("cycles", (960, 540), 20),
+    "final": ("cycles", (960, 540), 16),
     "high": ("cycles", (1280, 720), 48),
 }
 

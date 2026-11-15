@@ -129,7 +129,7 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--llm", default="auto", choices=["auto", "scripted", "anthropic"],
                         help="LLM provider (auto = anthropic if ANTHROPIC_API_KEY else offline scripted)")
         if render:
-            sp.add_argument("--quality", default="final", choices=["preview", "draft", "final", "high"])
+            sp.add_argument("--quality", default="final", choices=["ci", "preview", "draft", "final", "high"])
             sp.add_argument("--critic-iterations", type=int, default=3)
             sp.add_argument("--no-render", action="store_true", help="build and review the scene, skip the final render")
 
@@ -165,7 +165,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     rr = sub.add_parser("render", help="re-render a project's .blend + soundtrack to final.mp4")
     rr.add_argument("project")
-    rr.add_argument("--quality", default="final", choices=["preview", "draft", "final", "high"])
+    rr.add_argument("--quality", default="final", choices=["ci", "preview", "draft", "final", "high"])
     rr.set_defaults(fn=cmd_render)
 
     lg = sub.add_parser("log", help="write the production log viewer (static HTML)")

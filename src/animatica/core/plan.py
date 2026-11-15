@@ -53,7 +53,8 @@ class Setting(_M):
 
 
 class VoiceChoice(_M):
-    speaker: int = 20
+    voice: str = "am_puck"  # Kokoro voice id (stock voices only; no cloning)
+    speaker: int = 20  # Piper multi-speaker fallback
     pitch: float = Field(1.12, ge=0.5, le=2.0)
     rate: float = Field(0.9, ge=0.5, le=2.0)
     robot: float = Field(0.2, ge=0, le=1)

@@ -24,7 +24,7 @@ Return JSON matching this shape exactly:
  "setting": {"kind": one of [junkyard, forest, meadow, beach, desert, snow, city, space, room],
              "time_of_day": one of [dawn, day, sunset, night], "density": 0..3},
  "characters": [{"id": "hero", "kind": "robot"|"critter", "name": str, "color": hex, "eye_color": hex,
-                 "voice": {"speaker": 0-200, "pitch": 0.8-1.4, "rate": 0.8-1.1, "robot": 0-0.5}}],
+                 "voice": {"voice": one of [af_heart, af_bella, af_nicole, am_puck, am_michael, bf_emma, bm_george], "pitch": 0.8-1.4, "rate": 0.8-1.1, "robot": 0-0.5}}],
  "props": [{"id": "prop", "kind": one of [flower, lantern, ball, crystal, mushroom, star, egg, book], "color": hex}],
  "shots": [{"id": "s1", "type": "wide"|"medium"|"closeup", "duration": seconds,
             "beat": one of [enter, discover, approach, speak, react, celebrate, settle, exit, idle],
@@ -123,7 +123,7 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
     first_sentence = re.split(r"(?<=[.!?])\s", prompt.strip())[0]
 
     shots = [
-        {"id": "s1", "type": "wide", "duration": 5.5, "beat": "enter", "camera_move": "pan", "subject": "hero",
+        {"id": "s1", "type": "wide", "duration": 5.5, "beat": "enter", "camera_move": "track", "subject": "hero",
          "description": f"Establishing: the {subject} rolls into the {setting} at {tod}."},
         {"id": "s2", "type": "medium", "duration": 5.0, "beat": "discover", "camera_move": "dolly_in", "subject": "both",
          "description": f"{name} notices the {prop}, hesitates (anticipation), then approaches and leans in."},
@@ -143,8 +143,8 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
     shots.append({"id": "s4", "type": "wide", "duration": 5.5, "beat": "settle", "camera_move": "crane_up", "subject": "both",
                   "description": f"{name} settles beside the {prop}; the camera rises as the light fades."})
 
-    voice = {"speaker": 20, "pitch": 1.12, "rate": 0.88, "robot": 0.2} if kind == "robot" else \
-            {"speaker": 3, "pitch": 1.25, "rate": 0.92, "robot": 0.0}
+    voice = {"voice": "am_puck", "speaker": 20, "pitch": 1.1, "rate": 0.88, "robot": 0.18} if kind == "robot" else \
+            {"voice": "af_bella", "speaker": 3, "pitch": 1.15, "rate": 0.92, "robot": 0.0}
     return {
         "title": first_sentence[:60].rstrip(".") or "Untitled",
         "logline": prompt.strip(),

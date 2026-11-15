@@ -1,9 +1,13 @@
 """Local text-to-speech.
 
 Engines, tried in order (``engine="auto"``):
-  1. Piper (MIT) with an open voice model (CC0 / CC-BY datasets only — see THIRD_PARTY.md)
-  2. espeak-ng (GPL, invoked as an external program)
-  3. ``synth``: a dependency-free numpy "robot babble" voice so the pipeline always runs (CI)
+  1. Kokoro-82M (Apache-2.0 weights) via kokoro-onnx — default
+  2. Piper (GPL-3.0-or-later) with a CC0/CC-BY-dataset voice — fallback
+  3. espeak-ng (GPL, external program)
+  4. ``synth``: a dependency-free numpy "robot babble" voice so the pipeline always runs (CI)
+
+Engines 1–2 run in ``adapters/tts_worker`` — a separate, GPL-licensed process with a JSON contract —
+so this Apache-2.0 core never imports GPL code (see docs/research/03 and docs/DECISIONS.md).
 
 Voice cloning is intentionally not supported. ``VoiceSpec.consent`` exists as the hook for a future
 feature and must be an explicit, recorded consent from the voice owner; it is ignored tonight.
@@ -26,13 +30,17 @@ import numpy as np
 
 SAMPLE_RATE = 22050
 CACHE = Path(os.environ.get("ANIMATICA_CACHE", Path.home() / ".cache" / "animatica"))
+REPO_ROOT = Path(__file__).resolve().parents[3]
+WORKER = Path(os.environ.get("ANIMATICA_TTS_WORKER", REPO_ROOT / "adapters" / "tts_worker" / "animatica_tts_worker.py"))
+PIPER_VOICES = ("en-us-kathleen-low", "en-us-libritts-high")  # CC0 / CC BY 4.0 datasets
 
 
 @dataclass
 class VoiceSpec:
     engine: str = "auto"
-    model: str = "en-us-libritts-high"  # CC BY 4.0 dataset (LibriTTS); "en-us-kathleen-low" is CC0
-    speaker: int | None = 20
+    voice: str = "am_puck"  # Kokoro voice id
+    piper_model: str = "en-us-kathleen-low"
+    speaker: int | None = None
     pitch: float = 1.0  # >1 = higher (applied post-TTS)
     rate: float = 1.0  # speaking-rate multiplier
     robot: float = 0.0  # 0..1 subtle ring-mod "robot" colouring
@@ -43,6 +51,10 @@ def voices_dir() -> Path:
     return Path(os.environ.get("ANIMATICA_VOICES_DIR", CACHE / "voices"))
 
 
+def kokoro_dir() -> Path:
+    return Path(os.environ.get("ANIMATICA_KOKORO_DIR", CACHE / "kokoro"))
+
+
 def find_piper_model(name: str) -> Path | None:
     for base in (voices_dir(), Path.cwd() / "voices"):
         for cand in (base / name / f"{name}.onnx", base / f"{name}.onnx"):
@@ -51,23 +63,42 @@ def find_piper_model(name: str) -> Path | None:
     return None
 
 
-def _piper_available() -> bool:
-    try:
-        import piper  # noqa: F401
+def _worker_python() -> str:
+    return os.environ.get("ANIMATICA_TTS_PYTHON", sys.executable)
 
-        return True
-    except ImportError:
-        return shutil.which("piper") is not None
+
+def _has_module(mod: str) -> bool:
+    # probe in a subprocess: never import GPL engines into this process
+    try:
+        r = subprocess.run([_worker_python(), "-c", f"import importlib.util,sys; sys.exit(0 if importlib.util.find_spec({mod!r}) else 1)"],
+                           capture_output=True, timeout=60)
+        return r.returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
 
 
 def available_engines() -> list[str]:
     engines = []
-    if _piper_available() and (find_piper_model(VoiceSpec().model) or find_piper_model("en-us-kathleen-low")):
+    if (kokoro_dir() / "kokoro-v1.0.onnx").exists() and (kokoro_dir() / "voices-v1.0.bin").exists() and _has_module("kokoro_onnx"):
+        engines.append("kokoro")
+    if any(find_piper_model(v) for v in PIPER_VOICES) and _has_module("piper"):
         engines.append("piper")
     if shutil.which("espeak-ng") or shutil.which("espeak"):
         engines.append("espeak")
     engines.append("synth")
     return engines
+
+
+def _worker(req: dict) -> dict:
+    out = subprocess.run([_worker_python(), "-I", str(WORKER)], input=json.dumps(req), text=True, capture_output=True,
+                         timeout=600)
+    try:
+        res = json.loads(out.stdout)
+    except json.JSONDecodeError:
+        raise RuntimeError(f"tts worker crashed: {out.stderr[-400:]}") from None
+    if not res.get("ok"):
+        raise RuntimeError(res.get("error", "tts worker failed"))
+    return res
 
 
 def read_wav(path: str | Path) -> tuple[np.ndarray, int]:
@@ -108,29 +139,18 @@ def resample(a: np.ndarray, sr_from: int, sr_to: int) -> np.ndarray:
     return np.interp(x, np.arange(len(a)), a).astype(np.float32)
 
 
+def _kokoro(text: str, out: Path, voice: VoiceSpec) -> None:
+    _worker({"engine": "kokoro", "text": text, "voice": voice.voice, "speed": voice.rate, "out": str(out),
+             "model_dir": str(kokoro_dir())})
+
+
 def _piper(text: str, out: Path, voice: VoiceSpec) -> None:
-    model = find_piper_model(voice.model) or find_piper_model("en-us-kathleen-low")
+    model = find_piper_model(voice.piper_model) or next((m for m in map(find_piper_model, PIPER_VOICES) if m), None)
     if model is None:
         raise RuntimeError("no piper voice model found; run scripts/setup_assets.sh")
     cfg = json.loads(Path(str(model) + ".json").read_text())
-    n_speakers = int(cfg.get("num_speakers", 1))
-    cmd = [sys.executable, "-m", "piper", "-m", str(model), "-f", str(out)]
-    if shutil.which("piper") and not _module_piper():
-        cmd = ["piper", "-m", str(model), "-f", str(out)]
-    if n_speakers > 1 and voice.speaker is not None:
-        cmd += ["-s", str(min(voice.speaker, n_speakers - 1))]
-    if voice.rate != 1.0:
-        cmd += ["--length-scale", f"{1.0 / voice.rate:.3f}"]
-    subprocess.run(cmd, input=text, text=True, check=True, capture_output=True, timeout=300)
-
-
-def _module_piper() -> bool:
-    try:
-        import piper  # noqa: F401
-
-        return True
-    except ImportError:
-        return False
+    speaker = voice.speaker if int(cfg.get("num_speakers", 1)) > 1 else None
+    _worker({"engine": "piper", "text": text, "voice": str(model), "speaker": speaker, "speed": voice.rate, "out": str(out)})
 
 
 def _espeak(text: str, out: Path, voice: VoiceSpec) -> None:
@@ -224,7 +244,7 @@ def synthesize(text: str, out: str | Path, voice: VoiceSpec | None = None) -> di
     last_err = None
     for eng in engines:
         try:
-            {"piper": _piper, "espeak": _espeak, "synth": _synth}[eng](text, out, voice)
+            {"kokoro": _kokoro, "piper": _piper, "espeak": _espeak, "synth": _synth}[eng](text, out, voice)
             duration = _post(out, voice)
             return {"path": str(out), "engine": eng, "duration": round(duration, 3)}
         except Exception as e:  # noqa: BLE001

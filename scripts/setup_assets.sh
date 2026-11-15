@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Downloads the optional open-source tools/models Animatica uses into ~/.cache/animatica.
+#   * Kokoro-82M ONNX model + voices (Apache-2.0 weights) from the kokoro-onnx GitHub release — default TTS
 #   * Piper voices (rhasspy/piper GitHub release v0.0.2): en-us-libritts-high (CC BY 4.0 dataset),
 #     en-us-kathleen-low (CC0 dataset). HuggingFace may be blocked in sandboxes; GitHub releases work.
 #   * Rhubarb Lip Sync 1.14.0 (MIT) Linux binary.
@@ -7,7 +8,11 @@
 # amplitude-based lip sync, so the pipeline always runs.
 set -euo pipefail
 CACHE="${ANIMATICA_CACHE:-$HOME/.cache/animatica}"
-mkdir -p "$CACHE/voices" "$CACHE/rhubarb"
+mkdir -p "$CACHE/voices" "$CACHE/rhubarb" "$CACHE/kokoro"
+KREL=https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0
+for f in kokoro-v1.0.onnx voices-v1.0.bin; do
+  [ -f "$CACHE/kokoro/$f" ] || { echo "downloading $f"; curl -fsSL -o "$CACHE/kokoro/$f" "$KREL/$f"; }
+done
 for v in en-us-libritts-high en-us-kathleen-low; do
   if [ ! -f "$CACHE/voices/$v/$v.onnx" ]; then
     echo "downloading voice $v"

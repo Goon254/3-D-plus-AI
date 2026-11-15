@@ -28,7 +28,7 @@ class VoiceSound(Agent):
         engine = ctx.options.get("tts_engine", "auto")
         for d in plan.dialogue:
             v = hero.voice
-            spec = tts.VoiceSpec(engine=engine, speaker=v.speaker, pitch=v.pitch, rate=v.rate, robot=v.robot)
+            spec = tts.VoiceSpec(engine=engine, voice=v.voice, speaker=v.speaker, pitch=v.pitch, rate=v.rate, robot=v.robot)
             res = tts.synthesize(d.text, audio_dir / f"{d.id}.wav", spec)
             cues, ls_engine = lipsync.lipsync(res["path"], d.text)
             start_frame = frames[d.shot][0] + int(round(d.at * fps))

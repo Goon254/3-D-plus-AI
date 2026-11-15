@@ -30,7 +30,7 @@ SENSOR_W = 36.0
 ASPECT = 16 / 9
 
 DEFAULTS = {
-    "wide": {"azimuth": -8, "height": 1.5, "lens": 30, "fill": 0.3},
+    "wide": {"azimuth": -8, "height": 1.5, "lens": 30, "fill": 0.4},
     "medium": {"azimuth": 18, "height": 1.15, "lens": 40, "fill": 0.55},
     "closeup": {"azimuth": 42, "height": 1.15, "lens": 55, "fill": 0.6},
 }
@@ -145,12 +145,12 @@ class CameraLighting(Agent):
         stand_x = (anim_notes or {}).get("stand_x", prop_x - 0.95)
         ops: list[dict[str, Any]] = []
         x_track = (anim_notes or {}).get("root_x")  # callable time->x, when available
-        for i, shot in enumerate(plan.shots):
+        for _i, shot in enumerate(plan.shots):
             c = dict(DEFAULTS[shot.type])
             c.update(cp["shots"].get(shot.id, {}))
             move = c.get("move", shot.camera_move)
             f0, f1 = frames[shot.id]
-            t0, t1 = (f0 - 1) / fps, f1 / fps
+            _t0, _t1 = (f0 - 1) / fps, f1 / fps
             hx0 = x_track((f0 - 1) / fps) if x_track else stand_x
             hx1 = x_track(f1 / fps) if x_track else stand_x
             two_shot = False
@@ -166,6 +166,10 @@ class CameraLighting(Agent):
                 mid = (min(hx0, hx1) + prop_x) / 2
                 center = (mid, 0.0, hero_h * 0.45)
                 sub_h, sub_w = hero_h, abs(prop_x - min(hx0, hx1)) + 1.2
+            elif shot.type == "wide" and move == "track":
+                # travelling shot: frame the hero (plus lead room), the camera moves with it
+                center = ((hx0 + hx1) / 2, 0.0, hero_h * 0.5)
+                sub_h, sub_w = hero_h, 2.4
             elif shot.type == "wide":
                 center = ((hx0 + hx1) / 2, 0.0, hero_h * 0.5)
                 sub_h, sub_w = hero_h, abs(hx1 - hx0) + 1.6

@@ -39,7 +39,7 @@ def shade(hex_color: str, light: float = 0.0, sat: float = 0.0) -> str:
     l_ = min(1, max(0, l_ + light))
     s = min(1, max(0, s + sat))
     r, g, b = colorsys.hls_to_rgb(h, l_, s)
-    return "#{:02X}{:02X}{:02X}".format(round(r * 255), round(g * 255), round(b * 255))
+    return f"#{round(r * 255):02X}{round(g * 255):02X}{round(b * 255):02X}"
 
 
 def mat(color: str, metallic: float = 0.0, roughness: float = 0.5, emission: str | None = None,
