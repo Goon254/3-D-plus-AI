@@ -130,7 +130,7 @@ class TaskGraph:
 
 
 HERO_ANIMATED = ["hero_root", "hero_body", "hero_head_pivot", "hero_antenna_pivot", "hero_arm_pivot_L", "hero_arm_pivot_R",
-                 "hero_eye_L", "hero_eye_R", "hero_mouth", "prop_pivot", "prop"]
+                 "hero_eye_L", "hero_eye_R", "hero_mouth", "prop_pivot", "prop", "hero_elbow_L", "hero_elbow_R"]
 
 
 class Studio:

@@ -88,6 +88,8 @@ class Rig:
     eye_size: Curve = field(default_factory=lambda: Curve(1.0))
     arm_L: Curve = field(default_factory=Curve)
     arm_R: Curve = field(default_factory=Curve)
+    elbow_L: Curve = field(default_factory=lambda: Curve(-12.0))  # negative = forearm bends forward
+    elbow_R: Curve = field(default_factory=lambda: Curve(-12.0))
     blinks: list[float] = field(default_factory=list)
 
 
@@ -185,7 +187,10 @@ class Animator(Agent):
                     rig.eye_size.key(ts, 1.12).key(ts + 0.3, 1.25, "back").key(ts + dur_line + 0.4, 1.1)
                     if p.get("reach"):
                         reach_t = ts + dur_line + 0.3
-                        rig.arm_L.key(ts + 0.2, 0).key(reach_t, -38, "inout").key(min(t1 - 0.6, reach_t + 1.5), -50).key(t1, -20)
+                        # the camera-side arm (R: the hero faces +X, cameras sit on -Y) does the acting
+                        rig.arm_R.key(ts + 0.2, 0).key(reach_t, -38, "inout").key(min(t1 - 0.6, reach_t + 1.5), -50).key(t1, -20)
+                        # gentle reach: elbow folds first (anticipation), then the forearm extends toward the prop
+                        rig.elbow_R.key(ts + 0.2, -12).key(reach_t - 0.3, -55, "inout").key(reach_t + 0.5, -20, "out").key(t1, -15)
                     if p.get("bounce"):
                         hop_t = ts + dur_line + 0.15
                         if hop_t + 0.6 < t1:
@@ -204,6 +209,9 @@ class Animator(Agent):
                 rig.eye_size.key(t0 + 0.5, 1.4, "back")
                 rig.arm_L.key(t0 + 0.6, -120 * energy, "back").key(t1 - 0.5, -20)
                 rig.arm_R.key(t0 + 0.7, -120 * energy, "back").key(t1 - 0.4, -20)
+                for k in range(4):  # waving forearms
+                    rig.elbow_L.key(t0 + 0.9 + 0.35 * k, -60 if k % 2 == 0 else -15, "inout")
+                    rig.elbow_R.key(t0 + 1.0 + 0.35 * k, -15 if k % 2 == 0 else -60, "inout")
                 rig.blinks += [t0 + 0.3]
             elif shot.beat == "settle":
                 rig.lean.key(t0 + 0.6, 4, "inout")
@@ -212,7 +220,7 @@ class Animator(Agent):
                 rig.head_tilt.key(t0 + 1.0, tilt or 10, "inout")
                 rig.head_nod.key(t0 + 1.0, 10)
                 rig.eye_open.key(t0 + 1.5, 1.0).key(t0 + 2.6, 0.55, "inout")
-                rig.arm_L.key(t0 + 0.5, -20).key(t0 + 1.8, -8)
+                rig.arm_R.key(t0 + 0.5, -20).key(t0 + 1.8, -8)
                 rig.blinks += [t0 + 0.5]
             elif shot.beat == "idle":
                 # alone: slow look around, a sigh (dip + head drop + droopy eyes), blinks; no travel
@@ -310,6 +318,10 @@ class Animator(Agent):
                         "keys": sample(lambda f, t, c=curve, s=sgn: [r(c(t) + math.degrees(at(f, arm_lag)) * 0.5
                                                                          + 2 * math.sin(2 * math.pi * t / 2.6 + s), 2),
                                                                        r(4 * s, 2), 0.0])})
+        if "hero_elbow_L" in ctx.engine.known_ids:  # jointed arms: elbow bend + overlapping lag behind the shoulder
+            for side, curve in (("L", rig.elbow_L), ("R", rig.elbow_R)):
+                ops.append({"op": "insert_keyframes", "target": f"hero_elbow_{side}", "property": "rotation",
+                            "keys": sample(lambda f, t, c=curve: [r(c(t) + math.degrees(at(f, arm_lag)) * 0.8, 2), 0.0, 0.0])})
         # eyes: blink = fast scale-Z dip (2 frames down, 3 up), multiplied with eye size and openness
         def eye_z(t: float) -> float:
             b = 1.0

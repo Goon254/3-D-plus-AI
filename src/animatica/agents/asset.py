@@ -99,11 +99,17 @@ def robot_ops(color: str, eye: str, trim: str, antenna: bool = True, scale: floa
                         "depth": 0.03, "rotation": [0, 90, 0], "location": [0.43 * x, y, 0.14], "parent": "hero_root",
                         "segments": 16})
         ops += [
+            # two-segment arm: shoulder pivot -> upper arm -> elbow pivot -> forearm + hand (arms can bend)
             {"op": "create_empty", "id": f"hero_arm_pivot_{side}", "location": [0.37 * x, 0, 0.12], "parent": "hero_body"},
-            {"op": "create_primitive", "id": f"hero_arm_{side}", "shape": "cylinder", "radius": 0.04, "depth": 0.3,
-             "location": [0.03 * x, 0, -0.15], "parent": f"hero_arm_pivot_{side}", "segments": 16, "smooth": True},
+            {"op": "create_primitive", "id": f"hero_arm_{side}", "shape": "cylinder", "radius": 0.04, "depth": 0.16,
+             "location": [0.03 * x, 0, -0.08], "parent": f"hero_arm_pivot_{side}", "segments": 16, "smooth": True},
+            {"op": "create_empty", "id": f"hero_elbow_{side}", "location": [0.03 * x, 0, -0.16], "parent": f"hero_arm_pivot_{side}"},
+            {"op": "create_primitive", "id": f"hero_elbow_joint_{side}", "shape": "uv_sphere", "radius": 0.045,
+             "parent": f"hero_elbow_{side}", "smooth": True, "segments": 16},
+            {"op": "create_primitive", "id": f"hero_forearm_{side}", "shape": "cylinder", "radius": 0.037, "depth": 0.13,
+             "location": [0, 0, -0.07], "parent": f"hero_elbow_{side}", "segments": 16, "smooth": True},
             {"op": "create_primitive", "id": f"hero_hand_{side}", "shape": "uv_sphere", "radius": 0.065,
-             "location": [0.03 * x, 0, -0.32], "parent": f"hero_arm_pivot_{side}", "smooth": True, "segments": 16},
+             "location": [0, 0, -0.16], "parent": f"hero_elbow_{side}", "smooth": True, "segments": 16},
         ]
     ops += [
         {"op": "create_primitive", "id": "hero_neck", "shape": "cylinder", "radius": 0.07, "depth": 0.14,
@@ -141,10 +147,12 @@ def robot_ops(color: str, eye: str, trim: str, antenna: bool = True, scale: floa
     body = ["hero_body", "hero_head"]
     ops += [
         {"op": "set_material", "targets": body, "material": mat(color, 0.35, 0.38, name="hero_paint")},
-        {"op": "set_material", "targets": ["hero_tread_L", "hero_tread_R", "hero_neck", "hero_arm_L", "hero_arm_R"],
+        {"op": "set_material", "targets": ["hero_tread_L", "hero_tread_R", "hero_neck", "hero_arm_L", "hero_arm_R",
+                                           "hero_forearm_L", "hero_forearm_R"],
          "material": mat(trim, 0.6, 0.45, name="hero_trim")},
         {"op": "set_material", "targets": [f"hero_cog_{s}{j}" for s in "LR" for j in range(3)] + ["hero_ear_L", "hero_ear_R",
-                                                                                                    "hero_hand_L", "hero_hand_R", "hero_belly"],
+                                                                                                    "hero_hand_L", "hero_hand_R", "hero_belly",
+                                                                                                    "hero_elbow_joint_L", "hero_elbow_joint_R"],
          "material": mat(shade(color, -0.12), 0.7, 0.3, name="hero_metal")},
         {"op": "set_material", "targets": ["hero_face"], "material": mat(dark, 0.2, 0.15, name="hero_screen")},
         {"op": "set_material", "targets": ["hero_eye_L", "hero_eye_R", "hero_mouth"],
