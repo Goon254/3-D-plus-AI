@@ -13,6 +13,8 @@ that raised it.
 
 - [ ] **Commit the showcase** (small compressed MP4 + contact sheet + log link) to `examples/showcase/`
   and fill the `<!-- SHOWCASE -->` / `<!-- SHOWCASE_LIST -->` placeholders in README and PROGRESS.
+  *Partial (08:45): `examples/showcase/hello-little-one/` committed at `8f67618` (1.2 MB MP4, contact
+  sheet, log, .blend); README/PROGRESS placeholders still empty.*
 - [ ] **Lip sync legibility:** make the mouth on the robot's screen-face ~2–3× larger, and make the
   "closeup" shot an actual close-up (head + shoulders, face ≥ 25 % of frame height). Currently f300 is a
   medium shot and the mouth is ~20 px tall at 960×540. (`agents/asset.py`, `agents/camera.py`)
