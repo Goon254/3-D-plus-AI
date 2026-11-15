@@ -57,6 +57,12 @@ is the production log viewer: every agent decision, every batch, every critique 
   iteration 1 flags the flower at 55 % in frame in the close-up, iteration 2 passes after the reframe
   (previews `iter1_s3_f312.png` → `iter2_s3_f312.png`). [Editable `.blend`](examples/showcase/hello-little-one/scene.blend).
   Reproduce: `animatica demo --quality draft` (≈21 min) or `--quality preview` (≈2 min, Workbench).
+* **HD version** — [`examples/showcase/hello-little-one-hd/final.mp4`](examples/showcase/hello-little-one-hd/final.mp4)
+  (21 s, **960×540 Cycles `--quality final`**, title overlay, voice + lip sync + music + captions, ~3 MB), rendered
+  09:51–11:55 UTC from `46d8449`. It has the readable mouth, the head-and-shoulders dialogue close-up, jointed-arm reach,
+  haze and the sun halo, but it predates the rolling wheels and grounded heaps (`5f068e4`, `6a10f8a`).
+  [Production log](examples/showcase/hello-little-one-hd/log/index.html) (critic iteration 1 → 2 reframes the close-up) ·
+  [contact sheet](examples/showcase/hello-little-one-hd/contact_sheet.jpg).
 * **Games track** — [`examples/showcase/robot-flower-platformer/`](examples/showcase/robot-flower-platformer/)
   (generated Godot project; bot playtest 6/6).
 

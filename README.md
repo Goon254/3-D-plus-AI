@@ -16,6 +16,7 @@ procedural music, Cycles 640×360 `--quality draft`, ~21 min on 2 CPU cores), no
 ▶ [`examples/showcase/hello-little-one/final.mp4`](examples/showcase/hello-little-one/final.mp4) (21 s, with sound and captions) ·
 [production log](examples/showcase/hello-little-one/log/index.html) ·
 [editable .blend](examples/showcase/hello-little-one/scene.blend) ·
+**[HD 960×540 version](examples/showcase/hello-little-one-hd/final.mp4)** ·
 games track: [robot-flower-platformer](examples/showcase/robot-flower-platformer/) (screenshot below)
 
 <img src="examples/showcase/robot-flower-platformer/screenshot.png" width="480" alt="generated Godot platformer">
