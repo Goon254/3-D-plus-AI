@@ -20,7 +20,7 @@
   editable `scene.blend` and an `edit.mlt` timeline for Shotcut/Kdenlive.
 
 Hand edits survive `animatica continue` / `revise`. An **MCP server** exposes the batched tools. A
-**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **65 tests**
+**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **71 tests**
 (`pytest -q`) pass locally. GitHub CI runs ruff, unit, bpy adapter and offline pipeline tests; status
 for the final SHA is at the bottom of this report. An hourly reviewer session scored the project, and
 its queue is in [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md).
@@ -82,6 +82,11 @@ is the production log viewer: every agent decision, every batch, every critique 
 | 9 | Polish | **partial** | README + quickstart + Makefile, CONTRIBUTING (DCO), issue templates, `docs/BLENDER_FEATURE_MAP.md`, `docs/GAMES.md`. No GIF, no web UI |
 
 ## 5. Known issues & honest quality assessment
+
+**Update 14:15** ([review](docs/reviews/2026-11-15T1415Z.md)): exits now leave the frame (camera holds on the set),
+night reads as night in previews, the ground has grit/bump/pebbles, and scrap heaps are smooth with junk on the crest. The critter
+no longer sits in the floor. 71 tests pass. Scores ≈8.1 (visual 7, animation 6). Next: re-render the showcase, then bone rig + acting.
+`PHASE2.md` (showcase films, site, hosted MCP) was added at 14:00 and starts after the P1 quality items.
 
 Reviewer scores at 12:36 ([review](docs/reviews/2026-11-15T1236Z.md)): functionality 8, visual 7, animation 6,
 audio 8, code 9, architecture 9, docs 9, licenses 9 (≈8.1/10). The exit-verb fix is verified. Top open items: the exit

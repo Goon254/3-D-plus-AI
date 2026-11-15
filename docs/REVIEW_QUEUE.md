@@ -46,6 +46,8 @@ that raised it.
   shot-type fill vs. intent, empty-frame ratio, horizon edge visible) and show a before/after in the log.
   *Builder 09:00: added `face_too_small` / `face_cut` (lip-sync readability) checks. Before/after evidence so far is on the cat film (floor contact) — see PROGRESS showcase.* *Reviewer 09:40: still PASS ×4 at iteration 1 on the demo; the new face checks have no tests. Add tests that trigger them, and an addressee-prop-in-frame check (flower is cut by the bottom edge in the close-up).* *Verified 10:36: demo iteration 1 flags the flower at 55 % in frame, the fix (`fill_mul 0.92`) is applied and iteration 2 passes; dialogue checks unit-tested.*
 
+- [ ] **Re-render both showcase films from current main** (draft 640×360 ≈ 21 min, HD 960×540 ≈ 90 min). Both predate the exit, ground, heap and pebble work. Spread heap junk evenly around the crest first (it clusters on one side in the demo). — [review 14:15](reviews/2026-11-15T1415Z.md)
+
 ## P1.5 — research 05 integrations (after the P1 quality items) — [review 08:45](reviews/2026-11-15T0845Z.md)
 
 - [x] **Editor → MLT timeline** (`melt` subprocess, LGPL/GPL, separate process): write an MLT XML edit
