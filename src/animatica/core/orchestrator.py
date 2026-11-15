@@ -195,18 +195,21 @@ class Studio:
         for it in range(1, max_it + 1):
             issues, info = critic.review(ctx, it)
             blockers = [i for i in issues if i.severity == "blocker"]
+            polish = [i for i in issues if i.severity == "minor" and i.fix.get("kind") == "camera"]
             history.append({"iteration": it, "issues": len(issues), "blockers": len(blockers),
                             "messages": [f"{i.shot}: {i.message}" for i in issues]})
-            if not blockers:
+            if not blockers and not polish:
                 ctx.log.event("critique", critic.role, f"iteration {it}: all shots pass" +
                               (f" ({len(issues)} minor notes)" if issues else ""))
                 break
             if it == max_it:
-                ctx.log.event("critique", critic.role, f"iteration cap ({max_it}) reached with {len(blockers)} blockers; "
-                              "continuing with best effort")
+                ctx.log.event("critique", critic.role, f"iteration cap ({max_it}) reached with {len(blockers)} blockers, "
+                              f"{len(polish)} minor notes; continuing with best effort")
                 break
-            self._apply_fixes(ctx, blockers + [i for i in issues if i.severity == "minor" and i.fix.get("kind") == "camera"],
-                              camera, animator, voice)
+            if not blockers:
+                ctx.log.event("critique", critic.role, f"iteration {it}: no blockers; polishing {len(polish)} actionable "
+                              "minor camera notes")
+            self._apply_fixes(ctx, blockers + polish, camera, animator, voice)
         ctx.state.artifacts["critic_history"] = history
         return {"iterations": history}
 
