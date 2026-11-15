@@ -57,7 +57,7 @@ Source of truth: `src/animatica/core/protocol.py` (Pydantic models + semantic va
 | `transform` | set location/rotation/scale | `target, location?, rotation?, scale?` |
 | `parent` | (re)parent, keep world transform | `child, parent|null` |
 | `add_modifier` | bevel, subsurf, array, solidify, displace, mirror, smooth, wireframe, decimate | `target, type, params{}` |
-| `set_material` | Principled BSDF from a compact spec | `targets[], material{base_color, metallic, roughness, emission, emission_strength, alpha, name}` |
+| `set_material` | Principled BSDF from a compact spec | `targets[], material{base_color, metallic, roughness, specular?, emission, emission_strength, alpha, noise, noise_scale, fade_to, fade_start, fade_end, radial_glow, name}` |
 | `add_light` | sun/point/area/spot | `id, light_type, energy, color, size, spot_angle` |
 | `add_camera` | camera with optional track-to and DOF | `id, lens, look_at (id or point), dof_target, fstop` |
 | `set_camera_active` | active camera, or a **cut** at `frame` (timeline marker bound to the camera) | `id, frame?` |

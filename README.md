@@ -9,7 +9,7 @@ animatica film "A curious little robot discovers a flower growing in a junkyard 
 ```
 
 **Showcase** — made by the command above, fully offline (scripted planner, Kokoro voice, Rhubarb lip sync,
-procedural music, Cycles 960×540), no human edits:
+procedural music, Cycles 640×360 `--quality draft`, ~21 min on 2 CPU cores), no human edits:
 
 [![contact sheet](examples/showcase/hello-little-one/contact_sheet.jpg)](examples/showcase/hello-little-one/final.mp4)
 

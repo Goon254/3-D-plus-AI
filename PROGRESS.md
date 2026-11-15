@@ -20,7 +20,7 @@
   editable `scene.blend` and an `edit.mlt` timeline for Shotcut/Kdenlive.
 
 Hand edits survive `animatica continue` / `revise`. An **MCP server** exposes the batched tools. A
-**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **62 tests**
+**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **63 tests**
 (`pytest -q`) pass locally. GitHub CI runs ruff, unit, bpy adapter and offline pipeline tests; status
 for the final SHA is at the bottom of this report. An hourly reviewer session scored the project, and
 its queue is in [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md).
@@ -40,7 +40,7 @@ animatica film "A lonely robot sits in a junkyard at dusk until a flower blooms.
 animatica revise output/hello-little-one "make the robot blue and slow down shot 2" --quality preview
 animatica game "a 2D platformer where a robot collects flowers" && godot --path output/game-*/godot
 animatica-mcp                        # MCP server (stdio) for Claude Desktop / Claude Code
-pytest -q                            # 62 tests (Blender/Godot/MCP tests skip if those are missing)
+pytest -q                            # 63 tests (Blender/Godot/MCP tests skip if those are missing)
 ```
 
 Each film writes `output/<project>/final.mp4` (video + audio + captions), `scene.blend`, `edit.mlt`,
@@ -50,6 +50,15 @@ is the production log viewer: every agent decision, every batch, every critique 
 ## 3. Showcase
 
 <!-- SHOWCASE_LIST -->
+* **North-star short** — [`examples/showcase/hello-little-one/final.mp4`](examples/showcase/hello-little-one/final.mp4)
+  (21 s, 640×360 Cycles `--quality draft`, voice + lip sync + music + captions, 1.0 MB), re-rendered at 11:17 UTC
+  from `6a10f8a` with every fix so far (rolling wheels, grounded scrap heaps, sun halo, whole flower in the
+  close-up). [Production log](examples/showcase/hello-little-one/log/index.html) shows the critic loop at work:
+  iteration 1 flags the flower at 55 % in frame in the close-up, iteration 2 passes after the reframe
+  (previews `iter1_s3_f312.png` → `iter2_s3_f312.png`). [Editable `.blend`](examples/showcase/hello-little-one/scene.blend).
+  Reproduce: `animatica demo --quality draft` (≈21 min) or `--quality preview` (≈2 min, Workbench).
+* **Games track** — [`examples/showcase/robot-flower-platformer/`](examples/showcase/robot-flower-platformer/)
+  (generated Godot project; bot playtest 6/6).
 
 ## 4. Milestones
 
@@ -68,14 +77,14 @@ is the production log viewer: every agent decision, every batch, every critique 
 
 ## 5. Known issues & honest quality assessment
 
-Reviewer scores at 09:40, before the latest fixes: functionality 8, visual 6, animation 6, audio 7,
-code 8, architecture 8, docs 8, licenses 9 (≈7.75/10).
+Reviewer scores at 10:36 ([review](docs/reviews/2026-11-15T1036Z.md)): functionality 8, visual 7, animation 6,
+audio 8, code 8, architecture 9, docs 8, licenses 9 (≈7.9/10).
 
 * **It's a lit toy, not cinema.** Characters are bevelled primitives. They're readable and charming
   in Cycles, but there are no real textures (only procedural grime) and no volumetrics. The critter
   reads a bit like a chick.
 * **The rig is object-level** (empties + parenting, elbows added tonight). There's no walk cycle (the
-  robot rolls; the critter glides with a hop-bob) and no bone rig. That's the biggest visible upgrade
+  robot drives on wheels that now roll by distance; the critter glides with a hop-bob) and no bone rig. That's the biggest visible upgrade
   left.
 * **Story variety is template-driven offline.** Arcs vary with the prompt, but the scripted Director is
   a keyword parser. The Anthropic path (plans, performance, camera, vision critic) is implemented and

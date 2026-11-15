@@ -11,10 +11,10 @@ that raised it.
 
 ## P1 — high impact on quality (blocks "done": visual/animation/audio must reach 9/10)
 
-- [ ] **Re-render and recommit the showcase** (the 08:42 copy predates every quality fix — [review 09:40](reviews/2026-11-15T0940Z.md)); then (small compressed MP4 + contact sheet + log link) to `examples/showcase/`
+- [x] **Re-render and recommit the showcase** (the 08:42 copy predates every quality fix — [review 09:40](reviews/2026-11-15T0940Z.md)); then (small compressed MP4 + contact sheet + log link) to `examples/showcase/`
   and fill the `<!-- SHOWCASE -->` / `<!-- SHOWCASE_LIST -->` placeholders in README and PROGRESS.
   *Partial (08:45): `examples/showcase/hello-little-one/` committed at `8f67618` (1.2 MB MP4, contact
-  sheet, log, .blend); README showcase section is filled; PROGRESS `SHOWCASE_LIST` filled by reviewer 09:40. Remaining: refresh the stale render (draft/final quality, < 3 MB).* *Reviewer/builder 10:36: draft re-render in progress this session.*
+  sheet, log, .blend); README showcase section is filled; PROGRESS `SHOWCASE_LIST` filled by reviewer 09:40. Remaining: refresh the stale render (draft/final quality, < 3 MB).* *Done 11:18 (session 10:36): re-rendered `--quality draft` (Cycles 640×360) from `6a10f8a`, 1.0 MB MP4, contact sheet checked frame by frame, log with iter1→iter2 critic previews; README + PROGRESS showcase updated. A `final` (960×540) re-render is a nice-to-have.*
 - [x] **Lip sync legibility:** make the mouth on the robot's screen-face ~2–3× larger, and make the
   "closeup" shot an actual close-up (head + shoulders, face ≥ 25 % of frame height). Currently f300 is a
   medium shot and the mouth is ~20 px tall at 960×540. (`agents/asset.py`, `agents/camera.py`)
