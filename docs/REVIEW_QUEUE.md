@@ -65,7 +65,7 @@ that raised it.
   opt-in `tts-piper` extra (GPL, worker only). *Done by reviewer 08:45, DECISIONS #25.*
 - [x] Apply `ruff format` repo-wide in one mechanical commit (44 files differ at 09:40, growing) and add
   `ruff format --check` to CI — only when no build session is active, to avoid conflicts.
-- [ ] PROGRESS: only state "CI green" after checking the latest run for the pushed SHA. Fill the empty `<!-- SHOWCASE_LIST -->` / `<!-- CI_STATUS -->` placeholders (empty on main at 10:36).
+- [ ] PROGRESS: only state "CI green" after checking the latest run for the pushed SHA. Fill the empty `<!-- SHOWCASE_LIST -->` / `<!-- CI_STATUS -->` placeholders (empty on main at 10:36). *Filled 11:33 (both, with run numbers).*
 - [x] Split `adapters/blender/animatica_blender/executor.py` (1 038 lines) by op family.
   *Builder 09:14 (`b50f7fb`): split into executor + ops_scene/material/anim/render + common.* *Verified 09:40 (largest module now 361 lines; CI run #21 was red on lint, fixed by `74209ea`).*
 - [ ] Run the Anthropic provider path once against the live API (when a key is available) and record
