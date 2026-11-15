@@ -13,7 +13,7 @@ activity, exposure) and applies fixes in a loop. The Editor renders with Cycles 
 
 Hand edits survive `animatica continue` and `animatica revise`. An **MCP server** exposes the batched
 tools. A **Godot games track** turns a prompt into a playable platformer, which a bot playtests
-headlessly. **58 tests** pass locally, and CI on GitHub (lint, unit, bpy adapter, offline pipeline) is green.
+headlessly. **61 tests** (60 pass + 1 Godot test that skips without Godot) and CI on GitHub (lint, unit, bpy adapter, offline pipeline) is green for `f0aa66d` (run #24, checked 09:40 UTC).
 
 ## 2. Try it (fresh clone)
 
@@ -29,7 +29,7 @@ animatica demo                       # Cycles 960×540, ≈9 s/frame on 2 CPU co
 animatica film "A sleepy blue cat finds a glowing crystal in a snowy forest at night." --quality draft
 animatica revise output/hello-little-one "make the robot blue and slow down shot 2" --quality preview
 animatica game "a 2D platformer where a robot collects flowers" && godot --path output/game-*/godot
-pytest -q                            # 58 tests (Blender/Godot tests skip if missing)
+pytest -q                            # 61 tests (Blender/Godot tests skip if missing)
 ```
 
 Each film writes `output/<project>/final.mp4`, `scene.blend`, `scene.usda`, `final.srt`, `audio/`, and
@@ -38,6 +38,13 @@ Each film writes `output/<project>/final.mp4`, `scene.blend`, `scene.usda`, `fin
 ## 3. Showcase
 
 <!-- SHOWCASE_LIST -->
+* **Film:** [`examples/showcase/hello-little-one/final.mp4`](examples/showcase/hello-little-one/final.mp4) ·
+  [contact sheet](examples/showcase/hello-little-one/contact_sheet.jpg) ·
+  [production log](examples/showcase/hello-little-one/log/index.html) ·
+  [editable .blend](examples/showcase/hello-little-one/scene.blend). *Note: rendered 08:42, before the
+  09:00–09:16 look/audio/lip-sync fixes — a refresh is the top item in `docs/REVIEW_QUEUE.md`.*
+* **Game:** [`examples/showcase/robot-flower-platformer/`](examples/showcase/robot-flower-platformer/) (GDD, playtest report, screenshot).
+* **Reviews:** hourly scores in [`docs/reviews/`](docs/reviews/) — latest [09:40](docs/reviews/2026-11-15T0940Z.md), overall ≈ 7.75/10.
 
 ## 4. Milestones
 
