@@ -20,7 +20,7 @@
   editable `scene.blend` and an `edit.mlt` timeline for Shotcut/Kdenlive.
 
 Hand edits survive `animatica continue` / `revise`. An **MCP server** exposes the batched tools. A
-**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **64 tests**
+**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **65 tests**
 (`pytest -q`) pass locally. GitHub CI runs ruff, unit, bpy adapter and offline pipeline tests; status
 for the final SHA is at the bottom of this report. An hourly reviewer session scored the project, and
 its queue is in [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md).
@@ -40,7 +40,7 @@ animatica film "A lonely robot sits in a junkyard at dusk until a flower blooms.
 animatica revise output/hello-little-one "make the robot blue and slow down shot 2" --quality preview
 animatica game "a 2D platformer where a robot collects flowers" && godot --path output/game-*/godot
 animatica-mcp                        # MCP server (stdio) for Claude Desktop / Claude Code
-pytest -q                            # 64 tests (Blender/Godot/MCP tests skip if those are missing)
+pytest -q                            # 65 tests (Blender/Godot/MCP tests skip if those are missing)
 ```
 
 Each film writes `output/<project>/final.mp4` (video + audio + captions), `scene.blend`, `edit.mlt`,
@@ -135,6 +135,7 @@ All are in [docs/DECISIONS.md](docs/DECISIONS.md). These are worth a look:
 ## CI status
 
 <!-- CI_STATUS -->
-Checked 11:33 UTC via the Actions API: runs #29–#33 (`5f068e4` … `027a733`) all **success**, including the
-new `ruff format --check` step (#32 onward). Run #34 (`5fca91a`, critter hops) was still queued at writing time;
-63 passed + 1 skipped locally on that SHA. Later SHAs: see [Actions](https://github.com/Goon254/3-D-plus-AI/actions).
+Checked 12:01 UTC via the Actions API: run #39 for `54b67d3` (Director exit verbs, the last code commit of the
+night) → **success** on both jobs (`lint-and-unit`: ruff check + ruff format --check + unit tests;
+`blender-and-offline-pipeline`: bpy 5.3 adapter tests + offline film smoke test). Locally on that SHA:
+`pytest -q` → **65 passed** (Blender, Godot, MCP and Kokoro all present).
