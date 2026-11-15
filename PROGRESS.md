@@ -58,7 +58,7 @@ is the production log viewer: every agent decision, every batch, every critique 
   (previews `iter1_s3_f312.png` → `iter2_s3_f312.png`). [Editable `.blend`](examples/showcase/hello-little-one/scene.blend).
   Reproduce: `animatica demo --quality draft` (≈21 min) or `--quality preview` (≈2 min, Workbench).
 * **HD version** — [`examples/showcase/hello-little-one-hd/final.mp4`](examples/showcase/hello-little-one-hd/final.mp4)
-  (21 s, **960×540 Cycles `--quality final`**, title overlay, voice + lip sync + music + captions, ~3 MB), rendered
+  (21 s, **960×540 Cycles `--quality final`**, title overlay, voice + lip sync + music + captions, 1.3 MB), rendered
   09:51–11:55 UTC from `46d8449`. It has the readable mouth, the head-and-shoulders dialogue close-up, jointed-arm reach,
   haze and the sun halo, but it predates the rolling wheels and grounded heaps (`5f068e4`, `6a10f8a`).
   [Production log](examples/showcase/hello-little-one-hd/log/index.html) (critic iteration 1 → 2 reframes the close-up) ·
@@ -83,9 +83,9 @@ is the production log viewer: every agent decision, every batch, every critique 
 
 ## 5. Known issues & honest quality assessment
 
-Reviewer scores at 11:46 ([review](docs/reviews/2026-11-15T1146Z.md)): functionality 8, visual 7, animation 6,
-audio 8, code 9, architecture 9, docs 9, licenses 9 (≈8.1/10). Top open item: the scripted Director ignores
-exit verbs like "hops away" (fox film ends on `settle`).
+Reviewer scores at 12:36 ([review](docs/reviews/2026-11-15T1236Z.md)): functionality 8, visual 7, animation 6,
+audio 8, code 9, architecture 9, docs 9, licenses 9 (≈8.1/10). The exit-verb fix is verified. Top open items: the exit
+beat doesn't carry the hero out of frame, the HD showcase is stale (floating slab), and there is no bone rig or acting beat.
 
 * **It's a lit toy, not cinema.** Characters are bevelled primitives. They're readable and charming
   in Cycles, but there are no real textures (only procedural grime) and no volumetrics. The critter
