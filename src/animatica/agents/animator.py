@@ -248,11 +248,20 @@ class Animator(Agent):
                 )
                 rig.lean.key(notice + 0.5, 0).key(notice + 1.0, -9 * energy, "out")  # anticipation lean back
                 move_start = notice + 1.15
-                move_end = min(t1 - 0.9, move_start + 2.2 / speed)
-                rig.root_x.key(move_start, x, "hold").key(move_end, stand_x, "inout")
-                rig.lean.key(move_start + 0.25, 6, "out").key(move_end - 0.2, 3).key(
-                    move_end + 0.4, 13 * energy + 4, "back"
-                )
+                move_end = min(t1 - 0.9, move_start + 2.2 / speed + 0.55)
+                # a cautious approach, not a glide: halfway there it stops, leans in and tilts its head
+                # (curiosity), then closes the distance (review 11-16 17:25: acting beat)
+                pause = move_start + (move_end - move_start - 0.55) * 0.5
+                mid_x = x + (stand_x - x) * 0.55
+                rig.root_x.key(move_start, x, "hold").key(pause, mid_x, "inout").key(
+                    pause + 0.55, mid_x, "hold"
+                ).key(move_end, stand_x, "inout")
+                rig.lean.key(move_start + 0.25, 6, "out").key(pause, 4).key(
+                    pause + 0.3, 12 * energy + 5, "back"
+                ).key(pause + 0.6, 5).key(move_end - 0.2, 3).key(move_end + 0.4, 13 * energy + 4, "back")
+                rig.head_tilt.key(pause, 0).key(pause + 0.35, 14, "back").key(move_end, 8, "inout")
+                rig.blinks += [pause + 0.45]
+                notes["discover_pause"] = {"t": round(pause, 3), "x": round(mid_x, 3)}
                 rig.head_nod.key(move_end, 6).key(move_end + 0.5, 16, "inout")
                 rig.blinks += [notice + 1.9]
                 x = stand_x
@@ -274,6 +283,16 @@ class Animator(Agent):
                     dur_line = ctx.state.artifacts.get("lines", {}).get(d.id, {}).get("duration", 1.5)
                     rig.head_nod.key(ts - 0.15, 4).key(ts + 0.25, 14, "out").key(ts + dur_line, 9)
                     rig.eye_size.key(ts, 1.12).key(ts + 0.3, 1.25, "back").key(ts + dur_line + 0.4, 1.1)
+                    # after the line: a glance down at the one it spoke to, then back to the lens (eyeline)
+                    te = ts + dur_line + 0.1
+                    if te + 1.3 < t1 - 0.3:
+                        rig.head_turn.key(te, cheat, "hold").key(te + 0.35, 6, "inout").key(
+                            te + 0.95, 6, "hold"
+                        ).key(te + 1.3, cheat, "inout")
+                        rig.head_nod.key(te, 9).key(te + 0.35, 20, "inout").key(te + 0.95, 18).key(
+                            te + 1.3, 9, "inout"
+                        )
+                        notes.setdefault("glances", []).append(round(te, 3))
                     if p.get("reach"):
                         reach_t = ts + dur_line + 0.3
                         # the camera-side arm (R: the hero faces +X, cameras sit on -Y) does the acting

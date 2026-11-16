@@ -231,3 +231,34 @@ def test_critic_face_floor_per_kind_and_dialogue_singles():
         "s3", {"100": frame(0.5, 0.1)}, [(95, 120)], "lantern", face="hero_head", addressee=False
     )
     assert single == []
+
+
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "A curious little robot discovers a flower growing in a junkyard at sunset. It says: 'Hello, little one.'",
+        "A tiny fox finds a glowing lantern in a snowy forest at night. It whispers: 'Are you lost too?' Then it hops away.",
+    ],
+)
+def test_acting_beats_discovery_pause_and_glance_after_the_line(tmp_path, prompt):
+    from animatica.agents.animator import Animator, default_performance
+    from animatica.agents.director import normalize_plan, scripted_plan
+    from animatica.core.plan import FilmPlan
+    from animatica.core.state import ProjectState
+
+    plan = normalize_plan(FilmPlan.model_validate(scripted_plan(prompt)), prompt)
+    ctx = Context(ProjectState(root=tmp_path, plan=plan), None, _Log(), ScriptedProvider(), None)
+    rig, notes = Animator(ScriptedProvider()).build_rig(
+        ctx, default_performance(plan.model_dump(mode="json"))
+    )
+    # discovery: a cautious approach that stops halfway, leans in and tilts the head (not a straight glide)
+    p = notes["discover_pause"]
+    assert rig.root_x(p["t"] + 0.05) == pytest.approx(p["x"]) == pytest.approx(rig.root_x(p["t"] + 0.5))
+    assert rig.root_x(p["t"]) < notes["stand_x"] - 0.1
+    assert rig.head_tilt(p["t"] + 0.4) > 10 and rig.lean(p["t"] + 0.35) > rig.lean(p["t"]) + 4
+    # after the line: the head turns from the camera cheat toward the addressee and nods down, then returns
+    g = notes["glances"][0]
+    cheat = notes["face_cheat_deg"]
+    assert rig.head_turn(g) == pytest.approx(cheat, abs=1)
+    assert rig.head_turn(g + 0.6) > cheat + 20 and rig.head_nod(g + 0.6) > rig.head_nod(g) + 6
+    assert rig.head_turn(g + 1.35) == pytest.approx(cheat, abs=1)
