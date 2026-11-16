@@ -116,3 +116,33 @@ def test_species_reads_from_the_prompt_and_drives_the_recipe():
         assert part in ids, part
     generic = {op["id"] for op in critter_ops("#E8A15A", "#7FE7FF", "#333333") if "id" in op}
     assert "hero_muzzle" not in generic and "hero_ear_L" in generic and "hero_mouth" in generic
+
+
+def test_snow_pebbles_are_rock_not_puddles_and_horizon_has_a_ridge():
+    from animatica.agents.asset import set_ops
+
+    def ops_for(prompt):
+        plan = normalize_plan(FilmPlan.model_validate(scripted_plan(prompt)), prompt)
+        return plan, set_ops(plan, 1.0, 7, [])
+
+    plan, ops = ops_for("A tiny fox finds a lantern in a snowy forest at night.")
+    peb = next(o for o in ops if o.get("op") == "set_material" and "set_pebble_0" in o["targets"])
+    r, g, b = (int(peb["material"]["base_color"][i : i + 2], 16) for i in (1, 3, 5))
+    assert max(r, g, b) - min(r, g, b) < 20 and max(r, g, b) < 110  # neutral dark rock, not blue
+    _, ops = ops_for("A robot finds a flower in a junkyard at sunset.")
+    ridge = [o for o in ops if o.get("id", "").startswith("set_ridge_")]
+    assert len(ridge) >= 8
+    import math
+
+    for o in ridge:  # far away, low: peaks under 2.6 deg so the sunset disc stays visible
+        d = math.hypot(*o["location"][:2])
+        assert 55 < d < 82 and o["radius"] * o["scale"][2] / d < math.tan(math.radians(2.6))
+    # heap junk spread around the crest, not bunched on one side
+    junk = [o for o in ops if o.get("id", "").startswith("set_pile_0_junk")]
+    pile = next(o for o in ops if o.get("id") == "set_pile_0")
+    angs = sorted(
+        math.atan2(o["location"][1] - pile["location"][1], o["location"][0] - pile["location"][0])
+        for o in junk
+    )
+    gaps = [b - a for a, b in zip(angs, angs[1:])] + [angs[0] + 2 * math.pi - angs[-1]]
+    assert max(gaps) < math.radians(150)

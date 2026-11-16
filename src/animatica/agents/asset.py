@@ -427,7 +427,7 @@ DARK_FUR = "#2B1E1A"
 # shared rig interface; unknown species fall back to the generic round creature.
 SPECIES = {
     "fox": {
-        "ears": {"radius": 0.14, "depth": 0.42, "x": 0.16, "z": 0.5, "tilt": 18, "tip": True},
+        "ears": {"radius": 0.14, "depth": 0.42, "x": 0.16, "z": 0.6, "tilt": 18, "tip": True},
         "muzzle": {"radius": 0.13, "scale": [0.8, 1.4, 0.66], "y": -0.28, "z": 0.12},
         "tail": "bushy",
         "legs": True,
@@ -1068,6 +1068,9 @@ def pebble_ops(plan: FilmPlan, seed: int, n: int = 36) -> list[dict[str, Any]]:
     They stay off the hero's travel lane (|y| < 0.7 along x in -9..4) so wheels and feet never cut them.
     """
     rng = random.Random(seed * 7 + 3)
+    snow = plan.setting.kind == "snow"
+    # on snow, flat tinted stones read as puddles (review 14:50): rounder, neutral dark rock poking through
+    flat = (0.7, 1.0) if snow else (0.45, 0.7)
     ops: list[dict[str, Any]] = []
     ids: list[str] = []
     while len(ids) < n:
@@ -1083,16 +1086,55 @@ def pebble_ops(plan: FilmPlan, seed: int, n: int = 36) -> list[dict[str, Any]]:
                 "shape": "ico_sphere",
                 "radius": round(r, 3),
                 "segments": 32,
-                "scale": [round(rng.uniform(1.0, 1.6), 2), 1.0, round(rng.uniform(0.45, 0.7), 2)],
-                "location": [round(x, 3), round(y, 3), round(r * 0.15, 3)],
+                "scale": [round(rng.uniform(1.0, 1.6), 2), 1.0, round(rng.uniform(*flat), 2)],
+                "location": [round(x, 3), round(y, 3), round(r * (0.3 if snow else 0.15), 3)],
                 "rotation": [0, 0, round(rng.uniform(0, 360), 1)],
                 "smooth": True,
                 "tags": ["set", "pebble"],
             }
         )
         ids.append(pid)
-    tone = shade(plan.style.palette.ground, -0.07 if plan.setting.kind != "snow" else -0.35)
+    tone = "#4A4644" if snow else shade(plan.style.palette.ground, -0.07)
     ops.append({"op": "set_material", "targets": ids, "material": mat(tone, 0, 0.85, name="set_pebble")})
+    return ops
+
+
+def ridge_ops(plan: FilmPlan, seed: int, haze: dict[str, Any], n: int = 11) -> list[dict[str, Any]]:
+    """A band of low, wide hills 58-80 m out behind the set. The aerial fade turns them into soft hazy
+    silhouettes, so the ground no longer meets the sky in a hard straight line (review 14:50). Peaks stay
+    under ~2.5 deg of elevation so they only tuck under the low sunset disc (sun behind the hills)."""
+    rng = random.Random(seed * 13 + 5)
+    ops: list[dict[str, Any]] = []
+    ids: list[str] = []
+    for i in range(n):
+        ang = math.radians(15 + 150 * i / (n - 1) + rng.uniform(-6, 6))  # an arc behind the set (+Y)
+        dist = rng.uniform(58, 80)
+        h = dist * math.tan(math.radians(rng.uniform(1.4, 2.5)))
+        r = rng.uniform(13, 22)
+        pid = f"set_ridge_{i}"
+        ops.append(
+            {
+                "op": "create_primitive",
+                "id": pid,
+                "shape": "uv_sphere",
+                "radius": round(r, 2),
+                "scale": [round(rng.uniform(1.6, 2.4), 2), 1.0, round(h / r, 3)],
+                "location": [round(dist * math.cos(ang), 2), round(dist * math.sin(ang), 2), 0.0],
+                "rotation": [0, 0, round(math.degrees(ang) - 90 + rng.uniform(-10, 10), 1)],
+                "segments": 32,
+                "smooth": True,
+                "tags": ["set", "ridge"],
+            }
+        )
+        ids.append(pid)
+    tone = "#DCE4EE" if plan.setting.kind == "snow" else shade(plan.style.palette.ground, -0.1)
+    ops.append(
+        {
+            "op": "set_material",
+            "targets": ids,
+            "material": {**mat(tone, 0, 1.0, name="set_ridge"), "specular": 0.1, **haze},
+        }
+    )
     return ops
 
 
@@ -1231,9 +1273,12 @@ def set_ops(plan: FilmPlan, density: float, seed: int, landmarks: list[str]) -> 
             # junk poking out of the heap breaks its dome silhouette (beams, panels, a drum)
             jr = random.Random(seed * 31 + i)
             k = s / 3.0
+            base_a = jr.uniform(0, 2 * math.pi)
             for j, shape in enumerate(("beam", "panel", "drum", "beam", "panel")):
-                # biased toward the crest, where the pieces break the dome's silhouette against the sky
-                a, e = jr.uniform(0, 2 * math.pi), jr.uniform(0.75, 1.45)
+                # biased toward the crest, where the pieces break the dome's silhouette against the sky;
+                # spread evenly around it (random azimuths bunched them on one side, review 14:50)
+                a = base_a + j * 2 * math.pi / 5 + jr.uniform(-0.3, 0.3)
+                e = jr.uniform(0.75, 1.45)
                 px = x + 1.3 * s * math.cos(e) * math.cos(a)
                 py = y + s * math.cos(e) * math.sin(a)
                 pz = -s * 0.07 + 0.7 * s * math.sin(e)
@@ -1545,6 +1590,8 @@ def set_ops(plan: FilmPlan, density: float, seed: int, landmarks: list[str]) -> 
                     "material": {**mats[key], **grime, **haze, "name": f"set_{key}"},
                 }
             )
+    if kind not in ("room", "space", "city"):
+        ops += ridge_ops(plan, seed, haze)
     if plan.setting.time_of_day in ("sunset", "dawn") and kind not in ("room", "space"):
         ops += sun_disc_ops(plan)
     if plan.setting.time_of_day == "night" and kind != "room":
@@ -1714,10 +1761,14 @@ class AssetAgent(Agent):
             )
             self.submit(ctx, self.batch(f"Build the {plan.prop.kind} prop", ops))
         ctx.state.artifacts["hero_parts"] = len(res.created)
+        # top of the head *including ears*: close-ups frame it, so a fox keeps its ears in the shot
+        ears = SPECIES.get(hero.species, {}).get("ears") if hero.kind == "critter" else None
+        above = 0.3 if not ears else (0.86 if ears.get("long") else ears["z"] + ears["depth"] / 2 - 0.22)
         return {
             "prop_height": prop_height,
-            "hero_height": HERO_HEIGHT[hero.kind] * hero.scale,
+            "hero_height": max(HERO_HEIGHT[hero.kind], HERO_HEAD_Z[hero.kind] + above) * hero.scale,
             "head_z": HERO_HEAD_Z[hero.kind] * hero.scale,
+            "head_top": (HERO_HEAD_Z[hero.kind] + above) * hero.scale,
         }
 
 

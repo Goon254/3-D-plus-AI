@@ -232,7 +232,9 @@ class CameraLighting(Agent):
             if shot.type == "closeup" and shot.beat == "speak" and plan.prop:
                 # dialogue close-up: the face fills the frame (lip sync must read) with the prop's
                 # blossom entering from below — head and shoulders, not a medium shot
-                top, bottom = head_z + 0.3, max(0.0, prop_h - 0.3)  # keep the whole blossom in frame
+                # head (and ears) to the whole blossom
+                top = asset_info.get("head_top", head_z + 0.3) + 0.05
+                bottom = max(0.0, prop_h - 0.3)
                 center = ((hx1 * 2 + prop_x) / 3, 0.0, (top + bottom) / 2)
                 sub_h, sub_w = top - bottom, abs(prop_x - hx1) * 0.8 + 0.5
                 c["fill"] = round(
