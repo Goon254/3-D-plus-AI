@@ -110,6 +110,10 @@ def body_graph(
         (_lerp(n0, n1, u), sp.neck.r0 + (sp.neck.r1 - sp.neck.r0) * u) for u in (0.0, 0.34, 0.67, 1.0)
     ]
     top = g.chain(brisket, [(p, r * 0.98, r * 1.08) for p, r in neck_pts])
+    if sp.separate_head:  # the head (and trunk) are their own meshes: see head_elements()
+        if include_tail:
+            g.chain(rump, [(p, r, r) for p, r in tail_points(sp)])
+        return g
     hw, hl, hh = sp.head_size
 
     def hp(off: V3) -> V3:
@@ -132,6 +136,31 @@ def body_graph(
     if include_tail:  # tail: from the rump, tapering
         g.chain(rump, [(p, r, r) for p, r in tail_points(sp)])
     return g
+
+
+def head_elements(sp: Species) -> tuple[list[dict], float]:
+    """A calf head sculpted as its own mass (metaballs, root space): a big forehead dome, cheeks, a broad face
+    and chin. Carried rigidly by the head bone, so it never melts into the body."""
+    hw, hl, hh = sp.head_size
+
+    def hp(off: V3) -> list[float]:
+        o = _rx(off, sp.head_pitch)
+        return [round(sp.head_at[i] + o[i], 4) for i in range(3)]
+
+    def ball(off: V3, r: float) -> dict:
+        return {"type": "ball", "co": hp(off), "radius": round(r / SURFACE, 4)}
+
+    els = [
+        ball((0.0, hl * 0.06, hh * 0.04), hw * 0.44),  # the skull
+        ball(
+            (0.0, -hl * 0.06, hh * 0.24), hw * 0.36
+        ),  # the forehead dome (calves have a high, round forehead)
+        ball((0.0, -hl * 0.24, -hh * 0.06), hw * 0.3),  # the face where the trunk starts
+        ball((hw * 0.22, -hl * 0.14, -hh * 0.14), hw * 0.22),  # cheeks
+        ball((-hw * 0.22, -hl * 0.14, -hh * 0.14), hw * 0.22),
+        ball((0.0, -hl * 0.12, -hh * 0.34), hw * 0.16),  # chin / lower lip
+    ]
+    return els, max(0.004, round(hw * 0.02, 4))
 
 
 def tail_points(sp: Species) -> list[tuple[V3, float]]:

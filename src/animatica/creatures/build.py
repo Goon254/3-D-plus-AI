@@ -13,7 +13,7 @@ from dataclasses import dataclass, field, replace
 from typing import Any
 
 from .gait import FootSpot
-from .organic import body_graph, metaball_elements, tail_points
+from .organic import body_graph, head_elements, metaball_elements, tail_points
 from .species import EYE_WHITE, GLINT, IRIS, Chain, Species
 
 V3 = tuple[float, float, float]
@@ -510,6 +510,60 @@ def build_creature(
                     "tags": ["creature", cid],
                 }
             )
+            if sp.separate_head:
+                # the head is its own sculpted mass on the head bone; the trunk its own tube on the trunk chain
+                hels, hres = head_elements(sp)
+                trunk_pts = (
+                    [
+                        (
+                            _add(sp.trunk.base, _scale(_sub(sp.trunk.tip, sp.trunk.base), u)),
+                            sp.trunk.r0 + (sp.trunk.r1 - sp.trunk.r0) * u,
+                        )
+                        for u in (0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
+                    ]
+                    if sp.trunk
+                    else []
+                )
+                ops += [
+                    {
+                        "op": "create_metaball_mesh",
+                        "id": f"{cid}_head",
+                        "elements": hels,
+                        "resolution": hres,
+                        "parent": root,
+                        "tags": ["creature", cid],
+                    },
+                    {"op": "bind_mesh_to_armature", "mesh": f"{cid}_head", "armature": rig, "bone": "head"},
+                    {
+                        "op": "set_material",
+                        "targets": [f"{cid}_head"],
+                        "material": {**sp.coat, "name": f"{cid}_coat_head"},
+                    },
+                ]
+                if trunk_pts:
+                    ops += [
+                        {
+                            "op": "create_skin_mesh",
+                            "id": f"{cid}_trunk",
+                            "vertices": [list(p) for p, _ in trunk_pts],
+                            "edges": [[i, i + 1] for i in range(len(trunk_pts) - 1)],
+                            "radii": [[r, r] for _, r in trunk_pts],
+                            "subdivisions": 2,
+                            "parent": root,
+                            "tags": ["creature", cid],
+                        },
+                        {
+                            "op": "bind_mesh_to_armature",
+                            "mesh": f"{cid}_trunk",
+                            "armature": rig,
+                            "bones": trunk_bones,
+                        },
+                        {
+                            "op": "set_material",
+                            "targets": [f"{cid}_trunk"],
+                            "material": {**sp.coat, "name": f"{cid}_coat_trunk"},
+                        },
+                    ]
             # the thin tail is a skin-modifier tube on its own chain (too thin for the body's resolution)
             tp = tail_points(sp)
             ops += [
@@ -559,7 +613,9 @@ def build_creature(
                 "armature": rig,
                 "auto": True,
                 # separate meshes ride these: they must not tear the body (a swishing tail ripped the rump)
-                "exclude": ["ear_"] + (["tail_"] if body_style == "metaball" else []),
+                "exclude": ["ear_"]
+                + (["tail_"] if body_style == "metaball" else [])
+                + (["head", "trunk_"] if sp.separate_head else []),
             },
             {
                 "op": "set_material_by_bone",

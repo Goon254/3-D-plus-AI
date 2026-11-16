@@ -72,6 +72,7 @@ class Species:
     nails: int = 0  # toenails/claws on each skin-grown foot
     shell: tuple[V3, V3] | None = None  # (size, centre) of a tortoise carapace
     default_pose: str = "stand"  # "sentinel": the meerkat stands up when it stops
+    separate_head: bool = False  # sculpt the head as its own mesh on the head bone (no melting into the body)
 
 
 def _m(color: str, rough: float = 0.75, **kw: Any) -> dict[str, Any]:
@@ -100,15 +101,16 @@ SPECIES: dict[str, Species] = {
         leg_r=(0.13, 0.11, 0.135, 0.105),
         foot=("pad", 0.12, 0.08),
         knee_bend=0.12,  # pillar legs: nearly straight; the body vaults over them (gait planner)
-        neck=Chain((0.0, -0.38, 0.12), (0.0, -0.5, 0.24), 1, 0.27, 0.27),
-        head_at=(0.0, -0.64, 0.32),
-        head_size=(0.62, 0.54, 0.64),
+        # a short visible neck, narrower than both the body and the head
+        neck=Chain((0.0, -0.36, 0.14), (0.0, -0.52, 0.24), 1, 0.21, 0.19),
+        head_at=(0.0, -0.74, 0.36),
+        head_size=(0.66, 0.56, 0.68),
         head_pitch=6.0,
-        eye=(0.16, -0.2, 0.07, 0.07),
-        ear=("disc", (0.05, 0.36, 0.5), (0.28, 0.12, -0.26), (0.0, -8.0, 12.0)),
+        eye=(0.17, -0.22, 0.1, 0.088),
+        ear=("disc", (0.05, 0.46, 0.62), (0.31, 0.14, -0.28), (0.0, -8.0, 12.0)),
         tail=Chain((0.0, 0.48, 0.14), (0.0, 0.58, -0.3), 3, 0.03, 0.014),
         tuft=0.035,
-        trunk=Chain((0.0, -0.86, 0.18), (0.0, -0.95, -0.36), 5, 0.09, 0.045),
+        trunk=Chain((0.0, -0.98, 0.2), (0.0, -1.06, -0.3), 5, 0.095, 0.045),
         coat=_m(
             "#918D88",
             0.82,
@@ -125,6 +127,7 @@ SPECIES: dict[str, Species] = {
         mats={"nail": _m("#D9CCB2", 0.45), "tuft": _m("#3A3430", 0.9)},
         part_mats={"tuft": "tuft"},
         nails=3,
+        separate_head=True,
     ),
     # Young giraffe: withers 1.9 m, head at 3.2 m; long straight legs (forelegs longer, so the back slopes
     # to the rump); 7 cervical vertebrae animated as a 4-bone chain; tufted ossicones; patch coat.
@@ -271,7 +274,7 @@ SPECIES: dict[str, Species] = {
     "meerkat": Species(
         name="meerkat",
         body_z=0.105,
-        torso=(0.095, 0.27, 0.105),
+        torso=(0.122, 0.27, 0.13),
         torso_at=(0.0, 0.0, 0.0),
         torso_rot=0.0,
         shoulder=(0.033, -0.085, -0.02),
@@ -287,15 +290,17 @@ SPECIES: dict[str, Species] = {
         head_pitch=6.0,
         eye=(0.022, -0.026, 0.014, 0.013),
         ear=("disc", (0.01, 0.018, 0.018), (0.034, 0.02, 0.016), (0.0, 0.0, 0.0)),
-        tail=Chain((0.0, 0.13, 0.0), (0.0, 0.31, 0.05), 4, 0.01, 0.004),
-        tuft=0.0,
-        coat=_m("#CDB088", 0.85, fur=0.6, fur_scale=500.0, sheen_tint="#FFEBC8"),
+        tail=Chain((0.0, 0.13, 0.0), (0.0, 0.31, 0.05), 4, 0.013, 0.005),
+        tuft=0.009,  # the dark tail tip
+        coat=_m(
+            "#B68A56", 0.85, noise=0.18, noise_scale=40.0, fur=0.6, fur_scale=500.0, sheen_tint="#F2D2A0"
+        ),
         mats={
             "back": _m(
-                "#C6A87E",
+                "#B08452",
                 0.85,
                 pattern="bands",
-                pattern_color="#A98C68",
+                pattern_color="#9C7246",
                 pattern_scale=6.0,
                 pattern_width=0.1,
                 pattern_axis="y",
@@ -303,15 +308,15 @@ SPECIES: dict[str, Species] = {
                 fur=0.6,
                 fur_scale=500.0,
             ),
-            "paw": _m("#3A2E24", 0.7),
-            "patch": _m("#2A2018", 0.75),
-            "muzzle": _m("#E2CCA6", 0.8, fur=0.4, fur_scale=500.0),
+            "paw": _m("#24180F", 0.7),
+            "patch": _m("#1A120C", 0.7),
+            "muzzle": _m("#C49A64", 0.8, fur=0.4, fur_scale=500.0),
             "nose": _m("#1E1612", 0.4),
-            "tailtip": _m("#2A2018", 0.8),
+            "tailtip": _m("#1E150F", 0.8),
         },
-        part_mats={},
+        part_mats={"tuft": "tailtip"},
         # a pointed face: a long tapering snout, pale, with a dark nose
-        muzzle=((0.034, 0.075, 0.03), (0.0, -0.075, -0.014)),
+        muzzle=((0.036, 0.056, 0.03), (0.0, -0.066, -0.014)),
         regions=(
             (("hips", "chest"), "back"),
             (("leg_LF_lo", "leg_RF_lo", "leg_LH_lo", "leg_RH_lo"), "paw"),
@@ -322,8 +327,8 @@ SPECIES: dict[str, Species] = {
             Extra(
                 "patch_L",
                 "uv_sphere",
-                (0.032, 0.03, 0.026),
-                (0.02, -0.022, 0.013),
+                (0.036, 0.034, 0.03),
+                (0.021, -0.022, 0.013),
                 "head",
                 "patch",
                 (0, 0, -25),
@@ -331,13 +336,13 @@ SPECIES: dict[str, Species] = {
             Extra(
                 "patch_R",
                 "uv_sphere",
-                (0.032, 0.03, 0.026),
-                (-0.02, -0.022, 0.013),
+                (0.036, 0.034, 0.03),
+                (-0.021, -0.022, 0.013),
                 "head",
                 "patch",
                 (0, 0, 25),
             ),
-            Extra("nose", "uv_sphere", (0.014, 0.01, 0.01), (0.0, -0.112, -0.012), "head", "nose"),
+            Extra("nose", "uv_sphere", (0.015, 0.011, 0.011), (0.0, -0.093, -0.012), "head", "nose"),
         ),
         default_pose="sentinel",
     ),
