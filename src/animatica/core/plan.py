@@ -67,6 +67,8 @@ class Character(_M):
     color: str = "#D9822B"
     eye_color: str = "#7FE7FF"
     scale: float = Field(1.0, ge=0.3, le=3)
+    # what the critter is ("fox", "cat", "bunny", ...): selects species-defining parts in the Asset recipe
+    species: str = "creature"
     voice: VoiceChoice = Field(default_factory=VoiceChoice)
 
 

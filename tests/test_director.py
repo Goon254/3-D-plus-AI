@@ -83,3 +83,36 @@ def test_set_dressing_pebbles_and_heap_silhouettes():
     assert len(junk) == 5 * len(piles)
     ground = next(o for o in ops if o["op"] == "set_material" and o["targets"] == ["set_ground"])
     assert ground["material"]["grain"] > 0 and ground["material"]["bump"] > 0
+
+
+def test_species_reads_from_the_prompt_and_drives_the_recipe():
+    from animatica.agents.asset import critter_ops
+
+    cases = {"A tiny fox in the snow": "fox", "A rabbit in a meadow": "bunny", "A cat naps": "cat"}
+    for prompt, species in cases.items():
+        assert scripted_plan(prompt)["characters"][0]["species"] == species
+    assert scripted_plan("A tiny fox in the snow")["characters"][0]["color"] == "#E0712B"  # orange coat
+
+    ids = {op["id"] for op in critter_ops("#E0712B", "#7FE7FF", "#333333", species="fox") if "id" in op}
+    # species-defining parts: a matched pair of pointed ears with dark tips, a snout, a white-tipped
+    # bushy tail, four legs (front legs = the rig's arms, hind paws on the root), eyes with catch-lights
+    for part in (
+        "hero_ear_L",
+        "hero_ear_R",
+        "hero_ear_tip_L",
+        "hero_ear_tip_R",
+        "hero_muzzle",
+        "hero_tail",
+        "hero_tail_tip",
+        "hero_arm_L",
+        "hero_arm_R",
+        "hero_paw_L",
+        "hero_paw_R",
+        "hero_foot_L",
+        "hero_foot_R",
+        "hero_eye_glint_L",
+        "hero_eye_glint_R",
+    ):
+        assert part in ids, part
+    generic = {op["id"] for op in critter_ops("#E8A15A", "#7FE7FF", "#333333") if "id" in op}
+    assert "hero_muzzle" not in generic and "hero_ear_L" in generic and "hero_mouth" in generic

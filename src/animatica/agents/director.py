@@ -145,6 +145,28 @@ def _pick(text: str, table: dict[str, list[str]], default: str) -> str:
     return best
 
 
+SPECIES_ALIASES = {"rabbit": "bunny", "kitten": "cat", "kitty": "cat", "puppy": "dog", "vixen": "fox"}
+SPECIES_COLORS = {
+    "fox": "#E0712B",
+    "cat": "#9A9A9E",
+    "bunny": "#D8CFC4",
+    "bear": "#8A5A3A",
+    "mouse": "#A89A90",
+}
+
+
+def _species(text: str) -> str:
+    """The first critter word in the prompt, normalised ("rabbit" -> "bunny"); "creature" if none."""
+    words = [w for w in CHARACTER_WORDS["critter"] if w not in ("creature", "critter", "monster")]
+    words += list(SPECIES_ALIASES)
+    best, best_pos = "creature", len(text) + 1
+    for w in words:
+        m = re.search(r"\b" + re.escape(w) + r"(e?s)?\b", text)
+        if m and m.start() < best_pos:
+            best, best_pos = SPECIES_ALIASES.get(w, w), m.start()
+    return best
+
+
 def scripted_plan(prompt: str) -> dict[str, Any]:
     """Deterministic plan from keywords. Same prompt -> same film."""
     text = prompt.lower()
@@ -159,7 +181,8 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
         if re.search(rf"\b{cname}\b[^.]*\b({'|'.join(CHARACTER_WORDS[kind])})", text):
             color = hexv
             break
-    color = color or ("#D9822B" if kind == "robot" else "#E8A15A")
+    species = "robot" if kind == "robot" else _species(text)
+    color = color or ("#D9822B" if kind == "robot" else SPECIES_COLORS.get(species, "#E8A15A"))
     zenith, horizon, sun = SKIES[tod]
     if setting == "space":
         zenith, horizon = "#05060F", "#1B1F3B"
@@ -317,7 +340,15 @@ def scripted_plan(prompt: str) -> dict[str, Any]:
         },
         "setting": {"kind": setting, "time_of_day": tod, "density": 1.0},
         "characters": [
-            {"id": "hero", "kind": kind, "name": name, "color": color, "eye_color": "#7FE7FF", "voice": voice}
+            {
+                "id": "hero",
+                "kind": kind,
+                "species": species,
+                "name": name,
+                "color": color,
+                "eye_color": "#7FE7FF",
+                "voice": voice,
+            }
         ],
         "props": [{"id": "prop", "kind": prop, "color": PROP_COLORS[prop]}],
         "shots": shots,

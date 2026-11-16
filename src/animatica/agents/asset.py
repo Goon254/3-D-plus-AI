@@ -86,7 +86,7 @@ def mouth_mesh(
 
 # ------------------------------------------------------------------------------------------ characters
 def robot_ops(
-    color: str, eye: str, trim: str, antenna: bool = True, scale: float = 1.0
+    color: str, eye: str, trim: str, antenna: bool = True, scale: float = 1.0, **_: Any
 ) -> list[dict[str, Any]]:
     dark = "#1B1F27"
     ops: list[dict[str, Any]] = [
@@ -420,152 +420,273 @@ def robot_ops(
     return ops
 
 
-def critter_ops(color: str, eye: str, trim: str, scale: float = 1.0, **_: Any) -> list[dict[str, Any]]:
-    belly = shade(color, 0.22, -0.1)
+CREAM = "#F4E7D3"
+DARK_FUR = "#2B1E1A"
+
+# Species-defining parts, so a "fox" reads as a fox at a glance (review 14:50). Every species keeps the
+# shared rig interface; unknown species fall back to the generic round creature.
+SPECIES = {
+    "fox": {
+        "ears": {"radius": 0.115, "depth": 0.34, "x": 0.15, "z": 0.47, "tilt": 16, "tip": True},
+        "muzzle": {"radius": 0.13, "scale": [0.8, 1.4, 0.66], "y": -0.28, "z": 0.12},
+        "tail": "bushy",
+        "legs": True,
+        "chest": CREAM,
+    },
+    "cat": {
+        "ears": {"radius": 0.105, "depth": 0.2, "x": 0.17, "z": 0.45, "tilt": 20, "tip": False},
+        "muzzle": {"radius": 0.085, "scale": [1.1, 0.8, 0.75], "y": -0.27, "z": 0.12},
+        "tail": "long",
+        "legs": True,
+        "chest": None,
+    },
+    "bunny": {
+        "ears": {"long": True, "x": 0.09, "z": 0.5, "tilt": 10},
+        "muzzle": {"radius": 0.08, "scale": [1.1, 0.8, 0.75], "y": -0.27, "z": 0.13},
+        "tail": "puff",
+        "legs": False,
+        "chest": CREAM,
+    },
+}
+SPECIES["dog"] = {**SPECIES["fox"], "ears": {**SPECIES["fox"]["ears"], "depth": 0.22, "tilt": 34}}
+SPECIES["dog"]["tail"] = "long"
+SPECIES["dog"]["chest"] = None
+
+
+def critter_ops(
+    color: str, eye: str, trim: str, scale: float = 1.0, species: str = "creature", **_: Any
+) -> list[dict[str, Any]]:
+    sp = SPECIES.get(species, {})
+    chest = sp.get("chest") or shade(color, 0.22, -0.1)
+    muzzle = sp.get("muzzle")
+    fur_parts = [
+        "hero_body",
+        "hero_head",
+        "hero_ear_L",
+        "hero_ear_R",
+        "hero_tail",
+        "hero_arm_L",
+        "hero_arm_R",
+    ]
+    cream_parts = ["hero_belly", "hero_foot_L", "hero_foot_R"]
+    dark_parts = ["hero_eye_L", "hero_eye_R", "hero_nose"]
+
+    def sphere(
+        pid: str, radius: float, loc: list[float], parent: str, scl: list[float] | None = None, **kw: Any
+    ):
+        op = {"op": "create_primitive", "id": pid, "shape": "uv_sphere", "radius": radius, "location": loc}
+        op.update({"parent": parent, "smooth": True, **kw})
+        if scl:
+            op["scale"] = scl
+        return op
+
     ops: list[dict[str, Any]] = [
         {"op": "create_empty", "id": "hero_root", "scale": [scale] * 3, "tags": ["hero", "rig"]},
-        {
-            "op": "create_primitive",
-            "id": "hero_body",
-            "shape": "uv_sphere",
-            "radius": 0.36,
-            "scale": [1, 0.9, 0.85],
-            "location": [0, 0, 0.33],
-            "parent": "hero_root",
-            "smooth": True,
-            "tags": ["hero"],
-        },
-        {
-            "op": "create_primitive",
-            "id": "hero_belly",
-            "shape": "uv_sphere",
-            "radius": 0.24,
-            "scale": [1, 0.5, 1.05],
-            "location": [0, -0.2, -0.04],
-            "parent": "hero_body",
-            "smooth": True,
-        },
+        sphere("hero_body", 0.36, [0, 0, 0.33], "hero_root", [1, 0.9, 0.85], tags=["hero"]),
+        # chest/belly patch: cream bib on the fox, lighter belly otherwise
+        sphere(
+            "hero_belly",
+            0.24,
+            [0, -0.2, -0.04] if not sp else [0, -0.21, 0.04],
+            "hero_body",
+            [0.95, 0.5, 1.1],
+        ),
         {"op": "create_empty", "id": "hero_head_pivot", "location": [0, 0, 0.24], "parent": "hero_body"},
-        {
-            "op": "create_primitive",
-            "id": "hero_head",
-            "shape": "uv_sphere",
-            "radius": 0.3,
-            "location": [0, 0, 0.22],
-            "parent": "hero_head_pivot",
-            "smooth": True,
-            "tags": ["hero"],
-        },
+        sphere("hero_head", 0.3, [0, 0, 0.22], "hero_head_pivot", tags=["hero"]),
         {
             "op": "create_empty",
             "id": "hero_antenna_pivot",
             "location": [0, 0.3, -0.02],
             "parent": "hero_body",
         },
-        {
-            "op": "create_primitive",
-            "id": "hero_tail",
-            "shape": "uv_sphere",
-            "radius": 0.11,
-            "scale": [0.8, 1.4, 0.8],
-            "location": [0, 0.1, 0.05],
-            "parent": "hero_antenna_pivot",
-            "smooth": True,
-        },
     ]
-    for side, x in (("L", 1), ("R", -1)):
+    # ---------------------------------------------------------------- tail (secondary motion on the pivot)
+    tail = sp.get("tail")
+    if tail == "bushy":  # big plume sweeping up and back, white tip
         ops += [
-            {
-                "op": "create_primitive",
-                "id": f"hero_ear_{side}",
-                "shape": "cone",
-                "radius": 0.1,
-                "depth": 0.24,
-                "location": [0.16 * x, 0, 0.47],
-                "rotation": [0, 18 * x, 0],
-                "parent": "hero_head_pivot",
-                "smooth": True,
-            },
-            {
-                "op": "create_primitive",
-                "id": f"hero_eye_{side}",
-                "shape": "uv_sphere",
-                "radius": 0.045,
-                "scale": [1, 0.5, 1.3],
-                "location": [0.11 * x, -0.27, 0.28],
-                "parent": "hero_head_pivot",
-                "smooth": True,
-            },
-            {
-                "op": "create_primitive",
-                "id": f"hero_foot_{side}",
-                "shape": "uv_sphere",
-                "radius": 0.1,
-                "scale": [1, 1.3, 0.5],
-                "location": [0.16 * x, -0.06, 0.05],
-                "parent": "hero_root",
-                "smooth": True,
-            },
-            {
-                "op": "create_empty",
-                "id": f"hero_arm_pivot_{side}",
-                "location": [0.3 * x, -0.05, 0.05],
-                "parent": "hero_body",
-            },
-            {
-                "op": "create_primitive",
-                "id": f"hero_arm_{side}",
-                "shape": "uv_sphere",
-                "radius": 0.07,
-                "scale": [0.8, 0.8, 1.6],
-                "location": [0.02 * x, 0, -0.08],
-                "parent": f"hero_arm_pivot_{side}",
-                "smooth": True,
-            },
+            sphere(
+                "hero_tail",
+                0.17,
+                [0, 0.2, 0.12],
+                "hero_antenna_pivot",
+                [0.72, 1.9, 0.72],
+                rotation=[42, 0, 0],
+            ),
+            sphere(
+                "hero_tail_tip",
+                0.12,
+                [0, 0.42, 0.32],
+                "hero_antenna_pivot",
+                [0.78, 1.05, 0.78],
+                rotation=[42, 0, 0],
+            ),
         ]
-    verts, faces, keys = mouth_mesh(0.075, 0.01, open_mul=6.0)
+        cream_parts.append("hero_tail_tip")
+    elif tail == "long":
+        ops += [
+            sphere(
+                "hero_tail", 0.06, [0, 0.22, 0.14], "hero_antenna_pivot", [1, 4.2, 1], rotation=[48, 0, 0]
+            ),
+            sphere("hero_tail_tip", 0.065, [0, 0.36, 0.33], "hero_antenna_pivot"),
+        ]
+        fur_parts.append("hero_tail_tip")
+    elif tail == "puff":
+        ops.append(sphere("hero_tail", 0.12, [0, 0.06, 0.04], "hero_antenna_pivot"))
+    else:
+        ops.append(sphere("hero_tail", 0.11, [0, 0.1, 0.05], "hero_antenna_pivot", [0.8, 1.4, 0.8]))
+    if tail == "puff":
+        fur_parts.remove("hero_tail")
+        cream_parts.append("hero_tail")
+
+    ears = sp.get("ears")
+    for side, x in (("L", 1), ("R", -1)):
+        # ------------------------------------------------------------ ears: a matched pair, species shaped
+        if ears and ears.get("long"):
+            ops.append(
+                sphere(
+                    f"hero_ear_{side}",
+                    0.075,
+                    [ears["x"] * x, 0.02, ears["z"] + 0.12],
+                    "hero_head_pivot",
+                    [0.75, 0.42, 3.0],
+                    rotation=[-6, ears["tilt"] * x, 0],
+                )
+            )
+        else:
+            e = ears or {"radius": 0.1, "depth": 0.24, "x": 0.16, "z": 0.47, "tilt": 18, "tip": False}
+            ops.append(
+                {
+                    "op": "create_primitive",
+                    "id": f"hero_ear_{side}",
+                    "shape": "cone",
+                    "radius": e["radius"],
+                    "depth": e["depth"],
+                    "location": [e["x"] * x, 0.0, e["z"]],
+                    "rotation": [-8 if ears else 0, e["tilt"] * x, 0],
+                    "scale": [1, 0.55, 1] if ears else [1, 1, 1],
+                    "parent": "hero_head_pivot",
+                    "smooth": True,
+                    "segments": 24,
+                }
+            )
+            if e.get("tip"):  # dark ear tips (fox)
+                rt, h = math.radians(e["tilt"] * x), e["depth"] * 0.36
+                # follow the ear's X (-8 deg) then Y (tilt) rotation so the tip sits on the ear's point
+                up, back = h * math.cos(math.radians(8)), h * math.sin(math.radians(8))
+                ops.append(
+                    {
+                        "op": "create_primitive",
+                        "id": f"hero_ear_tip_{side}",
+                        "shape": "cone",
+                        "radius": e["radius"] * 0.42,
+                        "depth": e["depth"] * 0.3,
+                        "location": [e["x"] * x + math.sin(rt) * up, back, e["z"] + math.cos(rt) * up],
+                        "rotation": [-8, e["tilt"] * x, 0],
+                        "scale": [1.05, 0.6, 1],
+                        "parent": "hero_head_pivot",
+                        "smooth": True,
+                        "segments": 24,
+                    }
+                )
+                dark_parts.append(f"hero_ear_tip_{side}")
+        # ------------------------------------------------------------ eyes: on the front of the face, with a
+        # catch-light so they read as eyes (not painted ovals) at 480x270
+        eye_x, eye_y, eye_z = (0.12, -0.255, 0.29) if sp else (0.11, -0.27, 0.28)
+        ops += [
+            sphere(
+                f"hero_eye_{side}",
+                0.05 if sp else 0.045,
+                [eye_x * x, eye_y, eye_z],
+                "hero_head_pivot",
+                [1, 0.5, 1.3],
+            ),
+            # child of the eye (inherits its blink squash); same side on both eyes, like a real key light
+            sphere(f"hero_eye_glint_{side}", 0.016, [-0.016, -0.046, 0.016], f"hero_eye_{side}"),
+        ]
+        # ------------------------------------------------------------ feet / legs
+        if sp.get("legs"):
+            # four stubby legs: front legs hang from the shoulders (the "arms": they lift to reach/wave),
+            # hind legs are haunches + paws on the root
+            ops += [
+                sphere(f"hero_haunch_{side}", 0.15, [0.17 * x, 0.15, -0.14], "hero_body", [0.85, 1.05, 1.0]),
+                sphere(f"hero_foot_{side}", 0.085, [0.17 * x, 0.1, 0.045], "hero_root", [1, 1.45, 0.55]),
+                {
+                    "op": "create_empty",
+                    "id": f"hero_arm_pivot_{side}",
+                    "location": [0.15 * x, -0.17, -0.1],
+                    "parent": "hero_body",
+                },
+                sphere(f"hero_arm_{side}", 0.068, [0, 0, -0.13], f"hero_arm_pivot_{side}", [1, 1, 2.3]),
+                sphere(
+                    f"hero_paw_{side}", 0.072, [0, -0.025, -0.24], f"hero_arm_pivot_{side}", [1, 1.3, 0.62]
+                ),
+            ]
+            fur_parts.append(f"hero_haunch_{side}")
+            if species == "fox":  # black "socks"
+                cream_parts.remove(f"hero_foot_{side}")
+                dark_parts += [f"hero_foot_{side}", f"hero_paw_{side}"]
+            else:
+                cream_parts.append(f"hero_paw_{side}")
+        else:
+            ops += [
+                sphere(f"hero_foot_{side}", 0.1, [0.16 * x, -0.06, 0.05], "hero_root", [1, 1.3, 0.5]),
+                {
+                    "op": "create_empty",
+                    "id": f"hero_arm_pivot_{side}",
+                    "location": [0.3 * x, -0.05, 0.05],
+                    "parent": "hero_body",
+                },
+                sphere(
+                    f"hero_arm_{side}", 0.07, [0.02 * x, 0, -0.08], f"hero_arm_pivot_{side}", [0.8, 0.8, 1.6]
+                ),
+            ]
+    # ---------------------------------------------------------------- snout, nose, mouth
+    if muzzle:
+        tip_y = muzzle["y"] - muzzle["radius"] * muzzle["scale"][1]
+        ops.append(
+            sphere(
+                "hero_muzzle",
+                muzzle["radius"],
+                [0, muzzle["y"], muzzle["z"]],
+                "hero_head_pivot",
+                muzzle["scale"],
+            )
+        )
+        cream_parts.append("hero_muzzle")
+        nose_loc = [0, tip_y + 0.01, muzzle["z"] + muzzle["radius"] * muzzle["scale"][2] * 0.55]
+        # on the snout's front surface, below the nose: an ellipsoid at 45 % down is 0.89 of its depth
+        mouth_loc = [
+            0,
+            muzzle["y"] - muzzle["radius"] * muzzle["scale"][1] * 0.89 - 0.012,
+            muzzle["z"] - muzzle["radius"] * muzzle["scale"][2] * 0.45,
+        ]
+        nose_r = 0.042 if species in ("fox", "dog") else 0.028
+    else:
+        nose_loc, mouth_loc, nose_r = [0, -0.3, 0.19], [0, -0.29, 0.13], 0.03
+    verts, faces, keys = mouth_mesh(0.075 if not muzzle else 0.065, 0.01, open_mul=6.0)
     ops += [
         {
             "op": "create_mesh",
             "id": "hero_mouth",
             "vertices": verts,
             "faces": faces,
-            "location": [0, -0.29, 0.13],
+            "location": mouth_loc,
             "parent": "hero_head_pivot",
             "tags": ["hero", "mouth"],
         },
         {"op": "add_shape_keys", "target": "hero_mouth", "keys": keys},
+        sphere("hero_nose", nose_r, nose_loc, "hero_head_pivot", [1.25, 0.9, 0.8] if muzzle else None),
+        {"op": "set_material", "targets": fur_parts, "material": mat(color, 0.0, 0.7, name="hero_fur")},
+        {"op": "set_material", "targets": cream_parts, "material": mat(chest, 0.0, 0.8, name="hero_belly")},
         {
-            "op": "create_primitive",
-            "id": "hero_nose",
-            "shape": "uv_sphere",
-            "radius": 0.03,
-            "location": [0, -0.3, 0.19],
-            "parent": "hero_head_pivot",
-            "smooth": True,
+            "op": "set_material",
+            "targets": dark_parts,
+            "material": mat("#151515" if not sp else DARK_FUR, 0.0, 0.25, name="hero_eyes"),
         },
         {
             "op": "set_material",
-            "targets": [
-                "hero_body",
-                "hero_head",
-                "hero_ear_L",
-                "hero_ear_R",
-                "hero_tail",
-                "hero_arm_L",
-                "hero_arm_R",
-            ],
-            "material": mat(color, 0.0, 0.7, name="hero_fur"),
-        },
-        {
-            "op": "set_material",
-            "targets": ["hero_belly", "hero_foot_L", "hero_foot_R"],
-            "material": mat(belly, 0.0, 0.8, name="hero_belly"),
-        },
-        {
-            "op": "set_material",
-            "targets": ["hero_eye_L", "hero_eye_R", "hero_nose"],
-            "material": mat("#151515", 0.0, 0.08, name="hero_eyes"),
+            "targets": ["hero_eye_glint_L", "hero_eye_glint_R"],
+            "material": mat("#FFFFFF", 0.0, 0.2, emission="#FFFFFF", strength=2.0, name="hero_eye_glint"),
         },
         {
             "op": "set_material",
@@ -1577,6 +1698,7 @@ class AssetAgent(Agent):
                     ch.get("trim_color", plan.style.palette.secondary),
                     antenna=bool(ch.get("antenna", True)),
                     scale=hero.scale,
+                    species=hero.species,
                 ),
             ),
         )
