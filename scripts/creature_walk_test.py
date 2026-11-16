@@ -117,7 +117,7 @@ def main() -> int:
     scale = max(meta.length, meta.head_height) / 1.6  # framing scale relative to a ~1.6 m animal
     # camera: 3/4 side view from the camera's side (-Y), at about shoulder height, tracking with a lag
     size = max(meta.length, meta.head_height)
-    dist_cam = size * 2.3 + dist * 0.35
+    dist_cam = size * 1.9 + dist * 0.3
     cam_keys, aim_keys = [], []
     cx = x0
     for i, p in enumerate(plan):

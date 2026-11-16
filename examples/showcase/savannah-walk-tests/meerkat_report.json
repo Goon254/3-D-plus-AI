@@ -1,0 +1,26 @@
+{
+ "species": "meerkat",
+ "gait": "walk",
+ "frames": 210,
+ "leg_m": 0.08,
+ "speed_mps": 0.144,
+ "max_stance_slide_mm": 0.0,
+ "max_ik_miss_mm": 0.06,
+ "worst_miss": {
+  "leg": "LF",
+  "frame": 132,
+  "stance": false,
+  "tip": [
+   0.2913,
+   0.036,
+   0.019
+  ],
+  "want": [
+   0.291,
+   0.036,
+   0.019
+  ]
+ },
+ "render_s": 36.7,
+ "device": "OPTIX: NVIDIA GeForce RTX 5060 Laptop GPU"
+}
