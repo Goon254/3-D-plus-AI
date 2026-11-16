@@ -140,6 +140,8 @@ class CameraLighting(Agent):
                         out["shots"][sid]["fill"] = round(out["shots"][sid]["fill"] * v, 3)
                     elif k == "azimuth_add":
                         out["shots"][sid]["azimuth"] += v
+                    elif k == "lift_frac":
+                        continue  # applied to the subject box in run() (it needs the shot's framing height)
                     else:
                         out["shots"][sid][k] = v
         for k, v in ctx.state.tuning.get("lighting", {}).items():
@@ -237,12 +239,16 @@ class CameraLighting(Agent):
                 # the addressee, and the speaker's eyeline/glance keeps it present (review 11-16 17:25)
                 top = asset_info.get("head_top", head_z + 0.3) + 0.12 * plan.hero.scale  # ear-tip headroom
                 bottom = max(0.0, head_z - 0.45 * plan.hero.scale)
-                center = (hx1 + 0.05, 0.0, (top + bottom) / 2)
+                tune = ctx.state.tuning.get("camera", {}).get(shot.id, {})
+                c["fill"] = round(0.95 * tune.get("fill_mul", 1.0), 3)
+                # critic `prop_sliver`: raise the bottom edge (keeping the ear-tip headroom) so a prop peeking in at
+                # the bottom leaves the frame entirely. Tilting the whole frame up instead sank the face to the lower
+                # half under a band of empty sky; tightening keeps the eyes high and only crops the chest.
+                lift = float(tune.get("lift_frac", 0.0)) * (top - bottom) / c["fill"]
+                bottom = min(bottom + lift, head_z - 0.2 * plan.hero.scale)
+                center = (hx1 + 0.05, 0.0, round((top + bottom) / 2, 3))
                 sub_h, sub_w = top - bottom, 0.9 * plan.hero.scale
                 c["height"] = round(head_z + 0.08 * plan.hero.scale, 3)
-                c["fill"] = round(
-                    0.95 * ctx.state.tuning.get("camera", {}).get(shot.id, {}).get("fill_mul", 1.0), 3
-                )
                 singles.append(shot.id)
             elif shot.type == "closeup" and shot.beat == "speak" and plan.prop:
                 # dialogue close-up: the face fills the frame (lip sync must read) with the prop's

@@ -26,6 +26,11 @@ class MaterialOps:
         bsdf.inputs["Roughness"].default_value = spec.get("roughness", 0.5)
         if spec.get("specular") is not None:
             bsdf.inputs["Specular IOR Level"].default_value = spec["specular"]
+        if spec.get("sheen") and "Sheen Weight" in bsdf.inputs:
+            bsdf.inputs["Sheen Weight"].default_value = spec["sheen"]
+            bsdf.inputs["Sheen Roughness"].default_value = 0.35
+            tint = hex_to_rgb(spec.get("sheen_tint") or "#FFFFFF")
+            bsdf.inputs["Sheen Tint"].default_value = (*tint, 1.0)
         if spec.get("emission"):
             bsdf.inputs["Emission Color"].default_value = (*hex_to_rgb(spec["emission"]), 1.0)
             bsdf.inputs["Emission Strength"].default_value = spec.get("emission_strength", 1.0)

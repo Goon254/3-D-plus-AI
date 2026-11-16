@@ -233,6 +233,54 @@ def test_critic_face_floor_per_kind_and_dialogue_singles():
     assert single == []
 
 
+def test_critic_prop_sliver_in_a_single_lifts_the_frame():
+    from animatica.agents.critic import prop_sliver_issues
+
+    def frame(vis, h=0.4):
+        return {"subjects": {"prop": {"visible_fraction": vis, "screen_height": h}}}
+
+    # only the lantern's handle loop peeks in at the bottom edge (review 11-16 17:55): lift the frame
+    issues = prop_sliver_issues("s3", {"100": frame(0.12), "110": frame(0.0)}, "lantern")
+    assert [i.check for i in issues] == ["prop_sliver"]
+    assert issues[0].fix["kind"] == "camera" and 0.04 < issues[0].fix["lift_frac"] <= 0.25
+    # fully out, or properly in: nothing to fix
+    assert prop_sliver_issues("s3", {"100": frame(0.0)}, "lantern") == []
+    assert prop_sliver_issues("s3", {"100": frame(0.9)}, "lantern") == []
+    assert prop_sliver_issues("s3", {"100": frame(0.1)}, None) == []
+
+
+def test_lift_frac_raises_the_bottom_edge_of_the_critter_single(tmp_path):
+    from animatica.agents.camera import CameraLighting
+    from animatica.agents.director import normalize_plan, scripted_plan
+    from animatica.core.plan import FilmPlan
+    from animatica.core.state import ProjectState
+
+    prompt = "A tiny fox finds a glowing lantern in a snowy forest at night. It whispers: 'Are you lost too?'"
+    plan = normalize_plan(FilmPlan.model_validate(scripted_plan(prompt)), prompt)
+    shot = next(s for s in plan.shots if s.type == "closeup" and s.beat == "speak")
+
+    def aim_z(tuning):
+        st = ProjectState(root=tmp_path, plan=plan)
+        st.tuning = tuning
+        ctx = Context(st, None, _Log(), ScriptedProvider(), None)
+        cam = CameraLighting(ScriptedProvider())
+        cam.submit = lambda ctx, batch: None  # capture ops only
+        captured = {}
+        orig = cam.batch
+
+        def batch(label, ops, *a, **k):
+            captured.setdefault("ops", []).extend(ops)
+            return orig(label, ops, *a, **k)
+
+        cam.batch = batch
+        cam.run(ctx, {"hero_height": 0.8, "head_z": 0.62, "head_top": 0.95, "prop_height": 0.42})
+        aim = next(o for o in captured["ops"] if o.get("id") == f"cam_{shot.id}_aim")
+        assert shot.id in ctx.state.artifacts["single_shots"]
+        return aim["location"][2]
+
+    assert aim_z({"camera": {shot.id: {"lift_frac": 0.1}}}) > aim_z({}) + 0.02
+
+
 @pytest.mark.parametrize(
     "prompt",
     [

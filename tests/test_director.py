@@ -146,3 +146,34 @@ def test_snow_pebbles_are_rock_not_puddles_and_horizon_has_a_ridge():
     )
     gaps = [b - a for a, b in zip(angs, angs[1:])] + [angs[0] + 2 * math.pi - angs[-1]]
     assert max(gaps) < math.radians(150)
+
+
+def test_night_lantern_light_escapes_its_glass_and_snow_rocks_are_few_and_large():
+    from animatica.agents.asset import critter_ops, prop_ops, set_ops
+    from animatica.core.protocol import parse_batch
+
+    ops, _ = prop_ops("lantern", "#FFC857", (1.0, 0.0, 0.0), glow=1.5)
+    glass = next(o for o in ops if o.get("id") == "prop_glass")
+    light = next(o for o in ops if o.get("id") == "prop_light")
+    # the point light sits inside the glass: the glass must not shadow it (review 11-16 17:55)
+    assert glass["cast_shadow"] is False and light["energy"] >= 70
+    gems, _ = prop_ops("crystal", "#88CCFF", (1.0, 0.0, 0.0))
+    assert all(o["cast_shadow"] is False for o in gems if o.get("id") in ("prop_gem", "prop_gem_2"))
+    parse_batch({"batch_id": "b", "ops": ops})  # the protocol accepts cast_shadow
+
+    snow = normalize_plan(
+        FilmPlan.model_validate(scripted_plan("A tiny fox finds a lantern in a snowy forest at night.")),
+        "A tiny fox finds a lantern in a snowy forest at night.",
+    )
+    rocks = [o for o in set_ops(snow, 1.0, 7, []) if o.get("id", "").startswith("set_pebble_")]
+    dirt = [o for o in set_ops(plan(NORTH_STAR), 1.0, 7, []) if o.get("id", "").startswith("set_pebble_")]
+    assert len(rocks) <= len(dirt) // 2
+    mean = lambda xs: sum(o["radius"] for o in xs) / len(xs)  # noqa: E731
+    assert mean(rocks) > 2 * mean(dirt)
+
+    fur = next(
+        o
+        for o in critter_ops("#E0712B", "#7FE7FF", "#333333", species="fox")
+        if o.get("op") == "set_material" and o["material"].get("name") == "hero_fur"
+    )
+    assert fur["material"]["sheen"] > 0.3 and fur["material"]["sheen_tint"]

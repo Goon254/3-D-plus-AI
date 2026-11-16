@@ -316,6 +316,8 @@ class Studio:
                     cam["fill_mul"] = round(cam.get("fill_mul", 1.0) * i.fix["fill_mul"], 3)
                 if "azimuth_add" in i.fix:
                     cam["azimuth_add"] = cam.get("azimuth_add", 0) + i.fix["azimuth_add"]
+                if "lift_frac" in i.fix:
+                    cam["lift_frac"] = round(cam.get("lift_frac", 0.0) + float(i.fix["lift_frac"]), 3)
                 redo_camera = True
             elif k == "lighting":
                 L = tuning.setdefault("lighting", {})

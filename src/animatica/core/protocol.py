@@ -47,6 +47,9 @@ class _Placed(_Op):
     parent: str | None = None
     collection: str | None = None
     tags: list[str] = Field(default_factory=list)
+    # False: the object casts no shadow (e.g. the emissive glass around a lantern's point light,
+    # which would otherwise block the very light it is meant to throw)
+    cast_shadow: bool = True
 
     def references(self) -> list[str]:
         return [self.parent] if self.parent else []
@@ -74,8 +77,11 @@ class MaterialSpec(BaseModel):
     grain: float = Field(0.0, ge=0, le=1)
     grain_scale: float = Field(40.0, gt=0, le=10000)
     bump: float = Field(0.0, ge=0, le=1)
+    # soft velvet/fur rim (Principled sheen): grazing light catches the silhouette, so a coat stops reading as plastic
+    sheen: float = Field(0.0, ge=0, le=1)
+    sheen_tint: str | None = None
 
-    @field_validator("base_color", "emission", "fade_to")
+    @field_validator("base_color", "emission", "fade_to", "sheen_tint")
     @classmethod
     def _hex(cls, v: str | None) -> str | None:
         if v is not None and not re.fullmatch(r"#[0-9A-Fa-f]{6}", v):

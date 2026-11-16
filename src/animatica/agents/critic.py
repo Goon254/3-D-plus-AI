@@ -225,6 +225,8 @@ class Critic(Agent):
                             {"kind": "camera", "fill_mul": 0.85},
                         )
                     )
+            if s.id in ctx.state.artifacts.get("single_shots", []):
+                issues += prop_sliver_issues(s.id, fr, plan.prop.kind if plan.prop else None)
             issues += dialogue_framing_issues(
                 s.id,
                 fr,
@@ -410,6 +412,41 @@ def dialogue_framing_issues(
                 )
             )
     return issues
+
+
+SLIVER_MAX = 0.25  # a prop less than this much in frame reads as a stray object on the edge, not as the prop
+
+
+def prop_sliver_issues(shot: str, frames: dict[str, Any], prop_kind: str | None) -> list[Issue]:
+    """A dialogue single keeps the addressee out of frame on purpose, but must not clip a sliver of it.
+
+    In the fox close-up only the lantern's handle loop poked up at the bottom edge and read as a stray black
+    ring (review 11-16 17:55). Raise the bottom edge until the prop leaves the frame completely (``lift_frac``:
+    the share of the frame height to crop from the bottom; the camera keeps the ear-tip headroom).
+    """
+    if not prop_kind:
+        return []
+    props = [f["subjects"]["prop"] for f in frames.values() if "prop" in f.get("subjects", {})]
+    peeking = [
+        v
+        for v in props
+        if not v.get("behind_camera") and 0.0 < float(v.get("visible_fraction", 0.0)) < SLIVER_MAX
+    ]
+    if not peeking:
+        return []
+    # visible share of the frame height ~ fraction x on-screen height; lift a little more than that
+    worst = max(float(v["visible_fraction"]) * float(v.get("screen_height", 0.3)) for v in peeking)
+    lift = round(min(0.25, worst + 0.04), 3)
+    return [
+        Issue(
+            shot,
+            "prop_sliver",
+            "blocker",
+            f"only a sliver of the {prop_kind} pokes into the frame edge "
+            f"({max(float(v['visible_fraction']) for v in peeking):.0%}): it reads as a stray object",
+            {"kind": "camera", "lift_frac": lift},
+        )
+    ]
 
 
 def _compact(rep: dict[str, Any]) -> dict[str, Any]:

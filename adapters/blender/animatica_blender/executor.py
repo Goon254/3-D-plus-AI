@@ -84,6 +84,8 @@ class Executor(SceneOps, MaterialOps, AnimOps, RenderOps):
         o.location = op.get("location", (0, 0, 0))
         o.rotation_euler = rad(op.get("rotation", (0, 0, 0)))
         o.scale = op.get("scale", (1, 1, 1))
+        if not op.get("cast_shadow", True):
+            o.visible_shadow = False
         return o
 
     # ------------------------------------------------------------------ batch entry

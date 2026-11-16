@@ -744,7 +744,19 @@ def critter_ops(
         },
         {"op": "add_shape_keys", "target": "hero_mouth", "keys": keys},
         sphere("hero_nose", nose_r, nose_loc, "hero_head_pivot", [1.25, 0.9, 0.8] if muzzle else None),
-        {"op": "set_material", "targets": fur_parts, "material": mat(color, 0.0, 0.7, name="hero_fur")},
+        {
+            "op": "set_material",
+            "targets": fur_parts,
+            # sheen = a soft light rim on the coat's silhouette, plus a gentle mottling, so the fur stops reading as
+            # flat plastic in Cycles (review 11-16 17:25/17:55)
+            "material": {
+                **mat(color, 0.0, 0.7, name="hero_fur"),
+                "sheen": 0.8,
+                "sheen_tint": shade(color, 0.35),
+                "noise": 0.1,
+                "noise_scale": 7.0,
+            },
+        },
         {"op": "set_material", "targets": cream_parts, "material": mat(chest, 0.0, 0.8, name="hero_belly")},
         {
             "op": "set_material",
@@ -894,6 +906,9 @@ def prop_ops(
                 "location": [0, 0, 0.15],
                 "parent": "prop_pivot",
                 "smooth": True,
+                # the point light sits inside the glass: an opaque shadow caster would swallow it, leaving only a
+                # faint emissive pool (review 11-16 17:55). The glass glows but casts no shadow.
+                "cast_shadow": False,
             },
             {
                 "op": "create_primitive",
@@ -918,7 +933,8 @@ def prop_ops(
                 "op": "add_light",
                 "id": "prop_light",
                 "light_type": "point",
-                "energy": 25 + 10 * glow,
+                # ~1-1.5 m warm pool on the ground and the hero's face at night
+                "energy": 40 + 25 * glow,
                 "color": color,
                 "location": [0, 0, 0.15],
                 "parent": "prop_pivot",
@@ -947,6 +963,7 @@ def prop_ops(
                 "location": [0, 0, 0.22],
                 "parent": "prop_pivot",
                 "segments": 16,
+                "cast_shadow": False,
             },
             {
                 "op": "create_primitive",
@@ -958,6 +975,7 @@ def prop_ops(
                 "rotation": [0, 25, 0],
                 "parent": "prop_pivot",
                 "segments": 16,
+                "cast_shadow": False,
             },
             {
                 "op": "create_primitive",
@@ -1135,15 +1153,20 @@ def pebble_ops(plan: FilmPlan, seed: int, n: int = 36) -> list[dict[str, Any]]:
     """
     rng = random.Random(seed * 7 + 3)
     snow = plan.setting.kind == "snow"
-    # on snow, flat tinted stones read as puddles (review 14:50): rounder, neutral dark rock poking through
+    # on snow, flat tinted stones read as puddles (review 14:50): rounder, neutral dark rock poking through.
+    # Many small dark stones on bright snow read as specks of ash in the wides (review 11-16 17:55), so snow
+    # gets a third as many, ~2.5x larger, half-buried boulders instead.
     flat = (0.7, 1.0) if snow else (0.45, 0.7)
+    size = 2.5 if snow else 1.0
+    if snow:
+        n = max(6, n // 3)
     ops: list[dict[str, Any]] = []
     ids: list[str] = []
     while len(ids) < n:
         x, y = rng.uniform(-9, 7), rng.uniform(-3.2, 4.5)
         if -9.5 < x < 4.5 and abs(y) < 0.7:
             continue
-        r = rng.uniform(0.025, 0.09) * (1.6 if abs(y) > 2.5 else 1.0)
+        r = rng.uniform(0.025, 0.09) * (1.6 if abs(y) > 2.5 else 1.0) * size
         pid = f"set_pebble_{len(ids)}"
         ops.append(
             {
