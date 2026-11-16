@@ -11,6 +11,294 @@ def Xform "World"
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
         color3f[] primvars:displayColor = [(0.420, 0.337, 0.275)]
     }
+    def Xform "set_pebble_0"
+    {
+        double3 xformOp:translate = (0.144, 1.174, 0.004)
+        float3 xformOp:rotateXYZ = (0, 0, 152.9)
+        float3 xformOp:scale = (1.42, 1, 0.69)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_1"
+    {
+        double3 xformOp:translate = (4.806, 1.992, 0.004)
+        float3 xformOp:rotateXYZ = (0, 0, 99.6)
+        float3 xformOp:scale = (1.57, 1, 0.68)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_2"
+    {
+        double3 xformOp:translate = (2.531, 2.687, 0.008)
+        float3 xformOp:rotateXYZ = (0, 0, 301.8)
+        float3 xformOp:scale = (1.01, 1, 0.55)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_3"
+    {
+        double3 xformOp:translate = (5.422, 1.827, 0.009)
+        float3 xformOp:rotateXYZ = (0, 0, 141.1)
+        float3 xformOp:scale = (1.09, 1, 0.48)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_4"
+    {
+        double3 xformOp:translate = (-2.708, -1.887, 0.012)
+        float3 xformOp:rotateXYZ = (0, 0, 193.4)
+        float3 xformOp:scale = (1.38, 1, 0.68)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_5"
+    {
+        double3 xformOp:translate = (3.335, 2.742, 0.014)
+        float3 xformOp:rotateXYZ = (0, 0, 117.8)
+        float3 xformOp:scale = (1.23, 1, 0.7)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_6"
+    {
+        double3 xformOp:translate = (-7.703, -0.742, 0.008)
+        float3 xformOp:rotateXYZ = (0, 0, 80.1)
+        float3 xformOp:scale = (1.11, 1, 0.7)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_7"
+    {
+        double3 xformOp:translate = (-2.325, -2.265, 0.009)
+        float3 xformOp:rotateXYZ = (0, 0, 332.8)
+        float3 xformOp:scale = (1.25, 1, 0.53)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_8"
+    {
+        double3 xformOp:translate = (-7.866, 3.792, 0.018)
+        float3 xformOp:rotateXYZ = (0, 0, 183.7)
+        float3 xformOp:scale = (1.48, 1, 0.63)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_9"
+    {
+        double3 xformOp:translate = (-5.032, 1.573, 0.005)
+        float3 xformOp:rotateXYZ = (0, 0, 322.3)
+        float3 xformOp:scale = (1.56, 1, 0.46)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_10"
+    {
+        double3 xformOp:translate = (-6.46, 3.54, 0.008)
+        float3 xformOp:rotateXYZ = (0, 0, 120.5)
+        float3 xformOp:scale = (1.04, 1, 0.61)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_11"
+    {
+        double3 xformOp:translate = (1.143, -2.887, 0.008)
+        float3 xformOp:rotateXYZ = (0, 0, 238.9)
+        float3 xformOp:scale = (1.57, 1, 0.64)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_12"
+    {
+        double3 xformOp:translate = (6.96, -2.342, 0.013)
+        float3 xformOp:rotateXYZ = (0, 0, 231)
+        float3 xformOp:scale = (1.33, 1, 0.59)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_13"
+    {
+        double3 xformOp:translate = (5.443, 0.07, 0.008)
+        float3 xformOp:rotateXYZ = (0, 0, 288.9)
+        float3 xformOp:scale = (1.33, 1, 0.67)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_14"
+    {
+        double3 xformOp:translate = (-4.998, 2.982, 0.013)
+        float3 xformOp:rotateXYZ = (0, 0, 225.1)
+        float3 xformOp:scale = (1.28, 1, 0.64)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_15"
+    {
+        double3 xformOp:translate = (-1.596, 3.397, 0.012)
+        float3 xformOp:rotateXYZ = (0, 0, 350.9)
+        float3 xformOp:scale = (1.04, 1, 0.46)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_16"
+    {
+        double3 xformOp:translate = (5.827, -3.034, 0.014)
+        float3 xformOp:rotateXYZ = (0, 0, 142.2)
+        float3 xformOp:scale = (1.07, 1, 0.54)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_17"
+    {
+        double3 xformOp:translate = (6.781, -2.427, 0.01)
+        float3 xformOp:rotateXYZ = (0, 0, 103.1)
+        float3 xformOp:scale = (1.49, 1, 0.57)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_18"
+    {
+        double3 xformOp:translate = (-6.598, -1.178, 0.012)
+        float3 xformOp:rotateXYZ = (0, 0, 249.5)
+        float3 xformOp:scale = (1.57, 1, 0.52)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_19"
+    {
+        double3 xformOp:translate = (1.258, 1.515, 0.011)
+        float3 xformOp:rotateXYZ = (0, 0, 175.9)
+        float3 xformOp:scale = (1.13, 1, 0.69)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_20"
+    {
+        double3 xformOp:translate = (3.836, -2.14, 0.01)
+        float3 xformOp:rotateXYZ = (0, 0, 52.7)
+        float3 xformOp:scale = (1.39, 1, 0.64)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_21"
+    {
+        double3 xformOp:translate = (4.805, -3.041, 0.007)
+        float3 xformOp:rotateXYZ = (0, 0, 33.2)
+        float3 xformOp:scale = (1.06, 1, 0.59)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_22"
+    {
+        double3 xformOp:translate = (-0.342, 3.006, 0.019)
+        float3 xformOp:rotateXYZ = (0, 0, 359.1)
+        float3 xformOp:scale = (1.14, 1, 0.52)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_23"
+    {
+        double3 xformOp:translate = (4.697, -0.625, 0.008)
+        float3 xformOp:rotateXYZ = (0, 0, 328.2)
+        float3 xformOp:scale = (1.58, 1, 0.47)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_24"
+    {
+        double3 xformOp:translate = (1.876, -2.57, 0.008)
+        float3 xformOp:rotateXYZ = (0, 0, 60.4)
+        float3 xformOp:scale = (1.1, 1, 0.66)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_25"
+    {
+        double3 xformOp:translate = (-0.326, -3.194, 0.009)
+        float3 xformOp:rotateXYZ = (0, 0, 172.4)
+        float3 xformOp:scale = (1.01, 1, 0.51)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_26"
+    {
+        double3 xformOp:translate = (1.753, 1.313, 0.009)
+        float3 xformOp:rotateXYZ = (0, 0, 326.6)
+        float3 xformOp:scale = (1.4, 1, 0.51)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_27"
+    {
+        double3 xformOp:translate = (-5.538, 4.038, 0.009)
+        float3 xformOp:rotateXYZ = (0, 0, 32.1)
+        float3 xformOp:scale = (1.08, 1, 0.49)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_28"
+    {
+        double3 xformOp:translate = (-0.113, 1.131, 0.013)
+        float3 xformOp:rotateXYZ = (0, 0, 157.3)
+        float3 xformOp:scale = (1.22, 1, 0.64)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_29"
+    {
+        double3 xformOp:translate = (6.929, -2.562, 0.009)
+        float3 xformOp:rotateXYZ = (0, 0, 315.4)
+        float3 xformOp:scale = (1.54, 1, 0.58)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_30"
+    {
+        double3 xformOp:translate = (-5.049, -2.743, 0.009)
+        float3 xformOp:rotateXYZ = (0, 0, 52.2)
+        float3 xformOp:scale = (1.51, 1, 0.63)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_31"
+    {
+        double3 xformOp:translate = (-1.366, -1.043, 0.005)
+        float3 xformOp:rotateXYZ = (0, 0, 37.5)
+        float3 xformOp:scale = (1.24, 1, 0.68)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_32"
+    {
+        double3 xformOp:translate = (5.513, 1.818, 0.007)
+        float3 xformOp:rotateXYZ = (0, 0, 248.7)
+        float3 xformOp:scale = (1.07, 1, 0.51)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_33"
+    {
+        double3 xformOp:translate = (3.747, 1.082, 0.005)
+        float3 xformOp:rotateXYZ = (0, 0, 262.6)
+        float3 xformOp:scale = (1.56, 1, 0.56)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_34"
+    {
+        double3 xformOp:translate = (-4.568, -2.784, 0.009)
+        float3 xformOp:rotateXYZ = (0, 0, 58.5)
+        float3 xformOp:scale = (1.45, 1, 0.5)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
+    def Xform "set_pebble_35"
+    {
+        double3 xformOp:translate = (2.788, 3.896, 0.015)
+        float3 xformOp:rotateXYZ = (0, 0, 336.8)
+        float3 xformOp:scale = (1.03, 1, 0.46)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.333, 0.271, 0.220)]
+    }
     def Xform "set_junk_0"
     {
         double3 xformOp:translate = (-9.931, -3.403, 0.12)
@@ -237,57 +525,337 @@ def Xform "World"
     }
     def Xform "set_pile_0"
     {
-        double3 xformOp:translate = (22.141, -13.2, -0.376796)
+        double3 xformOp:translate = (22.141, -13.2, -0.219798)
         float3 xformOp:rotateXYZ = (0, 0, 111.482)
-        float3 xformOp:scale = (1.3, 1, 0.45)
+        float3 xformOp:scale = (1.3, 1, 0.7)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
         color3f[] primvars:displayColor = [(0.310, 0.357, 0.384)]
     }
-    def Xform "set_pile_1"
+    def Xform "set_pile_0_junk0"
     {
-        double3 xformOp:translate = (0.522, 25.883, -0.47451)
-        float3 xformOp:rotateXYZ = (0, 0, 114.179)
-        float3 xformOp:scale = (1.3, 1, 0.45)
+        double3 xformOp:translate = (22.087, -12.605, 1.938)
+        float3 xformOp:rotateXYZ = (4.7, -12.6, 94)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.431, 0.416, 0.392)]
+    }
+    def Xform "set_pile_0_junk1"
+    {
+        double3 xformOp:translate = (21.184, -12.741, 1.893)
+        float3 xformOp:rotateXYZ = (-27.4, 31.7, 148)
+        float3 xformOp:scale = (1, 1, 1)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
         color3f[] primvars:displayColor = [(0.478, 0.416, 0.310)]
     }
+    def Xform "set_pile_0_junk2"
+    {
+        double3 xformOp:translate = (21.904, -13.54, 1.962)
+        float3 xformOp:rotateXYZ = (-33.2, 33.3, 241.8)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.431, 0.416, 0.392)]
+    }
+    def Xform "set_pile_0_junk3"
+    {
+        double3 xformOp:translate = (23.341, -14.714, 1.594)
+        float3 xformOp:rotateXYZ = (26.1, -0.1, 301.4)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.549, 0.290, 0.184)]
+    }
+    def Xform "set_pile_0_junk4"
+    {
+        double3 xformOp:translate = (25.045, -13.376, 1.32)
+        float3 xformOp:rotateXYZ = (-33.2, -9.3, 355.5)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.549, 0.290, 0.184)]
+    }
+    def Xform "set_pile_1"
+    {
+        double3 xformOp:translate = (0.522, 25.883, -0.276798)
+        float3 xformOp:rotateXYZ = (0, 0, 114.179)
+        float3 xformOp:scale = (1.3, 1, 0.7)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.478, 0.416, 0.310)]
+    }
+    def Xform "set_pile_1_junk0"
+    {
+        double3 xformOp:translate = (-1.483, 25.058, 2.206)
+        float3 xformOp:rotateXYZ = (12.2, -10, 208.1)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.627, 0.322, 0.176)]
+    }
+    def Xform "set_pile_1_junk1"
+    {
+        double3 xformOp:translate = (1.021, 24.721, 2.355)
+        float3 xformOp:rotateXYZ = (-26.1, 5.2, 288.3)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.478, 0.416, 0.310)]
+    }
+    def Xform "set_pile_1_junk2"
+    {
+        double3 xformOp:translate = (3.037, 25.647, 2.132)
+        float3 xformOp:rotateXYZ = (-4.5, 37.6, 353.1)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.549, 0.290, 0.184)]
+    }
+    def Xform "set_pile_1_junk3"
+    {
+        double3 xformOp:translate = (0.937, 28.59, 1.729)
+        float3 xformOp:rotateXYZ = (-19, 17.7, 443.3)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.612, 0.478, 0.235)]
+    }
+    def Xform "set_pile_1_junk4"
+    {
+        double3 xformOp:translate = (-0.416, 26.071, 2.442)
+        float3 xformOp:rotateXYZ = (-20.7, -32.9, 525.4)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.612, 0.478, 0.235)]
+    }
     def Xform "set_pile_2"
     {
-        double3 xformOp:translate = (3.31, 24.476, -0.417945)
+        double3 xformOp:translate = (3.31, 24.476, -0.243801)
         float3 xformOp:rotateXYZ = (0, 0, 228.061)
-        float3 xformOp:scale = (1.3, 1, 0.45)
+        float3 xformOp:scale = (1.3, 1, 0.7)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
         color3f[] primvars:displayColor = [(0.310, 0.357, 0.384)]
+    }
+    def Xform "set_pile_2_junk0"
+    {
+        double3 xformOp:translate = (4.869, 24.291, 2.041)
+        float3 xformOp:rotateXYZ = (3.9, -3.2, -8.8)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.612, 0.478, 0.235)]
+    }
+    def Xform "set_pile_2_junk1"
+    {
+        double3 xformOp:translate = (3.327, 24.911, 2.175)
+        float3 xformOp:rotateXYZ = (16.6, -12.9, 88.3)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.478, 0.416, 0.310)]
+    }
+    def Xform "set_pile_2_junk2"
+    {
+        double3 xformOp:translate = (0.94, 25.982, 1.546)
+        float3 xformOp:rotateXYZ = (-7.8, -9.1, 140.4)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.310, 0.357, 0.384)]
+    }
+    def Xform "set_pile_2_junk3"
+    {
+        double3 xformOp:translate = (2.816, 24.212, 2.173)
+        float3 xformOp:rotateXYZ = (-3.2, -20.5, 214.8)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.431, 0.416, 0.392)]
+    }
+    def Xform "set_pile_2_junk4"
+    {
+        double3 xformOp:translate = (3.792, 22.705, 1.839)
+        float3 xformOp:rotateXYZ = (21.3, 4, 281.8)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.549, 0.290, 0.184)]
     }
     def Xform "set_pile_3"
     {
-        double3 xformOp:translate = (-12.234, 3.36, -0.378891)
+        double3 xformOp:translate = (-12.234, 3.36, -0.22102)
         float3 xformOp:rotateXYZ = (0, 0, 127.36)
-        float3 xformOp:scale = (1.3, 1, 0.45)
+        float3 xformOp:scale = (1.3, 1, 0.7)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
         color3f[] primvars:displayColor = [(0.612, 0.478, 0.235)]
     }
-    def Xform "set_pile_4"
+    def Xform "set_pile_3_junk0"
     {
-        double3 xformOp:translate = (-14.014, -7.387, -0.364912)
-        float3 xformOp:rotateXYZ = (0, 0, 18.8128)
-        float3 xformOp:scale = (1.3, 1, 0.45)
+        double3 xformOp:translate = (-14.357, 4.784, 1.386)
+        float3 xformOp:rotateXYZ = (8.4, 22.4, 138.9)
+        float3 xformOp:scale = (1, 1, 1)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
-        color3f[] primvars:displayColor = [(0.612, 0.478, 0.235)]
+        color3f[] primvars:displayColor = [(0.431, 0.416, 0.392)]
     }
-    def Xform "set_pile_5"
+    def Xform "set_pile_3_junk1"
     {
-        double3 xformOp:translate = (3.329, 24.74, -0.625186)
-        float3 xformOp:rotateXYZ = (0, 0, 1.5063)
-        float3 xformOp:scale = (1.3, 1, 0.45)
+        double3 xformOp:translate = (-13.938, 1.929, 1.523)
+        float3 xformOp:rotateXYZ = (-17.5, 13.5, 227.5)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.431, 0.416, 0.392)]
+    }
+    def Xform "set_pile_3_junk2"
+    {
+        double3 xformOp:translate = (-11.82, 2.27, 1.841)
+        float3 xformOp:rotateXYZ = (-0.5, 22.3, 286.3)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.627, 0.322, 0.176)]
+    }
+    def Xform "set_pile_3_junk3"
+    {
+        double3 xformOp:translate = (-11.108, 3.406, 1.904)
+        float3 xformOp:rotateXYZ = (36.1, 21.5, 363.1)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.478, 0.416, 0.310)]
+    }
+    def Xform "set_pile_3_junk4"
+    {
+        double3 xformOp:translate = (-11.872, 4.677, 1.778)
+        float3 xformOp:rotateXYZ = (27.8, 8.6, 438.1)
+        float3 xformOp:scale = (1, 1, 1)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
         color3f[] primvars:displayColor = [(0.310, 0.357, 0.384)]
     }
+    def Xform "set_pile_4"
+    {
+        double3 xformOp:translate = (-14.014, -7.387, -0.212865)
+        float3 xformOp:rotateXYZ = (0, 0, 18.8128)
+        float3 xformOp:scale = (1.3, 1, 0.7)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.612, 0.478, 0.235)]
+    }
+    def Xform "set_pile_4_junk0"
+    {
+        double3 xformOp:translate = (-13.646, -6.891, 1.878)
+        float3 xformOp:rotateXYZ = (17.4, 29.1, 60.3)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.612, 0.478, 0.235)]
+    }
+    def Xform "set_pile_4_junk1"
+    {
+        double3 xformOp:translate = (-14.582, -6.71, 1.84)
+        float3 xformOp:rotateXYZ = (8.3, -26.1, 122.9)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.310, 0.357, 0.384)]
+    }
+    def Xform "set_pile_4_junk2"
+    {
+        double3 xformOp:translate = (-16.116, -7.829, 1.563)
+        float3 xformOp:rotateXYZ = (-4.6, -3, 195.3)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.549, 0.290, 0.184)]
+    }
+    def Xform "set_pile_4_junk3"
+    {
+        double3 xformOp:translate = (-14.816, -9.511, 1.248)
+        float3 xformOp:rotateXYZ = (-14.3, 14.2, 253.8)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.478, 0.416, 0.310)]
+    }
+    def Xform "set_pile_4_junk4"
+    {
+        double3 xformOp:translate = (-12.758, -7.986, 1.761)
+        float3 xformOp:rotateXYZ = (-15.8, 1.7, 328.2)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.627, 0.322, 0.176)]
+    }
+    def Xform "set_pile_5"
+    {
+        double3 xformOp:translate = (3.329, 24.74, -0.364692)
+        float3 xformOp:rotateXYZ = (0, 0, 1.5063)
+        float3 xformOp:scale = (1.3, 1, 0.7)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.310, 0.357, 0.384)]
+    }
+    def Xform "set_pile_5_junk0"
+    {
+        double3 xformOp:translate = (5.093, 28.289, 2.131)
+        float3 xformOp:rotateXYZ = (12.2, 5.8, 69.1)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.431, 0.416, 0.392)]
+    }
+    def Xform "set_pile_5_junk1"
+    {
+        double3 xformOp:translate = (2.158, 26.419, 3.03)
+        float3 xformOp:rotateXYZ = (16.9, 6.6, 118.2)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.612, 0.478, 0.235)]
+    }
+    def Xform "set_pile_5_junk2"
+    {
+        double3 xformOp:translate = (-0.57, 24.503, 2.613)
+        float3 xformOp:rotateXYZ = (-19.3, 28, 184.5)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.478, 0.416, 0.310)]
+    }
+    def Xform "set_pile_5_junk3"
+    {
+        double3 xformOp:translate = (3.562, 23.578, 3.188)
+        float3 xformOp:rotateXYZ = (-37.8, -8.3, 278.8)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.310, 0.357, 0.384)]
+    }
+    def Xform "set_pile_5_junk4"
+    {
+        double3 xformOp:translate = (4.447, 24.735, 3.232)
+        float3 xformOp:rotateXYZ = (21.1, -32.4, 359.6)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.478, 0.416, 0.310)]
+    }
     def Xform "set_pile_6"
     {
-        double3 xformOp:translate = (-20.246, 2.137, -0.358204)
+        double3 xformOp:translate = (-20.246, 2.137, -0.208952)
         float3 xformOp:rotateXYZ = (0, 0, 35.9001)
-        float3 xformOp:scale = (1.3, 1, 0.45)
+        float3 xformOp:scale = (1.3, 1, 0.7)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.612, 0.478, 0.235)]
+    }
+    def Xform "set_pile_6_junk0"
+    {
+        double3 xformOp:translate = (-19.707, 3.101, 1.747)
+        float3 xformOp:rotateXYZ = (5.5, 10.8, 66.7)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.431, 0.416, 0.392)]
+    }
+    def Xform "set_pile_6_junk1"
+    {
+        double3 xformOp:translate = (-21.545, 3.37, 1.561)
+        float3 xformOp:rotateXYZ = (29.7, -36.2, 129)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.612, 0.478, 0.235)]
+    }
+    def Xform "set_pile_6_junk2"
+    {
+        double3 xformOp:translate = (-22.596, 1.303, 1.348)
+        float3 xformOp:rotateXYZ = (-0.6, 26.3, 204.8)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.310, 0.357, 0.384)]
+    }
+    def Xform "set_pile_6_junk3"
+    {
+        double3 xformOp:translate = (-19.976, 0.342, 1.454)
+        float3 xformOp:rotateXYZ = (-33.2, -15.6, 276.6)
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.612, 0.478, 0.235)]
+    }
+    def Xform "set_pile_6_junk4"
+    {
+        double3 xformOp:translate = (-19.247, 2.117, 1.81)
+        float3 xformOp:rotateXYZ = (21.3, -23.9, 358.5)
+        float3 xformOp:scale = (1, 1, 1)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
         color3f[] primvars:displayColor = [(0.612, 0.478, 0.235)]
     }
@@ -306,6 +874,94 @@ def Xform "World"
         float3 xformOp:scale = (1, 1, 1)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
         color3f[] primvars:displayColor = [(0.431, 0.416, 0.392)]
+    }
+    def Xform "set_ridge_0"
+    {
+        double3 xformOp:translate = (59.74, 19.15, 0)
+        float3 xformOp:rotateXYZ = (0, 0, -64)
+        float3 xformOp:scale = (1.94, 1, 0.139)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.298, 0.239, 0.196)]
+    }
+    def Xform "set_ridge_1"
+    {
+        double3 xformOp:translate = (56.82, 36.66, 0)
+        float3 xformOp:rotateXYZ = (0, 0, -55.6)
+        float3 xformOp:scale = (1.75, 1, 0.127)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.298, 0.239, 0.196)]
+    }
+    def Xform "set_ridge_2"
+    {
+        double3 xformOp:translate = (54.77, 44.57, 0)
+        float3 xformOp:rotateXYZ = (0, 0, -56)
+        float3 xformOp:scale = (1.95, 1, 0.143)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.298, 0.239, 0.196)]
+    }
+    def Xform "set_ridge_3"
+    {
+        double3 xformOp:translate = (29.92, 61.42, 0)
+        float3 xformOp:rotateXYZ = (0, 0, -35.2)
+        float3 xformOp:scale = (2.29, 1, 0.09)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.298, 0.239, 0.196)]
+    }
+    def Xform "set_ridge_4"
+    {
+        double3 xformOp:translate = (22.84, 72.21, 0)
+        float3 xformOp:rotateXYZ = (0, 0, -13.3)
+        float3 xformOp:scale = (2.21, 1, 0.224)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.298, 0.239, 0.196)]
+    }
+    def Xform "set_ridge_5"
+    {
+        double3 xformOp:translate = (-6.46, 76.23, 0)
+        float3 xformOp:rotateXYZ = (0, 0, -1.6)
+        float3 xformOp:scale = (1.97, 1, 0.151)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.298, 0.239, 0.196)]
+    }
+    def Xform "set_ridge_6"
+    {
+        double3 xformOp:translate = (-13.61, 70.68, 0)
+        float3 xformOp:rotateXYZ = (0, 0, 20.1)
+        float3 xformOp:scale = (1.83, 1, 0.095)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.298, 0.239, 0.196)]
+    }
+    def Xform "set_ridge_7"
+    {
+        double3 xformOp:translate = (-34.36, 56.24, 0)
+        float3 xformOp:rotateXYZ = (0, 0, 21.9)
+        float3 xformOp:scale = (2.33, 1, 0.204)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.298, 0.239, 0.196)]
+    }
+    def Xform "set_ridge_8"
+    {
+        double3 xformOp:translate = (-43.5, 49.82, 0)
+        float3 xformOp:rotateXYZ = (0, 0, 43.9)
+        float3 xformOp:scale = (2.21, 1, 0.155)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.298, 0.239, 0.196)]
+    }
+    def Xform "set_ridge_9"
+    {
+        double3 xformOp:translate = (-65.18, 36.09, 0)
+        float3 xformOp:rotateXYZ = (0, 0, 53.6)
+        float3 xformOp:scale = (2.21, 1, 0.18)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.298, 0.239, 0.196)]
+    }
+    def Xform "set_ridge_10"
+    {
+        double3 xformOp:translate = (-68.63, 14.25, 0)
+        float3 xformOp:rotateXYZ = (0, 0, 70.3)
+        float3 xformOp:scale = (2.03, 1, 0.135)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.298, 0.239, 0.196)]
     }
     def Xform "set_sun_disc"
     {
@@ -547,29 +1203,98 @@ def Xform "World"
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
             color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
         }
-        def Xform "hero_cog_L0"
+        def Xform "hero_wheel_L0"
         {
             double3 xformOp:translate = (0.43, -0.2, 0.14)
-            float3 xformOp:rotateXYZ = (0, 90, 0)
+            float3 xformOp:rotateXYZ = (0, 0, 0)
             float3 xformOp:scale = (1, 1, 1)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
-            color3f[] primvars:displayColor = [(0.663, 0.388, 0.118)]
+            def Xform "hero_cog_L0"
+            {
+                double3 xformOp:translate = (0, 0, 0)
+                float3 xformOp:rotateXYZ = (0, 90, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.663, 0.388, 0.118)]
+            }
+            def Xform "hero_spoke_L0"
+            {
+                double3 xformOp:translate = (0.017, 0, 0)
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
+            }
+            def Xform "hero_bolt_L0"
+            {
+                double3 xformOp:translate = (0.02, 0, 0.048)
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
+            }
         }
-        def Xform "hero_cog_L1"
+        def Xform "hero_wheel_L1"
         {
             double3 xformOp:translate = (0.43, 0, 0.14)
-            float3 xformOp:rotateXYZ = (0, 90, 0)
+            float3 xformOp:rotateXYZ = (0, 0, 0)
             float3 xformOp:scale = (1, 1, 1)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
-            color3f[] primvars:displayColor = [(0.663, 0.388, 0.118)]
+            def Xform "hero_cog_L1"
+            {
+                double3 xformOp:translate = (0, 0, 0)
+                float3 xformOp:rotateXYZ = (0, 90, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.663, 0.388, 0.118)]
+            }
+            def Xform "hero_spoke_L1"
+            {
+                double3 xformOp:translate = (0.017, 0, 0)
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
+            }
+            def Xform "hero_bolt_L1"
+            {
+                double3 xformOp:translate = (0.02, 0, 0.048)
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
+            }
         }
-        def Xform "hero_cog_L2"
+        def Xform "hero_wheel_L2"
         {
             double3 xformOp:translate = (0.43, 0.2, 0.14)
-            float3 xformOp:rotateXYZ = (0, 90, 0)
+            float3 xformOp:rotateXYZ = (0, 0, 0)
             float3 xformOp:scale = (1, 1, 1)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
-            color3f[] primvars:displayColor = [(0.663, 0.388, 0.118)]
+            def Xform "hero_cog_L2"
+            {
+                double3 xformOp:translate = (0, 0, 0)
+                float3 xformOp:rotateXYZ = (0, 90, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.663, 0.388, 0.118)]
+            }
+            def Xform "hero_spoke_L2"
+            {
+                double3 xformOp:translate = (0.017, 0, 0)
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
+            }
+            def Xform "hero_bolt_L2"
+            {
+                double3 xformOp:translate = (0.02, 0, 0.048)
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
+            }
         }
         def Xform "hero_tread_R"
         {
@@ -579,29 +1304,98 @@ def Xform "World"
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
             color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
         }
-        def Xform "hero_cog_R0"
+        def Xform "hero_wheel_R0"
         {
             double3 xformOp:translate = (-0.43, -0.2, 0.14)
-            float3 xformOp:rotateXYZ = (0, 90, 0)
+            float3 xformOp:rotateXYZ = (0, 0, 0)
             float3 xformOp:scale = (1, 1, 1)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
-            color3f[] primvars:displayColor = [(0.663, 0.388, 0.118)]
+            def Xform "hero_cog_R0"
+            {
+                double3 xformOp:translate = (0, 0, 0)
+                float3 xformOp:rotateXYZ = (0, 90, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.663, 0.388, 0.118)]
+            }
+            def Xform "hero_spoke_R0"
+            {
+                double3 xformOp:translate = (-0.017, 0, 0)
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
+            }
+            def Xform "hero_bolt_R0"
+            {
+                double3 xformOp:translate = (-0.02, 0, 0.048)
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
+            }
         }
-        def Xform "hero_cog_R1"
+        def Xform "hero_wheel_R1"
         {
             double3 xformOp:translate = (-0.43, 0, 0.14)
-            float3 xformOp:rotateXYZ = (0, 90, 0)
+            float3 xformOp:rotateXYZ = (0, 0, 0)
             float3 xformOp:scale = (1, 1, 1)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
-            color3f[] primvars:displayColor = [(0.663, 0.388, 0.118)]
+            def Xform "hero_cog_R1"
+            {
+                double3 xformOp:translate = (0, 0, 0)
+                float3 xformOp:rotateXYZ = (0, 90, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.663, 0.388, 0.118)]
+            }
+            def Xform "hero_spoke_R1"
+            {
+                double3 xformOp:translate = (-0.017, 0, 0)
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
+            }
+            def Xform "hero_bolt_R1"
+            {
+                double3 xformOp:translate = (-0.02, 0, 0.048)
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
+            }
         }
-        def Xform "hero_cog_R2"
+        def Xform "hero_wheel_R2"
         {
             double3 xformOp:translate = (-0.43, 0.2, 0.14)
-            float3 xformOp:rotateXYZ = (0, 90, 0)
+            float3 xformOp:rotateXYZ = (0, 0, 0)
             float3 xformOp:scale = (1, 1, 1)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
-            color3f[] primvars:displayColor = [(0.663, 0.388, 0.118)]
+            def Xform "hero_cog_R2"
+            {
+                double3 xformOp:translate = (0, 0, 0)
+                float3 xformOp:rotateXYZ = (0, 90, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.663, 0.388, 0.118)]
+            }
+            def Xform "hero_spoke_R2"
+            {
+                double3 xformOp:translate = (-0.017, 0, 0)
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
+            }
+            def Xform "hero_bolt_R2"
+            {
+                double3 xformOp:translate = (-0.02, 0, 0.048)
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+                color3f[] primvars:displayColor = [(0.243, 0.290, 0.349)]
+            }
         }
     }
     def Xform "prop"
@@ -764,14 +1558,14 @@ def Xform "World"
     }
     def Xform "cam_s3_aim"
     {
-        double3 xformOp:translate = (0.667, 0, 0.82)
+        double3 xformOp:translate = (0.667, 0, 0.845)
         float3 xformOp:rotateXYZ = (0, 0, 0)
         float3 xformOp:scale = (1, 1, 1)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
     }
     def Camera "cam_s3"
     {
-        double3 xformOp:translate = (3.074, -2.674, 1.15)
+        double3 xformOp:translate = (3.557, -3.21, 1.15)
         float3 xformOp:rotateXYZ = (0, 0, 0)
         float3 xformOp:scale = (1, 1, 1)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]

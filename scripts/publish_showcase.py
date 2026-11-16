@@ -72,6 +72,8 @@ def main() -> None:
     for f in ("production.jsonl", "contact_sheet.jpg"):
         if (src / "log" / f).exists():
             shutil.copy2(src / "log" / f, dst / "log" / f)
+    if (src / "log" / "contact_sheet.jpg").exists():  # README/PROGRESS link the top-level copy
+        shutil.copy2(src / "log" / "contact_sheet.jpg", dst / "contact_sheet.jpg")
     for p in sorted((src / "log" / "previews").glob("iter*.png")):
         shutil.copy2(p, dst / "log" / "previews" / p.name)
     if (src / "project.json").exists():
