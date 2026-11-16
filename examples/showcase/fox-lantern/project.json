@@ -5043,7 +5043,7 @@
    "hero_tail": {
     "id": "hero_tail",
     "type": "mesh",
-    "parent": "hero_antenna_pivot",
+    "parent": "hero_rig",
     "translate": [
      0.0,
      0.2,
@@ -5066,7 +5066,7 @@
    "hero_tail_tip": {
     "id": "hero_tail_tip",
     "type": "mesh",
-    "parent": "hero_antenna_pivot",
+    "parent": "hero_rig",
     "translate": [
      0.0,
      0.42,
@@ -5183,7 +5183,7 @@
    "hero_haunch_L": {
     "id": "hero_haunch_L",
     "type": "mesh",
-    "parent": "hero_body",
+    "parent": "hero_rig",
     "translate": [
      0.17,
      0.15,
@@ -5206,11 +5206,11 @@
    "hero_foot_L": {
     "id": "hero_foot_L",
     "type": "mesh",
-    "parent": "hero_root",
+    "parent": "hero_rig",
     "translate": [
      0.17,
      0.1,
-     0.045
+     0.06
     ],
     "rotate": [
      0.0,
@@ -5254,7 +5254,7 @@
    "hero_arm_L": {
     "id": "hero_arm_L",
     "type": "mesh",
-    "parent": "hero_arm_pivot_L",
+    "parent": "hero_rig",
     "translate": [
      0.0,
      0.0,
@@ -5277,7 +5277,7 @@
    "hero_paw_L": {
     "id": "hero_paw_L",
     "type": "mesh",
-    "parent": "hero_arm_pivot_L",
+    "parent": "hero_rig",
     "translate": [
      0.0,
      -0.025,
@@ -5394,7 +5394,7 @@
    "hero_haunch_R": {
     "id": "hero_haunch_R",
     "type": "mesh",
-    "parent": "hero_body",
+    "parent": "hero_rig",
     "translate": [
      -0.17,
      0.15,
@@ -5417,11 +5417,11 @@
    "hero_foot_R": {
     "id": "hero_foot_R",
     "type": "mesh",
-    "parent": "hero_root",
+    "parent": "hero_rig",
     "translate": [
      -0.17,
      0.1,
-     0.045
+     0.06
     ],
     "rotate": [
      0.0,
@@ -5465,7 +5465,7 @@
    "hero_arm_R": {
     "id": "hero_arm_R",
     "type": "mesh",
-    "parent": "hero_arm_pivot_R",
+    "parent": "hero_rig",
     "translate": [
      0.0,
      0.0,
@@ -5488,7 +5488,7 @@
    "hero_paw_R": {
     "id": "hero_paw_R",
     "type": "mesh",
-    "parent": "hero_arm_pivot_R",
+    "parent": "hero_rig",
     "translate": [
      0.0,
      -0.025,
@@ -5530,6 +5530,44 @@
     "material": "#F4E7D3",
     "animated": [],
     "tags": []
+   },
+   "hero_rig": {
+    "id": "hero_rig",
+    "type": "armature",
+    "parent": "hero_body",
+    "translate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "bone:tail_0.rotation",
+     "bone:tail_1.rotation",
+     "bone:tail_2.rotation",
+     "bone:leg_FL_0.rotation",
+     "bone:leg_FL_1.rotation",
+     "bone:leg_HL_0.rotation",
+     "bone:leg_HL_1.rotation",
+     "bone:leg_FR_0.rotation",
+     "bone:leg_FR_1.rotation",
+     "bone:leg_HR_0.rotation",
+     "bone:leg_HR_1.rotation"
+    ],
+    "tags": [
+     "hero",
+     "rig"
+    ]
    },
    "hero_mouth": {
     "id": "hero_mouth",
@@ -6043,37 +6081,37 @@
   {
    "task": "director",
    "ok": true,
-   "seconds": 0.04
+   "seconds": 0.01
   },
   {
    "task": "voice",
    "ok": true,
-   "seconds": 5.42
+   "seconds": 3.8
   },
   {
    "task": "asset",
    "ok": true,
-   "seconds": 2.17
+   "seconds": 1.29
   },
   {
    "task": "animator",
    "ok": true,
-   "seconds": 0.31
+   "seconds": 0.37
   },
   {
    "task": "camera",
    "ok": true,
-   "seconds": 0.28
+   "seconds": 0.23
   },
   {
    "task": "review",
    "ok": true,
-   "seconds": 4.32
+   "seconds": 3.41
   },
   {
    "task": "edit",
    "ok": true,
-   "seconds": 230.7
+   "seconds": 223.0
   }
  ],
  "locked": {},
@@ -6090,7 +6128,7 @@
   },
   "music": "output\\fox-lantern\\audio\\music_bed.wav",
   "mix": "output\\fox-lantern\\audio\\mix.wav",
-  "hero_parts": 29,
+  "hero_parts": 30,
   "asset_info": {
    "prop_height": 0.42,
    "hero_height": 1.3900000000000001,
@@ -6111,7 +6149,7 @@
   "edit_mlt": "output\\fox-lantern\\edit.mlt",
   "final": "examples/showcase/fox-lantern/final.mp4",
   "contact_sheet": "examples/showcase/fox-lantern/log/contact_sheet.jpg",
-  "render_seconds": 224.0,
+  "render_seconds": 213.8,
   "quality": "final",
   "llm_usage": {
    "provider": "scripted",

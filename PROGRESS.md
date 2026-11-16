@@ -65,7 +65,7 @@ is the production log viewer: every agent decision, every batch, every critique 
   [Production log](examples/showcase/hello-little-one-hd/log/index.html) ·
   [contact sheet](examples/showcase/hello-little-one-hd/contact_sheet.jpg).
 * **Fox film (HD)** — [`examples/showcase/fox-lantern/final.mp4`](examples/showcase/fox-lantern/final.mp4)
-  (22 s, 960×540 Cycles `--quality final`, OptiX 224 s, from `a26e85d`), prompt "A tiny fox finds a glowing lantern in a snowy forest at
+  (22 s, 960×540 Cycles `--quality final`, OptiX 214 s, from `3a5ac08`, with the critter bone rig), prompt "A tiny fox finds a glowing lantern in a snowy forest at
   night. It whispers: 'Are you lost too?' Then it hops away." The species pass (snout, pointed ears, white-tipped tail,
   legs), an eye-level head-and-shoulders dialogue close-up with a readable Rhubarb-synced mouth, the acting beats,
   rock-not-puddle snow stones, and an exit that leaves frame. Critic passes every shot on iteration 1.
@@ -102,9 +102,9 @@ beat doesn't carry the hero out of frame, the HD showcase is stale (floating sla
 * **It's a lit toy, not cinema.** Characters are bevelled primitives. They're readable and charming
   in Cycles, but there are no real textures (only procedural grime) and no volumetrics. The critter
   reads a bit like a chick.
-* **The rig is object-level** (empties + parenting, elbows added tonight). There's no walk cycle (the
-  robot drives on wheels that now roll by distance; the critter now bounds in real hops) and no bone rig. That's the biggest visible upgrade
-  left.
+* **Rigging:** critters (fox/cat/dog) have a bone rig for the tail (skinned, bends with follow-through) and legs
+  (tuck and reach in hops); body, head and the robot stay object-level pivots (DECISIONS #36). No walk cycle: the robot
+  rolls on wheels that turn by distance, critters hop.
 * **Story variety is template-driven offline.** Arcs vary with the prompt, but the scripted Director is
   a keyword parser. The Anthropic path (plans, performance, camera, vision critic) is implemented and
   unit-tested but **was never run against the live API** (no key here).
