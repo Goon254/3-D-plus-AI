@@ -5127,37 +5127,37 @@
   {
    "task": "director",
    "ok": true,
-   "seconds": 0.04
+   "seconds": 0.01
   },
   {
    "task": "voice",
    "ok": true,
-   "seconds": 5.54
+   "seconds": 5.06
   },
   {
    "task": "asset",
    "ok": true,
-   "seconds": 3.14
+   "seconds": 2.18
   },
   {
    "task": "animator",
    "ok": true,
-   "seconds": 0.42
+   "seconds": 0.25
   },
   {
    "task": "camera",
    "ok": true,
-   "seconds": 0.42
+   "seconds": 0.27
   },
   {
    "task": "review",
    "ok": true,
-   "seconds": 10.3
+   "seconds": 8.01
   },
   {
    "task": "edit",
    "ok": true,
-   "seconds": 94.04
+   "seconds": 81.9
   }
  ],
  "locked": {},
@@ -5167,9 +5167,9 @@
     "path": "output\\hello-little-one\\audio\\line1.wav",
     "engine": "kokoro",
     "duration": 1.131,
-    "lipsync": "amplitude",
+    "lipsync": "rhubarb",
     "start_s": 11.708,
-    "cues": 10
+    "cues": 9
    }
   },
   "music": "output\\hello-little-one\\audio\\music_bed.wav",
@@ -5181,6 +5181,7 @@
    "head_z": 1.12,
    "head_top": 1.4200000000000002
   },
+  "single_shots": [],
   "critic_history": [
    {
     "iteration": 1,
@@ -5200,7 +5201,7 @@
   "edit_mlt": "output\\hello-little-one\\edit.mlt",
   "final": "examples/showcase/hello-little-one/final.mp4",
   "contact_sheet": "examples/showcase/hello-little-one/log/contact_sheet.jpg",
-  "render_seconds": 88.2,
+  "render_seconds": 77.1,
   "quality": "draft",
   "llm_usage": {
    "provider": "scripted",

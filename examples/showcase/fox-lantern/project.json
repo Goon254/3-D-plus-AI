@@ -5538,7 +5538,7 @@
     "translate": [
      0.0,
      -0.45398000000000005,
-     0.08138999999999999
+     0.0771
     ],
     "rotate": [
      0.0,
@@ -5936,9 +5936,9 @@
     "type": "empty",
     "parent": null,
     "translate": [
-     0.8,
-     0.0,
-     0.78
+     0.869,
+     0.242,
+     0.93
     ],
     "rotate": [
      0.0,
@@ -5961,9 +5961,9 @@
     "type": "camera",
     "parent": null,
     "translate": [
-     3.729,
-     -3.253,
-     1.15
+     2.819,
+     -2.464,
+     0.88
     ],
     "rotate": [
      0.0,
@@ -6048,17 +6048,17 @@
   {
    "task": "voice",
    "ok": true,
-   "seconds": 5.79
+   "seconds": 5.42
   },
   {
    "task": "asset",
    "ok": true,
-   "seconds": 2.3
+   "seconds": 2.17
   },
   {
    "task": "animator",
    "ok": true,
-   "seconds": 0.29
+   "seconds": 0.31
   },
   {
    "task": "camera",
@@ -6068,12 +6068,12 @@
   {
    "task": "review",
    "ok": true,
-   "seconds": 8.43
+   "seconds": 4.32
   },
   {
    "task": "edit",
    "ok": true,
-   "seconds": 236.04
+   "seconds": 230.7
   }
  ],
  "locked": {},
@@ -6083,9 +6083,9 @@
     "path": "output\\fox-lantern\\audio\\line1.wav",
     "engine": "kokoro",
     "duration": 1.152,
-    "lipsync": "amplitude",
+    "lipsync": "rhubarb",
     "start_s": 11.708,
-    "cues": 10
+    "cues": 7
    }
   },
   "music": "output\\fox-lantern\\audio\\music_bed.wav",
@@ -6097,17 +6097,12 @@
    "head_z": 0.8,
    "head_top": 1.3900000000000001
   },
+  "single_shots": [
+   "s3"
+  ],
   "critic_history": [
    {
     "iteration": 1,
-    "issues": 1,
-    "blockers": 1,
-    "messages": [
-     "s3: the lantern being spoken to is only 67% in frame (min 80%)"
-    ]
-   },
-   {
-    "iteration": 2,
     "issues": 0,
     "blockers": 0,
     "messages": []
@@ -6116,20 +6111,14 @@
   "edit_mlt": "output\\fox-lantern\\edit.mlt",
   "final": "examples/showcase/fox-lantern/final.mp4",
   "contact_sheet": "examples/showcase/fox-lantern/log/contact_sheet.jpg",
-  "render_seconds": 228.8,
+  "render_seconds": 224.0,
   "quality": "final",
   "llm_usage": {
    "provider": "scripted",
-   "calls": 5,
+   "calls": 4,
    "tokens": 0
   },
   "usda": "output\\fox-lantern\\scene.usda"
  },
- "tuning": {
-  "camera": {
-   "s3": {
-    "fill_mul": 0.833
-   }
-  }
- }
+ "tuning": {}
 }

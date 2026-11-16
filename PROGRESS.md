@@ -57,16 +57,18 @@ is the production log viewer: every agent decision, every batch, every critique 
   [Editable `.blend`](examples/showcase/hello-little-one/scene.blend). Reproduce: `animatica demo --quality draft`.
 * **HD version** — [`examples/showcase/hello-little-one-hd/final.mp4`](examples/showcase/hello-little-one-hd/final.mp4)
   (21 s, **960×540 Cycles `--quality final`**, title overlay, voice + lip sync + music + captions, 1.5 MB), re-rendered
-  2026-11-16 from `fdc5db1` on an **RTX 5060 with OptiX in 4 min end to end** (504 frames in 204 s, 0.40 s/frame; the
+  2026-11-16 from `a26e85d` on an **RTX 5060 with OptiX in 4 min end to end** (504 frames in 199 s, 0.40 s/frame; the
   previous CPU render took ~2 h). Includes everything to date: speaker cheats toward the lens (22° off-axis), whole flower
   in the close-up (critic iteration 1 flags it at 56 % with the new 80 % rule, iteration 2 passes), hazy ridge band on
-  the horizon, junk spread around the heap crest, rolling wheels, ground grit and pebbles.
+  the horizon, junk spread around the heap crest, rolling wheels, ground grit and pebbles, Rhubarb lip sync, and the
+  acting beats (cautious discovery with a lean-in and head tilt; a glance down at the flower after the line).
   [Production log](examples/showcase/hello-little-one-hd/log/index.html) ·
   [contact sheet](examples/showcase/hello-little-one-hd/contact_sheet.jpg).
 * **Fox film (HD)** — [`examples/showcase/fox-lantern/final.mp4`](examples/showcase/fox-lantern/final.mp4)
-  (22 s, 960×540 Cycles `--quality final`, OptiX 229 s), prompt "A tiny fox finds a glowing lantern in a snowy forest at
+  (22 s, 960×540 Cycles `--quality final`, OptiX 224 s, from `a26e85d`), prompt "A tiny fox finds a glowing lantern in a snowy forest at
   night. It whispers: 'Are you lost too?' Then it hops away." The species pass (snout, pointed ears, white-tipped tail,
-  legs), the speaker facing the lens with the lantern in frame, rock-not-puddle snow stones, and an exit that leaves frame.
+  legs), an eye-level head-and-shoulders dialogue close-up with a readable Rhubarb-synced mouth, the acting beats,
+  rock-not-puddle snow stones, and an exit that leaves frame. Critic passes every shot on iteration 1.
   [Production log](examples/showcase/fox-lantern/log/index.html) · [contact sheet](examples/showcase/fox-lantern/contact_sheet.jpg).
 * **Games track** — [`examples/showcase/robot-flower-platformer/`](examples/showcase/robot-flower-platformer/)
   (generated Godot project; bot playtest 6/6).

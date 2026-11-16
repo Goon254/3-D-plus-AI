@@ -1624,7 +1624,7 @@ def Xform "World"
                 }
                 def Xform "hero_mouth"
                 {
-                    double3 xformOp:translate = (0, -0.45398, 0.08139)
+                    double3 xformOp:translate = (0, -0.45398, 0.0771)
                     float3 xformOp:rotateXYZ = (0, 0, 0)
                     float3 xformOp:scale = (1, 1, 1)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
@@ -1846,14 +1846,14 @@ def Xform "World"
     }
     def Xform "cam_s3_aim"
     {
-        double3 xformOp:translate = (0.8, 0, 0.78)
+        double3 xformOp:translate = (0.869, 0.242, 0.93)
         float3 xformOp:rotateXYZ = (0, 0, 0)
         float3 xformOp:scale = (1, 1, 1)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
     }
     def Camera "cam_s3"
     {
-        double3 xformOp:translate = (3.729, -3.253, 1.15)
+        double3 xformOp:translate = (2.819, -2.464, 0.88)
         float3 xformOp:rotateXYZ = (0, 0, 0)
         float3 xformOp:scale = (1, 1, 1)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
