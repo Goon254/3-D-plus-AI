@@ -7,12 +7,13 @@ Status 11-16 21:48 UTC ([review](docs/reviews/2026-11-16T2148Z.md)): **pre-produ
 * Species research notes (elephant, giraffe, zebra, meerkat, leopard tortoise): `src/animatica/knowledge/species/`.
 * Story: premise and beats, draft 1, story-editor critique, production screenplay (10 scenes, ≈5:20): `films/savannah/`.
 * Creatures: species body plans on bone rigs with IK legs and a foot-locked gait planner; walk tests for all five,
-  0.0 mm measured stance slide: [`examples/showcase/savannah-walk-tests/`](examples/showcase/savannah-walk-tests/).
+  0.0 mm measured stance slide; v2 metaball-sculpted organic bodies with skin/fur shading:
+  [`examples/showcase/savannah-walk-tests/`](examples/showcase/savannah-walk-tests/).
 * Score: a Composer with per-scene cues and six character leitmotifs, rendered with FluidSynth + GeneralUser GS:
   [`examples/showcase/savannah-score/score.m4a`](examples/showcase/savannah-score/score.m4a) (5:22, not yet cut to picture).
   Reproduce: `python scripts/savannah_score.py`.
 
-Scorecard (strict): story 8 (script), character design 5, motion 6, visuals 3, voices 1, music 7, mix 1. Next: faces +
+Scorecard (strict): story 8 (script), character design 6 (v2 organic bodies), motion 6, visuals 3, voices 1, music 7, mix 1. Next: faces +
 meerkat/tortoise design pass, the savannah set, voice casting, ambience, and the scene production pipeline (see
 [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md) P1-SAVANNAH).
 
