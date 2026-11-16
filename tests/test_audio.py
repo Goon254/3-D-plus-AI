@@ -71,3 +71,15 @@ def test_mlt_timeline_export(tmp_path):
     a1 = doc.find("playlist[@id='A1']")
     assert a1.find("blank").get("length") == str(12 * plan.fps)
     assert doc.find("producer[@id='line1']/property[@name='resource']").text == "audio/line1.wav"
+
+
+def test_rhubarb_is_used_when_installed(tmp_path):
+    import pytest
+
+    if not lipsync.find_rhubarb():
+        pytest.skip("rhubarb not installed (scripts/setup_assets.sh)")
+    res = tts.synthesize("Are you lost too?", tmp_path / "a.wav", tts.VoiceSpec(engine="synth"))
+    cues, engine = lipsync.lipsync(res["path"], "Are you lost too?")
+    # the Windows build prints nothing on stdout with -q: this used to fall back to "amplitude" silently
+    assert engine == "rhubarb"
+    assert cues and abs(cues[-1].end - res["duration"]) < 0.2

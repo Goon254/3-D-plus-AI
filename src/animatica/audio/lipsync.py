@@ -61,19 +61,17 @@ def rhubarb_cues(wav: str | Path, transcript: str | None = None) -> list[Cue]:
     exe = find_rhubarb()
     if not exe:
         raise FileNotFoundError("rhubarb not found")
-    cmd = [exe, "-f", "json", "-q", "--extendedShapes", "GHX", str(wav)]
-    tmp = None
-    if transcript:
-        tmp = tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False)
-        tmp.write(transcript)
-        tmp.close()
-        cmd[1:1] = ["--dialogFile", tmp.name]
-    try:
-        out = subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=600)
-    finally:
-        if tmp:
-            os.unlink(tmp.name)
-    data = json.loads(out.stdout)
+    # -o file, not stdout: the Windows build writes nothing to stdout with -q (lip sync silently fell back
+    # to the amplitude estimator there)
+    with tempfile.TemporaryDirectory() as td:
+        out_json = Path(td) / "cues.json"
+        cmd = [exe, "-f", "json", "-q", "--extendedShapes", "GHX", "-o", str(out_json), str(wav)]
+        if transcript:
+            dialog = Path(td) / "dialog.txt"
+            dialog.write_text(transcript, encoding="utf-8")
+            cmd[1:1] = ["--dialogFile", str(dialog)]
+        subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=600)
+        data = json.loads(out_json.read_text(encoding="utf-8"))
     return [Cue(c["start"], c["end"], c["value"]) for c in data["mouthCues"]]
 
 
