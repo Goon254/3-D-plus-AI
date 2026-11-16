@@ -1,0 +1,943 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Pebble and the Lantern — production log</title><style>
+:root{--bg:#faf8f5;--fg:#1f1d1a;--mut:#6b665e;--card:#fff;--line:#e6e1d8;--ok:#2e7d32;--bad:#c62828;--acc:#d9822b}
+@media (prefers-color-scheme:dark){:root{--bg:#141311;--fg:#ece7df;--mut:#a39d93;--card:#1d1b18;--line:#2f2c27;--ok:#66bb6a;--bad:#ef5350}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--fg)}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 80px}h1{font-size:26px;margin:0 0 4px}h2{font-size:18px;margin:32px 0 8px}
+.sub{color:var(--mut);margin:0 0 20px}.hero{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}video,img{max-width:100%;border-radius:8px;display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.ev{display:grid;grid-template-columns:64px 92px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);align-items:start}
+.t{color:var(--mut);font-variant-numeric:tabular-nums}.ag{font-weight:600}.k{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.pass{color:var(--ok);font-weight:600}.fail{color:var(--bad);font-weight:600}.pv{max-width:360px;margin-top:6px}
+details{margin-top:4px}summary{cursor:pointer;color:var(--mut);font-size:13px}pre{white-space:pre-wrap;font-size:12px;overflow:auto;max-height:300px}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left;font-size:14px}
+</style></head><body><main><h1>Pebble and the Lantern</h1><p class='sub'>A tiny fox finds a glowing lantern in a snowy forest at night. It whispers: &#x27;Are you lost too?&#x27; Then it hops away.</p><div class='hero'><div><video controls src='../final.mp4'></video></div><div class='card'><table><tr><th>Provider</th><td>scripted</td></tr><tr><th>LLM calls / tokens</th><td>5 / 0</td></tr><tr><th>Shots</th><td>4</td></tr><tr><th>Duration</th><td>22.0s</td></tr><tr><th>Render</th><td>final in 229s</td></tr><tr><th>Critic iterations</th><td>2</td></tr></table></div></div><h2>Contact sheet</h2><img src='contact_sheet.jpg' alt='contact sheet'><h2>Shot list</h2><div class='card'><table><tr><th>Shot</th><th>Type</th><th>Beat</th><th>Camera</th><th>Duration</th><th>Description</th></tr><tr><td>s1</td><td>wide</td><td>enter</td><td>track</td><td>5.5s</td><td>Establishing: the small creature hops into the snow at night.</td></tr><tr><td>s2</td><td>medium</td><td>discover</td><td>dolly_in</td><td>5.0s</td><td>Pebble notices the lantern, hesitates (anticipation), then approaches and leans in.</td></tr><tr><td>s3</td><td>closeup</td><td>speak</td><td>dolly_in</td><td>5.0s</td><td>Close-up: Pebble speaks softly to the lantern.</td></tr><tr><td>s4</td><td>wide</td><td>exit</td><td>crane_up</td><td>6.5s</td><td>Pebble turns, looks back at the lantern once, and heads home.</td></tr></table></div><h2>Production log</h2><div class='card'><div class='ev'><div class='t'>0.0s</div><div><div class='ag'>orchestr.</div><div class='k'>start</div></div><div>new film from prompt: &quot;A tiny fox finds a glowing lantern in a snowy forest at night. It whispers: &#x27;Are you lost too?&#x27; Then it hops away.&quot; (provider: scripted)<details><summary>details</summary><pre>{
+ &quot;options&quot;: {
+  &quot;quality&quot;: &quot;final&quot;,
+  &quot;preview_engine&quot;: &quot;cycles&quot;,
+  &quot;critic_iterations&quot;: 3,
+  &quot;device&quot;: &quot;optix&quot;
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>1.9s</div><div><div class='ag'>orchestr.</div><div class='k'>info</div></div><div>engine: Blender 5.3.0 (headless adapter)</div></div><div class='ev'><div class='t'>1.9s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>start director</div></div><div class='ev'><div class='t'>2.0s</div><div><div class='ag'>director</div><div class='k'>decision</div></div><div>&#x27;Pebble and the Lantern&#x27;: 4 shots, 22.0s, snow at night, critter &#x27;Pebble&#x27;, prop lantern<details><summary>details</summary><pre>{
+ &quot;plan&quot;: {
+  &quot;title&quot;: &quot;Pebble and the Lantern&quot;,
+  &quot;logline&quot;: &quot;A tiny fox finds a glowing lantern in a snowy forest at night. It whispers: &#x27;Are you lost too?&#x27; Then it hops away.&quot;,
+  &quot;prompt&quot;: &quot;A tiny fox finds a glowing lantern in a snowy forest at night. It whispers: &#x27;Are you lost too?&#x27; Then it hops away.&quot;,
+  &quot;style&quot;: {
+   &quot;palette&quot;: {
+    &quot;primary&quot;: &quot;#E0712B&quot;,
+    &quot;secondary&quot;: &quot;#3E4A59&quot;,
+    &quot;accent&quot;: &quot;#7FE7FF&quot;,
+    &quot;ground&quot;: &quot;#E8EEF5&quot;,
+    &quot;sky_zenith&quot;: &quot;#070B1F&quot;,
+    &quot;sky_horizon&quot;: &quot;#1D2A55&quot;,
+    &quot;sun&quot;: &quot;#A9C2FF&quot;
+   },
+   &quot;mood&quot;: &quot;wonder&quot;,
+   &quot;shape_language&quot;: &quot;rounded, chunky, friendly; bevelled edges; big readable silhouettes&quot;,
+   &quot;lighting&quot;: &quot;cool moonlight key, warm practical glow on the prop&quot;,
+   &quot;notes&quot;: [
+    &quot;keep Pebble the warmest saturated object on screen&quot;,
+    &quot;the lantern is the visual focal point&quot;
+   ]
+  },
+  &quot;setting&quot;: {
+   &quot;kind&quot;: &quot;snow&quot;,
+   &quot;time_of_day&quot;: &quot;night&quot;,
+   &quot;density&quot;: 1.0
+  },
+  &quot;characters&quot;: [
+   {
+    &quot;id&quot;: &quot;hero&quot;,
+    &quot;kind&quot;: &quot;critter&quot;,
+    &quot;name&quot;: &quot;Pebble&quot;,
+    &quot;color&quot;: &quot;#E0712B&quot;,
+    &quot;eye_color&quot;: &quot;#7FE7FF&quot;,
+    &quot;scale&quot;: 1.0,
+    &quot;species&quot;: &quot;fox&quot;,
+    &quot;voice&quot;: {
+     &quot;voice&quot;: &quot;af_bella&quot;,
+     &quot;speaker&quot;: 3,
+     &quot;pitch&quot;: 1.15,
+     &quot;rate&quot;: 0.92,
+     &quot;robot&quot;: 0.0
+    }
+   }
+  ],
+  &quot;props&quot;: [
+   {
+    &quot;id&quot;: &quot;prop&quot;,
+    &quot;kind&quot;: &quot;lantern&quot;,
+    &quot;color&quot;: &quot;#FFC857&quot;,
+    &quot;location&quot;: [
+     1.3,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  &quot;shots&quot;: [
+   {
+    &quot;id&quot;: &quot;s1&quot;,
+    &quot;type&quot;: &quot;wide&quot;,
+    &quot;duration&quot;: 5.5,
+    &quot;beat&quot;: &quot;enter&quot;,
+    &quot;description&quot;: &quot;Establishing: the small creature hops into the snow at night.&quot;,
+    &quot;camera_move&quot;: &quot;track&quot;,
+    &quot;subject&quot;: &quot;hero&quot;
+   },
+   {
+    &quot;id&quot;: &quot;s2&quot;,
+    &quot;type&quot;: &quot;medium&quot;,
+    &quot;duration&quot;: 5.0,
+    &quot;beat&quot;: &quot;discover&quot;,
+    &quot;description&quot;: &quot;Pebble notices the lantern, hesitates (anticipation), then approaches and leans in.&quot;,
+    &quot;camera_move&quot;: &quot;dolly_in&quot;,
+    &quot;subject&quot;: &quot;both&quot;
+   },
+   {
+    &quot;id&quot;: &quot;s3&quot;,
+    &quot;type&quot;: &quot;closeup&quot;,
+    &quot;duration&quot;: 5.0,
+    &quot;beat&quot;: &quot;speak&quot;,
+    &quot;description&quot;: &quot;Close-up: Pebble speaks softly to the lantern.&quot;,
+    &quot;camera_move&quot;: &quot;dolly_in&quot;,
+    &quot;subject&quot;: &quot;hero&quot;
+   },
+   {
+    &quot;id&quot;: &quot;s4&quot;,
+    &quot;type&quot;: &quot;wide&quot;,
+    &quot;duration&quot;: 6.5,
+    &quot;beat&quot;: &quot;exit&quot;,
+    &quot;description&quot;: &quot;Pebble turns, looks back at the lantern once, and heads home.&quot;,
+    &quot;camera_move&quot;: &quot;crane_up&quot;,
+    &quot;subject&quot;: &quot;both&quot;
+   }
+  ],
+  &quot;dialogue&quot;: [
+   {
+    &quot;id&quot;: &quot;line1&quot;,
+    &quot;character&quot;: &quot;hero&quot;,
+    &quot;text&quot;: &quot;Are you lost too?&quot;,
+    &quot;shot&quot;: &quot;s3&quot;,
+    &quot;at&quot;: 1.2
+   }
+  ],
+  &quot;fps&quot;: 24
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>2.0s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>done director in 0.0s</div></div><div class='ev'><div class='t'>2.0s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>start voice</div></div><div class='ev'><div class='t'>6.7s</div><div><div class='ag'>voice</div><div class='k'>audio</div></div><div>line1 &#x27;Are you lost too?&#x27; -&gt; kokoro 1.15s, 10 mouth cues via amplitude, starts frame 282<details><summary>details</summary><pre>{
+ &quot;line&quot;: &quot;line1&quot;
+}</pre></details></div></div><div class='ev'><div class='t'>7.8s</div><div><div class='ag'>voice</div><div class='k'>audio</div></div><div>music bed: mood &#x27;wonder&#x27;, 22.0s; mixed with dialogue ducking -12 dB -&gt; mix.wav</div></div><div class='ev'><div class='t'>7.8s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>done voice in 5.8s</div></div><div class='ev'><div class='t'>7.8s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>start asset</div></div><div class='ev'><div class='t'>9.5s</div><div><div class='ag'>asset</div><div class='k'>batch</div></div><div>Build the snow set (night) -&gt; b-0001: ok, created 189, modified 189 (1731 ms)<details><summary>details</summary><pre>{
+ &quot;batch_id&quot;: &quot;b-0001&quot;,
+ &quot;intent&quot;: &quot;Build the snow set (night)&quot;,
+ &quot;n_ops&quot;: 196,
+ &quot;ok&quot;: true,
+ &quot;created&quot;: [
+  &quot;set_ground&quot;,
+  &quot;set_pebble_0&quot;,
+  &quot;set_pebble_1&quot;,
+  &quot;set_pebble_2&quot;,
+  &quot;set_pebble_3&quot;,
+  &quot;set_pebble_4&quot;,
+  &quot;set_pebble_5&quot;,
+  &quot;set_pebble_6&quot;,
+  &quot;set_pebble_7&quot;,
+  &quot;set_pebble_8&quot;,
+  &quot;set_pebble_9&quot;,
+  &quot;set_pebble_10&quot;,
+  &quot;set_pebble_11&quot;,
+  &quot;set_pebble_12&quot;,
+  &quot;set_pebble_13&quot;,
+  &quot;set_pebble_14&quot;,
+  &quot;set_pebble_15&quot;,
+  &quot;set_pebble_16&quot;,
+  &quot;set_pebble_17&quot;,
+  &quot;set_pebble_18&quot;,
+  &quot;set_pebble_19&quot;,
+  &quot;set_pebble_20&quot;,
+  &quot;set_pebble_21&quot;,
+  &quot;set_pebble_22&quot;,
+  &quot;set_pebble_23&quot;,
+  &quot;set_pebble_24&quot;,
+  &quot;set_pebble_25&quot;,
+  &quot;set_pebble_26&quot;,
+  &quot;set_pebble_27&quot;,
+  &quot;set_pebble_28&quot;,
+  &quot;set_pebble_29&quot;,
+  &quot;set_pebble_30&quot;,
+  &quot;set_pebble_31&quot;,
+  &quot;set_pebble_32&quot;,
+  &quot;set_pebble_33&quot;,
+  &quot;set_pebble_34&quot;,
+  &quot;set_pebble_35&quot;,
+  &quot;set_trunk_0&quot;,
+  &quot;set_leaves_0_0&quot;,
+  &quot;set_leaves_0_1&quot;,
+  &quot;set_leaves_0_2&quot;,
+  &quot;set_trunk_1&quot;,
+  &quot;set_leaves_1_0&quot;,
+  &quot;set_leaves_1_1&quot;,
+  &quot;set_leaves_1_2&quot;,
+  &quot;set_trunk_2&quot;,
+  &quot;set_leaves_2_0&quot;,
+  &quot;set_leaves_2_1&quot;,
+  &quot;set_leaves_2_2&quot;,
+  &quot;set_trunk_3&quot;
+ ],
+ &quot;errors&quot;: [],
+ &quot;warnings&quot;: []
+}</pre></details></div></div><div class='ev'><div class='t'>9.9s</div><div><div class='ag'>asset</div><div class='k'>batch</div></div><div>Build Pebble the critter (rigged: root/body/head/eyes/mouth/arms) -&gt; b-0002: ok, created 29, modified 24 (392 ms)<details><summary>details</summary><pre>{
+ &quot;batch_id&quot;: &quot;b-0002&quot;,
+ &quot;intent&quot;: &quot;Build Pebble the critter (rigged: root/body/head/eyes/mouth/arms)&quot;,
+ &quot;n_ops&quot;: 35,
+ &quot;ok&quot;: true,
+ &quot;created&quot;: [
+  &quot;hero_root&quot;,
+  &quot;hero_body&quot;,
+  &quot;hero_belly&quot;,
+  &quot;hero_head_pivot&quot;,
+  &quot;hero_head&quot;,
+  &quot;hero_antenna_pivot&quot;,
+  &quot;hero_tail&quot;,
+  &quot;hero_tail_tip&quot;,
+  &quot;hero_ear_L&quot;,
+  &quot;hero_ear_tip_L&quot;,
+  &quot;hero_eye_L&quot;,
+  &quot;hero_eye_glint_L&quot;,
+  &quot;hero_haunch_L&quot;,
+  &quot;hero_foot_L&quot;,
+  &quot;hero_arm_pivot_L&quot;,
+  &quot;hero_arm_L&quot;,
+  &quot;hero_paw_L&quot;,
+  &quot;hero_ear_R&quot;,
+  &quot;hero_ear_tip_R&quot;,
+  &quot;hero_eye_R&quot;,
+  &quot;hero_eye_glint_R&quot;,
+  &quot;hero_haunch_R&quot;,
+  &quot;hero_foot_R&quot;,
+  &quot;hero_arm_pivot_R&quot;,
+  &quot;hero_arm_R&quot;,
+  &quot;hero_paw_R&quot;,
+  &quot;hero_muzzle&quot;,
+  &quot;hero_mouth&quot;,
+  &quot;hero_nose&quot;
+ ],
+ &quot;errors&quot;: [],
+ &quot;warnings&quot;: []
+}</pre></details></div></div><div class='ev'><div class='t'>10.1s</div><div><div class='ag'>asset</div><div class='k'>batch</div></div><div>Build the lantern prop -&gt; b-0003: ok, created 7, modified 4 (163 ms)<details><summary>details</summary><pre>{
+ &quot;batch_id&quot;: &quot;b-0003&quot;,
+ &quot;intent&quot;: &quot;Build the lantern prop&quot;,
+ &quot;n_ops&quot;: 9,
+ &quot;ok&quot;: true,
+ &quot;created&quot;: [
+  &quot;prop&quot;,
+  &quot;prop_pivot&quot;,
+  &quot;prop_base&quot;,
+  &quot;prop_glass&quot;,
+  &quot;prop_cap&quot;,
+  &quot;prop_handle&quot;,
+  &quot;prop_light&quot;
+ ],
+ &quot;errors&quot;: [],
+ &quot;warnings&quot;: []
+}</pre></details></div></div><div class='ev'><div class='t'>10.1s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>done asset in 2.3s</div></div><div class='ev'><div class='t'>10.1s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>start animator</div></div><div class='ev'><div class='t'>10.4s</div><div><div class='ag'>animator</div><div class='k'>batch</div></div><div>Animate Pebble: 4 shots, 5950 keys (anticipation, overshoot, follow-through, lip sync) -&gt; b-0004: ok, modified 10 (242 ms)<details><summary>details</summary><pre>{
+ &quot;batch_id&quot;: &quot;b-0004&quot;,
+ &quot;intent&quot;: &quot;Animate Pebble: 4 shots, 5950 keys (anticipation, overshoot, follow-through, lip sync)&quot;,
+ &quot;n_ops&quot;: 16,
+ &quot;ok&quot;: true,
+ &quot;created&quot;: [],
+ &quot;errors&quot;: [],
+ &quot;warnings&quot;: []
+}</pre></details></div></div><div class='ev'><div class='t'>10.4s</div><div><div class='ag'>animator</div><div class='k'>decision</div></div><div>performance per shot: {&#x27;s1&#x27;: {&#x27;energy&#x27;: 0.6, &#x27;speed&#x27;: 1.0, &#x27;head_tilt&#x27;: 0, &#x27;reach&#x27;: False, &#x27;bounce&#x27;: False, &#x27;look_around&#x27;: True}, &#x27;s2&#x27;: {&#x27;energy&#x27;: 0.8, &#x27;speed&#x27;: 1.0, &#x27;head_tilt&#x27;: 0, &#x27;reach&#x27;: False, &#x27;bounce&#x27;: False, &#x27;look_around&#x27;: False}, &#x27;s3&#x27;: {&#x27;energy&#x27;: 0.5, &#x27;speed&#x27;: 1.0, &#x27;head_tilt&#x27;: 12, &#x27;reach&#x27;: True, &#x27;bounce&#x27;: True, &#x27;look_around&#x27;: False}, &#x27;s4&#x27;: {&#x27;energy&#x27;: 0.5, &#x27;speed&#x27;: 1.0, &#x27;head_tilt&#x27;: 0, &#x27;reach&#x27;: False, &#x27;bounce&#x27;: False, &#x27;look_around&#x27;: False}}<details><summary>details</summary><pre>{
+ &quot;performance&quot;: {
+  &quot;s1&quot;: {
+   &quot;energy&quot;: 0.6,
+   &quot;speed&quot;: 1.0,
+   &quot;head_tilt&quot;: 0,
+   &quot;reach&quot;: false,
+   &quot;bounce&quot;: false,
+   &quot;look_around&quot;: true
+  },
+  &quot;s2&quot;: {
+   &quot;energy&quot;: 0.8,
+   &quot;speed&quot;: 1.0,
+   &quot;head_tilt&quot;: 0,
+   &quot;reach&quot;: false,
+   &quot;bounce&quot;: false,
+   &quot;look_around&quot;: false
+  },
+  &quot;s3&quot;: {
+   &quot;energy&quot;: 0.5,
+   &quot;speed&quot;: 1.0,
+   &quot;head_tilt&quot;: 12,
+   &quot;reach&quot;: true,
+   &quot;bounce&quot;: true,
+   &quot;look_around&quot;: false
+  },
+  &quot;s4&quot;: {
+   &quot;energy&quot;: 0.5,
+   &quot;speed&quot;: 1.0,
+   &quot;head_tilt&quot;: 0,
+   &quot;reach&quot;: false,
+   &quot;bounce&quot;: false,
+   &quot;look_around&quot;: false
+  }
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>10.4s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>done animator in 0.3s</div></div><div class='ev'><div class='t'>10.4s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>start camera</div></div><div class='ev'><div class='t'>10.5s</div><div><div class='ag'>camera</div><div class='k'>batch</div></div><div>Light the scene: cool moonlight key, warm practical glow on the prop -&gt; b-0005: ok, created 3 (133 ms)<details><summary>details</summary><pre>{
+ &quot;batch_id&quot;: &quot;b-0005&quot;,
+ &quot;intent&quot;: &quot;Light the scene: cool moonlight key, warm practical glow on the prop&quot;,
+ &quot;n_ops&quot;: 5,
+ &quot;ok&quot;: true,
+ &quot;created&quot;: [
+  &quot;light_key&quot;,
+  &quot;light_fill&quot;,
+  &quot;light_rim&quot;
+ ],
+ &quot;errors&quot;: [],
+ &quot;warnings&quot;: []
+}</pre></details></div></div><div class='ev'><div class='t'>10.5s</div><div><div class='ag'>camera</div><div class='k'>decision</div></div><div>s1 wide/track: lens 30mm, az -8°, fill 0.40, camera [-3.933, -5.035, 1.5] -&gt; aim [-2.205, -0.143, 0.695]<details><summary>details</summary><pre>{
+ &quot;shot&quot;: &quot;s1&quot;,
+ &quot;camera&quot;: {
+  &quot;azimuth&quot;: -8,
+  &quot;height&quot;: 1.5,
+  &quot;lens&quot;: 30,
+  &quot;fill&quot;: 0.4,
+  &quot;move&quot;: &quot;track&quot;
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>10.5s</div><div><div class='ag'>camera</div><div class='k'>decision</div></div><div>s2 medium/dolly_in: lens 40mm, az 18°, fill 0.55, camera [1.709, -4.722, 1.15] -&gt; aim [0.175, 0.0, 0.626]<details><summary>details</summary><pre>{
+ &quot;shot&quot;: &quot;s2&quot;,
+ &quot;camera&quot;: {
+  &quot;azimuth&quot;: 18,
+  &quot;height&quot;: 1.15,
+  &quot;lens&quot;: 40,
+  &quot;fill&quot;: 0.55,
+  &quot;move&quot;: &quot;dolly_in&quot;
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>10.5s</div><div><div class='ag'>camera</div><div class='k'>decision</div></div><div>s3 closeup/dolly_in: lens 55mm, az 42°, fill 0.98, camera [3.235, -2.705, 1.15] -&gt; aim [0.8, 0.0, 0.78]<details><summary>details</summary><pre>{
+ &quot;shot&quot;: &quot;s3&quot;,
+ &quot;camera&quot;: {
+  &quot;azimuth&quot;: 42,
+  &quot;height&quot;: 1.15,
+  &quot;lens&quot;: 55,
+  &quot;fill&quot;: 0.98,
+  &quot;move&quot;: &quot;dolly_in&quot;
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>10.5s</div><div><div class='ag'>camera</div><div class='k'>decision</div></div><div>s4 wide/crane_up: lens 30mm, az -8°, fill 0.40, camera [0.219, -5.024, 1.5] -&gt; aim [0.925, 0.0, 0.626]<details><summary>details</summary><pre>{
+ &quot;shot&quot;: &quot;s4&quot;,
+ &quot;camera&quot;: {
+  &quot;azimuth&quot;: -8,
+  &quot;height&quot;: 1.5,
+  &quot;lens&quot;: 30,
+  &quot;fill&quot;: 0.4,
+  &quot;move&quot;: &quot;crane_up&quot;
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>10.6s</div><div><div class='ag'>camera</div><div class='k'>batch</div></div><div>Cameras for 4 shots with cuts -&gt; b-0006: ok, created 8, modified 6 (142 ms)<details><summary>details</summary><pre>{
+ &quot;batch_id&quot;: &quot;b-0006&quot;,
+ &quot;intent&quot;: &quot;Cameras for 4 shots with cuts&quot;,
+ &quot;n_ops&quot;: 18,
+ &quot;ok&quot;: true,
+ &quot;created&quot;: [
+  &quot;cam_s1_aim&quot;,
+  &quot;cam_s1&quot;,
+  &quot;cam_s2_aim&quot;,
+  &quot;cam_s2&quot;,
+  &quot;cam_s3_aim&quot;,
+  &quot;cam_s3&quot;,
+  &quot;cam_s4_aim&quot;,
+  &quot;cam_s4&quot;
+ ],
+ &quot;errors&quot;: [],
+ &quot;warnings&quot;: []
+}</pre></details></div></div><div class='ev'><div class='t'>10.7s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>done camera in 0.3s</div></div><div class='ev'><div class='t'>10.7s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>start review</div></div><div class='ev'><div class='t'>15.0s</div><div><div class='ag'>critic</div><div class='k'>critique</div></div><div>iter 1 s1 (wide): <span class='pass'>PASS</span><img class='pv' loading='lazy' src='previews/iter1_s1_f66.png' alt='preview'><details><summary>details</summary><pre>{
+ &quot;iteration&quot;: 1,
+ &quot;shot&quot;: &quot;s1&quot;,
+ &quot;verdict&quot;: &quot;PASS&quot;,
+ &quot;issues&quot;: [],
+ &quot;stats&quot;: {
+  &quot;mean&quot;: 0.371,
+  &quot;black&quot;: 0.007,
+  &quot;white&quot;: 0.0
+ },
+ &quot;report&quot;: {
+  &quot;motion&quot;: {
+   &quot;hero_root&quot;: 4.74
+  },
+  &quot;mid_frame&quot;: {
+   &quot;66&quot;: {
+    &quot;camera&quot;: &quot;cam_s1&quot;,
+    &quot;subjects&quot;: {
+     &quot;hero_root&quot;: {
+      &quot;min_z&quot;: 0.138,
+      &quot;center&quot;: [
+       -2.021,
+       -0.048,
+       0.615
+      ],
+      &quot;screen&quot;: [
+       0.398,
+       0.345,
+       0.594,
+       0.744
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.399
+     }
+    },
+    &quot;mouth&quot;: 0.0
+   }
+  }
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>15.0s</div><div><div class='ag'>critic</div><div class='k'>critique</div></div><div>iter 1 s2 (medium): <span class='pass'>PASS</span><img class='pv' loading='lazy' src='previews/iter1_s2_f192.png' alt='preview'><details><summary>details</summary><pre>{
+ &quot;iteration&quot;: 1,
+ &quot;shot&quot;: &quot;s2&quot;,
+ &quot;verdict&quot;: &quot;PASS&quot;,
+ &quot;issues&quot;: [],
+ &quot;stats&quot;: {
+  &quot;mean&quot;: 0.402,
+  &quot;black&quot;: 0.021,
+  &quot;white&quot;: 0.0
+ },
+ &quot;report&quot;: {
+  &quot;motion&quot;: {
+   &quot;hero_root&quot;: 1.646,
+   &quot;prop&quot;: 0.153
+  },
+  &quot;mid_frame&quot;: {
+   &quot;192&quot;: {
+    &quot;camera&quot;: &quot;cam_s2&quot;,
+    &quot;subjects&quot;: {
+     &quot;hero_root&quot;: {
+      &quot;min_z&quot;: 0.1,
+      &quot;center&quot;: [
+       -0.581,
+       -0.003,
+       0.553
+      ],
+      &quot;screen&quot;: [
+       0.196,
+       0.317,
+       0.442,
+       0.823
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.507
+     },
+     &quot;prop&quot;: {
+      &quot;min_z&quot;: -0.006,
+      &quot;center&quot;: [
+       1.317,
+       -0.009,
+       0.31
+      ],
+      &quot;screen&quot;: [
+       0.709,
+       0.238,
+       0.759,
+       0.409
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.172
+     }
+    },
+    &quot;mouth&quot;: 0.0
+   }
+  }
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>15.0s</div><div><div class='ag'>critic</div><div class='k'>critique</div></div><div>iter 1 s3 (closeup): <span class='fail'>FAIL</span>: the lantern being spoken to is only 67% in frame (min 80%)<img class='pv' loading='lazy' src='previews/iter1_s3_f312.png' alt='preview'><details><summary>details</summary><pre>{
+ &quot;iteration&quot;: 1,
+ &quot;shot&quot;: &quot;s3&quot;,
+ &quot;verdict&quot;: &quot;FAIL&quot;,
+ &quot;issues&quot;: [
+  {
+   &quot;shot&quot;: &quot;s3&quot;,
+   &quot;check&quot;: &quot;addressee_cut&quot;,
+   &quot;severity&quot;: &quot;blocker&quot;,
+   &quot;message&quot;: &quot;the lantern being spoken to is only 67% in frame (min 80%)&quot;,
+   &quot;fix&quot;: {
+    &quot;kind&quot;: &quot;camera&quot;,
+    &quot;fill_mul&quot;: 0.833
+   }
+  }
+ ],
+ &quot;stats&quot;: {
+  &quot;mean&quot;: 0.401,
+  &quot;black&quot;: 0.01,
+  &quot;white&quot;: 0.0
+ },
+ &quot;report&quot;: {
+  &quot;motion&quot;: {
+   &quot;hero_head&quot;: 0.11,
+   &quot;prop&quot;: 0.163
+  },
+  &quot;mid_frame&quot;: {
+   &quot;296&quot;: {
+    &quot;camera&quot;: &quot;cam_s3&quot;,
+    &quot;subjects&quot;: {
+     &quot;hero_head&quot;: {
+      &quot;min_z&quot;: 0.504,
+      &quot;center&quot;: [
+       0.642,
+       0.025,
+       0.802
+      ],
+      &quot;screen&quot;: [
+       0.355,
+       0.329,
+       0.571,
+       0.713
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.384
+     },
+     &quot;prop&quot;: {
+      &quot;min_z&quot;: -0.01,
+      &quot;center&quot;: [
+       1.324,
+       0.019,
+       0.309
+      ],
+      &quot;screen&quot;: [
+       0.608,
+       -0.093,
+       0.703,
+       0.227
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 0.709,
+      &quot;screen_height&quot;: 0.321
+     }
+    },
+    &quot;facing_deg&quot;: 22.9,
+    &quot;mouth&quot;: 0.0
+   }
+  }
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>15.0s</div><div><div class='ag'>critic</div><div class='k'>critique</div></div><div>iter 1 s4 (wide): <span class='pass'>PASS</span><img class='pv' loading='lazy' src='previews/iter1_s4_f450.png' alt='preview'><details><summary>details</summary><pre>{
+ &quot;iteration&quot;: 1,
+ &quot;shot&quot;: &quot;s4&quot;,
+ &quot;verdict&quot;: &quot;PASS&quot;,
+ &quot;issues&quot;: [],
+ &quot;stats&quot;: {
+  &quot;mean&quot;: 0.422,
+  &quot;black&quot;: 0.005,
+  &quot;white&quot;: 0.0
+ },
+ &quot;report&quot;: {
+  &quot;motion&quot;: {
+   &quot;hero_root&quot;: 6.116,
+   &quot;prop&quot;: 0.197
+  },
+  &quot;mid_frame&quot;: {
+   &quot;450&quot;: {
+    &quot;camera&quot;: &quot;cam_s4&quot;,
+    &quot;subjects&quot;: {
+     &quot;hero_root&quot;: {
+      &quot;min_z&quot;: -0.002,
+      &quot;center&quot;: [
+       0.608,
+       0.107,
+       0.461
+      ],
+      &quot;screen&quot;: [
+       0.397,
+       0.308,
+       0.563,
+       0.678
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.371
+     },
+     &quot;prop&quot;: {
+      &quot;min_z&quot;: -0.01,
+      &quot;center&quot;: [
+       1.273,
+       0.017,
+       0.309
+      ],
+      &quot;screen&quot;: [
+       0.532,
+       0.327,
+       0.564,
+       0.434
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.107
+     }
+    },
+    &quot;mouth&quot;: 0.0
+   }
+  }
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>15.0s</div><div><div class='ag'>orchestr.</div><div class='k'>fix</div></div><div>applying fixes: camera=True animation=False voice=False; tuning={&quot;camera&quot;: {&quot;s3&quot;: {&quot;fill_mul&quot;: 0.833}}}</div></div><div class='ev'><div class='t'>15.3s</div><div><div class='ag'>camera</div><div class='k'>batch</div></div><div>Light the scene: cool moonlight key, warm practical glow on the prop -&gt; b-0007: ok, created 3 (135 ms)<details><summary>details</summary><pre>{
+ &quot;batch_id&quot;: &quot;b-0007&quot;,
+ &quot;intent&quot;: &quot;Light the scene: cool moonlight key, warm practical glow on the prop&quot;,
+ &quot;n_ops&quot;: 5,
+ &quot;ok&quot;: true,
+ &quot;created&quot;: [
+  &quot;light_key&quot;,
+  &quot;light_fill&quot;,
+  &quot;light_rim&quot;
+ ],
+ &quot;errors&quot;: [],
+ &quot;warnings&quot;: []
+}</pre></details></div></div><div class='ev'><div class='t'>15.3s</div><div><div class='ag'>camera</div><div class='k'>decision</div></div><div>s1 wide/track: lens 30mm, az -8°, fill 0.40, camera [-3.933, -5.035, 1.5] -&gt; aim [-2.205, -0.143, 0.695]<details><summary>details</summary><pre>{
+ &quot;shot&quot;: &quot;s1&quot;,
+ &quot;camera&quot;: {
+  &quot;azimuth&quot;: -8,
+  &quot;height&quot;: 1.5,
+  &quot;lens&quot;: 30,
+  &quot;fill&quot;: 0.4,
+  &quot;move&quot;: &quot;track&quot;
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>15.3s</div><div><div class='ag'>camera</div><div class='k'>decision</div></div><div>s2 medium/dolly_in: lens 40mm, az 18°, fill 0.55, camera [1.709, -4.722, 1.15] -&gt; aim [0.175, 0.0, 0.626]<details><summary>details</summary><pre>{
+ &quot;shot&quot;: &quot;s2&quot;,
+ &quot;camera&quot;: {
+  &quot;azimuth&quot;: 18,
+  &quot;height&quot;: 1.15,
+  &quot;lens&quot;: 40,
+  &quot;fill&quot;: 0.55,
+  &quot;move&quot;: &quot;dolly_in&quot;
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>15.3s</div><div><div class='ag'>camera</div><div class='k'>decision</div></div><div>s3 closeup/dolly_in: lens 55mm, az 42°, fill 0.82, camera [3.729, -3.253, 1.15] -&gt; aim [0.8, 0.0, 0.78]<details><summary>details</summary><pre>{
+ &quot;shot&quot;: &quot;s3&quot;,
+ &quot;camera&quot;: {
+  &quot;azimuth&quot;: 42,
+  &quot;height&quot;: 1.15,
+  &quot;lens&quot;: 55,
+  &quot;fill&quot;: 0.816,
+  &quot;move&quot;: &quot;dolly_in&quot;
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>15.3s</div><div><div class='ag'>camera</div><div class='k'>decision</div></div><div>s4 wide/crane_up: lens 30mm, az -8°, fill 0.40, camera [0.219, -5.024, 1.5] -&gt; aim [0.925, 0.0, 0.626]<details><summary>details</summary><pre>{
+ &quot;shot&quot;: &quot;s4&quot;,
+ &quot;camera&quot;: {
+  &quot;azimuth&quot;: -8,
+  &quot;height&quot;: 1.5,
+  &quot;lens&quot;: 30,
+  &quot;fill&quot;: 0.4,
+  &quot;move&quot;: &quot;crane_up&quot;
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>15.4s</div><div><div class='ag'>camera</div><div class='k'>batch</div></div><div>Cameras for 4 shots with cuts -&gt; b-0008: ok, created 8, modified 6 (133 ms)<details><summary>details</summary><pre>{
+ &quot;batch_id&quot;: &quot;b-0008&quot;,
+ &quot;intent&quot;: &quot;Cameras for 4 shots with cuts&quot;,
+ &quot;n_ops&quot;: 18,
+ &quot;ok&quot;: true,
+ &quot;created&quot;: [
+  &quot;cam_s1_aim&quot;,
+  &quot;cam_s1&quot;,
+  &quot;cam_s2_aim&quot;,
+  &quot;cam_s2&quot;,
+  &quot;cam_s3_aim&quot;,
+  &quot;cam_s3&quot;,
+  &quot;cam_s4_aim&quot;,
+  &quot;cam_s4&quot;
+ ],
+ &quot;errors&quot;: [],
+ &quot;warnings&quot;: []
+}</pre></details></div></div><div class='ev'><div class='t'>19.1s</div><div><div class='ag'>critic</div><div class='k'>critique</div></div><div>iter 2 s1 (wide): <span class='pass'>PASS</span><img class='pv' loading='lazy' src='previews/iter2_s1_f66.png' alt='preview'><details><summary>details</summary><pre>{
+ &quot;iteration&quot;: 2,
+ &quot;shot&quot;: &quot;s1&quot;,
+ &quot;verdict&quot;: &quot;PASS&quot;,
+ &quot;issues&quot;: [],
+ &quot;stats&quot;: {
+  &quot;mean&quot;: 0.371,
+  &quot;black&quot;: 0.007,
+  &quot;white&quot;: 0.0
+ },
+ &quot;report&quot;: {
+  &quot;motion&quot;: {
+   &quot;hero_root&quot;: 4.74
+  },
+  &quot;mid_frame&quot;: {
+   &quot;66&quot;: {
+    &quot;camera&quot;: &quot;cam_s1&quot;,
+    &quot;subjects&quot;: {
+     &quot;hero_root&quot;: {
+      &quot;min_z&quot;: 0.138,
+      &quot;center&quot;: [
+       -2.021,
+       -0.048,
+       0.615
+      ],
+      &quot;screen&quot;: [
+       0.398,
+       0.345,
+       0.594,
+       0.744
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.399
+     }
+    },
+    &quot;mouth&quot;: 0.0
+   }
+  }
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>19.1s</div><div><div class='ag'>critic</div><div class='k'>critique</div></div><div>iter 2 s2 (medium): <span class='pass'>PASS</span><img class='pv' loading='lazy' src='previews/iter2_s2_f192.png' alt='preview'><details><summary>details</summary><pre>{
+ &quot;iteration&quot;: 2,
+ &quot;shot&quot;: &quot;s2&quot;,
+ &quot;verdict&quot;: &quot;PASS&quot;,
+ &quot;issues&quot;: [],
+ &quot;stats&quot;: {
+  &quot;mean&quot;: 0.402,
+  &quot;black&quot;: 0.021,
+  &quot;white&quot;: 0.0
+ },
+ &quot;report&quot;: {
+  &quot;motion&quot;: {
+   &quot;hero_root&quot;: 1.646,
+   &quot;prop&quot;: 0.153
+  },
+  &quot;mid_frame&quot;: {
+   &quot;192&quot;: {
+    &quot;camera&quot;: &quot;cam_s2&quot;,
+    &quot;subjects&quot;: {
+     &quot;hero_root&quot;: {
+      &quot;min_z&quot;: 0.1,
+      &quot;center&quot;: [
+       -0.581,
+       -0.003,
+       0.553
+      ],
+      &quot;screen&quot;: [
+       0.196,
+       0.317,
+       0.442,
+       0.823
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.507
+     },
+     &quot;prop&quot;: {
+      &quot;min_z&quot;: -0.006,
+      &quot;center&quot;: [
+       1.317,
+       -0.009,
+       0.31
+      ],
+      &quot;screen&quot;: [
+       0.709,
+       0.238,
+       0.759,
+       0.409
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.172
+     }
+    },
+    &quot;mouth&quot;: 0.0
+   }
+  }
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>19.1s</div><div><div class='ag'>critic</div><div class='k'>critique</div></div><div>iter 2 s3 (closeup): <span class='pass'>PASS</span><img class='pv' loading='lazy' src='previews/iter2_s3_f312.png' alt='preview'><details><summary>details</summary><pre>{
+ &quot;iteration&quot;: 2,
+ &quot;shot&quot;: &quot;s3&quot;,
+ &quot;verdict&quot;: &quot;PASS&quot;,
+ &quot;issues&quot;: [],
+ &quot;stats&quot;: {
+  &quot;mean&quot;: 0.403,
+  &quot;black&quot;: 0.014,
+  &quot;white&quot;: 0.0
+ },
+ &quot;report&quot;: {
+  &quot;motion&quot;: {
+   &quot;hero_head&quot;: 0.11,
+   &quot;prop&quot;: 0.163
+  },
+  &quot;mid_frame&quot;: {
+   &quot;296&quot;: {
+    &quot;camera&quot;: &quot;cam_s3&quot;,
+    &quot;subjects&quot;: {
+     &quot;hero_head&quot;: {
+      &quot;min_z&quot;: 0.504,
+      &quot;center&quot;: [
+       0.642,
+       0.025,
+       0.802
+      ],
+      &quot;screen&quot;: [
+       0.379,
+       0.356,
+       0.56,
+       0.677
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.321
+     },
+     &quot;prop&quot;: {
+      &quot;min_z&quot;: -0.01,
+      &quot;center&quot;: [
+       1.324,
+       0.019,
+       0.309
+      ],
+      &quot;screen&quot;: [
+       0.589,
+       0.016,
+       0.667,
+       0.278
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.262
+     }
+    },
+    &quot;facing_deg&quot;: 23.3,
+    &quot;mouth&quot;: 0.0
+   }
+  }
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>19.1s</div><div><div class='ag'>critic</div><div class='k'>critique</div></div><div>iter 2 s4 (wide): <span class='pass'>PASS</span><img class='pv' loading='lazy' src='previews/iter2_s4_f450.png' alt='preview'><details><summary>details</summary><pre>{
+ &quot;iteration&quot;: 2,
+ &quot;shot&quot;: &quot;s4&quot;,
+ &quot;verdict&quot;: &quot;PASS&quot;,
+ &quot;issues&quot;: [],
+ &quot;stats&quot;: {
+  &quot;mean&quot;: 0.422,
+  &quot;black&quot;: 0.005,
+  &quot;white&quot;: 0.0
+ },
+ &quot;report&quot;: {
+  &quot;motion&quot;: {
+   &quot;hero_root&quot;: 6.116,
+   &quot;prop&quot;: 0.197
+  },
+  &quot;mid_frame&quot;: {
+   &quot;450&quot;: {
+    &quot;camera&quot;: &quot;cam_s4&quot;,
+    &quot;subjects&quot;: {
+     &quot;hero_root&quot;: {
+      &quot;min_z&quot;: -0.002,
+      &quot;center&quot;: [
+       0.608,
+       0.107,
+       0.461
+      ],
+      &quot;screen&quot;: [
+       0.397,
+       0.308,
+       0.563,
+       0.678
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.371
+     },
+     &quot;prop&quot;: {
+      &quot;min_z&quot;: -0.01,
+      &quot;center&quot;: [
+       1.273,
+       0.017,
+       0.309
+      ],
+      &quot;screen&quot;: [
+       0.532,
+       0.327,
+       0.564,
+       0.434
+      ],
+      &quot;behind_camera&quot;: false,
+      &quot;visible_fraction&quot;: 1.0,
+      &quot;screen_height&quot;: 0.107
+     }
+    },
+    &quot;mouth&quot;: 0.0
+   }
+  }
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>19.1s</div><div><div class='ag'>critic</div><div class='k'>critique</div></div><div>iteration 2: all shots pass</div></div><div class='ev'><div class='t'>19.1s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>done review in 8.4s</div></div><div class='ev'><div class='t'>19.1s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>start edit</div></div><div class='ev'><div class='t'>19.4s</div><div><div class='ag'>editor</div><div class='k'>batch</div></div><div>Set up the edit: cycles 960x540, soundtrack on the VSE, save .blend -&gt; b-0009: ok, created 1 (332 ms)<details><summary>details</summary><pre>{
+ &quot;batch_id&quot;: &quot;b-0009&quot;,
+ &quot;intent&quot;: &quot;Set up the edit: cycles 960x540, soundtrack on the VSE, save .blend&quot;,
+ &quot;n_ops&quot;: 3,
+ &quot;ok&quot;: true,
+ &quot;created&quot;: [
+  &quot;soundtrack&quot;
+ ],
+ &quot;errors&quot;: [],
+ &quot;warnings&quot;: []
+}</pre></details></div></div><div class='ev'><div class='t'>19.4s</div><div><div class='ag'>editor</div><div class='k'>render</div></div><div>rendering 528 frames (22.0s) with cycles at 960x540, 16 samples ...</div></div><div class='ev'><div class='t'>248.2s</div><div><div class='ag'>editor</div><div class='k'>render</div></div><div>rendered in 229s (0.43s/frame) on OPTIX: NVIDIA GeForce RTX 5060 Laptop GPU<details><summary>details</summary><pre>{
+ &quot;render_seconds&quot;: 228.8
+}</pre></details></div></div><div class='ev'><div class='t'>254.7s</div><div><div class='ag'>editor</div><div class='k'>render</div></div><div>title overlay &#x27;Pebble and the Lantern&#x27; over the opening shot</div></div><div class='ev'><div class='t'>255.0s</div><div><div class='ag'>editor</div><div class='k'>render</div></div><div>final cut -&gt; output\fox-lantern\final.mp4 (2.0 MB)<details><summary>details</summary><pre>{
+ &quot;output&quot;: &quot;output\\fox-lantern\\final.mp4&quot;,
+ &quot;probe&quot;: {
+  &quot;programs&quot;: [],
+  &quot;stream_groups&quot;: [],
+  &quot;streams&quot;: [
+   {
+    &quot;codec_name&quot;: &quot;h264&quot;,
+    &quot;codec_type&quot;: &quot;video&quot;,
+    &quot;width&quot;: 960,
+    &quot;height&quot;: 540
+   },
+   {
+    &quot;codec_name&quot;: &quot;aac&quot;,
+    &quot;codec_type&quot;: &quot;audio&quot;
+   },
+   {
+    &quot;codec_name&quot;: &quot;mov_text&quot;,
+    &quot;codec_type&quot;: &quot;subtitle&quot;
+   }
+  ],
+  &quot;format&quot;: {
+   &quot;duration&quot;: &quot;22.000000&quot;
+  }
+ }
+}</pre></details></div></div><div class='ev'><div class='t'>255.1s</div><div><div class='ag'>orchestr.</div><div class='k'>task</div></div><div>done edit in 236.0s</div></div><div class='ev'><div class='t'>255.7s</div><div><div class='ag'>orchestr.</div><div class='k'>done</div></div><div>finished in 256s; LLM calls 5, tokens 0<details><summary>details</summary><pre>{
+ &quot;artifacts&quot;: {
+  &quot;lines&quot;: {
+   &quot;line1&quot;: {
+    &quot;path&quot;: &quot;output\\fox-lantern\\audio\\line1.wav&quot;,
+    &quot;engine&quot;: &quot;kokoro&quot;,
+    &quot;duration&quot;: 1.152,
+    &quot;lipsync&quot;: &quot;amplitude&quot;,
+    &quot;start_s&quot;: 11.708,
+    &quot;cues&quot;: 10
+   }
+  },
+  &quot;music&quot;: &quot;output\\fox-lantern\\audio\\music_bed.wav&quot;,
+  &quot;mix&quot;: &quot;output\\fox-lantern\\audio\\mix.wav&quot;,
+  &quot;hero_parts&quot;: 29,
+  &quot;asset_info&quot;: {
+   &quot;prop_height&quot;: 0.42,
+   &quot;hero_height&quot;: 1.3900000000000001,
+   &quot;head_z&quot;: 0.8,
+   &quot;head_top&quot;: 1.3900000000000001
+  },
+  &quot;critic_history&quot;: [
+   {
+    &quot;iteration&quot;: 1,
+    &quot;issues&quot;: 1,
+    &quot;blockers&quot;: 1,
+    &quot;messages&quot;: [
+     &quot;s3: the lantern being spoken to is only 67% in frame (min 80%)&quot;
+    ]
+   },
+   {
+    &quot;iteration&quot;: 2,
+    &quot;issues&quot;: 0,
+    &quot;blockers&quot;: 0,
+    &quot;messages&quot;: []
+   }
+  ],
+  &quot;edit_mlt&quot;: &quot;output\\fox-lantern\\edit.mlt&quot;,
+  &quot;final&quot;: &quot;output\\fox-lantern\\final.mp4&quot;,
+  &quot;contact_sheet&quot;: &quot;output\\fox-lantern\\log\\contact_sheet.jpg&quot;,
+  &quot;render_seconds&quot;: 228.8,
+  &quot;quality&quot;: &quot;final&quot;,
+  &quot;llm_usage&quot;: {
+   &quot;provider&quot;: &quot;scripted&quot;,
+   &quot;calls&quot;: 5,
+   &quot;tokens&quot;: 0
+  },
+  &quot;usda&quot;: &quot;output\\fox-lantern\\scene.usda&quot;
+ }
+}</pre></details></div></div></div></main></body></html>

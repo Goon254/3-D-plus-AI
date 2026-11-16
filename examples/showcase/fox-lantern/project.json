@@ -1,0 +1,6135 @@
+{
+ "format": "animatica-project/0.1",
+ "prompt": "A tiny fox finds a glowing lantern in a snowy forest at night. It whispers: 'Are you lost too?' Then it hops away.",
+ "provider": "scripted",
+ "plan": {
+  "title": "Pebble and the Lantern",
+  "logline": "A tiny fox finds a glowing lantern in a snowy forest at night. It whispers: 'Are you lost too?' Then it hops away.",
+  "prompt": "A tiny fox finds a glowing lantern in a snowy forest at night. It whispers: 'Are you lost too?' Then it hops away.",
+  "style": {
+   "palette": {
+    "primary": "#E0712B",
+    "secondary": "#3E4A59",
+    "accent": "#7FE7FF",
+    "ground": "#E8EEF5",
+    "sky_zenith": "#070B1F",
+    "sky_horizon": "#1D2A55",
+    "sun": "#A9C2FF"
+   },
+   "mood": "wonder",
+   "shape_language": "rounded, chunky, friendly; bevelled edges; big readable silhouettes",
+   "lighting": "cool moonlight key, warm practical glow on the prop",
+   "notes": [
+    "keep Pebble the warmest saturated object on screen",
+    "the lantern is the visual focal point"
+   ]
+  },
+  "setting": {
+   "kind": "snow",
+   "time_of_day": "night",
+   "density": 1.0
+  },
+  "characters": [
+   {
+    "id": "hero",
+    "kind": "critter",
+    "name": "Pebble",
+    "color": "#E0712B",
+    "eye_color": "#7FE7FF",
+    "scale": 1.0,
+    "species": "fox",
+    "voice": {
+     "voice": "af_bella",
+     "speaker": 3,
+     "pitch": 1.15,
+     "rate": 0.92,
+     "robot": 0.0
+    }
+   }
+  ],
+  "props": [
+   {
+    "id": "prop",
+    "kind": "lantern",
+    "color": "#FFC857",
+    "location": [
+     1.3,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "shots": [
+   {
+    "id": "s1",
+    "type": "wide",
+    "duration": 5.5,
+    "beat": "enter",
+    "description": "Establishing: the small creature hops into the snow at night.",
+    "camera_move": "track",
+    "subject": "hero"
+   },
+   {
+    "id": "s2",
+    "type": "medium",
+    "duration": 5.0,
+    "beat": "discover",
+    "description": "Pebble notices the lantern, hesitates (anticipation), then approaches and leans in.",
+    "camera_move": "dolly_in",
+    "subject": "both"
+   },
+   {
+    "id": "s3",
+    "type": "closeup",
+    "duration": 5.0,
+    "beat": "speak",
+    "description": "Close-up: Pebble speaks softly to the lantern.",
+    "camera_move": "dolly_in",
+    "subject": "hero"
+   },
+   {
+    "id": "s4",
+    "type": "wide",
+    "duration": 6.5,
+    "beat": "exit",
+    "description": "Pebble turns, looks back at the lantern once, and heads home.",
+    "camera_move": "crane_up",
+    "subject": "both"
+   }
+  ],
+  "dialogue": [
+   {
+    "id": "line1",
+    "character": "hero",
+    "text": "Are you lost too?",
+    "shot": "s3",
+    "at": 1.2
+   }
+  ],
+  "fps": 24
+ },
+ "scene": {
+  "prims": {
+   "set_ground": {
+    "id": "set_ground",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E8EEF5",
+    "animated": [],
+    "tags": [
+     "set",
+     "ground"
+    ]
+   },
+   "set_pebble_0": {
+    "id": "set_pebble_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -1.761,
+     0.936,
+     0.015
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     243.0
+    ],
+    "scale": [
+     1.02,
+     1.0,
+     0.88
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_1": {
+    "id": "set_pebble_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.677,
+     -1.936,
+     0.01
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     129.6
+    ],
+    "scale": [
+     1.38,
+     1.0,
+     0.97
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_2": {
+    "id": "set_pebble_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -7.608,
+     -2.024,
+     0.025
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     174.8
+    ],
+    "scale": [
+     1.53,
+     1.0,
+     0.94
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_3": {
+    "id": "set_pebble_3",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.806,
+     4.058,
+     0.031
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     57.5
+    ],
+    "scale": [
+     1.3,
+     1.0,
+     0.95
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_4": {
+    "id": "set_pebble_4",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -2.981,
+     -1.263,
+     0.008
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     253.9
+    ],
+    "scale": [
+     1.4,
+     1.0,
+     0.85
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_5": {
+    "id": "set_pebble_5",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.282,
+     1.507,
+     0.008
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     28.6
+    ],
+    "scale": [
+     1.11,
+     1.0,
+     0.89
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_6": {
+    "id": "set_pebble_6",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -1.72,
+     2.515,
+     0.027
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     19.9
+    ],
+    "scale": [
+     1.04,
+     1.0,
+     0.77
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_7": {
+    "id": "set_pebble_7",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -2.165,
+     2.274,
+     0.01
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     202.6
+    ],
+    "scale": [
+     1.1,
+     1.0,
+     0.83
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_8": {
+    "id": "set_pebble_8",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -0.186,
+     3.971,
+     0.033
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     36.6
+    ],
+    "scale": [
+     1.26,
+     1.0,
+     0.81
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_9": {
+    "id": "set_pebble_9",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -0.235,
+     1.616,
+     0.013
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     225.0
+    ],
+    "scale": [
+     1.43,
+     1.0,
+     0.76
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_10": {
+    "id": "set_pebble_10",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.21,
+     3.342,
+     0.043
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     117.7
+    ],
+    "scale": [
+     1.04,
+     1.0,
+     0.83
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_11": {
+    "id": "set_pebble_11",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.74,
+     -2.061,
+     0.021
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     307.4
+    ],
+    "scale": [
+     1.04,
+     1.0,
+     0.93
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_12": {
+    "id": "set_pebble_12",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.552,
+     -3.026,
+     0.025
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     187.0
+    ],
+    "scale": [
+     1.59,
+     1.0,
+     0.97
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_13": {
+    "id": "set_pebble_13",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.239,
+     1.288,
+     0.009
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     300.8
+    ],
+    "scale": [
+     1.58,
+     1.0,
+     0.79
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_14": {
+    "id": "set_pebble_14",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -0.726,
+     1.911,
+     0.02
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     172.0
+    ],
+    "scale": [
+     1.03,
+     1.0,
+     0.86
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_15": {
+    "id": "set_pebble_15",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -8.308,
+     2.349,
+     0.023
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     167.4
+    ],
+    "scale": [
+     1.46,
+     1.0,
+     0.91
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_16": {
+    "id": "set_pebble_16",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.55,
+     -1.259,
+     0.017
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     223.2
+    ],
+    "scale": [
+     1.18,
+     1.0,
+     0.97
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_17": {
+    "id": "set_pebble_17",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.76,
+     -3.043,
+     0.026
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     297.5
+    ],
+    "scale": [
+     1.41,
+     1.0,
+     0.7
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_18": {
+    "id": "set_pebble_18",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     5.355,
+     0.126,
+     0.02
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     327.2
+    ],
+    "scale": [
+     1.43,
+     1.0,
+     0.91
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_19": {
+    "id": "set_pebble_19",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     6.108,
+     4.017,
+     0.035
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     92.2
+    ],
+    "scale": [
+     1.37,
+     1.0,
+     0.85
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_20": {
+    "id": "set_pebble_20",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -3.814,
+     3.54,
+     0.031
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     315.8
+    ],
+    "scale": [
+     1.32,
+     1.0,
+     0.85
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_21": {
+    "id": "set_pebble_21",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -7.401,
+     -1.698,
+     0.014
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     184.8
+    ],
+    "scale": [
+     1.03,
+     1.0,
+     0.74
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_22": {
+    "id": "set_pebble_22",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     6.096,
+     4.04,
+     0.021
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     91.7
+    ],
+    "scale": [
+     1.38,
+     1.0,
+     0.92
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_23": {
+    "id": "set_pebble_23",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -8.245,
+     1.893,
+     0.015
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     92.6
+    ],
+    "scale": [
+     1.51,
+     1.0,
+     0.84
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_24": {
+    "id": "set_pebble_24",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     6.775,
+     -1.18,
+     0.01
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     52.6
+    ],
+    "scale": [
+     1.51,
+     1.0,
+     0.76
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_25": {
+    "id": "set_pebble_25",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     1.764,
+     1.592,
+     0.013
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     266.3
+    ],
+    "scale": [
+     1.18,
+     1.0,
+     0.86
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_26": {
+    "id": "set_pebble_26",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -4.037,
+     -2.546,
+     0.04
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     216.2
+    ],
+    "scale": [
+     1.48,
+     1.0,
+     0.78
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_27": {
+    "id": "set_pebble_27",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -6.217,
+     1.417,
+     0.008
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     35.3
+    ],
+    "scale": [
+     1.35,
+     1.0,
+     0.97
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_28": {
+    "id": "set_pebble_28",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.813,
+     -2.999,
+     0.034
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     178.0
+    ],
+    "scale": [
+     1.16,
+     1.0,
+     0.92
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_29": {
+    "id": "set_pebble_29",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     5.55,
+     1.979,
+     0.019
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     358.0
+    ],
+    "scale": [
+     1.15,
+     1.0,
+     0.72
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_30": {
+    "id": "set_pebble_30",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     6.997,
+     2.735,
+     0.027
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     287.6
+    ],
+    "scale": [
+     1.32,
+     1.0,
+     0.77
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_31": {
+    "id": "set_pebble_31",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     5.479,
+     -1.307,
+     0.027
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     348.3
+    ],
+    "scale": [
+     1.43,
+     1.0,
+     0.74
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_32": {
+    "id": "set_pebble_32",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.582,
+     3.549,
+     0.018
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     70.3
+    ],
+    "scale": [
+     1.13,
+     1.0,
+     0.97
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_33": {
+    "id": "set_pebble_33",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.055,
+     -2.374,
+     0.018
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     190.7
+    ],
+    "scale": [
+     1.25,
+     1.0,
+     0.9
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_34": {
+    "id": "set_pebble_34",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -0.499,
+     -2.608,
+     0.033
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     94.2
+    ],
+    "scale": [
+     1.38,
+     1.0,
+     0.98
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_pebble_35": {
+    "id": "set_pebble_35",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     1.72,
+     1.759,
+     0.015
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     10.6
+    ],
+    "scale": [
+     1.52,
+     1.0,
+     0.92
+    ],
+    "material": "#4A4644",
+    "animated": [],
+    "tags": [
+     "set",
+     "pebble"
+    ]
+   },
+   "set_trunk_0": {
+    "id": "set_trunk_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -4.151,
+     3.717,
+     0.7660709299975715
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_0_0": {
+    "id": "set_leaves_0_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -4.151,
+     3.717,
+     1.723659592494536
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_0_1": {
+    "id": "set_leaves_0_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -4.151,
+     3.717,
+     2.4897305224921076
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_0_2": {
+    "id": "set_leaves_0_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -4.151,
+     3.717,
+     3.2558014524896794
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_1": {
+    "id": "set_trunk_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.658,
+     4.955,
+     0.5174140710865122
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_1_0": {
+    "id": "set_leaves_1_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.658,
+     4.955,
+     1.1641816599446522
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_1_1": {
+    "id": "set_leaves_1_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.658,
+     4.955,
+     1.6815957310311644
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_1_2": {
+    "id": "set_leaves_1_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.658,
+     4.955,
+     2.1990098021176765
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_2": {
+    "id": "set_trunk_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     6.122,
+     10.169,
+     0.8126478138216102
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_2_0": {
+    "id": "set_leaves_2_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     6.122,
+     10.169,
+     1.828457581098623
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_2_1": {
+    "id": "set_leaves_2_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     6.122,
+     10.169,
+     2.6411053949202334
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_2_2": {
+    "id": "set_leaves_2_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     6.122,
+     10.169,
+     3.4537532087418437
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_3": {
+    "id": "set_trunk_3",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     13.026,
+     3.045,
+     0.5806718959810876
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_3_0": {
+    "id": "set_leaves_3_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     13.026,
+     3.045,
+     1.3065117659574472
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_3_1": {
+    "id": "set_leaves_3_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     13.026,
+     3.045,
+     1.8871836619385347
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_3_2": {
+    "id": "set_leaves_3_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     13.026,
+     3.045,
+     2.4678555579196226
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_4": {
+    "id": "set_trunk_4",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -11.807,
+     -0.458,
+     0.7408324068363152
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_4_0": {
+    "id": "set_leaves_4_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -11.807,
+     -0.458,
+     1.6668729153817092
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_4_1": {
+    "id": "set_leaves_4_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -11.807,
+     -0.458,
+     2.4077053222180242
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_4_2": {
+    "id": "set_leaves_4_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -11.807,
+     -0.458,
+     3.1485377290543397
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_5": {
+    "id": "set_trunk_5",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -6.89,
+     5.355,
+     0.6715970830860449
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_5_0": {
+    "id": "set_leaves_5_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -6.89,
+     5.355,
+     1.511093436943601
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_5_1": {
+    "id": "set_leaves_5_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -6.89,
+     5.355,
+     2.182690520029646
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_5_2": {
+    "id": "set_leaves_5_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -6.89,
+     5.355,
+     2.8542876031156914
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_6": {
+    "id": "set_trunk_6",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     13.734,
+     -8.851,
+     0.8691727654107769
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_6_0": {
+    "id": "set_leaves_6_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     13.734,
+     -8.851,
+     1.9556387221742482
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_6_1": {
+    "id": "set_leaves_6_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     13.734,
+     -8.851,
+     2.824811487585025
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_6_2": {
+    "id": "set_leaves_6_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     13.734,
+     -8.851,
+     3.693984252995802
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_7": {
+    "id": "set_trunk_7",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -15.292,
+     -3.398,
+     0.6069219075460854
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_7_0": {
+    "id": "set_leaves_7_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -15.292,
+     -3.398,
+     1.3655742919786922
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_7_1": {
+    "id": "set_leaves_7_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -15.292,
+     -3.398,
+     1.9724961995247776
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_7_2": {
+    "id": "set_leaves_7_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -15.292,
+     -3.398,
+     2.5794181070708633
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_8": {
+    "id": "set_trunk_8",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     9.201,
+     9.609,
+     0.6522579005474253
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_8_0": {
+    "id": "set_leaves_8_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     9.201,
+     9.609,
+     1.467580276231707
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_8_1": {
+    "id": "set_leaves_8_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     9.201,
+     9.609,
+     2.1198381767791323
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_8_2": {
+    "id": "set_leaves_8_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     9.201,
+     9.609,
+     2.7720960773265575
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_9": {
+    "id": "set_trunk_9",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.939,
+     -17.572,
+     0.49997601442515455
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_9_0": {
+    "id": "set_leaves_9_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.939,
+     -17.572,
+     1.1249460324565976
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_9_1": {
+    "id": "set_leaves_9_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.939,
+     -17.572,
+     1.6249220468817522
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_9_2": {
+    "id": "set_leaves_9_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.939,
+     -17.572,
+     2.124898061306907
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_10": {
+    "id": "set_trunk_10",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.66,
+     2.16,
+     0.5448144690705263
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_10_0": {
+    "id": "set_leaves_10_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.66,
+     2.16,
+     1.2258325554086842
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_10_1": {
+    "id": "set_leaves_10_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.66,
+     2.16,
+     1.7706470244792105
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_10_2": {
+    "id": "set_leaves_10_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.66,
+     2.16,
+     2.315461493549737
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_11": {
+    "id": "set_trunk_11",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.7,
+     9.528,
+     0.8752169033994772
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_11_0": {
+    "id": "set_leaves_11_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.7,
+     9.528,
+     1.9692380326488237
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_11_1": {
+    "id": "set_leaves_11_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.7,
+     9.528,
+     2.844454936048301
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_11_2": {
+    "id": "set_leaves_11_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.7,
+     9.528,
+     3.7196718394477783
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_12": {
+    "id": "set_trunk_12",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -16.833,
+     1.295,
+     0.5058313205594602
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_12_0": {
+    "id": "set_leaves_12_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -16.833,
+     1.295,
+     1.1381204712587853
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_12_1": {
+    "id": "set_leaves_12_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -16.833,
+     1.295,
+     1.6439517918182456
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_12_2": {
+    "id": "set_leaves_12_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -16.833,
+     1.295,
+     2.149783112377706
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_13": {
+    "id": "set_trunk_13",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -16.232,
+     -0.966,
+     0.5143139836079874
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_13_0": {
+    "id": "set_leaves_13_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -16.232,
+     -0.966,
+     1.1572064631179717
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_13_1": {
+    "id": "set_leaves_13_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -16.232,
+     -0.966,
+     1.6715204467259592
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_13_2": {
+    "id": "set_leaves_13_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -16.232,
+     -0.966,
+     2.185834430333947
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_14": {
+    "id": "set_trunk_14",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -14.961,
+     13.763,
+     0.4401720319213134
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_14_0": {
+    "id": "set_leaves_14_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -14.961,
+     13.763,
+     0.990387071822955
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_14_1": {
+    "id": "set_leaves_14_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -14.961,
+     13.763,
+     1.4305591037442684
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_14_2": {
+    "id": "set_leaves_14_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -14.961,
+     13.763,
+     1.8707311356655818
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_15": {
+    "id": "set_trunk_15",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.19,
+     10.429,
+     0.841059935828994
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_15_0": {
+    "id": "set_leaves_15_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.19,
+     10.429,
+     1.8923848556152365
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_15_1": {
+    "id": "set_leaves_15_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.19,
+     10.429,
+     2.7334447914442306
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_15_2": {
+    "id": "set_leaves_15_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -9.19,
+     10.429,
+     3.5745047272732244
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_16": {
+    "id": "set_trunk_16",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.877,
+     5.954,
+     0.516664502205909
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_16_0": {
+    "id": "set_leaves_16_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.877,
+     5.954,
+     1.1624951299632953
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_16_1": {
+    "id": "set_leaves_16_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.877,
+     5.954,
+     1.6791596321692042
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_16_2": {
+    "id": "set_leaves_16_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.877,
+     5.954,
+     2.1958241343751133
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_17": {
+    "id": "set_trunk_17",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     7.379,
+     10.609,
+     0.7018351995902589
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_17_0": {
+    "id": "set_leaves_17_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     7.379,
+     10.609,
+     1.5791291990780822
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_17_1": {
+    "id": "set_leaves_17_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     7.379,
+     10.609,
+     2.280964398668341
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_17_2": {
+    "id": "set_leaves_17_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     7.379,
+     10.609,
+     2.9827995982586004
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_18": {
+    "id": "set_trunk_18",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     16.907,
+     2.665,
+     0.832512146958269
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_18_0": {
+    "id": "set_leaves_18_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     16.907,
+     2.665,
+     1.8731523306561053
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_18_1": {
+    "id": "set_leaves_18_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     16.907,
+     2.665,
+     2.7056644776143743
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_18_2": {
+    "id": "set_leaves_18_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     16.907,
+     2.665,
+     3.538176624572644
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_19": {
+    "id": "set_trunk_19",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.89,
+     7.393,
+     0.697652931228777
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_19_0": {
+    "id": "set_leaves_19_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.89,
+     7.393,
+     1.5697190952647484
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_19_1": {
+    "id": "set_leaves_19_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.89,
+     7.393,
+     2.2673720264935255
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_19_2": {
+    "id": "set_leaves_19_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.89,
+     7.393,
+     2.9650249577223025
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_20": {
+    "id": "set_trunk_20",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -21.236,
+     -0.581,
+     0.5788779951821731
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_20_0": {
+    "id": "set_leaves_20_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -21.236,
+     -0.581,
+     1.3024754891598895
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_20_1": {
+    "id": "set_leaves_20_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -21.236,
+     -0.581,
+     1.8813534843420625
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_20_2": {
+    "id": "set_leaves_20_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -21.236,
+     -0.581,
+     2.4602314795242357
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_21": {
+    "id": "set_trunk_21",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.367,
+     2.228,
+     0.5933006385756909
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_21_0": {
+    "id": "set_leaves_21_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.367,
+     2.228,
+     1.3349264367953044
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_21_1": {
+    "id": "set_leaves_21_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.367,
+     2.228,
+     1.9282270753709954
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_21_2": {
+    "id": "set_leaves_21_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.367,
+     2.228,
+     2.5215277139466865
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_22": {
+    "id": "set_trunk_22",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -7.558,
+     10.727,
+     0.6405475493729432
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_22_0": {
+    "id": "set_leaves_22_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -7.558,
+     10.727,
+     1.441231986089122
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_22_1": {
+    "id": "set_leaves_22_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -7.558,
+     10.727,
+     2.0817795354620654
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_22_2": {
+    "id": "set_leaves_22_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -7.558,
+     10.727,
+     2.7223270848350087
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_23": {
+    "id": "set_trunk_23",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     2.417,
+     3.695,
+     0.8543443516561879
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_23_0": {
+    "id": "set_leaves_23_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     2.417,
+     3.695,
+     1.9222747912264229
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_23_1": {
+    "id": "set_leaves_23_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     2.417,
+     3.695,
+     2.776619142882611
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_23_2": {
+    "id": "set_leaves_23_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     2.417,
+     3.695,
+     3.630963494538799
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_24": {
+    "id": "set_trunk_24",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     1.61,
+     4.632,
+     0.5161733612267585
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_24_0": {
+    "id": "set_leaves_24_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     1.61,
+     4.632,
+     1.1613900627602067
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_24_1": {
+    "id": "set_leaves_24_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     1.61,
+     4.632,
+     1.6775634239869652
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_24_2": {
+    "id": "set_leaves_24_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     1.61,
+     4.632,
+     2.1937367852137237
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_25": {
+    "id": "set_trunk_25",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.811,
+     2.73,
+     0.44506524418848636
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_25_0": {
+    "id": "set_leaves_25_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.811,
+     2.73,
+     1.0013967994240944
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_25_1": {
+    "id": "set_leaves_25_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.811,
+     2.73,
+     1.4464620436125808
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_25_2": {
+    "id": "set_leaves_25_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.811,
+     2.73,
+     1.8915272878010672
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_26": {
+    "id": "set_trunk_26",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     7.966,
+     3.748,
+     0.8640964166106315
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_26_0": {
+    "id": "set_leaves_26_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     7.966,
+     3.748,
+     1.9442169373739209
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_26_1": {
+    "id": "set_leaves_26_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     7.966,
+     3.748,
+     2.8083133539845524
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_26_2": {
+    "id": "set_leaves_26_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     7.966,
+     3.748,
+     3.672409770595184
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_trunk_27": {
+    "id": "set_trunk_27",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.86,
+     18.703,
+     0.8729915713136308
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5B3A29",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_27_0": {
+    "id": "set_leaves_27_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.86,
+     18.703,
+     1.9642310354556691
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_27_1": {
+    "id": "set_leaves_27_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.86,
+     18.703,
+     2.8372226067693
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_leaves_27_2": {
+    "id": "set_leaves_27_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.86,
+     18.703,
+     3.710214178082931
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E9F0F5",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_0": {
+    "id": "set_rock_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -8.132,
+     2.457,
+     0.047464060258706774
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_1": {
+    "id": "set_rock_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.568,
+     -6.206,
+     0.04412953226962975
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_2": {
+    "id": "set_rock_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.441,
+     1.817,
+     0.06954912333812271
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_3": {
+    "id": "set_rock_3",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -6.444,
+     10.058,
+     0.06255513970796969
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_4": {
+    "id": "set_rock_4",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.137,
+     2.353,
+     0.09815662999235164
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_5": {
+    "id": "set_rock_5",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.182,
+     1.804,
+     0.08574050457490477
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_6": {
+    "id": "set_rock_6",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     1.452,
+     2.674,
+     0.07775367132471983
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_7": {
+    "id": "set_rock_7",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.275,
+     -6.53,
+     0.07067730131522629
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_8": {
+    "id": "set_rock_8",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     1.386,
+     -7.744,
+     0.03776214460464567
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_9": {
+    "id": "set_rock_9",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.161,
+     -3.45,
+     0.07680517337161352
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_10": {
+    "id": "set_rock_10",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     10.481,
+     -3.039,
+     0.09484561776149641
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_11": {
+    "id": "set_rock_11",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     5.453,
+     0.177,
+     0.08485291335272878
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_12": {
+    "id": "set_rock_12",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -2.388,
+     -2.362,
+     0.054863484739888696
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_13": {
+    "id": "set_rock_13",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     9.456,
+     -3.703,
+     0.08987210993578312
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_14": {
+    "id": "set_rock_14",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.541,
+     4.835,
+     0.040447128324608006
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_15": {
+    "id": "set_rock_15",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     7.231,
+     -9.252,
+     0.05578749641899658
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_16": {
+    "id": "set_rock_16",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     3.838,
+     2.481,
+     0.0640096540691101
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_17": {
+    "id": "set_rock_17",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -0.853,
+     -2.66,
+     0.08191457253965784
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_18": {
+    "id": "set_rock_18",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     1.933,
+     -4.317,
+     0.04850449480484819
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_19": {
+    "id": "set_rock_19",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -10.924,
+     4.727,
+     0.06258271649572966
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_20": {
+    "id": "set_rock_20",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -3.096,
+     -2.515,
+     0.07679698757540404
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_21": {
+    "id": "set_rock_21",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     0.392,
+     -3.933,
+     0.060588687089185585
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_22": {
+    "id": "set_rock_22",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -5.51,
+     -4.716,
+     0.08525045339609265
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_23": {
+    "id": "set_rock_23",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     5.778,
+     7.887,
+     0.09973411713847982
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_24": {
+    "id": "set_rock_24",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     5.368,
+     -5.164,
+     0.09877898649740018
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_25": {
+    "id": "set_rock_25",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -0.817,
+     -5.016,
+     0.06633356086324735
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_26": {
+    "id": "set_rock_26",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     4.333,
+     -9.098,
+     0.09399295513385528
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_rock_27": {
+    "id": "set_rock_27",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -1.929,
+     11.5,
+     0.07681844327244086
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.2,
+     1.0,
+     0.6
+    ],
+    "material": "#7D7A73",
+    "animated": [],
+    "tags": [
+     "set"
+    ]
+   },
+   "set_ridge_0": {
+    "id": "set_ridge_0",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     56.56,
+     13.02,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     -75.0
+    ],
+    "scale": [
+     1.89,
+     1.0,
+     0.147
+    ],
+    "material": "#DCE4EE",
+    "animated": [],
+    "tags": [
+     "set",
+     "ridge"
+    ]
+   },
+   "set_ridge_1": {
+    "id": "set_ridge_1",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     61.35,
+     40.41,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     -53.6
+    ],
+    "scale": [
+     1.9,
+     1.0,
+     0.138
+    ],
+    "material": "#DCE4EE",
+    "animated": [],
+    "tags": [
+     "set",
+     "ridge"
+    ]
+   },
+   "set_ridge_2": {
+    "id": "set_ridge_2",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     50.13,
+     45.82,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     -44.2
+    ],
+    "scale": [
+     1.66,
+     1.0,
+     0.126
+    ],
+    "material": "#DCE4EE",
+    "animated": [],
+    "tags": [
+     "set",
+     "ridge"
+    ]
+   },
+   "set_ridge_3": {
+    "id": "set_ridge_3",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     34.52,
+     62.02,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     -31.6
+    ],
+    "scale": [
+     2.32,
+     1.0,
+     0.167
+    ],
+    "material": "#DCE4EE",
+    "animated": [],
+    "tags": [
+     "set",
+     "ridge"
+    ]
+   },
+   "set_ridge_4": {
+    "id": "set_ridge_4",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     18.2,
+     64.41,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     -21.7
+    ],
+    "scale": [
+     1.83,
+     1.0,
+     0.126
+    ],
+    "material": "#DCE4EE",
+    "animated": [],
+    "tags": [
+     "set",
+     "ridge"
+    ]
+   },
+   "set_ridge_5": {
+    "id": "set_ridge_5",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -2.54,
+     59.32,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     -0.4
+    ],
+    "scale": [
+     1.73,
+     1.0,
+     0.082
+    ],
+    "material": "#DCE4EE",
+    "animated": [],
+    "tags": [
+     "set",
+     "ridge"
+    ]
+   },
+   "set_ridge_6": {
+    "id": "set_ridge_6",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -12.33,
+     72.25,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     15.9
+    ],
+    "scale": [
+     2.19,
+     1.0,
+     0.123
+    ],
+    "material": "#DCE4EE",
+    "animated": [],
+    "tags": [
+     "set",
+     "ridge"
+    ]
+   },
+   "set_ridge_7": {
+    "id": "set_ridge_7",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -35.69,
+     69.78,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     29.5
+    ],
+    "scale": [
+     1.92,
+     1.0,
+     0.184
+    ],
+    "material": "#DCE4EE",
+    "animated": [],
+    "tags": [
+     "set",
+     "ridge"
+    ]
+   },
+   "set_ridge_8": {
+    "id": "set_ridge_8",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -37.25,
+     44.57,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     31.9
+    ],
+    "scale": [
+     2.39,
+     1.0,
+     0.118
+    ],
+    "material": "#DCE4EE",
+    "animated": [],
+    "tags": [
+     "set",
+     "ridge"
+    ]
+   },
+   "set_ridge_9": {
+    "id": "set_ridge_9",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -62.85,
+     43.23,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     63.4
+    ],
+    "scale": [
+     2.2,
+     1.0,
+     0.176
+    ],
+    "material": "#DCE4EE",
+    "animated": [],
+    "tags": [
+     "set",
+     "ridge"
+    ]
+   },
+   "set_ridge_10": {
+    "id": "set_ridge_10",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -63.96,
+     13.46,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     81.5
+    ],
+    "scale": [
+     2.19,
+     1.0,
+     0.181
+    ],
+    "material": "#DCE4EE",
+    "animated": [],
+    "tags": [
+     "set",
+     "ridge"
+    ]
+   },
+   "set_moon": {
+    "id": "set_moon",
+    "type": "mesh",
+    "parent": null,
+    "translate": [
+     -30.0,
+     80.0,
+     26.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E8EEFF",
+    "animated": [],
+    "tags": [
+     "set",
+     "sky"
+    ]
+   },
+   "hero_root": {
+    "id": "hero_root",
+    "type": "empty",
+    "parent": null,
+    "translate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location",
+     "rotation"
+    ],
+    "tags": [
+     "hero",
+     "rig"
+    ]
+   },
+   "hero_body": {
+    "id": "hero_body",
+    "type": "mesh",
+    "parent": "hero_root",
+    "translate": [
+     0.0,
+     0.0,
+     0.33
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     0.9,
+     0.85
+    ],
+    "material": "#E0712B",
+    "animated": [
+     "location",
+     "rotation",
+     "scale"
+    ],
+    "tags": [
+     "hero"
+    ]
+   },
+   "hero_belly": {
+    "id": "hero_belly",
+    "type": "mesh",
+    "parent": "hero_body",
+    "translate": [
+     0.0,
+     -0.21,
+     0.04
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     0.95,
+     0.5,
+     1.1
+    ],
+    "material": "#F4E7D3",
+    "animated": [],
+    "tags": []
+   },
+   "hero_head_pivot": {
+    "id": "hero_head_pivot",
+    "type": "empty",
+    "parent": "hero_body",
+    "translate": [
+     0.0,
+     0.0,
+     0.24
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "rotation"
+    ],
+    "tags": []
+   },
+   "hero_head": {
+    "id": "hero_head",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.0,
+     0.0,
+     0.22
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#E0712B",
+    "animated": [],
+    "tags": [
+     "hero"
+    ]
+   },
+   "hero_antenna_pivot": {
+    "id": "hero_antenna_pivot",
+    "type": "empty",
+    "parent": "hero_body",
+    "translate": [
+     0.0,
+     0.3,
+     -0.02
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "rotation"
+    ],
+    "tags": []
+   },
+   "hero_tail": {
+    "id": "hero_tail",
+    "type": "mesh",
+    "parent": "hero_antenna_pivot",
+    "translate": [
+     0.0,
+     0.2,
+     0.12
+    ],
+    "rotate": [
+     42.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     0.72,
+     1.9,
+     0.72
+    ],
+    "material": "#E0712B",
+    "animated": [],
+    "tags": []
+   },
+   "hero_tail_tip": {
+    "id": "hero_tail_tip",
+    "type": "mesh",
+    "parent": "hero_antenna_pivot",
+    "translate": [
+     0.0,
+     0.42,
+     0.32
+    ],
+    "rotate": [
+     42.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     0.78,
+     1.05,
+     0.78
+    ],
+    "material": "#F4E7D3",
+    "animated": [],
+    "tags": []
+   },
+   "hero_ear_L": {
+    "id": "hero_ear_L",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.16,
+     0.0,
+     0.6
+    ],
+    "rotate": [
+     -8.0,
+     18.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     0.55,
+     1.0
+    ],
+    "material": "#E0712B",
+    "animated": [],
+    "tags": []
+   },
+   "hero_ear_tip_L": {
+    "id": "hero_ear_tip_L",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.2062686609288742,
+     0.021042972865161894,
+     0.7424002960279399
+    ],
+    "rotate": [
+     -8.0,
+     18.0,
+     0.0
+    ],
+    "scale": [
+     1.05,
+     0.6,
+     1.0
+    ],
+    "material": "#2B1E1A",
+    "animated": [],
+    "tags": []
+   },
+   "hero_eye_L": {
+    "id": "hero_eye_L",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.12,
+     -0.255,
+     0.29
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     0.5,
+     1.3
+    ],
+    "material": "#2B1E1A",
+    "animated": [
+     "scale"
+    ],
+    "tags": []
+   },
+   "hero_eye_glint_L": {
+    "id": "hero_eye_glint_L",
+    "type": "mesh",
+    "parent": "hero_eye_L",
+    "translate": [
+     -0.016,
+     -0.046,
+     0.016
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#FFFFFF",
+    "animated": [],
+    "tags": []
+   },
+   "hero_haunch_L": {
+    "id": "hero_haunch_L",
+    "type": "mesh",
+    "parent": "hero_body",
+    "translate": [
+     0.17,
+     0.15,
+     -0.14
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     0.85,
+     1.05,
+     1.0
+    ],
+    "material": "#E0712B",
+    "animated": [],
+    "tags": []
+   },
+   "hero_foot_L": {
+    "id": "hero_foot_L",
+    "type": "mesh",
+    "parent": "hero_root",
+    "translate": [
+     0.17,
+     0.1,
+     0.045
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.45,
+     0.55
+    ],
+    "material": "#2B1E1A",
+    "animated": [],
+    "tags": []
+   },
+   "hero_arm_pivot_L": {
+    "id": "hero_arm_pivot_L",
+    "type": "empty",
+    "parent": "hero_body",
+    "translate": [
+     0.15,
+     -0.17,
+     -0.08
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "rotation"
+    ],
+    "tags": []
+   },
+   "hero_arm_L": {
+    "id": "hero_arm_L",
+    "type": "mesh",
+    "parent": "hero_arm_pivot_L",
+    "translate": [
+     0.0,
+     0.0,
+     -0.12
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     2.0
+    ],
+    "material": "#E0712B",
+    "animated": [],
+    "tags": []
+   },
+   "hero_paw_L": {
+    "id": "hero_paw_L",
+    "type": "mesh",
+    "parent": "hero_arm_pivot_L",
+    "translate": [
+     0.0,
+     -0.025,
+     -0.235
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.3,
+     0.62
+    ],
+    "material": "#2B1E1A",
+    "animated": [],
+    "tags": []
+   },
+   "hero_ear_R": {
+    "id": "hero_ear_R",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     -0.16,
+     0.0,
+     0.6
+    ],
+    "rotate": [
+     -8.0,
+     -18.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     0.55,
+     1.0
+    ],
+    "material": "#E0712B",
+    "animated": [],
+    "tags": []
+   },
+   "hero_ear_tip_R": {
+    "id": "hero_ear_tip_R",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     -0.2062686609288742,
+     0.021042972865161894,
+     0.7424002960279399
+    ],
+    "rotate": [
+     -8.0,
+     -18.0,
+     0.0
+    ],
+    "scale": [
+     1.05,
+     0.6,
+     1.0
+    ],
+    "material": "#2B1E1A",
+    "animated": [],
+    "tags": []
+   },
+   "hero_eye_R": {
+    "id": "hero_eye_R",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     -0.12,
+     -0.255,
+     0.29
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     0.5,
+     1.3
+    ],
+    "material": "#2B1E1A",
+    "animated": [
+     "scale"
+    ],
+    "tags": []
+   },
+   "hero_eye_glint_R": {
+    "id": "hero_eye_glint_R",
+    "type": "mesh",
+    "parent": "hero_eye_R",
+    "translate": [
+     -0.016,
+     -0.046,
+     0.016
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#FFFFFF",
+    "animated": [],
+    "tags": []
+   },
+   "hero_haunch_R": {
+    "id": "hero_haunch_R",
+    "type": "mesh",
+    "parent": "hero_body",
+    "translate": [
+     -0.17,
+     0.15,
+     -0.14
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     0.85,
+     1.05,
+     1.0
+    ],
+    "material": "#E0712B",
+    "animated": [],
+    "tags": []
+   },
+   "hero_foot_R": {
+    "id": "hero_foot_R",
+    "type": "mesh",
+    "parent": "hero_root",
+    "translate": [
+     -0.17,
+     0.1,
+     0.045
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.45,
+     0.55
+    ],
+    "material": "#2B1E1A",
+    "animated": [],
+    "tags": []
+   },
+   "hero_arm_pivot_R": {
+    "id": "hero_arm_pivot_R",
+    "type": "empty",
+    "parent": "hero_body",
+    "translate": [
+     -0.15,
+     -0.17,
+     -0.08
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "rotation"
+    ],
+    "tags": []
+   },
+   "hero_arm_R": {
+    "id": "hero_arm_R",
+    "type": "mesh",
+    "parent": "hero_arm_pivot_R",
+    "translate": [
+     0.0,
+     0.0,
+     -0.12
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     2.0
+    ],
+    "material": "#E0712B",
+    "animated": [],
+    "tags": []
+   },
+   "hero_paw_R": {
+    "id": "hero_paw_R",
+    "type": "mesh",
+    "parent": "hero_arm_pivot_R",
+    "translate": [
+     0.0,
+     -0.025,
+     -0.235
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.3,
+     0.62
+    ],
+    "material": "#2B1E1A",
+    "animated": [],
+    "tags": []
+   },
+   "hero_muzzle": {
+    "id": "hero_muzzle",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.0,
+     -0.28,
+     0.12
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     0.8,
+     1.4,
+     0.66
+    ],
+    "material": "#F4E7D3",
+    "animated": [],
+    "tags": []
+   },
+   "hero_mouth": {
+    "id": "hero_mouth",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.0,
+     -0.45398000000000005,
+     0.08138999999999999
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#5A1E24",
+    "animated": [
+     "shape_key:open",
+     "shape_key:wide",
+     "shape_key:round"
+    ],
+    "tags": [
+     "hero",
+     "mouth"
+    ]
+   },
+   "hero_nose": {
+    "id": "hero_nose",
+    "type": "mesh",
+    "parent": "hero_head_pivot",
+    "translate": [
+     0.0,
+     -0.452,
+     0.16719
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.25,
+     0.9,
+     0.8
+    ],
+    "material": "#2B1E1A",
+    "animated": [],
+    "tags": []
+   },
+   "prop": {
+    "id": "prop",
+    "type": "empty",
+    "parent": null,
+    "translate": [
+     1.3,
+     0.0,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": [
+     "prop",
+     "rig"
+    ]
+   },
+   "prop_pivot": {
+    "id": "prop_pivot",
+    "type": "empty",
+    "parent": "prop",
+    "translate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "rotation"
+    ],
+    "tags": []
+   },
+   "prop_base": {
+    "id": "prop_base",
+    "type": "mesh",
+    "parent": "prop_pivot",
+    "translate": [
+     0.0,
+     0.0,
+     0.02
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#2B2B30",
+    "animated": [],
+    "tags": []
+   },
+   "prop_glass": {
+    "id": "prop_glass",
+    "type": "mesh",
+    "parent": "prop_pivot",
+    "translate": [
+     0.0,
+     0.0,
+     0.15
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#FFC857",
+    "animated": [],
+    "tags": []
+   },
+   "prop_cap": {
+    "id": "prop_cap",
+    "type": "mesh",
+    "parent": "prop_pivot",
+    "translate": [
+     0.0,
+     0.0,
+     0.3
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#2B2B30",
+    "animated": [],
+    "tags": []
+   },
+   "prop_handle": {
+    "id": "prop_handle",
+    "type": "mesh",
+    "parent": "prop_pivot",
+    "translate": [
+     0.0,
+     0.0,
+     0.37
+    ],
+    "rotate": [
+     90.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": "#2B2B30",
+    "animated": [],
+    "tags": []
+   },
+   "prop_light": {
+    "id": "prop_light",
+    "type": "light",
+    "parent": "prop_pivot",
+    "translate": [
+     0.0,
+     0.0,
+     0.15
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": []
+   },
+   "light_key": {
+    "id": "light_key",
+    "type": "light",
+    "parent": null,
+    "translate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rotate": [
+     55.0,
+     0.0,
+     20.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": [
+     "light"
+    ]
+   },
+   "light_fill": {
+    "id": "light_fill",
+    "type": "light",
+    "parent": null,
+    "translate": [
+     2.5,
+     -5.0,
+     3.2
+    ],
+    "rotate": [
+     55.0,
+     0.0,
+     25.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": [
+     "light"
+    ]
+   },
+   "light_rim": {
+    "id": "light_rim",
+    "type": "light",
+    "parent": null,
+    "translate": [
+     -2.0,
+     3.5,
+     2.8
+    ],
+    "rotate": [
+     -55.0,
+     0.0,
+     -30.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": [
+     "light"
+    ]
+   },
+   "cam_s1_aim": {
+    "id": "cam_s1_aim",
+    "type": "empty",
+    "parent": null,
+    "translate": [
+     -2.205,
+     -0.143,
+     0.695
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location"
+    ],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s1": {
+    "id": "cam_s1",
+    "type": "camera",
+    "parent": null,
+    "translate": [
+     -3.933,
+     -5.035,
+     1.5
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location"
+    ],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s2_aim": {
+    "id": "cam_s2_aim",
+    "type": "empty",
+    "parent": null,
+    "translate": [
+     0.175,
+     0.0,
+     0.626
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s2": {
+    "id": "cam_s2",
+    "type": "camera",
+    "parent": null,
+    "translate": [
+     1.709,
+     -4.722,
+     1.15
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location"
+    ],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s3_aim": {
+    "id": "cam_s3_aim",
+    "type": "empty",
+    "parent": null,
+    "translate": [
+     0.8,
+     0.0,
+     0.78
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s3": {
+    "id": "cam_s3",
+    "type": "camera",
+    "parent": null,
+    "translate": [
+     3.729,
+     -3.253,
+     1.15
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location"
+    ],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s4_aim": {
+    "id": "cam_s4_aim",
+    "type": "empty",
+    "parent": null,
+    "translate": [
+     0.925,
+     0.0,
+     0.626
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location"
+    ],
+    "tags": [
+     "camera"
+    ]
+   },
+   "cam_s4": {
+    "id": "cam_s4",
+    "type": "camera",
+    "parent": null,
+    "translate": [
+     0.219,
+     -5.024,
+     1.5
+    ],
+    "rotate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "animated": [
+     "location"
+    ],
+    "tags": [
+     "camera"
+    ]
+   }
+  }
+ },
+ "history": [
+  {
+   "task": "director",
+   "ok": true,
+   "seconds": 0.04
+  },
+  {
+   "task": "voice",
+   "ok": true,
+   "seconds": 5.79
+  },
+  {
+   "task": "asset",
+   "ok": true,
+   "seconds": 2.3
+  },
+  {
+   "task": "animator",
+   "ok": true,
+   "seconds": 0.29
+  },
+  {
+   "task": "camera",
+   "ok": true,
+   "seconds": 0.28
+  },
+  {
+   "task": "review",
+   "ok": true,
+   "seconds": 8.43
+  },
+  {
+   "task": "edit",
+   "ok": true,
+   "seconds": 236.04
+  }
+ ],
+ "locked": {},
+ "artifacts": {
+  "lines": {
+   "line1": {
+    "path": "output\\fox-lantern\\audio\\line1.wav",
+    "engine": "kokoro",
+    "duration": 1.152,
+    "lipsync": "amplitude",
+    "start_s": 11.708,
+    "cues": 10
+   }
+  },
+  "music": "output\\fox-lantern\\audio\\music_bed.wav",
+  "mix": "output\\fox-lantern\\audio\\mix.wav",
+  "hero_parts": 29,
+  "asset_info": {
+   "prop_height": 0.42,
+   "hero_height": 1.3900000000000001,
+   "head_z": 0.8,
+   "head_top": 1.3900000000000001
+  },
+  "critic_history": [
+   {
+    "iteration": 1,
+    "issues": 1,
+    "blockers": 1,
+    "messages": [
+     "s3: the lantern being spoken to is only 67% in frame (min 80%)"
+    ]
+   },
+   {
+    "iteration": 2,
+    "issues": 0,
+    "blockers": 0,
+    "messages": []
+   }
+  ],
+  "edit_mlt": "output\\fox-lantern\\edit.mlt",
+  "final": "examples/showcase/fox-lantern/final.mp4",
+  "contact_sheet": "examples/showcase/fox-lantern/log/contact_sheet.jpg",
+  "render_seconds": 228.8,
+  "quality": "final",
+  "llm_usage": {
+   "provider": "scripted",
+   "calls": 5,
+   "tokens": 0
+  },
+  "usda": "output\\fox-lantern\\scene.usda"
+ },
+ "tuning": {
+  "camera": {
+   "s3": {
+    "fill_mul": 0.833
+   }
+  }
+ }
+}

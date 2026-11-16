@@ -9,7 +9,7 @@ animatica film "A curious little robot discovers a flower growing in a junkyard 
 ```
 
 **Showcase** — made by the command above, fully offline (scripted planner, Kokoro voice, Rhubarb lip sync,
-procedural music, Cycles 640×360 `--quality draft`, ~21 min on 2 CPU cores), no human edits:
+procedural music, Cycles 640×360 `--quality draft`: 2 min on an RTX 5060 with OptiX, ~21 min on 2 CPU cores), no human edits:
 
 [![contact sheet](examples/showcase/hello-little-one/contact_sheet.jpg)](examples/showcase/hello-little-one/final.mp4)
 
@@ -17,6 +17,7 @@ procedural music, Cycles 640×360 `--quality draft`, ~21 min on 2 CPU cores), no
 [production log](examples/showcase/hello-little-one/log/index.html) ·
 [editable .blend](examples/showcase/hello-little-one/scene.blend) ·
 **[HD 960×540 version](examples/showcase/hello-little-one-hd/final.mp4)** ·
+**[fox film, HD](examples/showcase/fox-lantern/final.mp4)** ("A tiny fox finds a glowing lantern in a snowy forest at night…") ·
 games track: [robot-flower-platformer](examples/showcase/robot-flower-platformer/) (screenshot below)
 
 <img src="examples/showcase/robot-flower-platformer/screenshot.png" width="480" alt="generated Godot platformer">

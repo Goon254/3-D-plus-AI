@@ -40,7 +40,7 @@ animatica film "A lonely robot sits in a junkyard at dusk until a flower blooms.
 animatica revise output/hello-little-one "make the robot blue and slow down shot 2" --quality preview
 animatica game "a 2D platformer where a robot collects flowers" && godot --path output/game-*/godot
 animatica-mcp                        # MCP server (stdio) for Claude Desktop / Claude Code
-pytest -q                            # 65 tests (Blender/Godot/MCP tests skip if those are missing)
+pytest -q                            # 89 tests (Blender/Godot/MCP tests skip if those are missing)
 ```
 
 Each film writes `output/<project>/final.mp4` (video + audio + captions), `scene.blend`, `edit.mlt`,
@@ -51,12 +51,10 @@ is the production log viewer: every agent decision, every batch, every critique 
 
 <!-- SHOWCASE_LIST -->
 * **North-star short** — [`examples/showcase/hello-little-one/final.mp4`](examples/showcase/hello-little-one/final.mp4)
-  (21 s, 640×360 Cycles `--quality draft`, voice + lip sync + music + captions, 1.0 MB), re-rendered at 11:17 UTC
-  from `6a10f8a` with every fix so far (rolling wheels, grounded scrap heaps, sun halo, whole flower in the
-  close-up). [Production log](examples/showcase/hello-little-one/log/index.html) shows the critic loop at work:
-  iteration 1 flags the flower at 55 % in frame in the close-up, iteration 2 passes after the reframe
-  (previews `iter1_s3_f312.png` → `iter2_s3_f312.png`). [Editable `.blend`](examples/showcase/hello-little-one/scene.blend).
-  Reproduce: `animatica demo --quality draft` (≈21 min) or `--quality preview` (≈2 min, Workbench).
+  (21 s, 640×360 Cycles `--quality draft`, voice + lip sync + music + captions, 1.0 MB), re-rendered 2026-11-16 on OptiX
+  (88 s of rendering) with every fix to date. [Production log](examples/showcase/hello-little-one/log/index.html) shows the
+  critic loop: iteration 1 flags the flower at 56 % in the close-up, iteration 2 passes after the reframe.
+  [Editable `.blend`](examples/showcase/hello-little-one/scene.blend). Reproduce: `animatica demo --quality draft`.
 * **HD version** — [`examples/showcase/hello-little-one-hd/final.mp4`](examples/showcase/hello-little-one-hd/final.mp4)
   (21 s, **960×540 Cycles `--quality final`**, title overlay, voice + lip sync + music + captions, 1.5 MB), re-rendered
   2026-11-16 from `fdc5db1` on an **RTX 5060 with OptiX in 4 min end to end** (504 frames in 204 s, 0.40 s/frame; the
@@ -65,6 +63,11 @@ is the production log viewer: every agent decision, every batch, every critique 
   the horizon, junk spread around the heap crest, rolling wheels, ground grit and pebbles.
   [Production log](examples/showcase/hello-little-one-hd/log/index.html) ·
   [contact sheet](examples/showcase/hello-little-one-hd/contact_sheet.jpg).
+* **Fox film (HD)** — [`examples/showcase/fox-lantern/final.mp4`](examples/showcase/fox-lantern/final.mp4)
+  (22 s, 960×540 Cycles `--quality final`, OptiX 229 s), prompt "A tiny fox finds a glowing lantern in a snowy forest at
+  night. It whispers: 'Are you lost too?' Then it hops away." The species pass (snout, pointed ears, white-tipped tail,
+  legs), the speaker facing the lens with the lantern in frame, rock-not-puddle snow stones, and an exit that leaves frame.
+  [Production log](examples/showcase/fox-lantern/log/index.html) · [contact sheet](examples/showcase/fox-lantern/contact_sheet.jpg).
 * **Games track** — [`examples/showcase/robot-flower-platformer/`](examples/showcase/robot-flower-platformer/)
   (generated Godot project; bot playtest 6/6).
 
