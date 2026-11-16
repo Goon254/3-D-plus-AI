@@ -1,0 +1,508 @@
+"""Species body plan -> batched ops: meshes, armature (spine, IK legs, neck/tail/trunk chains, head,
+ears), foot IK targets with knee poles, coat materials.
+
+Every part is created in root space as a child of ``<cid>_root``, then bound to its bone. The binds keep
+local transforms, so the scene model stays exact. Foot targets are world-space empties: the locomotion
+planner keys them, and the leg IK reaches them, so a planted foot is exactly where the planner put it.
+"""
+
+from __future__ import annotations
+
+import math
+from dataclasses import dataclass, field
+from typing import Any
+
+from .gait import FootSpot
+from .species import EYE_WHITE, GLINT, IRIS, Chain, Species
+
+V3 = tuple[float, float, float]
+LEG_KEYS = ("LF", "RF", "LH", "RH")
+
+
+def _add(a: V3, b: V3) -> V3:
+    return (a[0] + b[0], a[1] + b[1], a[2] + b[2])
+
+
+def _sub(a: V3, b: V3) -> V3:
+    return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
+
+
+def _scale(a: V3, k: float) -> V3:
+    return (a[0] * k, a[1] * k, a[2] * k)
+
+
+def _len(a: V3) -> float:
+    return math.sqrt(a[0] ** 2 + a[1] ** 2 + a[2] ** 2)
+
+
+def _rx(v: V3, deg: float) -> V3:
+    """Rotate about +X (positive tips -Y forward vectors downward: a nose-down head pitch)."""
+    a = math.radians(deg)
+    return (v[0], v[1] * math.cos(a) - v[2] * math.sin(a), v[1] * math.sin(a) + v[2] * math.cos(a))
+
+
+def _r(v: V3, n: int = 4) -> list[float]:
+    return [round(c, n) for c in v]
+
+
+def align_z(direction: V3) -> list[float]:
+    """Euler XYZ (degrees) turning local +Z onto ``direction``: Ry(phi) Rx(theta) z = d."""
+    d = _scale(direction, 1 / max(_len(direction), 1e-9))
+    theta = math.asin(max(-1.0, min(1.0, -d[1])))
+    phi = math.atan2(d[0], d[2])
+    return [round(math.degrees(theta), 3), round(math.degrees(phi), 3), 0.0]
+
+
+def capsule(r0: float, r1: float, length: float, seg: int = 20, cap: int = 5, body: int = 6):
+    """Tapered capsule along local +Z from 0 to ``length`` (rounded ends). Returns (verts, faces)."""
+    prof: list[tuple[float, float]] = []
+    for i in range(1, cap + 1):
+        a = -math.pi / 2 + math.pi / 2 * i / cap
+        prof.append((r0 * math.sin(a), r0 * math.cos(a)))
+    for j in range(1, body):
+        u = j / body
+        prof.append((length * u, r0 + (r1 - r0) * u))
+    for i in range(0, cap):
+        a = math.pi / 2 * i / cap
+        prof.append((length + r1 * math.sin(a), r1 * math.cos(a)))
+    verts: list[list[float]] = [[0.0, 0.0, -r0]]
+    for z, rr in prof:
+        for k in range(seg):
+            t = 2 * math.pi * k / seg
+            verts.append([round(rr * math.cos(t), 5), round(rr * math.sin(t), 5), round(z, 5)])
+    verts.append([0.0, 0.0, length + r1])
+    faces: list[list[int]] = []
+    nr = len(prof)
+    for k in range(seg):
+        faces.append([0, 1 + (k + 1) % seg, 1 + k])
+    for i in range(nr - 1):
+        a, b = 1 + i * seg, 1 + (i + 1) * seg
+        for k in range(seg):
+            k2 = (k + 1) % seg
+            faces.append([a + k, a + k2, b + k2, b + k])
+    top = len(verts) - 1
+    last = 1 + (nr - 1) * seg
+    for k in range(seg):
+        faces.append([last + k, last + (k + 1) % seg, top])
+    return verts, faces
+
+
+@dataclass
+class CreatureMeta:
+    cid: str
+    species: str
+    root: str
+    rig: str
+    body_z: float
+    foot_z: float
+    leg: float  # fore-leg chain length (gait scaling)
+    feet: dict[str, FootSpot]
+    ik_targets: dict[str, str]
+    neck_bones: list[str]
+    tail_bones: list[str]
+    trunk_bones: list[str] = field(default_factory=list)
+    ear_bones: list[str] = field(default_factory=list)
+    eyes: list[str] = field(default_factory=list)
+    head_height: float = 0.0  # world height of the head centre at rest (camera framing)
+    reach_slack: float = 0.0  # how far the shortest-reaching leg can swing horizontally from rest height
+    joints: dict[str, tuple[float, float, float, float]] = field(
+        default_factory=dict
+    )  # leg -> x, y, z, chain
+    length: float = 0.0  # nose-to-tail length (camera framing)
+
+
+def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), yaw: float = 90.0):
+    """Ops that build creature ``cid`` of species ``sp`` standing at ``at`` heading ``yaw`` degrees."""
+    root, rig = f"{cid}_root", f"{cid}_rig"
+    ops: list[dict[str, Any]] = [
+        {
+            "op": "create_empty",
+            "id": root,
+            "location": [at[0], at[1], sp.body_z],
+            "rotation": [0, 0, yaw],
+            "tags": ["creature", cid],
+        }
+    ]
+    L = sp.torso[1]
+    bones: list[dict[str, Any]] = [
+        {"name": "hips", "head": [0, L * 0.3, 0], "tail": [0, 0, 0]},
+        {"name": "chest", "head": [0, 0, 0], "tail": [0, -L * 0.3, 0], "parent": "hips"},
+    ]
+    meshes: list[tuple[dict[str, Any], str, str | list[str]]] = []  # (create op, material key, bone(s))
+    foot_h = sp.foot[2]
+    foot_z_root = -sp.body_z + foot_h
+    feet: dict[str, FootSpot] = {}
+    poles: list[tuple[str, V3]] = []
+    leg_len = 0.0
+    slack = 1e9
+    joints: dict[str, tuple[float, float, float, float]] = {}
+    for key in LEG_KEYS:
+        side = 1 if key[0] == "L" else -1
+        fore = key[1] == "F"
+        jx, jy, jz = sp.shoulder if fore else sp.hip
+        fx, fy = sp.fore_foot if fore else sp.hind_foot
+        J: V3 = (jx * side, jy, jz)
+        F: V3 = (fx * side, fy, foot_z_root)
+        d = _len(_sub(F, J))
+        bend = sp.knee_bend * d
+        # fore: the carpus protrudes forward when the leg folds; hind: the hock points backward
+        mid = _add(J, _scale(_sub(F, J), 0.5))
+        K: V3 = _add(mid, (0.0, -bend if fore else bend, 0.0))
+        if abs(F[0] - J[0]) > 0.02:  # splayed (tortoise forelegs): the elbow also goes outward
+            K = _add(K, (0.35 * bend * side, 0.0, 0.0))
+        up, lo = f"leg_{key}_up", f"leg_{key}_lo"
+        bones += [
+            {"name": up, "head": _r(J), "tail": _r(K), "parent": "chest" if fore else "hips"},
+            {"name": lo, "head": _r(K), "tail": _r(F), "parent": up},
+        ]
+        chain_len = _len(_sub(K, J)) + _len(_sub(F, K))
+        joints[key] = (J[0], J[1], J[2], chain_len)
+        if fore:
+            leg_len = chain_len
+        # horizontal reach left at rest height, keeping 5 % of the chain bent (IK never locks straight) and
+        # budgeting for the hip rising with pitch/roll/breathing (2 % of the leg)
+        h = (J[2] - F[2]) + 0.02 * chain_len
+        slack = min(slack, math.sqrt(max((0.95 * chain_len) ** 2 - h**2, 1e-6)))
+        feet[key] = FootSpot(F[0], F[1])
+        ru, rl = (sp.leg_r[0], sp.leg_r[1]) if fore else (sp.leg_r[2], sp.leg_r[3])
+        for part, a, b, r0, r1, bone in (
+            ("up", J, K, ru, (ru + rl) / 2, up),
+            ("lo", K, F, rl, rl * 0.85, lo),
+        ):
+            v, f = capsule(r0, r1, _len(_sub(b, a)))
+            meshes.append(
+                (
+                    {
+                        "op": "create_mesh",
+                        "id": f"{cid}_leg_{key}_{part}",
+                        "vertices": v,
+                        "faces": f,
+                        "location": _r(a),
+                        "rotation": align_z(_sub(b, a)),
+                        "smooth": True,
+                    },
+                    "leg",
+                    bone,
+                )
+            )
+        shape, fr, fh = sp.foot
+        foot_op: dict[str, Any] = {
+            "op": "create_primitive",
+            "id": f"{cid}_foot_{key}",
+            "shape": "cylinder" if shape != "paw" else "uv_sphere",
+            "location": _r(_add(F, (0.0, -fr * 0.15, -fh / 2))),
+            "smooth": True,
+            "segments": 24,
+        }
+        foot_op["size"] = [fr * 2, fr * 2.1, fh] if shape != "paw" else [fr * 2, fr * 3, fh * 1.6]
+        meshes.append((foot_op, "foot", lo))
+        poles.append((key, _add(K, (0.0, -d if fore else d, 0.0))))
+
+    def chain(prefix: str, ch: Chain, parent: str) -> list[str]:
+        names = []
+        step = _scale(_sub(ch.tip, ch.base), 1 / ch.bones)
+        for i in range(ch.bones):
+            a = _add(ch.base, _scale(step, i))
+            names.append(f"{prefix}_{i}")
+            bones.append(
+                {
+                    "name": names[-1],
+                    "head": _r(a),
+                    "tail": _r(_add(a, step)),
+                    "parent": names[-2] if i else parent,
+                }
+            )
+        return names
+
+    neck_bones = chain("neck", sp.neck, "chest")
+    # the head bone runs from the top of the neck through the head centre
+    head_dir = _sub(sp.head_at, sp.neck.tip)
+    if _len(head_dir) < 0.02:
+        head_dir = (0.0, -0.05, 0.0)
+    bones.append(
+        {
+            "name": "head",
+            "head": _r(sp.neck.tip),
+            "tail": _r(_add(sp.head_at, _scale(head_dir, 0.3))),
+            "parent": neck_bones[-1],
+        }
+    )
+    tail_bones = chain("tail", sp.tail, "hips")
+    trunk_bones = chain("trunk", sp.trunk, "head") if sp.trunk else []
+
+    def head_pt(off: V3) -> V3:
+        return _add(sp.head_at, _rx(off, sp.head_pitch))
+
+    ear_bones: list[str] = []
+    eyes: list[str] = []
+    for side, sx in (("L", 1), ("R", -1)):
+        ex, ey, ez, er = sp.eye
+        eye_c = head_pt((ex * sx, ey, ez))
+        look = (0.42 * sx, -1.0, -0.05)  # forward and a little outward
+        n = _scale(look, 1 / _len(look))
+        iris_c = _add(eye_c, _scale(n, er * 0.55))
+        glint_c = _add(iris_c, (-0.3 * er, -0.32 * er, 0.32 * er))
+        for pid, c, size, mkey in (
+            (f"{cid}_eye_{side}", eye_c, (er * 2, er * 1.8, er * 2.1), "eye_white"),
+            (f"{cid}_iris_{side}", iris_c, (er * 1.3, er * 1.0, er * 1.45), "iris"),
+            (f"{cid}_glint_{side}", glint_c, (er * 0.36, er * 0.3, er * 0.36), "glint"),
+        ):
+            meshes.append(
+                (
+                    {
+                        "op": "create_primitive",
+                        "id": pid,
+                        "shape": "uv_sphere",
+                        "size": _r(size, 5),
+                        "location": _r(c, 5),
+                        "smooth": True,
+                        "segments": 24,
+                    },
+                    mkey,
+                    "head",
+                )
+            )
+        eyes.append(f"{cid}_eye_{side}")
+        shape, esize, eoff, erot = sp.ear
+        if shape != "none":
+            base = head_pt((eoff[0] * sx, eoff[1], eoff[2]))
+            name = f"ear_{side}"
+            bones.append(
+                {
+                    "name": name,
+                    "head": _r(base),
+                    "tail": _r(_add(base, (0.0, 0.0, max(esize) * 0.6))),
+                    "parent": "head",
+                }
+            )
+            ear_bones.append(name)
+            center = _add(base, (sx * esize[0] * 0.3, esize[1] * 0.25, esize[2] * 0.35))
+            meshes.append(
+                (
+                    {
+                        "op": "create_primitive",
+                        "id": f"{cid}_ear_{side}",
+                        "shape": "uv_sphere",
+                        "size": list(esize),
+                        "location": _r(center),
+                        "rotation": [erot[0], erot[1] * sx, erot[2] * sx],
+                        "smooth": True,
+                        "segments": 24,
+                    },
+                    "coat",
+                    name,
+                )
+            )
+
+    # body, neck, head
+    meshes.append(
+        (
+            {
+                "op": "create_primitive",
+                "id": f"{cid}_torso",
+                "shape": "uv_sphere",
+                "size": list(sp.torso),
+                "location": list(sp.torso_at),
+                "rotation": [-sp.torso_rot, 0, 0],
+                "smooth": True,
+                "segments": 48,
+            },
+            "torso",
+            ["hips", "chest"],
+        )
+    )
+    v, f = capsule(sp.neck.r0, sp.neck.r1, _len(_sub(sp.neck.tip, sp.neck.base)))
+    meshes.append(
+        (
+            {
+                "op": "create_mesh",
+                "id": f"{cid}_neck",
+                "vertices": v,
+                "faces": f,
+                "location": list(sp.neck.base),
+                "rotation": align_z(_sub(sp.neck.tip, sp.neck.base)),
+                "smooth": True,
+            },
+            "neck",
+            neck_bones if len(neck_bones) > 1 else neck_bones[0],
+        )
+    )
+    meshes.append(
+        (
+            {
+                "op": "create_primitive",
+                "id": f"{cid}_head",
+                "shape": "uv_sphere",
+                "size": list(sp.head_size),
+                "location": list(sp.head_at),
+                "rotation": [sp.head_pitch, 0, 0],
+                "smooth": True,
+                "segments": 40,
+            },
+            "head",
+            "head",
+        )
+    )
+    if sp.muzzle:
+        msize, moff = sp.muzzle
+        meshes.append(
+            (
+                {
+                    "op": "create_primitive",
+                    "id": f"{cid}_muzzle",
+                    "shape": "uv_sphere",
+                    "size": list(msize),
+                    "location": _r(head_pt(moff)),
+                    "rotation": [sp.head_pitch, 0, 0],
+                    "smooth": True,
+                    "segments": 32,
+                },
+                "muzzle" if "muzzle" in sp.mats else "coat",
+                "head",
+            )
+        )
+    v, f = capsule(sp.tail.r0, sp.tail.r1, _len(_sub(sp.tail.tip, sp.tail.base)), seg=12)
+    meshes.append(
+        (
+            {
+                "op": "create_mesh",
+                "id": f"{cid}_tail",
+                "vertices": v,
+                "faces": f,
+                "location": list(sp.tail.base),
+                "rotation": align_z(_sub(sp.tail.tip, sp.tail.base)),
+                "smooth": True,
+            },
+            "tail",
+            tail_bones if len(tail_bones) > 1 else tail_bones[0],
+        )
+    )
+    if sp.tuft:
+        meshes.append(
+            (
+                {
+                    "op": "create_primitive",
+                    "id": f"{cid}_tuft",
+                    "shape": "uv_sphere",
+                    "size": [sp.tuft * 1.6, sp.tuft * 1.6, sp.tuft * 2.6],
+                    "location": _r(sp.tail.tip),
+                    "rotation": align_z(_sub(sp.tail.tip, sp.tail.base)),
+                    "smooth": True,
+                    "segments": 16,
+                },
+                "tuft",
+                tail_bones[-1],
+            )
+        )
+    if sp.trunk:
+        v, f = capsule(sp.trunk.r0, sp.trunk.r1, _len(_sub(sp.trunk.tip, sp.trunk.base)), seg=18, body=10)
+        meshes.append(
+            (
+                {
+                    "op": "create_mesh",
+                    "id": f"{cid}_trunk",
+                    "vertices": v,
+                    "faces": f,
+                    "location": list(sp.trunk.base),
+                    "rotation": align_z(_sub(sp.trunk.tip, sp.trunk.base)),
+                    "smooth": True,
+                },
+                "coat",
+                trunk_bones,
+            )
+        )
+    bone_heads = {b["name"]: tuple(b["head"]) for b in bones}
+    for ex in sp.extras:
+        base = sp.head_at if ex.bone == "head" else bone_heads[ex.bone]
+        off = _rx(ex.loc, sp.head_pitch) if ex.bone == "head" else ex.loc
+        rot = [ex.rot[0] + (sp.head_pitch if ex.bone == "head" else 0), ex.rot[1], ex.rot[2]]
+        op = {
+            "op": "create_primitive",
+            "id": f"{cid}_{ex.id}",
+            "shape": ex.shape,
+            "size": list(ex.size),
+            "location": _r(_add(base, off)),
+            "rotation": rot,
+            "smooth": True,
+            "segments": 24,
+        }
+        meshes.append((op, ex.mat, ex.bone))
+
+    ops.append(
+        {"op": "create_armature", "id": rig, "parent": root, "bones": bones, "tags": ["creature", cid, "rig"]}
+    )
+    # meshes, parented to the root (root space), then bound to their bones
+    mat_groups: dict[str, list[str]] = {}
+    for op, mkey, bone in meshes:
+        op["parent"] = root
+        op.setdefault("tags", ["creature", cid])
+        ops.append(op)
+        bind: dict[str, Any] = {"op": "bind_mesh_to_armature", "mesh": op["id"], "armature": rig}
+        if isinstance(bone, list):
+            bind["bones"] = bone
+        else:
+            bind["bone"] = bone
+        ops.append(bind)
+        mat_groups.setdefault(mkey, []).append(op["id"])
+    for mkey, ids in mat_groups.items():
+        key = sp.part_mats.get(mkey, mkey)
+        if key in ("eye_white", "iris", "glint"):
+            spec = {"eye_white": EYE_WHITE, "iris": IRIS, "glint": GLINT}[key]
+        elif key in sp.mats:
+            spec = sp.mats[key]
+        else:
+            spec = sp.coat
+        ops.append({"op": "set_material", "targets": ids, "material": {**spec, "name": f"{cid}_{key}"}})
+
+    # leg IK: world-space foot targets (keyed by the locomotion planner) and knee poles that ride the body
+    ik_targets: dict[str, str] = {}
+    a = math.radians(yaw)
+
+    def world(p: V3) -> list[float]:
+        x, y = p[0] * math.cos(a) - p[1] * math.sin(a), p[0] * math.sin(a) + p[1] * math.cos(a)
+        return _r((at[0] + x, at[1] + y, sp.body_z + p[2]))
+
+    for key, pole_at in poles:
+        tgt, pole = f"{cid}_ik_{key}", f"{cid}_pole_{key}"
+        F = (feet[key].x, feet[key].y, foot_z_root)
+        ops += [
+            {"op": "create_empty", "id": tgt, "location": world(F), "tags": ["creature", cid, "ik"]},
+            {
+                "op": "create_empty",
+                "id": pole,
+                "location": _r(pole_at),
+                "parent": root,
+                "tags": ["creature", cid],
+            },
+            {
+                "op": "add_bone_constraint",
+                "armature": rig,
+                "bone": f"leg_{key}_lo",
+                "type": "ik",
+                "subject": tgt,
+                "pole": pole,
+            },
+        ]
+        ik_targets[key] = tgt
+    nose = min(sp.head_at[1] - sp.head_size[1] / 2, (sp.trunk.tip[1] if sp.trunk else 0.0))
+    meta = CreatureMeta(
+        cid=cid,
+        species=sp.name,
+        root=root,
+        rig=rig,
+        body_z=sp.body_z,
+        foot_z=foot_h,
+        leg=leg_len,
+        feet=feet,
+        ik_targets=ik_targets,
+        neck_bones=neck_bones,
+        tail_bones=tail_bones,
+        trunk_bones=trunk_bones,
+        ear_bones=ear_bones,
+        eyes=eyes,
+        head_height=sp.body_z + sp.head_at[2],
+        reach_slack=slack,
+        joints=joints,
+        length=max(sp.tail.tip[1], sp.torso[1] / 2) - nose,
+    )
+    return ops, meta
