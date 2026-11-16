@@ -80,8 +80,16 @@ class MaterialSpec(BaseModel):
     # soft velvet/fur rim (Principled sheen): grazing light catches the silhouette, so a coat stops reading as plastic
     sheen: float = Field(0.0, ge=0, le=1)
     sheen_tint: str | None = None
+    # procedural coat pattern in object space (metres): zebra stripes, giraffe patches, tortoise/leopard
+    # spots, meerkat back bands. pattern_color is the marking; base_color the ground colour.
+    pattern: Literal["stripes", "patches", "spots", "bands"] | None = None
+    pattern_color: str | None = None
+    pattern_scale: float = Field(1.0, gt=0, le=1000)  # markings per metre (roughly)
+    pattern_width: float = Field(0.5, gt=0, lt=1)  # share of the pattern that is marking
+    pattern_axis: Literal["x", "y", "z"] = "z"  # stripes/bands run across this axis
+    pattern_distort: float = Field(2.0, ge=0, le=50)
 
-    @field_validator("base_color", "emission", "fade_to", "sheen_tint")
+    @field_validator("base_color", "emission", "fade_to", "sheen_tint", "pattern_color")
     @classmethod
     def _hex(cls, v: str | None) -> str | None:
         if v is not None and not re.fullmatch(r"#[0-9A-Fa-f]{6}", v):
@@ -218,6 +226,24 @@ class SetCameraActive(_Op):
 
     def references(self) -> list[str]:
         return [self.id]
+
+
+class AddBoneConstraint(_Op):
+    """A constraint on a pose bone. ``ik``: two-bone legs reach ``subject`` (a foot target), bending toward
+    ``pole``; ``damped_track``: aim the bone at ``subject`` (look-at); ``copy_rotation``."""
+
+    op: Literal["add_bone_constraint"]
+    armature: str
+    bone: str
+    type: Literal["ik", "damped_track", "copy_rotation"]
+    subject: str
+    pole: str | None = None
+    chain_count: int = Field(2, ge=1, le=16)
+    pole_angle: float = Field(-90.0, ge=-360, le=360)  # degrees
+    influence: float = Field(1.0, ge=0, le=1)
+
+    def references(self) -> list[str]:
+        return [self.armature, self.subject] + ([self.pole] if self.pole else [])
 
 
 class AddConstraint(_Op):
@@ -365,6 +391,7 @@ class RenderPreview(_Op):
     resolution: tuple[int, int] = (480, 270)
     engine: Literal["workbench", "eevee", "cycles"] = "workbench"
     device: RenderDevice | None = None
+    samples: int = Field(12, ge=1, le=4096)  # Cycles previews
 
 
 class RenderFinal(_Op):
@@ -401,6 +428,8 @@ class Inspect(_Op):
     floor_z: float = 0.0
     camera: str | None = None
     shape_key_target: str | None = None
+    # report per frame the world position of these bone tips ("armature:bone"): foot-slide measurement
+    bone_tails: list[str] = Field(default_factory=list)
     # report per frame how far (degrees of yaw) this object's forward axis (-Y) is turned away from the lens
     facing_target: str | None = None
 
@@ -434,6 +463,7 @@ OP_CLASSES: tuple[type[_Op], ...] = (
     AddCamera,
     SetCameraActive,
     AddConstraint,
+    AddBoneConstraint,
     InsertKeyframes,
     ClearAnimation,
     SetFrameRange,

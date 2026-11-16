@@ -51,6 +51,8 @@ class MaterialOps:
             links.new(tc.outputs["Object"], noise.inputs["Vector"])
             links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
             color_out = ramp.outputs["Color"]
+        if spec.get("pattern"):
+            color_out = self._pattern(nodes, links, spec, rgb, color_out)
         if spec.get("grain") or spec.get("bump"):
             # fine grit: small-scale noise multiplies the colour (dark specks) and drives a bump map, so a
             # ground plane reads as a surface up close instead of a smooth gradient
@@ -150,6 +152,67 @@ class MaterialOps:
         mat.roughness = spec.get("roughness", 0.5)
         mat["animatica_spec"] = str(spec)
         return mat
+
+    @staticmethod
+    def _pattern(nodes, links, spec: dict, rgb, base_out):
+        """Coat markings in object space (metres): a hard-edged ramp between ground and marking colour.
+
+        stripes: distorted wave bands across ``pattern_axis`` (zebra). bands: the same, sparse and thin
+        (meerkat back). patches: Voronoi cells, pale lines between them (giraffe). spots: Voronoi dots
+        (tortoise shell, leopard).
+        """
+        kind = spec["pattern"]
+        mark = (*hex_to_rgb(spec.get("pattern_color") or "#111111"), 1)
+        ground = (*rgb, 1)
+        width = spec.get("pattern_width", 0.5)
+        tc = nodes.new("ShaderNodeTexCoord")
+        ramp = nodes.new("ShaderNodeValToRGB")
+        ramp.color_ramp.interpolation = "EASE"
+        lo, hi = ramp.color_ramp.elements[0], ramp.color_ramp.elements[1]
+        if kind in ("stripes", "bands"):
+            wave = nodes.new("ShaderNodeTexWave")
+            wave.wave_type = "BANDS"
+            wave.bands_direction = spec.get("pattern_axis", "z").upper()
+            wave.inputs["Scale"].default_value = spec.get("pattern_scale", 1.0)
+            wave.inputs["Distortion"].default_value = spec.get("pattern_distort", 2.0)
+            wave.inputs["Detail"].default_value = 1.5
+            links.new(tc.outputs["Object"], wave.inputs["Vector"])
+            links.new(wave.outputs["Fac"], ramp.inputs["Fac"])
+            w = width if kind == "stripes" else min(width, 0.25)
+            # Fac is a 0..1 sine: the bottom `w` share of it is the marking
+            lo.position, hi.position = max(0.0, w - 0.04), min(1.0, w + 0.04)
+            lo.color, hi.color = mark, ground
+        else:
+            vor = nodes.new("ShaderNodeTexVoronoi")
+            vor.inputs["Scale"].default_value = spec.get("pattern_scale", 1.0)
+            vor.inputs["Randomness"].default_value = 0.85
+            links.new(tc.outputs["Object"], vor.inputs["Vector"])
+            if kind == "patches":
+                vor.feature = "DISTANCE_TO_EDGE"
+                links.new(vor.outputs["Distance"], ramp.inputs["Fac"])
+                line = 0.12 * (1 - width) + 0.02  # wider pale lines when markings are smaller
+                lo.position, hi.position = line, line + 0.03
+                lo.color, hi.color = ground, mark
+            else:  # spots
+                vor.feature = "F1"
+                links.new(vor.outputs["Distance"], ramp.inputs["Fac"])
+                r = 0.25 + 0.35 * width
+                lo.position, hi.position = r, r + 0.05
+                lo.color, hi.color = mark, ground
+        if base_out is None:
+            return ramp.outputs["Color"]
+        # keep any grime variation: multiply the marking layer over the noisy base
+        mul = nodes.new("ShaderNodeMix")
+        mul.data_type, mul.blend_type = "RGBA", "MULTIPLY"
+        mul.inputs["Factor"].default_value = 1.0
+        links.new(base_out, mul.inputs["A"])
+        div = nodes.new("ShaderNodeMix")  # ramp / ground: 1 on ground, marking/ground on marks
+        div.data_type, div.blend_type = "RGBA", "DIVIDE"
+        div.inputs["Factor"].default_value = 1.0
+        links.new(ramp.outputs["Color"], div.inputs["A"])
+        div.inputs["B"].default_value = (max(rgb[0], 1e-3), max(rgb[1], 1e-3), max(rgb[2], 1e-3), 1)
+        links.new(div.outputs["Result"], mul.inputs["B"])
+        return mul.outputs["Result"]
 
     def op_set_material(self, op: dict, res: dict) -> None:
         spec = op["material"]

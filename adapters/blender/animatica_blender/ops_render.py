@@ -14,6 +14,7 @@ from . import devices
 from .common import (
     ID_PROP,
     TAGS_PROP,
+    OpError,
     _eevee_id,
     describe,
     fast_cycles,
@@ -295,6 +296,16 @@ class RenderOps:
                     motion[sid] += (center - prev_centers[sid]).length
                 prev_centers[sid] = center
                 fr["subjects"][sid] = info
+            if op.get("bone_tails"):
+                tails = {}
+                for ref in op["bone_tails"]:
+                    aid, _, bname = ref.partition(":")
+                    arm = self.obj(aid)
+                    pb = arm.pose.bones.get(bname)
+                    if pb is None:
+                        raise OpError(f"{aid!r} has no bone {bname!r}")
+                    tails[ref] = [round(v, 4) for v in (arm.matrix_world @ pb.tail)]
+                fr["bone_tails"] = tails
             if op.get("facing_target") and cam is not None:
                 fr["facing_deg"] = round(facing_degrees(self.obj(op["facing_target"]), cam), 1)
             if op.get("shape_key_target"):

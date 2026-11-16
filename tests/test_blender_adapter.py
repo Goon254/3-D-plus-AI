@@ -274,3 +274,96 @@ def test_bone_keys_smooth_bind_and_rigid_bind_keep_local(fresh):
         bid="c",
     )
     assert c.data["inspect"]["frames"]["10"]["subjects"]["tip"]["center"][2] == pytest.approx(1.0, abs=0.01)
+
+
+def test_ik_leg_reaches_its_foot_target_and_bone_tails_report_it(fresh):
+    res = run(
+        fresh,
+        {"op": "create_empty", "id": "root", "location": [0, 0, 1.0]},
+        {
+            "op": "create_armature",
+            "id": "rig",
+            "parent": "root",
+            "bones": [
+                {"name": "thigh", "head": [0, 0, 0], "tail": [0, -0.05, -0.5]},
+                {"name": "shin", "head": [0, -0.05, -0.5], "tail": [0, 0, -1.0], "parent": "thigh"},
+            ],
+        },
+        {"op": "create_empty", "id": "foot_target", "location": [0, 0.0, 0.0]},
+        {"op": "create_empty", "id": "pole", "location": [0, -2.0, 0.5], "parent": "root"},
+        {
+            "op": "add_bone_constraint",
+            "armature": "rig",
+            "bone": "shin",
+            "type": "ik",
+            "subject": "foot_target",
+            "pole": "pole",
+        },
+        {"op": "set_frame_range", "start": 1, "end": 10},
+        # the foot target steps forward and up; the body stays: the knee must bend, the foot must follow exactly
+        {
+            "op": "insert_keyframes",
+            "target": "foot_target",
+            "property": "location",
+            "keys": [[1, [0, 0, 0.1], "LINEAR"], [10, [0, -0.3, 0.25], "LINEAR"]],
+        },
+        {
+            "op": "inspect",
+            "subjects": ["root"],
+            "frames": [1, 5, 10],
+            "bone_tails": ["rig:shin", "rig:thigh"],
+        },
+    )
+    assert res.ok, res.errors
+    fr = res.data["inspect"]["frames"]
+    assert fr["1"]["bone_tails"]["rig:shin"] == pytest.approx([0, 0, 0.1], abs=0.01)
+    assert fr["10"]["bone_tails"]["rig:shin"] == pytest.approx([0, -0.3, 0.25], abs=0.01)
+    # the knee bends toward the pole (in front, -Y)
+    assert fr["10"]["bone_tails"]["rig:thigh"][1] < -0.1
+
+
+@pytest.mark.parametrize("pattern", ["stripes", "patches", "spots", "bands"])
+def test_coat_patterns_render_markings(fresh, tmp_path, pattern):
+    plain = {"base_color": "#E8E0D0", "roughness": 0.8}
+    marked = {
+        **plain,
+        "pattern": pattern,
+        "pattern_color": "#1A1410",
+        "pattern_scale": 6.0,
+        "pattern_width": 0.5,
+    }
+    stats = {}
+    for tag, m in (("plain", plain), ("marked", marked)):
+        r = run(
+            fresh,
+            {
+                "op": "create_primitive",
+                "id": f"s_{tag}",
+                "shape": "uv_sphere",
+                "size": [1.0, 1.0, 1.4],
+                "smooth": True,
+            },
+            {"op": "set_material", "targets": [f"s_{tag}"], "material": m},
+            {
+                "op": "add_camera",
+                "id": f"c_{tag}",
+                "location": [0, -3.2, 0],
+                "look_at": [0, 0, 0],
+                "lens": 50,
+            },
+            {"op": "set_world", "horizon": "#FFFFFF", "zenith": "#FFFFFF", "strength": 1.0},
+            {
+                "op": "render_preview",
+                "camera": f"c_{tag}",
+                "engine": "cycles",
+                "samples": 4,
+                "resolution": [96, 96],
+                "path": str(tmp_path / f"{tag}.png"),
+            },
+            {"op": "delete", "targets": [f"s_{tag}", f"c_{tag}"]},
+            bid=f"{pattern}-{tag}",
+        )
+        assert r.ok, r.errors
+        stats[tag] = r.data["previews"][0]["stats"]
+    # markings add strong light/dark contrast on the same sphere
+    assert stats["marked"]["std"] > stats["plain"]["std"] + 0.05, stats

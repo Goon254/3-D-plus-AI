@@ -188,8 +188,10 @@ def image_stats(path: str) -> dict:
             r, g, b = px[4 * i], px[4 * i + 1], px[4 * i + 2]
             lum.append(0.2126 * r + 0.7152 * g + 0.0722 * b)
         mean = sum(lum) / len(lum)
+        std = (sum((v - mean) ** 2 for v in lum) / len(lum)) ** 0.5
         return {
             "mean": round(mean, 3),
+            "std": round(std, 3),
             "black": round(sum(v < 0.02 for v in lum) / len(lum), 3),
             "white": round(sum(v > 0.98 for v in lum) / len(lum), 3),
         }

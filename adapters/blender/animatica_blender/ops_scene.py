@@ -336,6 +336,24 @@ class SceneOps:
         "limit_location": "LIMIT_LOCATION",
     }
 
+    def op_add_bone_constraint(self, op: dict, res: dict) -> None:
+        arm = self.obj(op["armature"])
+        if arm.type != "ARMATURE" or op["bone"] not in arm.pose.bones:
+            raise OpError(f"{op['armature']!r} has no bone {op['bone']!r}")
+        pb = arm.pose.bones[op["bone"]]
+        kind = {"ik": "IK", "damped_track": "DAMPED_TRACK", "copy_rotation": "COPY_ROTATION"}[op["type"]]
+        c = pb.constraints.new(kind)
+        c.target = self.obj(op["subject"])
+        if op["type"] == "ik":
+            c.chain_count = op.get("chain_count", 2)
+            c.use_tail = True
+            c.use_stretch = False
+            if op.get("pole"):
+                c.pole_target = self.obj(op["pole"])
+                c.pole_angle = math.radians(op.get("pole_angle", -90.0))
+        c.influence = op.get("influence", 1.0)
+        res["modified"].append(op["armature"])
+
     def op_add_constraint(self, op: dict, res: dict) -> None:
         o = self.obj(op["target"])
         c = o.constraints.new(self.CONSTRAINTS[op["type"]])
