@@ -70,6 +70,8 @@ class SceneModel:
                     p.rotate = list(d["rotation"])
                 if d.get("scale") is not None:
                     p.scale = list(d["scale"])
+            elif kind == "bind_mesh_to_armature" and d["mesh"] in self.prims:
+                self.prims[d["mesh"]].parent = d["armature"]
             elif kind == "parent" and d["child"] in self.prims:
                 self.prims[d["child"]].parent = d.get("parent")
             elif kind == "set_material":

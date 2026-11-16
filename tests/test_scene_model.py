@@ -72,3 +72,36 @@ def test_roundtrip_dict():
     m = model()
     m2 = SceneModel.from_dict(m.to_dict())
     assert m2.prims.keys() == m.prims.keys()
+
+
+def test_bind_reparents_in_the_model():
+    from animatica.core.protocol import Batch
+    from animatica.core.scene_model import SceneModel
+
+    m = SceneModel()
+    m.apply(
+        Batch.model_validate(
+            {
+                "batch_id": "b",
+                "ops": [
+                    {
+                        "op": "create_armature",
+                        "id": "rig",
+                        "bones": [{"name": "t0", "head": [0, 0, 0], "tail": [0, 1, 0]}],
+                    },
+                    {"op": "create_primitive", "id": "tail", "shape": "uv_sphere", "location": [0, 0.5, 0]},
+                    {"op": "bind_mesh_to_armature", "mesh": "tail", "armature": "rig", "bones": ["t0"]},
+                ],
+            }
+        )
+    )
+    # the engine reports the armature as parent after a bind and the local transform is unchanged: no "edit"
+    assert (
+        m.diff_snapshot(
+            {
+                "rig": {"type": "armature", "location": [0, 0, 0]},
+                "tail": {"location": [0, 0.5, 0], "parent": "rig"},
+            }
+        )
+        == {}
+    )

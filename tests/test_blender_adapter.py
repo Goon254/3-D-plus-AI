@@ -193,3 +193,78 @@ def test_viewport_tint_grades_workbench_only(fresh, tmp_path):
     assert run(fresh, {"op": "set_material", "targets": ["wall"], "material": white}, bid="w").ok
     assert run(fresh, {"op": "set_world", "horizon": "#202040"}, bid="d").ok
     assert mean("day2") == pytest.approx(day, abs=0.02)
+
+
+def test_bone_keys_smooth_bind_and_rigid_bind_keep_local(fresh):
+    # an armature under a body empty, a 3-bone tail along +Y, a long tail mesh skinned to the chain
+    res = run(
+        fresh,
+        {"op": "create_empty", "id": "body", "location": [0, 0, 1]},
+        {
+            "op": "create_armature",
+            "id": "rig",
+            "parent": "body",
+            "bones": [
+                {"name": "t0", "head": [0, 0, 0], "tail": [0, 0.3, 0]},
+                {"name": "t1", "head": [0, 0.3, 0], "tail": [0, 0.6, 0], "parent": "t0"},
+                {"name": "t2", "head": [0, 0.6, 0], "tail": [0, 0.9, 0], "parent": "t1"},
+            ],
+        },
+        {
+            "op": "create_primitive",
+            "id": "tail",
+            "shape": "uv_sphere",
+            "radius": 0.1,
+            "scale": [1, 4.5, 1],
+            "location": [0, 0.45, 0],
+            "parent": "body",
+        },
+        {
+            "op": "create_primitive",
+            "id": "tip",
+            "shape": "uv_sphere",
+            "radius": 0.08,
+            "location": [0, 0.95, 0],
+            "parent": "body",
+        },
+        {"op": "bind_mesh_to_armature", "mesh": "tail", "armature": "rig", "bones": ["t0", "t1", "t2"]},
+        {"op": "bind_mesh_to_armature", "mesh": "tip", "armature": "rig", "bone": "t2"},
+        {"op": "set_frame_range", "start": 1, "end": 10},
+        {
+            "op": "insert_keyframes",
+            "target": "rig",
+            "property": "bone:t0.rotation",
+            "keys": [[1, [0, 0, 0], "BEZIER"], [10, [40, 0, 0], "BEZIER"]],
+        },
+        {
+            "op": "insert_keyframes",
+            "target": "rig",
+            "property": "bone:t1.rotation",
+            "keys": [[1, [0, 0, 0], "BEZIER"], [10, [40, 0, 0], "BEZIER"]],
+        },
+        {"op": "inspect", "subjects": ["tail", "tip"], "frames": [1, 10]},
+    )
+    assert res.ok, res.errors
+    fr = res.data["inspect"]["frames"]
+    # the skinned tail *bends* up (measured on the deformed mesh) and the rigid tip follows the last bone
+    assert fr["10"]["subjects"]["tail"]["center"][2] > fr["1"]["subjects"]["tail"]["center"][2] + 0.1
+    assert fr["10"]["subjects"]["tip"]["center"][2] > fr["1"]["subjects"]["tip"]["center"][2] + 0.4
+    assert fr["1"]["subjects"]["tip"]["center"] == pytest.approx(
+        [0, 0.95, 1.0], abs=0.01
+    )  # bind didn't move it
+    # binding keeps the local transform (scene-model replay / artist-edit diffs still match)
+    q = fresh.run_batch(
+        {"batch_id": "q", "ops": [{"op": "query", "ids": ["tip", "tail"], "fields": ["transform", "parent"]}]}
+    )
+    objs = q.data["objects"]
+    assert objs["tip"]["location"] == pytest.approx([0, 0.95, 0], abs=1e-3)
+    assert objs["tail"]["scale"] == pytest.approx([1, 4.5, 1], abs=1e-3)
+    assert objs["tip"].get("parent") == "rig"
+    # clearing animation returns the pose to rest
+    c = run(
+        fresh,
+        {"op": "clear_animation", "targets": ["rig"]},
+        {"op": "inspect", "subjects": ["tip"], "frames": [10]},
+        bid="c",
+    )
+    assert c.data["inspect"]["frames"]["10"]["subjects"]["tip"]["center"][2] == pytest.approx(1.0, abs=0.01)

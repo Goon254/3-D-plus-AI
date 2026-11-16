@@ -24,6 +24,17 @@ class AnimOps:
             return o, "scale", True, None
         if prop == "hide":
             return o, "hide_render", False, bool
+        if prop.startswith("bone:"):  # bone:<name>.rotation | .location | .scale (pose space)
+            name, _, attr = prop[5:].rpartition(".")
+            if o.type != "ARMATURE" or name not in o.pose.bones:
+                raise OpError(f"{o.name!r} has no pose bone {name!r}")
+            pb = o.pose.bones[name]
+            if attr == "rotation":
+                pb.rotation_mode = "XYZ"
+                return o, f'pose.bones["{name}"].rotation_euler', True, math.radians
+            if attr in ("location", "scale"):
+                return o, f'pose.bones["{name}"].{attr}', True, None
+            raise OpError(f"unsupported bone property {attr!r}")
         if prop.startswith("shape_key:"):
             key = prop.split(":", 1)[1]
             if (
@@ -125,6 +136,10 @@ class AnimOps:
         for t in op["targets"]:
             o = self.obj(t)
             o.animation_data_clear()
+            if o.type == "ARMATURE":  # back to the rest pose (clearing the action leaves the last pose)
+                for pb in o.pose.bones:
+                    pb.location, pb.rotation_euler, pb.scale = (0, 0, 0), (0, 0, 0), (1, 1, 1)
+                    pb.rotation_quaternion = (1, 0, 0, 0)
             if op.get("shape_keys", True) and o.type == "MESH" and o.data.shape_keys:
                 o.data.shape_keys.animation_data_clear()
                 for kb in o.data.shape_keys.key_blocks:

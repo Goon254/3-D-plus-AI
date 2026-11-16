@@ -169,15 +169,10 @@ class SceneOps:
         mesh, arm = self.obj(op["mesh"]), self.obj(op["armature"])
         if arm.type != "ARMATURE":
             raise OpError(f"{op['armature']!r} is not an armature")
-        if op.get("bone"):
-            if op["bone"] not in arm.data.bones:
-                raise OpError(f"no bone {op['bone']!r}")
-            mw = mesh.matrix_world.copy()
-            mesh.parent = arm
-            mesh.parent_type = "BONE"
-            mesh.parent_bone = op["bone"]
-            bpy.context.view_layer.update()
-            mesh.matrix_world = mw
+        if op.get("bones"):
+            self._smooth_bind(mesh, arm, op["bones"])
+        elif op.get("bone"):
+            self._rigid_bind(mesh, arm, op["bone"])
         else:
             for ob in bpy.context.selected_objects:
                 ob.select_set(False)
@@ -186,6 +181,46 @@ class SceneOps:
             bpy.context.view_layer.objects.active = arm
             bpy.ops.object.parent_set(type="ARMATURE_AUTO")
         res["modified"].append(mesh.name)
+
+    def _rigid_bind(self, mesh, arm, bone: str) -> None:
+        if bone not in arm.data.bones:
+            raise OpError(f"no bone {bone!r}")
+        bpy.context.view_layer.update()
+        mw = mesh.matrix_world.copy()
+        b = arm.data.bones[bone]
+        # a BONE parent sits at the bone's tail
+        tail = arm.matrix_world @ b.matrix_local @ mathutils.Matrix.Translation((0, b.length, 0))
+        mesh.parent, mesh.parent_type, mesh.parent_bone = arm, "BONE", bone
+        mesh.matrix_parent_inverse = tail.inverted() @ mw @ mesh.matrix_basis.inverted()
+
+    def _smooth_bind(self, mesh, arm, bones: list[str]) -> None:
+        if mesh.type != "MESH":
+            raise OpError(f"{mesh.name!r} is not a mesh")
+        for b in bones:
+            if b not in arm.data.bones:
+                raise OpError(f"no bone {b!r}")
+        bpy.context.view_layer.update()
+        mw = mesh.matrix_world.copy()
+        to_arm = arm.matrix_world.inverted() @ mw
+        segs = [(b, arm.data.bones[b].head_local, arm.data.bones[b].tail_local) for b in bones]
+        groups = {b: mesh.vertex_groups.get(b) or mesh.vertex_groups.new(name=b) for b in bones}
+        for v in mesh.data.vertices:
+            p = to_arm @ v.co
+            ws = []
+            for b, h, t in segs:
+                ht = t - h
+                u = max(0.0, min(1.0, (p - h).dot(ht) / max(ht.length_squared, 1e-9)))
+                d = (p - (h + ht * u)).length
+                ws.append((b, 1.0 / (d + 0.02) ** 4))
+            total = sum(w for _, w in ws)
+            for b, w in ws:
+                if w / total > 0.01:
+                    groups[b].add([v.index], w / total, "REPLACE")
+        mesh.parent, mesh.parent_type = arm, "OBJECT"
+        mesh.matrix_parent_inverse = arm.matrix_world.inverted() @ mw @ mesh.matrix_basis.inverted()
+        mod = mesh.modifiers.get("animatica_armature") or mesh.modifiers.new("animatica_armature", "ARMATURE")
+        mod.object = arm
+        mod.use_vertex_groups = True
 
     def op_import_asset(self, op: dict, res: dict) -> None:
         path = op["path"]

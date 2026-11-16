@@ -232,6 +232,7 @@ class InsertKeyframes(_Op):
     """Batched keyframes: one op sets many keys on one property.
 
     property: ``location`` | ``rotation`` (degrees) | ``scale`` | ``shape_key:<name>`` |
+    ``bone:<name>.rotation`` (degrees, pose space) / ``.location`` / ``.scale`` on an armature |
     ``light.energy`` | ``light.color`` | ``camera.lens`` | ``material.emission_strength`` |
     ``hide`` (0/1)
     """
@@ -284,6 +285,9 @@ class BindMeshToArmature(_Op):
     mesh: str
     armature: str
     bone: str | None = None  # rigid bind to one bone; None = automatic weights
+    # smooth bind to these bones with distance-falloff weights (deterministic; no bone-heat failures on
+    # primitives). The mesh keeps its local transform; the armature should share the mesh's parent.
+    bones: list[str] | None = None
 
     def references(self) -> list[str]:
         return [self.mesh, self.armature]
@@ -593,10 +597,12 @@ def validate_batch(data: dict[str, Any] | Batch, existing_ids: set[str] | None =
             if op.index is not None and True in kinds:
                 errors.append(f"{p}: 'index' given, values must be scalars")
             vec_props = {"location", "rotation", "scale", "light.color"}
-            if op.index is None and op.property in vec_props and False in kinds:
+            is_vec = op.property in vec_props or re.fullmatch(r"bone:.+\.(rotation|location|scale)", op.property)
+            if op.index is None and is_vec and False in kinds:
                 errors.append(f"{p}: property {op.property!r} needs vector values or an 'index'")
             if not re.fullmatch(
-                r"location|rotation|scale|hide|shape_key:[\w .\-]+|light\.(energy|color)|camera\.lens|material\.emission_strength",
+                r"location|rotation|scale|hide|shape_key:[\w .\-]+|bone:[\w.\-]+\.(rotation|location|scale)"
+                r"|light\.(energy|color)|camera\.lens|material\.emission_strength",
                 op.property,
             ):
                 errors.append(f"{p}: unsupported property {op.property!r}")

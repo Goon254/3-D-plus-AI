@@ -114,8 +114,17 @@ def hierarchy_bbox_points(o) -> list:
         cur = stack.pop()
         if cur.type == "MESH" and not cur.hide_render:
             mw = cur.matrix_world
-            verts = cur.data.vertices
-            if len(verts) <= 4000:  # exact extents (a rotated bbox overestimates round shapes)
+            skinned = any(m.type == "ARMATURE" and m.show_render for m in cur.modifiers)
+            if skinned:  # bone-deformed (rigged legs/tail): measure the posed shape, not the rest mesh
+                ev = cur.evaluated_get(bpy.context.evaluated_depsgraph_get())
+                me = ev.to_mesh()
+                try:
+                    step = max(1, len(me.vertices) // 400)
+                    pts.extend(mw @ me.vertices[i].co for i in range(0, len(me.vertices), step))
+                finally:
+                    ev.to_mesh_clear()
+            elif len(cur.data.vertices) <= 4000:  # exact extents (a rotated bbox overestimates round shapes)
+                verts = cur.data.vertices
                 step = max(1, len(verts) // 400)
                 pts.extend(mw @ verts[i].co for i in range(0, len(verts), step))
             else:
