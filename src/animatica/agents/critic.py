@@ -57,14 +57,17 @@ class Critic(Agent):
                 a = int(line["start_s"] * plan.fps) + 1
                 dialogue_frames.setdefault(d.shot, []).append((a, a + int(line["duration"] * plan.fps)))
 
+        # the robot has a screen face; a critter's face is its head
+        face = "hero_face" if "hero_face" in ctx.engine.known_ids else "hero_head"
         inspect_ops = []
         for s in plan.shots:
             f0, f1 = frames[s.id]
             subj = ["hero_head"] if s.type == "closeup" else ["hero_root"]
             if s.subject in ("both", "prop") and plan.prop and s.type != "closeup":
                 subj.append("prop")
-            if dialogue_frames.get(s.id) and "hero_face" in ctx.engine.known_ids:
-                subj.append("hero_face")  # lip sync must be readable on screen
+            if dialogue_frames.get(s.id):
+                if face not in subj:
+                    subj.append(face)  # lip sync must be readable on screen
                 if plan.prop and "prop" not in subj:
                     subj.append("prop")  # ...and the one being addressed should be in the shot
             sample = set(self.sample_frames(f0, f1))
@@ -77,6 +80,7 @@ class Critic(Agent):
                     "frames": sorted(sample),
                     "camera": f"cam_{s.id}",
                     "shape_key_target": "hero_mouth",
+                    **({"facing_target": "hero_head_pivot"} if dialogue_frames.get(s.id) else {}),
                 }
             )
         res = ctx.engine.run_batch(
@@ -222,7 +226,12 @@ class Critic(Agent):
                         )
                     )
             issues += dialogue_framing_issues(
-                s.id, fr, dialogue_frames.get(s.id, []), plan.prop.kind if plan.prop else None
+                s.id,
+                fr,
+                dialogue_frames.get(s.id, []),
+                plan.prop.kind if plan.prop else None,
+                shot_type=s.type,
+                face=face,
             )
             for a, b in dialogue_frames.get(s.id, []):
                 inside = [f for k, f in fr.items() if a <= int(k) <= b]
@@ -327,13 +336,22 @@ def exit_issues(shot_id: str, frames: dict[str, Any], depart_f: int, subj: str =
     return []
 
 
+FACE_TURN_MAX = 35.0  # degrees of head yaw away from the lens while speaking (review 14:50)
+ADDRESSEE_MIN = {"closeup": 0.8, "medium": 0.8, "wide": 0.6}
+
+
 def dialogue_framing_issues(
-    shot: str, frames: dict[str, Any], windows: list[tuple[int, int]], prop_kind: str | None
+    shot: str,
+    frames: dict[str, Any],
+    windows: list[tuple[int, int]],
+    prop_kind: str | None,
+    shot_type: str = "closeup",
+    face: str = "hero_face",
 ) -> list[Issue]:
-    """Lip-sync readability and addressee checks over the inspected frames inside dialogue windows."""
+    """Lip-sync readability, eyeline and addressee checks over the inspected frames inside dialogue windows."""
     issues: list[Issue] = []
     inside = [f for k, f in frames.items() if any(a <= int(k) <= b for a, b in windows)]
-    faces = [f["subjects"]["hero_face"] for f in inside if "hero_face" in f.get("subjects", {})]
+    faces = [f["subjects"][face] for f in inside if face in f.get("subjects", {})]
     if faces:
         fh = min(v.get("screen_height", 0) for v in faces)
         fv = min(v.get("visible_fraction", 1) for v in faces)
@@ -357,17 +375,32 @@ def dialogue_framing_issues(
                     {"kind": "camera", "fill_mul": 0.9},
                 )
             )
+    turns = sorted(f["facing_deg"] for f in inside if "facing_deg" in f)
+    if turns:
+        med = turns[len(turns) // 2]
+        if med > FACE_TURN_MAX:
+            issues.append(
+                Issue(
+                    shot,
+                    "face_turned_away",
+                    "blocker",
+                    f"the speaker's face is turned {med:.0f} deg away from the lens (max {FACE_TURN_MAX:.0f}): "
+                    "no eyeline, the mouth reads edge-on",
+                    {"kind": "animator", "face_cam_add": round(med - FACE_TURN_MAX + 8, 1)},
+                )
+            )
     props = [f["subjects"]["prop"] for f in inside if "prop" in f.get("subjects", {})]
     if prop_kind and props:
         pv = min(v.get("visible_fraction", 1) for v in props)
-        if pv < 0.6:
+        need = ADDRESSEE_MIN.get(shot_type, 0.6)
+        if pv < need:
             issues.append(
                 Issue(
                     shot,
                     "addressee_cut",
-                    "minor",
-                    f"the {prop_kind} being spoken to is only {pv:.0%} in frame",
-                    {"kind": "camera", "fill_mul": 0.92},
+                    "blocker",
+                    f"the {prop_kind} being spoken to is only {pv:.0%} in frame (min {need:.0%})",
+                    {"kind": "camera", "fill_mul": round(max(0.8, min(0.95, pv / need)), 3)},
                 )
             )
     return issues

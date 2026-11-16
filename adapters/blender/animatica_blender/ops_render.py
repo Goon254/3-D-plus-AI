@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 import time
 
@@ -21,6 +22,19 @@ from .common import (
     image_stats,
     workbench_setup,
 )
+
+
+def facing_degrees(obj, cam) -> float:
+    """Yaw (ground-plane) angle between ``obj``'s forward axis (-Y, the rig convention) and the direction
+    from ``obj`` to the camera. 0 = looking straight into the lens, 90 = profile, 180 = back to camera."""
+    mw = obj.matrix_world
+    fwd = mw.to_3x3() @ mathutils.Vector((0.0, -1.0, 0.0))
+    to_cam = cam.matrix_world.translation - mw.translation
+    a = mathutils.Vector((fwd.x, fwd.y))
+    b = mathutils.Vector((to_cam.x, to_cam.y))
+    if a.length < 1e-6 or b.length < 1e-6:
+        return 0.0
+    return math.degrees(a.angle(b))
 
 
 class RenderOps:
@@ -281,6 +295,8 @@ class RenderOps:
                     motion[sid] += (center - prev_centers[sid]).length
                 prev_centers[sid] = center
                 fr["subjects"][sid] = info
+            if op.get("facing_target") and cam is not None:
+                fr["facing_deg"] = round(facing_degrees(self.obj(op["facing_target"]), cam), 1)
             if op.get("shape_key_target"):
                 t = self.obj(op["shape_key_target"])
                 if t.data and t.data.shape_keys:

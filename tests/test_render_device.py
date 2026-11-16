@@ -140,3 +140,32 @@ def test_cycles_render_reports_device_and_falls_back(fresh, tmp_path):
         assert any("optix" in w for w in r.warnings)
     else:
         assert r.data["device"].startswith("OPTIX")
+
+
+@pytest.mark.blender
+def test_inspect_reports_head_facing(fresh):
+    ops = [
+        {"op": "create_empty", "id": "head", "location": [0, 0, 1], "rotation": [0, 0, 0]},
+        {"op": "add_camera", "id": "cam", "location": [0, -5, 1], "look_at": "head"},
+        {"op": "inspect", "subjects": ["head"], "frames": [1], "camera": "cam", "facing_target": "head"},
+    ]
+    r = fresh.run_batch({"batch_id": "facing", "ops": ops})
+    assert r.ok, r.errors
+    assert r.data["inspect"]["frames"]["1"]["facing_deg"] == pytest.approx(0, abs=0.5)  # -Y faces the lens
+    r = fresh.run_batch(
+        {
+            "batch_id": "facing2",
+            "ops": [
+                {"op": "transform", "target": "head", "rotation": [0, 0, 90]},
+                {
+                    "op": "inspect",
+                    "subjects": ["head"],
+                    "frames": [1],
+                    "camera": "cam",
+                    "facing_target": "head",
+                },
+            ],
+        }
+    )
+    assert r.ok, r.errors
+    assert r.data["inspect"]["frames"]["1"]["facing_deg"] == pytest.approx(90, abs=0.5)  # profile

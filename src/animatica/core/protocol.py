@@ -391,9 +391,12 @@ class Inspect(_Op):
     floor_z: float = 0.0
     camera: str | None = None
     shape_key_target: str | None = None
+    # report per frame how far (degrees of yaw) this object's forward axis (-Y) is turned away from the lens
+    facing_target: str | None = None
 
     def references(self) -> list[str]:
-        return list(self.subjects) + ([self.camera] if self.camera else [])
+        refs = list(self.subjects) + ([self.camera] if self.camera else [])
+        return refs + ([self.facing_target] if self.facing_target else [])
 
 
 class SetProperty(_Op):

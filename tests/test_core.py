@@ -176,3 +176,35 @@ def test_critic_exit_must_leave_the_frame():
     assert [i.check for i in issues] == ["exit_in_frame"] and issues[0].fix["exit_speed_mul"] > 1
     gone = {"400": fr(1.0), "450": fr(0.5), "500": fr(0.0)}
     assert exit_issues("s4", gone, 420) == []
+
+
+def test_critic_eyeline_and_addressee_thresholds():
+    from animatica.agents.critic import dialogue_framing_issues
+
+    def frame(facing, prop_vis):
+        return {
+            "facing_deg": facing,
+            "subjects": {
+                "hero_head": {"screen_height": 0.4, "visible_fraction": 1.0},
+                "prop": {"visible_fraction": prop_vis},
+            },
+        }
+
+    # the fox close-up of review 14:50: 3/4-away head (43 deg) and the lantern 55 % in frame
+    away = {"100": frame(43, 0.55), "103": frame(44, 0.56), "106": frame(42, 0.55)}
+    issues = {
+        i.check: i
+        for i in dialogue_framing_issues("s3", away, [(95, 120)], "lantern", "closeup", "hero_head")
+    }
+    assert issues["face_turned_away"].severity == "blocker"
+    assert (
+        issues["face_turned_away"].fix["kind"] == "animator"
+        and issues["face_turned_away"].fix["face_cam_add"] > 0
+    )
+    assert issues["addressee_cut"].severity == "blocker" and issues["addressee_cut"].fix["fill_mul"] < 1
+    # 65 % fails a close-up (0.8) but passes a wide (0.6); a face 22 deg off the lens is fine
+    part = {"100": frame(22, 0.65)}
+    assert {i.check for i in dialogue_framing_issues("s3", part, [(95, 120)], "lantern")} == {"addressee_cut"}
+    assert dialogue_framing_issues("s1", part, [(95, 120)], "lantern", "wide", "hero_head") == []
+    good = {"100": frame(22, 0.95)}
+    assert dialogue_framing_issues("s3", good, [(95, 120)], "lantern", "closeup", "hero_head") == []

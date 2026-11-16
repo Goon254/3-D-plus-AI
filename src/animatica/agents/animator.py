@@ -80,6 +80,9 @@ class Curve:
         return self.keys[-1][1]
 
 
+FACE_CHEAT_DEG = 20.0  # default head turn toward the camera while speaking
+
+
 @dataclass
 class Rig:
     root_x: Curve = field(default_factory=lambda: Curve(-5.5))
@@ -255,6 +258,13 @@ class Animator(Agent):
                 x = stand_x
             elif shot.beat == "speak":
                 lines = [d for d in plan.dialogue if d.shot == shot.id]
+                # stage the line: cheat the head toward the lens (cameras sit on -Y; negative turn = toward
+                # them), so the face sits between camera and addressee. The critic's face_turned_away check
+                # adds `face_cam` degrees when that is not enough.
+                cheat = -(FACE_CHEAT_DEG + float(ctx.state.tuning.get("animator", {}).get("face_cam", 0.0)))
+                cheat = max(cheat, -75.0)
+                rig.head_turn.key(t0 + 0.2, 0).key(t0 + 0.75, cheat, "inout").key(t1 - 0.3, cheat, "hold")
+                notes["face_cheat_deg"] = cheat
                 rig.lean.key(t0 + 0.4, 10, "inout")
                 rig.head_nod.key(t0 + 0.3, 12).key(t0 + 1.0, 8)
                 if tilt:
