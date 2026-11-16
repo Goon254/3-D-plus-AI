@@ -14,10 +14,73 @@ from typing import Any
 
 from .build import CreatureMeta
 from .gait import GaitSpec, LocoFrame, Waypoint, plan_locomotion
+from .species import SPECIES
 
 
 def _k(frame: int, v: Any) -> list[Any]:
     return [frame, v, "LINEAR"]
+
+
+SENTINEL_PITCH = 72.0  # degrees the meerkat's body rises from horizontal when it stands up
+SENTINEL_NECK = 60.0  # the neck bends forward again so the head looks ahead, not at the sky
+SENTINEL_TAIL = 48.0  # the tail swings back down to the ground: the third leg of the tripod
+
+
+def _smooth(u: float) -> float:
+    u = max(0.0, min(1.0, u))
+    return u * u * (3 - 2 * u)
+
+
+def apply_sentinel(meta: CreatureMeta, plan: list[LocoFrame], fps: int) -> None:
+    """Meerkat sentinel pose whenever it stands still (knowledge/species/meerkat.md): it rises on its hind
+    legs, balancing on legs + tail, front paws tucked at the chest, head level and scanning. The body pitches
+    up around the hips, so the planted hind feet keep their reach; it drops to all fours before walking."""
+    n = len(plan)
+    moving = [p.speed > 0.02 for p in plan]
+    big = 10**6
+    since = [big] * n
+    until = [big] * n
+    last = None
+    for k in range(n):
+        if moving[k]:
+            last = k
+        since[k] = 0 if moving[k] else (k - last if last is not None else big)
+    nxt = None
+    for k in range(n - 1, -1, -1):
+        if moving[k]:
+            nxt = k
+        until[k] = 0 if moving[k] else (nxt - k if nxt is not None else big)
+    hips = [j for leg, j in meta.joints.items() if leg[1] == "H"]
+    fronts = {leg: j for leg, j in meta.joints.items() if leg[1] == "F"}
+    hy = sum(j[1] for j in hips) / len(hips)
+    hz = sum(j[2] for j in hips) / len(hips)
+    for k, p in enumerate(plan):
+        rise = 1.0 if since[k] >= big else _smooth((since[k] / fps - 0.2) / 0.55)
+        drop = 1.0 if until[k] >= big else _smooth((until[k] / fps - 0.1) / 0.4)
+        b = min(rise, drop)
+        if b <= 0:
+            continue
+        th = math.radians(-SENTINEL_PITCH * b)  # negative pitch = front up
+        # pivot around the hips: local offset H - Rx(th) H, then into the world by the heading
+        oy = hy - (hy * math.cos(th) - hz * math.sin(th))
+        oz = hz - (hy * math.sin(th) + hz * math.cos(th))
+        ya = math.radians(p.yaw)
+        wx, wy = -oy * math.sin(ya), oy * math.cos(ya)
+        root = (p.root[0] + wx, p.root[1] + wy, p.root[2] + oz)
+        pitch = p.pitch - SENTINEL_PITCH * b
+        a = math.radians(pitch)
+        for leg, (jx, jy, jz, chain) in fronts.items():
+            # paws tucked in front of the chest, hanging half a leg below the shoulder (body space)
+            lx, ly, lz = jx * 0.9, jy - 0.15 * chain, jz - 0.55 * chain
+            y2, z2 = ly * math.cos(a) - lz * math.sin(a), ly * math.sin(a) + lz * math.cos(a)
+            tx = root[0] + lx * math.cos(ya) - y2 * math.sin(ya)
+            ty = root[1] + lx * math.sin(ya) + y2 * math.cos(ya)
+            tz = root[2] + z2
+            g = p.feet[leg]
+            p.feet[leg] = (g[0] + (tx - g[0]) * b, g[1] + (ty - g[1]) * b, g[2] + (tz - g[2]) * b)
+            if b > 0.05:
+                p.stance[leg] = False
+        p.root, p.pitch, p.sentinel = root, pitch, b
 
 
 def walk_keys(
@@ -26,6 +89,8 @@ def walk_keys(
     plan = plan_locomotion(
         points, gait, meta.feet, meta.leg, meta.body_z, meta.foot_z, fps, joints=meta.joints
     )
+    if SPECIES[meta.species].default_pose == "sentinel":
+        apply_sentinel(meta, plan, fps)
     rng = random.Random(seed)
     frames = [frame0 + i for i in range(len(plan))]
     ts = [i / fps for i in range(len(plan))]
@@ -90,7 +155,8 @@ def walk_keys(
         bone(
             name,
             lambda p, t: [
-                (p.head_nod + p.neck_counter) / n + 1.5 * math.sin(2 * math.pi * t / 3.1) / n,
+                (p.head_nod + p.neck_counter + SENTINEL_NECK * p.sentinel) / n
+                + 1.5 * math.sin(2 * math.pi * t / 3.1) / n,
                 0.0,
                 look(t) / n,
             ],
@@ -102,7 +168,9 @@ def walk_keys(
 
         def tail(p: LocoFrame, t: float, k: int = k, amp: float = amp) -> list[float]:
             return [
-                3 * math.sin(2 * math.pi * p.phase - 0.8 * k) + 2.0 * min(1.0, p.speed),
+                3 * math.sin(2 * math.pi * p.phase - 0.8 * k)
+                + 2.0 * min(1.0, p.speed)
+                + (SENTINEL_TAIL if k == 0 else -8.0) * p.sentinel,
                 0.0,
                 amp * math.sin(2 * math.pi * t / 2.3 - 0.7 * k),
             ]

@@ -117,6 +117,11 @@ def main() -> int:
     scale = max(meta.length, meta.head_height) / 1.6  # framing scale relative to a ~1.6 m animal
     # camera: 3/4 side view from the camera's side (-Y), at about shoulder height, tracking with a lag
     size = max(meta.length, meta.head_height)
+    aim_z = meta.head_height * 0.55
+    if sp.default_pose == "sentinel":  # it stands up when it stops: frame the upright height too
+        upright = meta.body_z + 0.75 * meta.length
+        size = max(size, upright * 1.25)
+        aim_z = upright * 0.5
     dist_cam = size * 1.9 + dist * 0.3
     cam_keys, aim_keys = [], []
     cx = x0
@@ -134,7 +139,7 @@ def main() -> int:
                 "LINEAR",
             ]
         )
-        aim_keys.append([f, [round(cx - 0.05 * size, 3), 0.0, round(meta.head_height * 0.55, 3)], "LINEAR"])
+        aim_keys.append([f, [round(cx - 0.05 * size, 3), 0.0, round(aim_z, 3)], "LINEAR"])
     scene = set_ops(scale, size)
     scene += [
         {"op": "create_empty", "id": "cam_aim", "location": aim_keys[0][1]},

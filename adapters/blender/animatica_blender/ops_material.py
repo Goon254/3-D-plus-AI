@@ -51,8 +51,49 @@ class MaterialOps:
             links.new(tc.outputs["Object"], noise.inputs["Vector"])
             links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
             color_out = ramp.outputs["Color"]
+        normal_out = None
         if spec.get("pattern"):
-            color_out = self._pattern(nodes, links, spec, rgb, color_out)
+            color_out, pat_height = self._pattern(nodes, links, spec, rgb, color_out)
+            if pat_height is not None:  # scute seams / scale crevices are carved, not just painted
+                normal_out = self._bump(nodes, links, pat_height, 0.6, 0.004, normal_out)
+        if spec.get("wrinkles"):
+            # creased skin: distorted wave bands (horizontal folds) plus a finer crackle
+            tcw = nodes.new("ShaderNodeTexCoord")
+            wave = nodes.new("ShaderNodeTexWave")
+            wave.wave_type, wave.bands_direction = "BANDS", "Z"
+            wave.inputs["Scale"].default_value = spec.get("wrinkle_scale", 12.0)
+            wave.inputs["Distortion"].default_value = 6.0
+            wave.inputs["Detail"].default_value = 4.0
+            links.new(tcw.outputs["Object"], wave.inputs["Vector"])
+            normal_out = self._bump(
+                nodes, links, wave.outputs["Fac"], spec["wrinkles"] * 0.5, 0.006, normal_out
+            )
+            crack = nodes.new("ShaderNodeTexVoronoi")
+            crack.feature = "DISTANCE_TO_EDGE"
+            crack.inputs["Scale"].default_value = spec.get("wrinkle_scale", 12.0) * 4
+            links.new(tcw.outputs["Object"], crack.inputs["Vector"])
+            normal_out = self._bump(
+                nodes, links, crack.outputs["Distance"], spec["wrinkles"] * 0.35, 0.003, normal_out
+            )
+        if spec.get("fur"):
+            # short coat: streaky fine noise (stretched along Z) drives a soft bump; sheen catches the rim
+            tcf = nodes.new("ShaderNodeTexCoord")
+            mp = nodes.new("ShaderNodeMapping")
+            sc = spec.get("fur_scale", 220.0)
+            mp.inputs["Scale"].default_value = (sc, sc, sc * 0.18)
+            nz = nodes.new("ShaderNodeTexNoise")
+            nz.inputs["Scale"].default_value = 1.0
+            nz.inputs["Detail"].default_value = 3.0
+            links.new(tcf.outputs["Object"], mp.inputs["Vector"])
+            links.new(mp.outputs["Vector"], nz.inputs["Vector"])
+            normal_out = self._bump(nodes, links, nz.outputs["Fac"], spec["fur"] * 0.35, 0.002, normal_out)
+            if "Sheen Weight" in bsdf.inputs:
+                bsdf.inputs["Sheen Weight"].default_value = max(spec.get("sheen", 0.0), 0.6 * spec["fur"])
+                bsdf.inputs["Sheen Roughness"].default_value = 0.4
+        if spec.get("subsurface") and "Subsurface Weight" in bsdf.inputs:
+            bsdf.inputs["Subsurface Weight"].default_value = spec["subsurface"]
+            bsdf.inputs["Subsurface Radius"].default_value = (1.0, 0.45, 0.3)
+            bsdf.inputs["Subsurface Scale"].default_value = spec.get("subsurface_radius", 0.02)
         if spec.get("grain") or spec.get("bump"):
             # fine grit: small-scale noise multiplies the colour (dark specks) and drives a bump map, so a
             # ground plane reads as a surface up close instead of a smooth gradient
@@ -79,11 +120,7 @@ class MaterialOps:
                 links.new(gr.outputs["Color"], mul.inputs["B"])
                 color_out = mul.outputs["Result"]
             if spec.get("bump"):
-                bump = nodes.new("ShaderNodeBump")
-                bump.inputs["Strength"].default_value = spec["bump"]
-                bump.inputs["Distance"].default_value = 0.02
-                links.new(fine.outputs["Fac"], bump.inputs["Height"])
-                links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+                normal_out = self._bump(nodes, links, fine.outputs["Fac"], spec["bump"], 0.02, normal_out)
         if spec.get("fade_to"):
             geo = nodes.new("ShaderNodeNewGeometry")
             length = nodes.new("ShaderNodeVectorMath")
@@ -112,6 +149,8 @@ class MaterialOps:
             links.new(mr.outputs["Result"], bsdf.inputs["Emission Strength"])
         if color_out is not None:
             links.new(color_out, bsdf.inputs["Base Color"])
+        if normal_out is not None:
+            links.new(normal_out, bsdf.inputs["Normal"])
         if spec.get("radial_glow") and spec.get("emission"):
             out = next(n for n in nodes if n.type == "OUTPUT_MATERIAL")
             tc = nodes.new("ShaderNodeTexCoord")
@@ -154,6 +193,17 @@ class MaterialOps:
         return mat
 
     @staticmethod
+    def _bump(nodes, links, height_socket, strength: float, distance: float, normal_in=None):
+        """Chain a bump node (details stack: grain, wrinkles, fur, scute seams)."""
+        b = nodes.new("ShaderNodeBump")
+        b.inputs["Strength"].default_value = strength
+        b.inputs["Distance"].default_value = distance
+        links.new(height_socket, b.inputs["Height"])
+        if normal_in is not None:
+            links.new(normal_in, b.inputs["Normal"])
+        return b.outputs["Normal"]
+
+    @staticmethod
     def _pattern(nodes, links, spec: dict, rgb, base_out):
         """Coat markings in object space (metres): a hard-edged ramp between ground and marking colour.
 
@@ -162,6 +212,7 @@ class MaterialOps:
         (tortoise shell, leopard).
         """
         kind = spec["pattern"]
+        height = None
         mark = (*hex_to_rgb(spec.get("pattern_color") or "#111111"), 1)
         ground = (*rgb, 1)
         width = spec.get("pattern_width", 0.5)
@@ -193,14 +244,67 @@ class MaterialOps:
                 line = 0.12 * (1 - width) + 0.02  # wider pale lines when markings are smaller
                 lo.position, hi.position = line, line + 0.03
                 lo.color, hi.color = ground, mark
-            else:  # spots
+            elif kind == "spots":
                 vor.feature = "F1"
                 links.new(vor.outputs["Distance"], ramp.inputs["Fac"])
                 r = 0.25 + 0.35 * width
                 lo.position, hi.position = r, r + 0.05
                 lo.color, hi.color = mark, ground
+            elif kind == "scales":  # reptile skin: small plates with dark crevices (carved by the bump too)
+                vor.feature = "DISTANCE_TO_EDGE"
+                vor.inputs["Randomness"].default_value = 0.6
+                links.new(vor.outputs["Distance"], ramp.inputs["Fac"])
+                lo.position, hi.position = 0.02, 0.12
+                lo.color, hi.color = mark, ground
+                height = vor.outputs["Distance"]
+            else:  # scutes: near-hexagonal shell plates, dark seams, growth rings, a dark heart per plate
+                vor.feature = "DISTANCE_TO_EDGE"
+                vor.inputs["Randomness"].default_value = 0.5
+                f1 = nodes.new("ShaderNodeTexVoronoi")
+                f1.feature = "F1"
+                f1.inputs["Scale"].default_value = spec.get("pattern_scale", 1.0)
+                f1.inputs["Randomness"].default_value = 0.5
+                links.new(tc.outputs["Object"], f1.inputs["Vector"])
+                rings = nodes.new("ShaderNodeMath")  # growth rings parallel to the seams
+                rings.operation = "PINGPONG"
+                rings.inputs[1].default_value = 0.07
+                links.new(vor.outputs["Distance"], rings.inputs[0])
+                ring_ramp = nodes.new("ShaderNodeValToRGB")
+                ring_ramp.color_ramp.elements[0].position = 0.0
+                ring_ramp.color_ramp.elements[1].position = 0.05
+                dark = (0.8 * ground[0], 0.8 * ground[1], 0.8 * ground[2], 1)
+                ring_ramp.color_ramp.elements[0].color, ring_ramp.color_ramp.elements[1].color = dark, ground
+                links.new(rings.outputs[0], ring_ramp.inputs["Fac"])
+                heart = nodes.new("ShaderNodeValToRGB")  # the leopard tortoise's dark blotch per plate
+                r = 0.18 + 0.3 * width
+                heart.color_ramp.elements[0].position, heart.color_ramp.elements[1].position = r, r + 0.06
+                heart.color_ramp.elements[0].color, heart.color_ramp.elements[1].color = mark, (1, 1, 1, 1)
+                # blotchy, not a bullseye: noise breaks up the heart's outline
+                hn = nodes.new("ShaderNodeTexNoise")
+                hn.inputs["Scale"].default_value = spec.get("pattern_scale", 1.0) * 5
+                links.new(tc.outputs["Object"], hn.inputs["Vector"])
+                wob = nodes.new("ShaderNodeMath")
+                wob.operation = "MULTIPLY_ADD"
+                wob.inputs[1].default_value = 0.22
+                links.new(hn.outputs["Fac"], wob.inputs[0])
+                links.new(f1.outputs["Distance"], wob.inputs[2])
+                links.new(wob.outputs[0], heart.inputs["Fac"])
+                m1 = nodes.new("ShaderNodeMix")
+                m1.data_type, m1.blend_type = "RGBA", "MULTIPLY"
+                m1.inputs["Factor"].default_value = 1.0
+                links.new(ring_ramp.outputs["Color"], m1.inputs["A"])
+                links.new(heart.outputs["Color"], m1.inputs["B"])
+                links.new(vor.outputs["Distance"], ramp.inputs["Fac"])
+                lo.position, hi.position = 0.015, 0.04  # dark seam between plates
+                lo.color, hi.color = mark, (1, 1, 1, 1)
+                m2 = nodes.new("ShaderNodeMix")
+                m2.data_type, m2.blend_type = "RGBA", "MULTIPLY"
+                m2.inputs["Factor"].default_value = 1.0
+                links.new(m1.outputs["Result"], m2.inputs["A"])
+                links.new(ramp.outputs["Color"], m2.inputs["B"])
+                return m2.outputs["Result"], vor.outputs["Distance"]
         if base_out is None:
-            return ramp.outputs["Color"]
+            return ramp.outputs["Color"], height
         # keep any grime variation: multiply the marking layer over the noisy base
         mul = nodes.new("ShaderNodeMix")
         mul.data_type, mul.blend_type = "RGBA", "MULTIPLY"
@@ -212,7 +316,35 @@ class MaterialOps:
         links.new(ramp.outputs["Color"], div.inputs["A"])
         div.inputs["B"].default_value = (max(rgb[0], 1e-3), max(rgb[1], 1e-3), max(rgb[2], 1e-3), 1)
         links.new(div.outputs["Result"], mul.inputs["B"])
-        return mul.outputs["Result"]
+        return mul.outputs["Result"], height
+
+    def op_set_material_by_bone(self, op: dict, res: dict) -> None:
+        o = self.obj(op["target"])
+        if o.type != "MESH":
+            raise OpError(f"{op['target']!r} is not a mesh")
+        base = o.get("animatica_id", o.name)
+        specs = [op["default"]] + [r["material"] for r in op.get("rules", [])]
+        mats = [self._material(sp, sp.get("name") or f"{base}_region{i}") for i, sp in enumerate(specs)]
+        o.data.materials.clear()
+        for m in mats:
+            o.data.materials.append(m)
+        names = {vg.index: vg.name for vg in o.vertex_groups}
+
+        def region(group: str) -> int:
+            for i, r in enumerate(op.get("rules", [])):
+                if any(group.startswith(p) for p in r["bones"]):
+                    return i + 1
+            return 0
+
+        verts = o.data.vertices
+        for poly in o.data.polygons:
+            score: dict[int, float] = {}
+            for vi in poly.vertices:
+                for g in verts[vi].groups:
+                    reg = region(names.get(g.group, ""))
+                    score[reg] = score.get(reg, 0.0) + g.weight
+            poly.material_index = max(score, key=score.get) if score else 0
+        res["modified"].append(op["target"])
 
     def op_set_material(self, op: dict, res: dict) -> None:
         spec = op["material"]

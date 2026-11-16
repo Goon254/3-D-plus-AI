@@ -36,6 +36,8 @@ _CREATE_TYPES = {
     "add_light": "light",
     "add_camera": "camera",
     "create_armature": "armature",
+    "create_skin_mesh": "mesh",
+    "create_metaball_mesh": "mesh",
     "import_asset": "empty",
 }
 

@@ -96,6 +96,74 @@ class SceneOps:
         o = self._new_object(op, mesh)
         res["created"].append(o.name)
 
+    def op_create_skin_mesh(self, op: dict, res: dict) -> None:
+        verts, edges, radii = op["vertices"], op["edges"], op["radii"]
+        if len(radii) != len(verts):
+            raise OpError("create_skin_mesh: one radius pair per vertex")
+        mesh = bpy.data.meshes.new(op["id"] + "_mesh")
+        mesh.from_pydata([tuple(v) for v in verts], [tuple(e) for e in edges], [])
+        mesh.update()
+        o = self._new_object(op, mesh)
+        skin = o.modifiers.new("skin", "SKIN")
+        skin.use_smooth_shade = True
+        sv = mesh.skin_vertices[0].data
+        for i, (rx, ry) in enumerate(radii):
+            sv[i].radius = (rx, ry)
+            sv[i].use_root = i == op.get("root", 0)
+        if op.get("subdivisions", 2):
+            sub = o.modifiers.new("subsurf", "SUBSURF")
+            sub.levels = sub.render_levels = op.get("subdivisions", 2)
+        if op.get("apply", True):
+            # bake the modifiers into real geometry: bone-heat skinning and object-space textures need it
+            dg = bpy.context.evaluated_depsgraph_get()
+            baked = bpy.data.meshes.new_from_object(o.evaluated_get(dg))
+            o.modifiers.clear()
+            old = o.data
+            o.data = baked
+            baked.name = op["id"] + "_mesh"
+            bpy.data.meshes.remove(old)
+            if op.get("smooth", True):
+                for p in baked.polygons:
+                    p.use_smooth = True
+        res["created"].append(o.name)
+        res.setdefault("data", {}).setdefault("vertex_counts", {})[op["id"]] = len(o.data.vertices)
+
+    def op_create_metaball_mesh(self, op: dict, res: dict) -> None:
+        mb = bpy.data.metaballs.new(op["id"] + "_mb")
+        mb.resolution = mb.render_resolution = op.get("resolution", 0.02)
+        mb.threshold = op.get("threshold", 0.6)
+        for el in op["elements"]:
+            e = mb.elements.new(type=el.get("type", "ball").upper())
+            e.co = el["co"]
+            e.radius = el["radius"]
+            e.stiffness = el.get("stiffness", 2.0)
+            e.use_negative = el.get("negative", False)
+            size = el.get("size") or (0.0, 0.0, 0.0)
+            if e.type == "CAPSULE":
+                e.size_x = max(size[0], 1e-4)
+            elif e.type == "ELLIPSOID":
+                e.size_x, e.size_y, e.size_z = (max(v, 1e-4) for v in size)
+            rot = el.get("rotation") or (0.0, 0.0, 0.0)
+            e.rotation = mathutils.Euler([math.radians(a) for a in rot], "XYZ").to_quaternion()
+        tmp = bpy.data.objects.new(op["id"] + "_mbtmp", mb)
+        self.scene.collection.objects.link(tmp)
+        try:
+            dg = bpy.context.evaluated_depsgraph_get()
+            dg.update()
+            mesh = bpy.data.meshes.new_from_object(tmp.evaluated_get(dg))
+        finally:
+            bpy.data.objects.remove(tmp, do_unlink=True)
+            bpy.data.metaballs.remove(mb)
+        if len(mesh.vertices) == 0:
+            raise OpError(f"metaball {op['id']!r} produced no surface (radii too small for the threshold?)")
+        mesh.name = op["id"] + "_mesh"
+        if op.get("smooth", True):
+            for p in mesh.polygons:
+                p.use_smooth = True
+        o = self._new_object(op, mesh)
+        res["created"].append(o.name)
+        res.setdefault("data", {}).setdefault("vertex_counts", {})[op["id"]] = len(mesh.vertices)
+
     def op_create_empty(self, op: dict, res: dict) -> None:
         o = self._new_object(op, None)
         o.empty_display_type = op.get("display", "PLAIN_AXES")
@@ -169,7 +237,9 @@ class SceneOps:
         mesh, arm = self.obj(op["mesh"]), self.obj(op["armature"])
         if arm.type != "ARMATURE":
             raise OpError(f"{op['armature']!r} is not an armature")
-        if op.get("bones"):
+        if op.get("auto"):
+            self._auto_bind(mesh, arm, res, op.get("exclude", []))
+        elif op.get("bones"):
             self._smooth_bind(mesh, arm, op["bones"])
         elif op.get("bone"):
             self._rigid_bind(mesh, arm, op["bone"])
@@ -181,6 +251,42 @@ class SceneOps:
             bpy.context.view_layer.objects.active = arm
             bpy.ops.object.parent_set(type="ARMATURE_AUTO")
         res["modified"].append(mesh.name)
+
+    def _auto_bind(self, mesh, arm, res: dict, exclude: list[str] | None = None) -> None:
+        """Bone-heat weights over the whole armature, keeping the mesh's local transform (the parent inverse
+        absorbs the re-parenting). If heat weighting fails (no weights), fall back to distance weights."""
+        bpy.context.view_layer.update()
+        mw = mesh.matrix_world.copy()
+        for ob in bpy.context.selected_objects:
+            ob.select_set(False)
+        mesh.select_set(True)
+        arm.select_set(True)
+        bpy.context.view_layer.objects.active = arm
+        # bones that drive other meshes (a separate tail, ears) must not pull this one's surface
+        muted = [
+            b for b in arm.data.bones if b.use_deform and any(b.name.startswith(p) for p in exclude or [])
+        ]
+        for b in muted:
+            b.use_deform = False
+        try:
+            bpy.ops.object.parent_set(type="ARMATURE_AUTO")
+        finally:
+            for b in muted:
+                b.use_deform = True
+            for vg in [g for g in mesh.vertex_groups if any(g.name.startswith(p) for p in exclude or [])]:
+                mesh.vertex_groups.remove(vg)
+        mesh.select_set(False)
+        arm.select_set(False)
+        weighted = any(len(v.groups) for v in mesh.data.vertices)
+        if not weighted:
+            res["warnings"].append(f"bone heat failed on {mesh.name!r}; using distance weights")
+            for vg in list(mesh.vertex_groups):
+                mesh.vertex_groups.remove(vg)
+            for m in [m for m in mesh.modifiers if m.type == "ARMATURE"]:
+                mesh.modifiers.remove(m)
+            self._smooth_bind(mesh, arm, [b.name for b in arm.data.bones if b.use_deform])
+            return
+        mesh.matrix_parent_inverse = arm.matrix_world.inverted() @ mw @ mesh.matrix_basis.inverted()
 
     def _rigid_bind(self, mesh, arm, bone: str) -> None:
         if bone not in arm.data.bones:

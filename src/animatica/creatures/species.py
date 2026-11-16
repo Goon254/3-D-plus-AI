@@ -2,8 +2,11 @@
 
 Root space: the origin is the body centre at rest height ``body_z`` above the ground. +X is the animal's
 left, -Y its front, +Z up. Ratios follow ``knowledge/species/<animal>.md``, stylized for appeal (big
-eyes, rounded forms), never against the anatomy: an elephant keeps pillar legs and never trots, a
-giraffe's forelegs are longer than its hind legs, and so on.
+eyes, rounded sculpted masses), never against the anatomy: an elephant keeps pillar legs and never
+trots, a giraffe's forelegs are longer than its hind legs, and so on.
+
+Bodies are organic (``organic.body_graph``: one skin-modifier mesh with muscle masses). The fields
+below describe the skeleton the mesh is grown on, the masses, and per-species skin/fur shading.
 """
 
 from __future__ import annotations
@@ -25,12 +28,12 @@ class Chain:
 
 @dataclass(frozen=True)
 class Extra:
-    """A decorative mesh rigidly carried by a bone (ossicones, mane, hooves, muzzle, eye patches...)."""
+    """A decorative mesh rigidly carried by a bone (ossicones, mane, muzzle, eye patches...)."""
 
     id: str
     shape: str
     size: V3
-    loc: V3
+    loc: V3  # relative to the head centre (head bone, rotated with the head pitch) or the bone's head
     bone: str
     mat: str
     rot: V3 = (0.0, 0.0, 0.0)
@@ -40,7 +43,7 @@ class Extra:
 class Species:
     name: str
     body_z: float
-    torso: V3  # full size (width, length, depth)
+    torso: V3  # body mass (width, length, depth)
     torso_at: V3
     torso_rot: float  # pitch (deg, + = front up)
     shoulder: V3  # left shoulder joint; right is mirrored
@@ -60,103 +63,126 @@ class Species:
     tuft: float  # radius of the tail-tip tuft (0 = none)
     coat: dict[str, Any]
     mats: dict[str, dict[str, Any]]
-    part_mats: dict[str, str] = field(default_factory=dict)  # part id suffix -> material key
+    part_mats: dict[str, str] = field(default_factory=dict)  # part kind -> material key
     trunk: Chain | None = None
     extras: tuple[Extra, ...] = ()
     gait: str = "walk"
-    muzzle: tuple[V3, V3] | None = None  # size, offset from head centre
+    muzzle: tuple[V3, V3] | None = None  # size, offset from head centre (a separately coloured muzzle)
+    regions: tuple[tuple[tuple[str, ...], str], ...] = ()  # (bone prefixes, material key) on the body mesh
+    nails: int = 0  # toenails/claws on each skin-grown foot
+    shell: tuple[V3, V3] | None = None  # (size, centre) of a tortoise carapace
+    default_pose: str = "stand"  # "sentinel": the meerkat stands up when it stops
 
 
 def _m(color: str, rough: float = 0.75, **kw: Any) -> dict[str, Any]:
-    return {"base_color": color, "roughness": rough, "specular": 0.25, **kw}
+    return {"base_color": color, "roughness": rough, "specular": 0.3, **kw}
 
 
-EYE_WHITE = _m("#F6F2EA", 0.35)
-IRIS = _m("#20160F", 0.12, specular=0.6)
+EYE_WHITE = _m("#F6F2EA", 0.3)
+IRIS = _m("#1E140D", 0.1, specular=0.7)
 GLINT = {"base_color": "#FFFFFF", "emission": "#FFFFFF", "emission_strength": 2.5, "roughness": 0.2}
 
+_ZEBRA_STRIPES = {"pattern": "stripes", "pattern_color": "#1A1818", "pattern_width": 0.46}
+
 SPECIES: dict[str, Species] = {
-    # A ~1-year-old calf: 1.2 m at the shoulder, barrel body, pillar legs, big ears, a floppy trunk.
+    # About a year old: 1.1 m at the shoulder; big domed head (calves are head-heavy), barrel body,
+    # pillar legs; a short calf trunk; ears hanging down the sides of the head; subtle wrinkles.
     "elephant": Species(
         name="elephant",
-        body_z=0.78,
-        torso=(0.72, 1.02, 0.8),
-        torso_at=(0.0, 0.02, 0.04),
-        torso_rot=2.0,
-        shoulder=(0.2, -0.28, -0.12),
-        hip=(0.2, 0.3, -0.12),
-        fore_foot=(0.2, -0.3),
-        hind_foot=(0.2, 0.3),
-        leg_r=(0.13, 0.115, 0.13, 0.11),
-        foot=("pad", 0.125, 0.09),
+        body_z=0.72,
+        torso=(0.64, 0.86, 0.7),
+        torso_at=(0.0, 0.02, 0.05),
+        torso_rot=3.0,
+        shoulder=(0.19, -0.27, -0.1),
+        hip=(0.19, 0.29, -0.08),
+        fore_foot=(0.19, -0.29),
+        hind_foot=(0.19, 0.29),
+        leg_r=(0.13, 0.11, 0.135, 0.105),
+        foot=("pad", 0.12, 0.08),
         knee_bend=0.12,  # pillar legs: nearly straight; the body vaults over them (gait planner)
-        neck=Chain((0.0, -0.38, 0.12), (0.0, -0.5, 0.22), 1, 0.27, 0.27),
-        head_at=(0.0, -0.66, 0.3),
-        head_size=(0.5, 0.48, 0.5),
-        head_pitch=8.0,
-        eye=(0.15, -0.2, 0.07, 0.068),
-        # African ears hang down the sides of the head (top of the head to below the jaw), skin outside
-        ear=("disc", (0.05, 0.36, 0.5), (0.25, 0.1, -0.12), (0.0, -8.0, 12.0)),
-        tail=Chain((0.0, 0.5, 0.12), (0.0, 0.58, -0.32), 3, 0.025, 0.015),
+        neck=Chain((0.0, -0.38, 0.12), (0.0, -0.5, 0.24), 1, 0.27, 0.27),
+        head_at=(0.0, -0.64, 0.32),
+        head_size=(0.62, 0.54, 0.64),
+        head_pitch=6.0,
+        eye=(0.16, -0.2, 0.07, 0.07),
+        ear=("disc", (0.05, 0.36, 0.5), (0.28, 0.12, -0.26), (0.0, -8.0, 12.0)),
+        tail=Chain((0.0, 0.48, 0.14), (0.0, 0.58, -0.3), 3, 0.03, 0.014),
         tuft=0.035,
-        trunk=Chain((0.0, -0.86, 0.2), (0.0, -0.98, -0.5), 5, 0.085, 0.04),
+        trunk=Chain((0.0, -0.86, 0.18), (0.0, -0.95, -0.36), 5, 0.09, 0.045),
         coat=_m(
-            "#8F8C88", 0.85, noise=0.25, noise_scale=6.0, grain=0.2, grain_scale=60.0, bump=0.3, sheen=0.15
+            "#918D88",
+            0.82,
+            noise=0.22,
+            noise_scale=5.0,
+            wrinkles=0.45,
+            wrinkle_scale=14.0,
+            subsurface=0.12,
+            subsurface_radius=0.03,
+            grain=0.15,
+            grain_scale=70.0,
+            bump=0.15,
         ),
-        mats={
-            "ear_inner": _m("#B79189", 0.8, noise=0.2, noise_scale=8.0),
-            "nail": _m("#77736E", 0.8, noise=0.3, noise_scale=10.0),
-            "tuft": _m("#3A3430", 0.9),
-        },
-        part_mats={"foot": "nail", "tuft": "tuft"},
+        mats={"nail": _m("#D9CCB2", 0.45), "tuft": _m("#3A3430", 0.9)},
+        part_mats={"tuft": "tuft"},
+        nails=3,
     ),
-    # Young giraffe: withers 1.9 m, head at 3.2 m; forelegs longer than hind legs (back slopes down to
-    # the rump); 7 cervical vertebrae animated as a 4-bone chain; ossicones with tufts; patch coat.
+    # Young giraffe: withers 1.9 m, head at 3.2 m; long straight legs (forelegs longer, so the back slopes
+    # to the rump); 7 cervical vertebrae animated as a 4-bone chain; tufted ossicones; patch coat.
     "giraffe": Species(
         name="giraffe",
         body_z=1.55,
-        torso=(0.48, 1.05, 0.6),
+        torso=(0.5, 1.05, 0.62),
         torso_at=(0.0, 0.0, 0.0),
         torso_rot=10.0,
         shoulder=(0.15, -0.36, 0.02),
-        hip=(0.14, 0.38, -0.1),
+        hip=(0.14, 0.38, -0.08),
         fore_foot=(0.15, -0.38),
         hind_foot=(0.14, 0.38),
-        leg_r=(0.075, 0.05, 0.085, 0.05),
-        foot=("hoof", 0.06, 0.07),
-        knee_bend=0.2,
-        neck=Chain((0.0, -0.42, 0.18), (0.0, -0.78, 1.45), 4, 0.13, 0.075),
+        leg_r=(0.09, 0.06, 0.1, 0.06),
+        foot=("hoof", 0.065, 0.07),
+        knee_bend=0.1,
+        neck=Chain((0.0, -0.42, 0.18), (0.0, -0.78, 1.45), 4, 0.14, 0.08),
         head_at=(0.0, -0.95, 1.52),
-        head_size=(0.19, 0.44, 0.21),
+        head_size=(0.2, 0.46, 0.22),
         head_pitch=22.0,
-        eye=(0.085, -0.05, 0.05, 0.052),
-        ear=("leaf", (0.05, 0.035, 0.14), (0.1, 0.1, 0.06), (0.0, 70.0, -20.0)),
-        tail=Chain((0.0, 0.5, 0.0), (0.0, 0.62, -0.7), 3, 0.025, 0.015),
+        eye=(0.09, -0.05, 0.05, 0.055),
+        ear=("leaf", (0.05, 0.035, 0.15), (0.1, 0.1, 0.06), (0.0, 70.0, -20.0)),
+        tail=Chain((0.0, 0.5, 0.0), (0.0, 0.62, -0.7), 3, 0.028, 0.014),
         tuft=0.05,
         coat=_m(
-            "#F1DFB4",
+            "#F2DFB2",
             0.8,
             pattern="patches",
             pattern_color="#9A5428",
             pattern_scale=4.2,
             pattern_width=0.55,
-            sheen=0.25,
+            fur=0.45,
             sheen_tint="#FFE8C0",
         ),
         mats={
             "hoof": _m("#3A2E26", 0.5),
             "tuft": _m("#2E2420", 0.9),
-            "muzzle": _m("#E9D6B0", 0.8),
+            "muzzle": _m("#EBD9B4", 0.8, fur=0.3),
             "ossicone": _m("#B07A48", 0.8),
+            "shins": _m(
+                "#F5E8C8",
+                0.8,
+                pattern="patches",
+                pattern_color="#A86233",
+                pattern_scale=9.0,
+                pattern_width=0.4,
+                fur=0.4,
+            ),
         },
         part_mats={"foot": "hoof", "tuft": "tuft"},
-        muzzle=((0.16, 0.16, 0.15), (0.0, -0.2, -0.04)),
+        muzzle=((0.17, 0.17, 0.15), (0.0, -0.21, -0.04)),
+        regions=((("leg_LF_lo", "leg_RF_lo", "leg_LH_lo", "leg_RH_lo"), "shins"),),
         extras=(
             Extra(
                 "ossicone_L",
                 "cylinder",
-                (0.04, 0.04, 0.13),
-                (0.05, 0.1, 0.13),
+                (0.045, 0.045, 0.14),
+                (0.05, 0.1, 0.14),
                 "head",
                 "ossicone",
                 (-15, 0, 0),
@@ -164,194 +190,208 @@ SPECIES: dict[str, Species] = {
             Extra(
                 "ossicone_R",
                 "cylinder",
-                (0.04, 0.04, 0.13),
-                (-0.05, 0.1, 0.13),
+                (0.045, 0.045, 0.14),
+                (-0.05, 0.1, 0.14),
                 "head",
                 "ossicone",
                 (-15, 0, 0),
             ),
-            Extra("ossitip_L", "uv_sphere", (0.055, 0.055, 0.05), (0.05, 0.09, 0.2), "head", "tuft"),
-            Extra("ossitip_R", "uv_sphere", (0.055, 0.055, 0.05), (-0.05, 0.09, 0.2), "head", "tuft"),
+            Extra("ossitip_L", "uv_sphere", (0.06, 0.06, 0.055), (0.05, 0.09, 0.215), "head", "tuft"),
+            Extra("ossitip_R", "uv_sphere", (0.06, 0.06, 0.055), (-0.05, 0.09, 0.215), "head", "tuft"),
         ),
     ),
     # Young plains zebra: 1.15 m at the shoulder; big head, sturdy neck, erect striped mane, tasselled tail;
-    # broad stripes, vertical on the body and horizontal on the legs.
+    # broad stripes, vertical on the body, horizontal on the legs, rings around the neck.
     "zebra": Species(
         name="zebra",
         body_z=0.86,
-        torso=(0.42, 1.0, 0.5),
+        torso=(0.44, 1.0, 0.52),
         torso_at=(0.0, 0.0, 0.02),
         torso_rot=0.0,
         shoulder=(0.12, -0.33, -0.06),
         hip=(0.13, 0.33, -0.02),
         fore_foot=(0.12, -0.34),
         hind_foot=(0.13, 0.34),
-        leg_r=(0.065, 0.04, 0.08, 0.04),
-        foot=("hoof", 0.05, 0.06),
-        knee_bend=0.2,
-        neck=Chain((0.0, -0.4, 0.12), (0.0, -0.62, 0.58), 3, 0.13, 0.095),
+        leg_r=(0.075, 0.045, 0.09, 0.045),
+        foot=("hoof", 0.052, 0.06),
+        knee_bend=0.16,
+        neck=Chain((0.0, -0.4, 0.12), (0.0, -0.62, 0.58), 3, 0.14, 0.1),
         head_at=(0.0, -0.8, 0.58),
-        head_size=(0.2, 0.46, 0.24),
+        head_size=(0.21, 0.48, 0.25),
         head_pitch=40.0,
-        eye=(0.09, -0.07, 0.06, 0.058),
+        eye=(0.095, -0.07, 0.06, 0.058),
         ear=("leaf", (0.06, 0.035, 0.17), (0.065, 0.12, 0.15), (-10.0, 0.0, 12.0)),
-        tail=Chain((0.0, 0.5, 0.14), (0.0, 0.63, -0.3), 3, 0.03, 0.018),
+        tail=Chain((0.0, 0.5, 0.14), (0.0, 0.63, -0.3), 3, 0.032, 0.018),
         tuft=0.055,
         coat=_m(
             "#F3F0E8",
             0.8,
-            pattern="stripes",
-            pattern_color="#1C1A1A",
+            **_ZEBRA_STRIPES,
             pattern_scale=2.6,
-            pattern_width=0.46,
             pattern_axis="y",
             pattern_distort=2.5,
-            sheen=0.2,
+            fur=0.5,
         ),
         mats={
             "legs": _m(
                 "#F3F0E8",
                 0.8,
-                pattern="stripes",
-                pattern_color="#1C1A1A",
+                **_ZEBRA_STRIPES,
                 pattern_scale=4.2,
-                pattern_width=0.46,
                 pattern_axis="z",
                 pattern_distort=1.0,
+                fur=0.5,
             ),
             "neck": _m(
                 "#F3F0E8",
                 0.8,
-                pattern="stripes",
-                pattern_color="#1C1A1A",
+                **_ZEBRA_STRIPES,
                 pattern_scale=3.4,
-                pattern_width=0.46,
                 pattern_axis="z",
                 pattern_distort=1.5,
+                fur=0.5,
             ),
             "hoof": _m("#222020", 0.5),
             "tuft": _m("#161414", 0.9),
-            "muzzle": _m("#2A2626", 0.6),
+            "muzzle": _m("#2A2626", 0.55),
             "mane": _m(
-                "#F3F0E8",
-                0.9,
-                pattern="stripes",
-                pattern_color="#1C1A1A",
-                pattern_scale=9.0,
-                pattern_width=0.5,
-                pattern_axis="y",
-                pattern_distort=0.5,
+                "#F3F0E8", 0.9, **_ZEBRA_STRIPES, pattern_scale=9.0, pattern_axis="y", pattern_distort=0.5
             ),
         },
-        part_mats={"foot": "hoof", "tuft": "tuft", "leg": "legs", "neck": "neck"},
+        part_mats={"foot": "hoof", "tuft": "tuft"},
         muzzle=((0.17, 0.16, 0.15), (0.0, -0.21, -0.03)),
-        # along the top of the neck: offset back/up from neck_1's head, tilted 25 deg forward like the neck
+        # real zebras: neck stripes run vertically like the body's; only the legs turn horizontal
+        regions=((("leg_LF_lo", "leg_RF_lo", "leg_LH_lo", "leg_RH_lo"), "legs"),),
         extras=(
             Extra("mane", "uv_sphere", (0.05, 0.15, 0.56), (0.0, 0.085, 0.13), "neck_1", "mane", (25, 0, 0)),
         ),
     ),
-    # Meerkat on all fours: 0.32 m head+body, thin tapering tail (not bushy), dark eye patches, banded back.
+    # Meerkat: 0.32 m head+body, slim; pointed face, dark eye patches, faint bands on the back only, a thin
+    # tapering tail (not bushy), dark paws. Stands up into the sentinel pose whenever it stops.
     "meerkat": Species(
         name="meerkat",
         body_z=0.105,
-        torso=(0.1, 0.27, 0.11),
+        torso=(0.095, 0.27, 0.105),
         torso_at=(0.0, 0.0, 0.0),
         torso_rot=0.0,
-        shoulder=(0.035, -0.085, -0.02),
-        hip=(0.04, 0.085, -0.015),
-        fore_foot=(0.036, -0.09),
-        hind_foot=(0.042, 0.085),
-        leg_r=(0.016, 0.012, 0.02, 0.013),
-        foot=("paw", 0.014, 0.012),
-        knee_bend=0.22,
-        neck=Chain((0.0, -0.12, 0.015), (0.0, -0.165, 0.05), 2, 0.035, 0.03),
-        head_at=(0.0, -0.205, 0.06),
-        head_size=(0.075, 0.1, 0.075),
-        head_pitch=8.0,
-        eye=(0.024, -0.03, 0.013, 0.014),
-        ear=("disc", (0.012, 0.022, 0.022), (0.036, 0.015, 0.02), (0.0, 0.0, 0.0)),
-        tail=Chain((0.0, 0.13, 0.0), (0.0, 0.31, 0.05), 4, 0.009, 0.004),
+        shoulder=(0.033, -0.085, -0.02),
+        hip=(0.038, 0.085, -0.015),
+        fore_foot=(0.034, -0.09),
+        hind_foot=(0.04, 0.085),
+        leg_r=(0.017, 0.011, 0.022, 0.012),
+        foot=("paw", 0.013, 0.011),
+        knee_bend=0.2,
+        neck=Chain((0.0, -0.12, 0.015), (0.0, -0.16, 0.05), 2, 0.034, 0.03),
+        head_at=(0.0, -0.2, 0.058),
+        head_size=(0.066, 0.1, 0.066),
+        head_pitch=6.0,
+        eye=(0.022, -0.026, 0.014, 0.013),
+        ear=("disc", (0.01, 0.018, 0.018), (0.034, 0.02, 0.016), (0.0, 0.0, 0.0)),
+        tail=Chain((0.0, 0.13, 0.0), (0.0, 0.31, 0.05), 4, 0.01, 0.004),
         tuft=0.0,
-        coat=_m(
-            "#C9AA7E",
-            0.85,
-            pattern="bands",
-            pattern_color="#7A6044",
-            pattern_scale=6.0,
-            pattern_width=0.12,
-            pattern_axis="y",
-            pattern_distort=2.0,
-            sheen=0.3,
-        ),
+        coat=_m("#CDB088", 0.85, fur=0.6, fur_scale=500.0, sheen_tint="#FFEBC8"),
         mats={
+            "back": _m(
+                "#C6A87E",
+                0.85,
+                pattern="bands",
+                pattern_color="#A98C68",
+                pattern_scale=6.0,
+                pattern_width=0.1,
+                pattern_axis="y",
+                pattern_distort=2.0,
+                fur=0.6,
+                fur_scale=500.0,
+            ),
             "paw": _m("#3A2E24", 0.7),
-            "patch": _m("#2E241C", 0.8),
-            "muzzle": _m("#D8C09A", 0.8),
-            "tail": _m("#B89A70", 0.85),
+            "patch": _m("#2A2018", 0.75),
+            "muzzle": _m("#E2CCA6", 0.8, fur=0.4, fur_scale=500.0),
+            "nose": _m("#1E1612", 0.4),
+            "tailtip": _m("#2A2018", 0.8),
         },
-        part_mats={"foot": "paw", "tail": "tail"},
-        muzzle=((0.04, 0.06, 0.04), (0.0, -0.055, -0.012)),
+        part_mats={},
+        # a pointed face: a long tapering snout, pale, with a dark nose
+        muzzle=((0.034, 0.075, 0.03), (0.0, -0.075, -0.014)),
+        regions=(
+            (("hips", "chest"), "back"),
+            (("leg_LF_lo", "leg_RF_lo", "leg_LH_lo", "leg_RH_lo"), "paw"),
+            (("tail_3",), "tailtip"),
+        ),
         extras=(
+            # the "sunglasses": dark patches around and behind the eyes
             Extra(
                 "patch_L",
                 "uv_sphere",
-                (0.03, 0.012, 0.024),
-                (0.024, -0.028, 0.011),
+                (0.032, 0.03, 0.026),
+                (0.02, -0.022, 0.013),
                 "head",
                 "patch",
-                (0, 0, -15),
+                (0, 0, -25),
             ),
             Extra(
                 "patch_R",
                 "uv_sphere",
-                (0.03, 0.012, 0.024),
-                (-0.024, -0.028, 0.011),
+                (0.032, 0.03, 0.026),
+                (-0.02, -0.022, 0.013),
                 "head",
                 "patch",
-                (0, 0, 15),
+                (0, 0, 25),
             ),
+            Extra("nose", "uv_sphere", (0.014, 0.01, 0.01), (0.0, -0.112, -0.012), "head", "nose"),
         ),
+        default_pose="sentinel",
     ),
-    # Leopard tortoise elder: high-domed spotted shell (0.55 m), splayed scaly forelegs, columnar hind legs.
+    # Leopard tortoise elder: a high-domed carapace of geometric scutes (dark heart and growth rings in each
+    # plate); thick, scaly, elephant-like legs; a wise old head on an extendable neck.
     "tortoise": Species(
         name="tortoise",
         body_z=0.2,
-        torso=(0.44, 0.56, 0.31),
-        torso_at=(0.0, 0.0, 0.02),
+        torso=(0.36, 0.46, 0.2),
+        torso_at=(0.0, 0.0, -0.02),
         torso_rot=0.0,
-        shoulder=(0.15, -0.17, -0.08),
-        hip=(0.14, 0.18, -0.08),
-        fore_foot=(0.23, -0.21),
-        hind_foot=(0.2, 0.2),
-        leg_r=(0.045, 0.04, 0.05, 0.045),
-        foot=("pad", 0.045, 0.03),
+        shoulder=(0.14, -0.16, -0.07),
+        hip=(0.13, 0.17, -0.07),
+        fore_foot=(0.22, -0.2),
+        hind_foot=(0.19, 0.2),
+        leg_r=(0.05, 0.046, 0.058, 0.052),
+        foot=("pad", 0.05, 0.03),
         knee_bend=0.25,
-        neck=Chain((0.0, -0.22, -0.05), (0.0, -0.32, 0.0), 2, 0.045, 0.04),
+        neck=Chain((0.0, -0.21, -0.05), (0.0, -0.32, 0.0), 2, 0.046, 0.04),
         head_at=(0.0, -0.37, 0.02),
-        head_size=(0.085, 0.12, 0.075),
+        head_size=(0.09, 0.125, 0.078),
         head_pitch=0.0,
-        eye=(0.032, -0.03, 0.015, 0.018),
+        eye=(0.034, -0.03, 0.015, 0.019),
         ear=("none", (0.0, 0.0, 0.0), (0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
-        tail=Chain((0.0, 0.26, -0.08), (0.0, 0.31, -0.11), 1, 0.018, 0.01),
+        tail=Chain((0.0, 0.25, -0.08), (0.0, 0.31, -0.11), 1, 0.02, 0.01),
         tuft=0.0,
-        coat=_m("#BBA57E", 0.9, grain=0.35, grain_scale=90.0, bump=0.4),
+        coat=_m(
+            "#B9A27A",
+            0.85,
+            pattern="scales",
+            pattern_color="#7D6A4E",
+            pattern_scale=55.0,
+            subsurface=0.08,
+            grain=0.2,
+            grain_scale=120.0,
+        ),
         mats={
             "shell": _m(
-                "#E0C26C",
-                0.55,
-                pattern="spots",
-                pattern_color="#33241A",
-                pattern_scale=17.0,
-                pattern_width=0.3,
-                bump=0.25,
-                grain=0.1,
-                grain_scale=40.0,
+                "#E3C46A",
+                0.5,
+                pattern="scutes",
+                pattern_color="#2E2014",
+                pattern_scale=6.5,
+                pattern_width=0.35,
+                grain=0.12,
+                grain_scale=60.0,
             ),
             "plastron": _m("#D9C48A", 0.7),
             "nail": _m("#4A3E30", 0.6),
         },
-        part_mats={"torso": "shell", "foot": "nail"},
-        extras=(Extra("plastron", "uv_sphere", (0.4, 0.5, 0.08), (0.0, 0.0, -0.13), "chest", "plastron"),),
+        part_mats={},
+        nails=3,
+        shell=((0.46, 0.58, 0.46), (0.0, 0.0, 0.07)),
+        extras=(Extra("plastron", "uv_sphere", (0.4, 0.5, 0.07), (0.0, 0.0, -0.125), "chest", "plastron"),),
     ),
 }
 

@@ -82,12 +82,19 @@ class MaterialSpec(BaseModel):
     sheen_tint: str | None = None
     # procedural coat pattern in object space (metres): zebra stripes, giraffe patches, tortoise/leopard
     # spots, meerkat back bands. pattern_color is the marking; base_color the ground colour.
-    pattern: Literal["stripes", "patches", "spots", "bands"] | None = None
+    pattern: Literal["stripes", "patches", "spots", "bands", "scutes", "scales"] | None = None
     pattern_color: str | None = None
     pattern_scale: float = Field(1.0, gt=0, le=1000)  # markings per metre (roughly)
     pattern_width: float = Field(0.5, gt=0, lt=1)  # share of the pattern that is marking
     pattern_axis: Literal["x", "y", "z"] = "z"  # stripes/bands run across this axis
     pattern_distort: float = Field(2.0, ge=0, le=50)
+    # skin and fur shading per species
+    subsurface: float = Field(0.0, ge=0, le=1)  # skin: light scatters under the surface (elephant, tortoise)
+    subsurface_radius: float = Field(0.02, gt=0, le=1)  # metres
+    fur: float = Field(0.0, ge=0, le=1)  # short coat: fine streak bump + soft sheen rim
+    fur_scale: float = Field(220.0, gt=0, le=5000)  # streaks per metre
+    wrinkles: float = Field(0.0, ge=0, le=1)  # creased skin bump (elephant)
+    wrinkle_scale: float = Field(12.0, gt=0, le=1000)
 
     @field_validator("base_color", "emission", "fade_to", "sheen_tint", "pattern_color")
     @classmethod
@@ -106,6 +113,50 @@ class CreatePrimitive(_Placed):
     depth: float | None = Field(None, gt=0, le=MAX_COORD)
     segments: int = Field(32, ge=3, le=256)
     smooth: bool = False
+
+    def creates(self) -> list[str]:
+        return [self.id]
+
+
+class CreateSkinMesh(_Placed):
+    """Organic body from a skeleton graph: Blender's Skin modifier wraps the edges with per-vertex radii,
+    then Subdivision rounds it. ``apply`` bakes both into real geometry (for skinning and texturing)."""
+
+    op: Literal["create_skin_mesh"]
+    id: str
+    vertices: list[Vec3] = Field(min_length=2, max_length=5000)
+    edges: list[tuple[int, int]] = Field(min_length=1, max_length=10000)
+    radii: list[tuple[float, float]] = Field(min_length=2, max_length=5000)  # per vertex (x, y)
+    root: int = Field(0, ge=0)
+    subdivisions: int = Field(2, ge=0, le=4)
+    smooth: bool = True
+    apply: bool = True
+
+    def creates(self) -> list[str]:
+        return [self.id]
+
+
+class MetaElement(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    type: Literal["ball", "capsule", "ellipsoid"] = "ball"
+    co: Vec3
+    radius: float = Field(gt=0, le=MAX_COORD)
+    size: Vec3 = (0.0, 0.0, 0.0)  # capsule: half-length in x; ellipsoid: x/y/z scale
+    rotation: Vec3 = (0.0, 0.0, 0.0)  # Euler XYZ degrees (a capsule runs along its local X)
+    stiffness: float = Field(2.0, gt=0, le=10)
+    negative: bool = False  # carves instead of adds
+
+
+class CreateMetaballMesh(_Placed):
+    """Implicit-surface sculpting: overlapping capsules/ellipsoids melt into one smooth body (muscle masses
+    blend; no hull seams), converted to a real mesh at ``resolution`` (metres)."""
+
+    op: Literal["create_metaball_mesh"]
+    id: str
+    elements: list[MetaElement] = Field(min_length=1, max_length=2000)
+    resolution: float = Field(0.02, gt=0.0005, le=1)
+    threshold: float = Field(0.6, gt=0, le=10)
+    smooth: bool = True
 
     def creates(self) -> list[str]:
         return [self.id]
@@ -184,6 +235,25 @@ class SetMaterial(_Op):
 
     def references(self) -> list[str]:
         return list(self.targets)
+
+
+class MaterialRule(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    bones: list[str] = Field(min_length=1)  # bone-name prefixes, e.g. ["leg_"]
+    material: MaterialSpec
+
+
+class SetMaterialByBone(_Op):
+    """Regional materials on one skinned mesh: each face takes the material of the rule matching its
+    dominant bone weight (legs striped across, body striped along; pale lower legs; scaly tortoise legs)."""
+
+    op: Literal["set_material_by_bone"]
+    target: str
+    default: MaterialSpec
+    rules: list[MaterialRule] = Field(default_factory=list)
+
+    def references(self) -> list[str]:
+        return [self.target]
 
 
 class AddLight(_Placed):
@@ -320,6 +390,10 @@ class BindMeshToArmature(_Op):
     # smooth bind to these bones with distance-falloff weights (deterministic; no bone-heat failures on
     # primitives). The mesh keeps its local transform; the armature should share the mesh's parent.
     bones: list[str] | None = None
+    # automatic (bone-heat) weights over the whole armature, keeping the local transform; falls back to
+    # distance weights if heat weighting fails
+    auto: bool = False
+    exclude: list[str] = Field(default_factory=list)  # bone-name prefixes that must not deform this mesh
 
     def references(self) -> list[str]:
         return [self.mesh, self.armature]
@@ -453,6 +527,8 @@ class SetProperty(_Op):
 OP_CLASSES: tuple[type[_Op], ...] = (
     CreatePrimitive,
     CreateMesh,
+    CreateSkinMesh,
+    CreateMetaballMesh,
     CreateEmpty,
     Delete,
     Transform,
@@ -464,6 +540,7 @@ OP_CLASSES: tuple[type[_Op], ...] = (
     SetCameraActive,
     AddConstraint,
     AddBoneConstraint,
+    SetMaterialByBone,
     InsertKeyframes,
     ClearAnimation,
     SetFrameRange,

@@ -106,6 +106,7 @@ class LocoFrame:
     stance: dict[str, bool] = field(default_factory=dict)
     head_nod: float = 0.0
     neck_counter: float = 0.0
+    sentinel: float = 0.0  # 0 = on all fours, 1 = upright sentinel (meerkat)
 
 
 def _smooth(u: float) -> float:

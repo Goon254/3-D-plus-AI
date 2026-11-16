@@ -367,3 +367,47 @@ def test_coat_patterns_render_markings(fresh, tmp_path, pattern):
         stats[tag] = r.data["previews"][0]["stats"]
     # markings add strong light/dark contrast on the same sphere
     assert stats["marked"]["std"] > stats["plain"]["std"] + 0.05, stats
+
+
+@pytest.mark.parametrize("pole_y, angle", [(-2.0, -90.0), (2.0, 90.0)])
+def test_ik_pole_angle_does_not_twist_the_leg(fresh, pole_y, angle):
+    # a marker hung off the side of the thigh must stay put when IK + pole are added at rest
+    knee_y = -0.08 if pole_y < 0 else 0.08
+    res = run(
+        fresh,
+        {"op": "create_empty", "id": "root", "location": [0, 0, 1.0]},
+        {
+            "op": "create_armature",
+            "id": "rig",
+            "parent": "root",
+            "bones": [
+                {"name": "up", "head": [0, 0, 0], "tail": [0, knee_y, -0.5]},
+                {"name": "lo", "head": [0, knee_y, -0.5], "tail": [0, 0, -1.0], "parent": "up"},
+            ],
+        },
+        {
+            "op": "create_primitive",
+            "id": "mark",
+            "shape": "cube",
+            "size": [0.05, 0.05, 0.05],
+            "location": [0.3, 0, -0.25],
+            "parent": "root",
+        },
+        {"op": "bind_mesh_to_armature", "mesh": "mark", "armature": "rig", "bone": "up"},
+        {"op": "create_empty", "id": "tgt", "location": [0, 0, 0.0]},
+        {"op": "create_empty", "id": "pole", "location": [0, pole_y, 0.5], "parent": "root"},
+        {
+            "op": "add_bone_constraint",
+            "armature": "rig",
+            "bone": "lo",
+            "type": "ik",
+            "subject": "tgt",
+            "pole": "pole",
+            "pole_angle": angle,
+        },
+        {"op": "inspect", "subjects": ["mark"], "frames": [1]},
+    )
+    assert res.ok, res.errors
+    assert res.data["inspect"]["frames"]["1"]["subjects"]["mark"]["center"] == pytest.approx(
+        [0.3, 0, 0.75], abs=0.01
+    )

@@ -9,10 +9,11 @@ planner keys them, and the leg IK reaches them, so a planted foot is exactly whe
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from .gait import FootSpot
+from .organic import body_graph, metaball_elements, tail_points
 from .species import EYE_WHITE, GLINT, IRIS, Chain, Species
 
 V3 = tuple[float, float, float]
@@ -111,7 +112,14 @@ class CreatureMeta:
     length: float = 0.0  # nose-to-tail length (camera framing)
 
 
-def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), yaw: float = 90.0):
+def build_creature(
+    cid: str,
+    sp: Species,
+    at: tuple[float, float] = (0.0, 0.0),
+    yaw: float = 90.0,
+    organic: bool = True,
+    body_style: str = "metaball",
+):
     """Ops that build creature ``cid`` of species ``sp`` standing at ``at`` heading ``yaw`` degrees."""
     root, rig = f"{cid}_root", f"{cid}_rig"
     ops: list[dict[str, Any]] = [
@@ -135,6 +143,7 @@ def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), 
     poles: list[tuple[str, V3]] = []
     leg_len = 0.0
     slack = 1e9
+    leg_pts: dict[str, tuple[V3, V3, V3]] = {}
     joints: dict[str, tuple[float, float, float, float]] = {}
     for key in LEG_KEYS:
         side = 1 if key[0] == "L" else -1
@@ -165,9 +174,14 @@ def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), 
         slack = min(slack, math.sqrt(max((0.95 * chain_len) ** 2 - h**2, 1e-6)))
         feet[key] = FootSpot(F[0], F[1])
         ru, rl = (sp.leg_r[0], sp.leg_r[1]) if fore else (sp.leg_r[2], sp.leg_r[3])
+        leg_pts[key] = (J, K, F)
         for part, a, b, r0, r1, bone in (
-            ("up", J, K, ru, (ru + rl) / 2, up),
-            ("lo", K, F, rl, rl * 0.85, lo),
+            ()
+            if organic
+            else (
+                ("up", J, K, ru, (ru + rl) / 2, up),
+                ("lo", K, F, rl, rl * 0.85, lo),
+            )
         ):
             v, f = capsule(r0, r1, _len(_sub(b, a)))
             meshes.append(
@@ -186,6 +200,34 @@ def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), 
                 )
             )
         shape, fr, fh = sp.foot
+        if organic and shape != "hoof":
+            # skin-grown foot; elephants and tortoises get toenails/claws on the front of it
+            for t in range(sp.nails):
+                u = (t - (sp.nails - 1) / 2) / max(1, sp.nails - 1)
+                ang = u * 1.1
+                nail_c = (
+                    F[0] + math.sin(ang) * fr * 0.85,
+                    F[1] - math.cos(ang) * fr * 0.85,
+                    F[2] - fh * 0.55,
+                )
+                meshes.append(
+                    (
+                        {
+                            "op": "create_primitive",
+                            "id": f"{cid}_nail_{key}_{t}",
+                            "shape": "uv_sphere",
+                            "size": [fr * 0.42, fr * 0.26, fh * 0.55],
+                            "location": _r(nail_c),
+                            "rotation": [0, 0, round(-math.degrees(ang) * side, 2)],
+                            "smooth": True,
+                            "segments": 16,
+                        },
+                        "nail",
+                        lo,
+                    )
+                )
+            poles.append((key, _add(K, (0.0, -d if fore else d, 0.0))))
+            continue
         foot_op: dict[str, Any] = {
             "op": "create_primitive",
             "id": f"{cid}_foot_{key}",
@@ -227,6 +269,22 @@ def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), 
             "parent": neck_bones[-1],
         }
     )
+    if organic:
+        # the organic rump is fuller than the old primitive: start the tail on its surface, not inside it
+        W, L, D = sp.torso
+        rump_y = sp.torso_at[1] + 0.45 * L + max(W / 2 * 0.62, D / 2 * 0.66) * (0.35 if sp.shell else 0.85)
+        dy = max(0.0, rump_y - sp.tail.base[1])
+        if dy:
+            sp = replace(
+                sp,
+                tail=Chain(
+                    _add(sp.tail.base, (0.0, dy, 0.0)),
+                    _add(sp.tail.tip, (0.0, dy, 0.0)),
+                    sp.tail.bones,
+                    sp.tail.r0,
+                    sp.tail.r1,
+                ),
+            )
     tail_bones = chain("tail", sp.tail, "hips")
     trunk_bones = chain("trunk", sp.trunk, "head") if sp.trunk else []
 
@@ -295,6 +353,7 @@ def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), 
             )
 
     # body, neck, head
+    meshes_before = len(meshes)
     meshes.append(
         (
             {
@@ -343,6 +402,8 @@ def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), 
             "head",
         )
     )
+    if organic:  # the skin-modifier body replaces the torso/neck/head primitives
+        del meshes[meshes_before:]
     if sp.muzzle:
         msize, moff = sp.muzzle
         meshes.append(
@@ -362,6 +423,7 @@ def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), 
             )
         )
     v, f = capsule(sp.tail.r0, sp.tail.r1, _len(_sub(sp.tail.tip, sp.tail.base)), seg=12)
+    tail_at = len(meshes)
     meshes.append(
         (
             {
@@ -377,6 +439,8 @@ def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), 
             tail_bones if len(tail_bones) > 1 else tail_bones[0],
         )
     )
+    if organic:
+        del meshes[tail_at:]
     if sp.tuft:
         meshes.append(
             (
@@ -394,7 +458,7 @@ def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), 
                 tail_bones[-1],
             )
         )
-    if sp.trunk:
+    if sp.trunk and not organic:
         v, f = capsule(sp.trunk.r0, sp.trunk.r1, _len(_sub(sp.trunk.tip, sp.trunk.base)), seg=18, body=10)
         meshes.append(
             (
@@ -431,6 +495,99 @@ def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), 
     ops.append(
         {"op": "create_armature", "id": rig, "parent": root, "bones": bones, "tags": ["creature", cid, "rig"]}
     )
+    if organic:
+        body = f"{cid}_body"
+        if body_style == "metaball":
+            g = body_graph(sp, leg_pts, shell=sp.shell is not None, include_tail=False)
+            els, res_m = metaball_elements(g)
+            ops.append(
+                {
+                    "op": "create_metaball_mesh",
+                    "id": body,
+                    "elements": els,
+                    "resolution": res_m,
+                    "parent": root,
+                    "tags": ["creature", cid],
+                }
+            )
+            # the thin tail is a skin-modifier tube on its own chain (too thin for the body's resolution)
+            tp = tail_points(sp)
+            ops += [
+                {
+                    "op": "create_skin_mesh",
+                    "id": f"{cid}_tail",
+                    "vertices": [list(p) for p, _ in tp],
+                    "edges": [[i, i + 1] for i in range(len(tp) - 1)],
+                    "radii": [[r, r] for _, r in tp],
+                    "subdivisions": 2,
+                    "parent": root,
+                    "tags": ["creature", cid],
+                },
+                {
+                    "op": "bind_mesh_to_armature",
+                    "mesh": f"{cid}_tail",
+                    "armature": rig,
+                    **({"bones": tail_bones} if len(tail_bones) > 1 else {"bone": tail_bones[0]}),
+                },
+                {
+                    "op": "set_material",
+                    "targets": [f"{cid}_tail"],
+                    "material": {
+                        **sp.mats.get(sp.part_mats.get("tail", "tail"), sp.coat),
+                        "name": f"{cid}_tailskin",
+                    },
+                },
+            ]
+        else:
+            g = body_graph(sp, leg_pts, shell=sp.shell is not None)
+            ops.append(
+                {
+                    "op": "create_skin_mesh",
+                    "id": body,
+                    "vertices": g.verts,
+                    "edges": g.edges,
+                    "radii": g.radii,
+                    "subdivisions": 2,
+                    "parent": root,
+                    "tags": ["creature", cid],
+                }
+            )
+        ops += [
+            {
+                "op": "bind_mesh_to_armature",
+                "mesh": body,
+                "armature": rig,
+                "auto": True,
+                # separate meshes ride these: they must not tear the body (a swishing tail ripped the rump)
+                "exclude": ["ear_"] + (["tail_"] if body_style == "metaball" else []),
+            },
+            {
+                "op": "set_material_by_bone",
+                "target": body,
+                "default": {**sp.coat, "name": f"{cid}_coat"},
+                "rules": [
+                    {"bones": list(prefixes), "material": {**sp.mats[key], "name": f"{cid}_{key}"}}
+                    for prefixes, key in sp.regions
+                ],
+            },
+        ]
+        if sp.shell is not None:
+            ssize, sat = sp.shell
+            meshes.append(
+                (
+                    {
+                        "op": "create_primitive",
+                        "id": f"{cid}_shell",
+                        "shape": "uv_sphere",
+                        "size": list(ssize),
+                        "location": list(sat),
+                        "smooth": True,
+                        "segments": 64,
+                    },
+                    "shell",
+                    "chest",
+                )
+            )
     # meshes, parented to the root (root space), then bound to their bones
     mat_groups: dict[str, list[str]] = {}
     for op, mkey, bone in meshes:
@@ -481,6 +638,9 @@ def build_creature(cid: str, sp: Species, at: tuple[float, float] = (0.0, 0.0), 
                 "type": "ik",
                 "subject": tgt,
                 "pole": pole,
+                # twist-free: a pole in front needs -90 deg, a pole behind needs +90 (measured); the wrong
+                # sign spins the leg 180 deg about its own axis and drags the skinned rump with it
+                "pole_angle": -90.0 if key[1] == "F" else 90.0,
             },
         ]
         ik_targets[key] = tgt
