@@ -1,0 +1,35 @@
+{
+ "voices": {
+  "narrator": {
+   "voice": "bm_fable",
+   "f0_hz": 114.0,
+   "centroid_hz": 1121
+  },
+  "tembo": {
+   "voice": "am_puck",
+   "f0_hz": 168.3,
+   "centroid_hz": 618
+  },
+  "zuri": {
+   "voice": "af_bella",
+   "f0_hz": 218.3,
+   "centroid_hz": 467
+  },
+  "kiki": {
+   "voice": "af_sky",
+   "f0_hz": 239.7,
+   "centroid_hz": 615
+  },
+  "neema": {
+   "voice": "af_nicole",
+   "f0_hz": 157.5,
+   "centroid_hz": 359
+  },
+  "bibi_kobe": {
+   "voice": "bf_emma",
+   "f0_hz": 144.1,
+   "centroid_hz": 565
+  }
+ },
+ "clashes": []
+}
