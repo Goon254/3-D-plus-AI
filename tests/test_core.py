@@ -208,3 +208,26 @@ def test_critic_eyeline_and_addressee_thresholds():
     assert dialogue_framing_issues("s1", part, [(95, 120)], "lantern", "wide", "hero_head") == []
     good = {"100": frame(22, 0.95)}
     assert dialogue_framing_issues("s3", good, [(95, 120)], "lantern", "closeup", "hero_head") == []
+
+
+def test_critic_face_floor_per_kind_and_dialogue_singles():
+    from animatica.agents.critic import dialogue_framing_issues
+
+    def frame(head_h, prop_vis):
+        return {
+            "subjects": {
+                "hero_head": {"screen_height": head_h, "visible_fraction": 1.0},
+                "prop": {"visible_fraction": prop_vis},
+            }
+        }
+
+    # a critter's head at 25 % of the frame: fine for a robot screen face (20 %), too small for a snout mouth
+    issues = dialogue_framing_issues(
+        "s3", {"100": frame(0.25, 1.0)}, [(95, 120)], "lantern", face="hero_head"
+    )
+    assert [i.check for i in issues] == ["face_too_small"] and issues[0].fix["fill_mul"] > 1
+    # a head-and-shoulders single deliberately leaves the addressee out: no addressee_cut there
+    single = dialogue_framing_issues(
+        "s3", {"100": frame(0.5, 0.1)}, [(95, 120)], "lantern", face="hero_head", addressee=False
+    )
+    assert single == []

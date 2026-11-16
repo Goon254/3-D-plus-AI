@@ -232,6 +232,7 @@ class Critic(Agent):
                 plan.prop.kind if plan.prop else None,
                 shot_type=s.type,
                 face=face,
+                addressee=s.id not in ctx.state.artifacts.get("single_shots", []),
             )
             for a, b in dialogue_frames.get(s.id, []):
                 inside = [f for k, f in fr.items() if a <= int(k) <= b]
@@ -338,6 +339,9 @@ def exit_issues(shot_id: str, frames: dict[str, Any], depart_f: int, subj: str =
 
 FACE_TURN_MAX = 35.0  # degrees of head yaw away from the lens while speaking (review 14:50)
 ADDRESSEE_MIN = {"closeup": 0.8, "medium": 0.8, "wide": 0.6}
+# per-kind face-size floor while speaking: the robot's screen face is big; a critter's mouth sits on a small
+# snout, so its head (the measured "face") must fill more of the frame (review 11-16 17:25)
+FACE_MIN = {"hero_face": 0.2, "hero_head": 0.3}
 
 
 def dialogue_framing_issues(
@@ -347,6 +351,7 @@ def dialogue_framing_issues(
     prop_kind: str | None,
     shot_type: str = "closeup",
     face: str = "hero_face",
+    addressee: bool = True,
 ) -> list[Issue]:
     """Lip-sync readability, eyeline and addressee checks over the inspected frames inside dialogue windows."""
     issues: list[Issue] = []
@@ -355,14 +360,15 @@ def dialogue_framing_issues(
     if faces:
         fh = min(v.get("screen_height", 0) for v in faces)
         fv = min(v.get("visible_fraction", 1) for v in faces)
-        if fh < 0.2:
+        floor = FACE_MIN.get(face, 0.2)
+        if fh < floor:
             issues.append(
                 Issue(
                     shot,
                     "face_too_small",
                     "blocker",
-                    f"face is {fh:.0%} of frame height while speaking (min 20%): lip sync unreadable",
-                    {"kind": "camera", "fill_mul": round(min(1.6, 0.22 / max(fh, 0.02)), 3)},
+                    f"face is {fh:.0%} of frame height while speaking (min {floor:.0%}): lip sync unreadable",
+                    {"kind": "camera", "fill_mul": round(min(1.6, (floor + 0.02) / max(fh, 0.02)), 3)},
                 )
             )
         if fv < 0.95:
@@ -390,7 +396,7 @@ def dialogue_framing_issues(
                 )
             )
     props = [f["subjects"]["prop"] for f in inside if "prop" in f.get("subjects", {})]
-    if prop_kind and props:
+    if prop_kind and props and addressee:
         pv = min(v.get("visible_fraction", 1) for v in props)
         need = ADDRESSEE_MIN.get(shot_type, 0.6)
         if pv < need:

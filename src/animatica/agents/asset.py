@@ -660,12 +660,15 @@ def critter_ops(
         mouth_loc = [
             0,
             muzzle["y"] - muzzle["radius"] * muzzle["scale"][1] * 0.89 - 0.012,
-            muzzle["z"] - muzzle["radius"] * muzzle["scale"][2] * 0.45,
+            muzzle["z"] - muzzle["radius"] * muzzle["scale"][2] * 0.5,
         ]
         nose_r = 0.042 if species in ("fox", "dog") else 0.028
     else:
         nose_loc, mouth_loc, nose_r = [0, -0.3, 0.19], [0, -0.29, 0.13], 0.03
-    verts, faces, keys = mouth_mesh(0.075 if not muzzle else 0.065, 0.01, open_mul=6.0)
+    # a snout mouth is bigger and opens wider, so a whispered line still reads (review 11-16 17:25)
+    verts, faces, keys = (
+        mouth_mesh(0.075, 0.01, open_mul=6.0) if not muzzle else mouth_mesh(0.075, 0.012, open_mul=7.0)
+    )
     ops += [
         {
             "op": "create_mesh",

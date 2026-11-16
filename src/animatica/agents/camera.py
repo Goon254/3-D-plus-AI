@@ -218,6 +218,8 @@ class CameraLighting(Agent):
         stand_x = (anim_notes or {}).get("stand_x", prop_x - 0.95)
         ops: list[dict[str, Any]] = []
         x_track = (anim_notes or {}).get("root_x")  # callable time->x, when available
+        singles: list[str] = []  # dialogue singles: the addressee is intentionally out of frame
+        ctx.state.artifacts["single_shots"] = singles
         for _i, shot in enumerate(plan.shots):
             c = dict(DEFAULTS[shot.type])
             c.update(cp["shots"].get(shot.id, {}))
@@ -229,7 +231,20 @@ class CameraLighting(Agent):
             if shot.beat == "exit":
                 hx1 = hx0  # the camera holds on where the hero stood; the hero leaves the frame
             two_shot = False
-            if shot.type == "closeup" and shot.beat == "speak" and plan.prop:
+            if shot.type == "closeup" and shot.beat == "speak" and plan.hero.kind == "critter":
+                # a small critter speaking to something at its feet: a head-and-shoulders *single* at eye
+                # level (ear tips to chest) so the snout and mouth read; the medium before it already showed
+                # the addressee, and the speaker's eyeline/glance keeps it present (review 11-16 17:25)
+                top = asset_info.get("head_top", head_z + 0.3) + 0.12 * plan.hero.scale  # ear-tip headroom
+                bottom = max(0.0, head_z - 0.45 * plan.hero.scale)
+                center = (hx1 + 0.05, 0.0, (top + bottom) / 2)
+                sub_h, sub_w = top - bottom, 0.9 * plan.hero.scale
+                c["height"] = round(head_z + 0.08 * plan.hero.scale, 3)
+                c["fill"] = round(
+                    0.95 * ctx.state.tuning.get("camera", {}).get(shot.id, {}).get("fill_mul", 1.0), 3
+                )
+                singles.append(shot.id)
+            elif shot.type == "closeup" and shot.beat == "speak" and plan.prop:
                 # dialogue close-up: the face fills the frame (lip sync must read) with the prop's
                 # blossom entering from below — head and shoulders, not a medium shot
                 # head (and ears) to the whole blossom
