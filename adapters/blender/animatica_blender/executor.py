@@ -15,6 +15,7 @@ import builtins
 import math
 import os
 import signal
+import sys
 import tempfile
 import time
 import traceback
@@ -197,9 +198,22 @@ class Executor(SceneOps, MaterialOps, AnimOps, RenderOps):
                 signal.setitimer(signal.ITIMER_REAL, timeout)
             except ValueError:  # not main thread (live add-on)
                 old = None
+        traced = old is None  # Windows (no SIGALRM) or a worker thread: enforce the deadline by tracing
+        if traced:
+            deadline = time.monotonic() + timeout
+
+            def tracer(frame, event, arg):
+                if time.monotonic() > deadline:
+                    raise TimeoutError(f"script exceeded {timeout}s")
+                # line events only inside the script itself (cheap for helper/library frames)
+                return tracer if frame.f_code.co_filename == "<animatica-script>" else None
+
+            sys.settrace(tracer)
         try:
             exec(compile(code, "<animatica-script>", "exec"), ns)  # noqa: S102 - sandboxed namespace
         finally:
+            if traced:
+                sys.settrace(None)
             if old is not None:
                 signal.setitimer(signal.ITIMER_REAL, 0)
                 signal.signal(signal.SIGALRM, old)

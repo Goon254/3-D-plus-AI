@@ -26,12 +26,45 @@ def main() -> None:
     final = src / "final.mp4"
     if final.exists():
         for crf in (24, 27, 30, 33):
-            subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(final), "-map", "0", "-c:v", "libx264", "-crf", str(crf),
-                            "-preset", "slow", "-pix_fmt", "yuv420p", "-c:a", "copy", "-c:s", "copy", "-movflags", "+faststart",
-                            str(dst / "final.mp4")], check=True)
+            subprocess.run(
+                [
+                    "ffmpeg",
+                    "-v",
+                    "error",
+                    "-y",
+                    "-i",
+                    str(final),
+                    "-map",
+                    "0",
+                    "-c:v",
+                    "libx264",
+                    "-crf",
+                    str(crf),
+                    "-preset",
+                    "slow",
+                    "-pix_fmt",
+                    "yuv420p",
+                    "-c:a",
+                    "copy",
+                    "-c:s",
+                    "copy",
+                    "-movflags",
+                    "+faststart",
+                    str(dst / "final.mp4"),
+                ],
+                check=True,
+            )
             if (dst / "final.mp4").stat().st_size / 1e6 < MAX_MB:
                 break
-    for f in ("final.srt", "scene.blend", "scene.usda", "GDD.json", "PLAYTEST.json", "README.md", "screenshot.png"):
+    for f in (
+        "final.srt",
+        "scene.blend",
+        "scene.usda",
+        "GDD.json",
+        "PLAYTEST.json",
+        "README.md",
+        "screenshot.png",
+    ):
         if (src / f).exists():
             shutil.copy2(src / f, dst / f)
     if (src / "audio" / "audio_manifest.json").exists():

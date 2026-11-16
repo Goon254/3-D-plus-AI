@@ -50,8 +50,10 @@ def find_rhubarb() -> str | None:
     which = shutil.which("rhubarb")
     if which:
         return which
-    for cand in sorted((CACHE / "rhubarb").glob("*/rhubarb")):
-        return str(cand)
+    for pattern in ("*/rhubarb", "*/rhubarb.exe"):  # Linux/macOS and Windows release layouts
+        for cand in sorted((CACHE / "rhubarb").glob(pattern)):
+            if cand.is_file():
+                return str(cand)
     return None
 
 

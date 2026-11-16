@@ -33,9 +33,9 @@ def write_mlt(
     def rel(p: str | Path) -> str:
         p = Path(p)
         try:
-            return str(p.resolve().relative_to(root.resolve()))
+            return p.resolve().relative_to(root.resolve()).as_posix()  # portable across OSes
         except ValueError:
-            return str(p)
+            return p.as_posix()
 
     x = [
         '<?xml version="1.0" encoding="utf-8"?>',

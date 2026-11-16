@@ -39,6 +39,7 @@ def godot_bin() -> str | None:
         if shutil.which(name):
             return shutil.which(name)
     found = sorted((CACHE / "godot").glob("Godot_v4*_linux.x86_64"))
+    found += sorted((CACHE / "godot").glob("Godot_v4*_win64_console.exe"))  # console build: stdout works
     return str(found[-1]) if found else None
 
 
