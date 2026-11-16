@@ -151,7 +151,8 @@ def describe(o, fields: list[str], tags: list[str]) -> dict:
         ]
     if "material" in fields and getattr(o, "active_material", None):
         m = o.active_material
-        c = m.diffuse_color[:3]
+        # the ungraded viewport colour: a night viewport tint is a preview grade, not an artist's edit
+        c = tuple(m["animatica_wb_base"])[:3] if "animatica_wb_base" in m else m.diffuse_color[:3]
         bsdf = m.node_tree.nodes.get("Principled BSDF") if m.use_nodes and m.node_tree else None
         if bsdf is not None and not bsdf.inputs["Base Color"].is_linked:
             c = bsdf.inputs["Base Color"].default_value[:3]  # what an artist edits in the UI

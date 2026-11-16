@@ -184,6 +184,12 @@ def test_viewport_tint_grades_workbench_only(fresh, tmp_path):
     assert run(fresh, {"op": "set_world", "horizon": "#202040", "viewport_tint": "#5060A0"}, bid="n").ok
     night = mean("night")
     assert night < day * 0.75
+    # ...but a query reports the ungraded colour: the preview grade is not an artist edit (continue/revise
+    # used to lock every grimed set material on a night film as "edited")
+    noisy = {"base_color": "#F0F0F0", "noise": 0.5, "noise_scale": 2.0}
+    assert run(fresh, {"op": "set_material", "targets": ["wall"], "material": noisy}, bid="nz").ok
+    q = fresh.run_batch({"batch_id": "q", "ops": [{"op": "query", "ids": ["wall"], "fields": ["material"]}]})
+    assert q.data["objects"]["wall"]["material"]["base_color"].upper() == "#F0F0F0"
     # an emissive material created after the grade shows its emission colour at full strength
     glow = {"base_color": "#202020", "emission": "#FFE0A0", "emission_strength": 4}
     assert run(fresh, {"op": "set_material", "targets": ["wall"], "material": glow}, bid="g").ok
