@@ -298,6 +298,22 @@ class SetCameraActive(_Op):
         return [self.id]
 
 
+class SnapToSurface(_Op):
+    """Seat ``target`` on the surface of mesh ``surface``: cast a ray from outside along ``direction`` (parent
+    space of the target) back toward the object, and place it ``offset`` metres proud of the hit. Robust face
+    placement on sculpted (metaball) heads, whose blended surfaces swell unpredictably."""
+
+    op: Literal["snap_to_surface"]
+    target: str
+    surface: str
+    direction: Vec3 = (0.0, -1.0, 0.0)
+    offset: float = Field(0.002, ge=-1, le=1)
+    reach: float = Field(1.0, gt=0, le=100)
+
+    def references(self) -> list[str]:
+        return [self.target, self.surface]
+
+
 class AddBoneConstraint(_Op):
     """A constraint on a pose bone. ``ik``: two-bone legs reach ``subject`` (a foot target), bending toward
     ``pole``; ``damped_track``: aim the bone at ``subject`` (look-at); ``copy_rotation``."""
@@ -541,6 +557,7 @@ OP_CLASSES: tuple[type[_Op], ...] = (
     AddConstraint,
     AddBoneConstraint,
     SetMaterialByBone,
+    SnapToSurface,
     InsertKeyframes,
     ClearAnimation,
     SetFrameRange,

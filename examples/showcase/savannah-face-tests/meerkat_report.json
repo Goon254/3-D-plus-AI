@@ -1,0 +1,10 @@
+{
+ "species": "meerkat",
+ "character": "Kiki",
+ "line": "Danger! Oh. It's a rock.",
+ "voice": "af_sky",
+ "lipsync": "rhubarb",
+ "cues": 13,
+ "seconds": 3.24,
+ "render_s": 16.8
+}

@@ -442,6 +442,29 @@ class SceneOps:
         "limit_location": "LIMIT_LOCATION",
     }
 
+    def op_snap_to_surface(self, op: dict, res: dict) -> None:
+        o, surf = self.obj(op["target"]), self.obj(op["surface"])
+        if surf.type != "MESH":
+            raise OpError(f"{op['surface']!r} is not a mesh")
+        bpy.context.view_layer.update()
+        d = mathutils.Vector(op.get("direction", (0.0, -1.0, 0.0)))
+        if o.parent is not None:
+            d = o.parent.matrix_world.to_3x3() @ d
+        d.normalize()
+        here = o.matrix_world.translation.copy()
+        origin = here + d * op.get("reach", 1.0)
+        inv = surf.matrix_world.inverted()
+        lo, ld = inv @ origin, (inv.to_3x3() @ -d).normalized()
+        hit, loc, _normal, _i = surf.ray_cast(lo, ld)
+        if not hit:
+            res["warnings"].append(f"snap_to_surface: no hit on {op['surface']!r} for {op['target']!r}")
+            return
+        world = surf.matrix_world @ loc + d * op.get("offset", 0.002)
+        mw = o.matrix_world.copy()
+        mw.translation = world
+        o.matrix_world = mw
+        res["modified"].append(op["target"])
+
     def op_add_bone_constraint(self, op: dict, res: dict) -> None:
         arm = self.obj(op["armature"])
         if arm.type != "ARMATURE" or op["bone"] not in arm.pose.bones:

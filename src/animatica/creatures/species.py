@@ -107,7 +107,8 @@ SPECIES: dict[str, Species] = {
         head_size=(0.66, 0.56, 0.68),
         head_pitch=6.0,
         eye=(0.17, -0.22, 0.1, 0.088),
-        ear=("disc", (0.05, 0.46, 0.62), (0.31, 0.14, -0.28), (0.0, -8.0, 12.0)),
+        # angled forward so the big ears frame the face instead of showing their edge
+        ear=("disc", (0.05, 0.46, 0.62), (0.31, 0.1, -0.28), (0.0, -8.0, 38.0)),
         tail=Chain((0.0, 0.48, 0.14), (0.0, 0.58, -0.3), 3, 0.03, 0.014),
         tuft=0.035,
         trunk=Chain((0.0, -0.98, 0.2), (0.0, -1.06, -0.3), 5, 0.095, 0.045),

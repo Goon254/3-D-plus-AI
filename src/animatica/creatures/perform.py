@@ -84,10 +84,16 @@ def apply_sentinel(meta: CreatureMeta, plan: list[LocoFrame], fps: int) -> None:
 
 
 def walk_keys(
-    meta: CreatureMeta, gait: GaitSpec, points: list[Waypoint], fps: int = 24, frame0: int = 1, seed: int = 0
+    meta: CreatureMeta,
+    gait: GaitSpec,
+    points: list[Waypoint],
+    fps: int = 24,
+    frame0: int = 1,
+    seed: int = 0,
+    yaw0: float | None = None,
 ) -> tuple[list[dict[str, Any]], list[LocoFrame]]:
     plan = plan_locomotion(
-        points, gait, meta.feet, meta.leg, meta.body_z, meta.foot_z, fps, joints=meta.joints
+        points, gait, meta.feet, meta.leg, meta.body_z, meta.foot_z, fps, joints=meta.joints, yaw0=yaw0
     )
     if SPECIES[meta.species].default_pose == "sentinel":
         apply_sentinel(meta, plan, fps)

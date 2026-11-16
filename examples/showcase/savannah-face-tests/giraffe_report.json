@@ -1,0 +1,10 @@
+{
+ "species": "giraffe",
+ "character": "Neema",
+ "line": "There! I see her stripes!",
+ "voice": "af_nicole",
+ "lipsync": "rhubarb",
+ "cues": 12,
+ "seconds": 3.31,
+ "render_s": 16.8
+}

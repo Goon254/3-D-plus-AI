@@ -105,3 +105,44 @@ def test_build_and_walk_ops_validate(species):
     if species == "elephant":
         assert len(meta.trunk_bones) == 5
     assert all(k[2] == "LINEAR" for o in keys if o["target"].endswith(("_ik_LF", "_root")) for k in o["keys"])
+
+
+def test_faces_mouth_brows_and_expressions():
+    from animatica.audio.lipsync import Cue
+    from animatica.creatures.face import (
+        BROW_COLOR,
+        EXPRESSIONS,
+        expression_at,
+        face_keys,
+        face_ops,
+        mouth_mesh,
+    )
+
+    v, f, keys = mouth_mesh(0.05)
+    assert set(keys) == {"open", "wide", "round", "smile", "frown"}
+    corner = max(range(1, len(v)), key=lambda i: v[i][0])  # the right-hand corner vertex
+    assert keys["smile"][corner][2] > v[corner][2] > keys["frown"][corner][2]  # smile curls up, frown down
+    for sp_name in SPECIES:
+        sp = SPECIES[sp_name]
+        ops, face = face_ops(sp_name, sp, f"{sp_name}_root", f"{sp_name}_rig", BROW_COLOR[sp_name])
+        validate_batch(
+            {"batch_id": "f", "ops": ops},
+            existing_ids={
+                f"{sp_name}_root",
+                f"{sp_name}_rig",
+                f"{sp_name}_body",
+                f"{sp_name}_head",
+                f"{sp_name}_muzzle",
+            },
+        )
+        assert any(o["op"] == "snap_to_surface" and o["target"] == face["mouth"] for o in ops)
+    # expressions ease in, sad brows tilt inner-up, determined inner-down
+    track = [(0.0, "neutral"), (1.0, "sad")]
+    assert expression_at(track, 0.9).brow_tilt == pytest.approx(0.0)
+    assert expression_at(track, 1.5).brow_tilt == pytest.approx(EXPRESSIONS["sad"].brow_tilt)
+    assert EXPRESSIONS["determined"].brow_tilt < 0 < EXPRESSIONS["worried"].brow_tilt
+    fk = face_keys(face, track, [Cue(0.0, 0.3, "D"), Cue(0.3, 0.6, "X")], 24, 1, 48, line_start=0.5)
+    props = {(o["target"], o["property"]) for o in fk}
+    assert (face["mouth"], "shape_key:open") in props and (face["mouth"], "shape_key:frown") in props
+    opens = next(o for o in fk if o["property"] == "shape_key:open")["keys"]
+    assert opens[0][0] == 1 + 12  # lip sync starts where the line starts
