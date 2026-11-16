@@ -129,7 +129,7 @@ def write_srt(lines: list[tuple[float, float, str]], out: str | Path) -> Path:
         return f"{ms // 3600000:02d}:{ms // 60000 % 60:02d}:{ms // 1000 % 60:02d},{ms % 1000:03d}"
 
     blocks = [f"{i}\n{ts(a)} --> {ts(b)}\n{text}\n" for i, (a, b, text) in enumerate(lines, 1)]
-    Path(out).write_text("\n".join(blocks))
+    Path(out).write_text("\n".join(blocks), encoding="utf-8")
     return Path(out)
 
 

@@ -91,7 +91,7 @@ def run_batch(project: Path, batch: dict[str, Any], timeout: float = 120) -> dic
     install_addon(project)
     with tempfile.TemporaryDirectory() as td:
         bpath, rpath = Path(td) / "batch.json", Path(td) / "result.json"
-        bpath.write_text(json.dumps(batch))
+        bpath.write_text(json.dumps(batch), encoding="utf-8")
         proc = subprocess.run(
             [
                 exe,
@@ -110,7 +110,7 @@ def run_batch(project: Path, batch: dict[str, Any], timeout: float = 120) -> dic
         )
         if not rpath.exists():
             raise GodotError(f"runner produced no result: {proc.stderr[-800:]}")
-        res = json.loads(rpath.read_text())
+        res = json.loads(rpath.read_text(encoding="utf-8"))
     res["engine_errors"] = script_errors(proc.stderr + proc.stdout)
     return res
 

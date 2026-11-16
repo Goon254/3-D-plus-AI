@@ -165,7 +165,7 @@ def study(sources: list[str], name: str, license_note: str, provider=None) -> di
     notes.update({"name": name, "sources": [Path(s).name for s in sources], "license": license_note})
     notes["director_hints"] = style_hints(notes)
     STYLES_DIR.mkdir(exist_ok=True)
-    (STYLES_DIR / f"{name}.json").write_text(json.dumps(notes, indent=1))
+    (STYLES_DIR / f"{name}.json").write_text(json.dumps(notes, indent=1), encoding="utf-8")
     return notes
 
 
@@ -188,4 +188,4 @@ def style_hints(notes: dict[str, Any]) -> dict[str, Any]:
 
 def load_style(name: str) -> dict[str, Any] | None:
     p = STYLES_DIR / f"{name}.json"
-    return json.loads(p.read_text()) if p.exists() else None
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None

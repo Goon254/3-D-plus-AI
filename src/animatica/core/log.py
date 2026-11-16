@@ -35,7 +35,9 @@ class ProductionLog:
     def read(self) -> list[dict[str, Any]]:
         if not self.path.exists():
             return []
-        return [json.loads(line) for line in self.path.read_text().splitlines() if line.strip()]
+        return [
+            json.loads(line) for line in self.path.read_text(encoding="utf-8").splitlines() if line.strip()
+        ]
 
 
 def read_log(project_dir: str | Path) -> list[dict[str, Any]]:

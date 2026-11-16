@@ -50,13 +50,13 @@ class ProjectState:
             "artifacts": self.artifacts,
             "tuning": self.tuning,
         }
-        self.path.write_text(json.dumps(data, indent=1))
+        self.path.write_text(json.dumps(data, indent=1), encoding="utf-8")
         return self.path
 
     @classmethod
     def load(cls, root: str | Path) -> ProjectState:
         root = Path(root)
-        data = json.loads((root / "project.json").read_text())
+        data = json.loads((root / "project.json").read_text(encoding="utf-8"))
         return cls(
             root=root,
             prompt=data.get("prompt", ""),

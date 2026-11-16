@@ -176,7 +176,7 @@ def _piper(text: str, out: Path, voice: VoiceSpec) -> None:
     )
     if model is None:
         raise RuntimeError("no piper voice model found; run scripts/setup_assets.sh")
-    cfg = json.loads(Path(str(model) + ".json").read_text())
+    cfg = json.loads(Path(str(model) + ".json").read_text(encoding="utf-8"))
     speaker = voice.speaker if int(cfg.get("num_speakers", 1)) > 1 else None
     _worker(
         {

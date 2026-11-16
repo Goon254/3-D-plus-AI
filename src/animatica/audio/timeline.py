@@ -90,5 +90,5 @@ def write_mlt(
     x.append("  </tractor>")
     x.append("</mlt>")
     out = root / out_name
-    out.write_text("\n".join(x) + "\n")
+    out.write_text("\n".join(x) + "\n", encoding="utf-8")
     return out

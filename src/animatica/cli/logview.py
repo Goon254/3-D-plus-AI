@@ -36,15 +36,19 @@ def _rel(path: str | None, root: Path) -> str | None:
     if not p.is_absolute():
         p = Path.cwd() / p
     try:
-        return os.path.relpath(p, root / "log")
+        return Path(os.path.relpath(p, root / "log")).as_posix()  # URLs, also on Windows
     except ValueError:
-        return str(p)
+        return p.as_posix()
 
 
 def write_log_html(project: str | Path) -> Path:
     root = Path(project)
     events = read_log(root)
-    state = json.loads((root / "project.json").read_text()) if (root / "project.json").exists() else {}
+    state = (
+        json.loads((root / "project.json").read_text(encoding="utf-8"))
+        if (root / "project.json").exists()
+        else {}
+    )
     plan = state.get("plan") or {}
     arts = state.get("artifacts") or {}
     e = html.escape
@@ -105,5 +109,5 @@ def write_log_html(project: str | Path) -> Path:
     parts.append("</div></main></body></html>")
     out = root / "log" / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text("".join(parts))
+    out.write_text("".join(parts), encoding="utf-8")
     return out

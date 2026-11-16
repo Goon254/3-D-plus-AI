@@ -97,7 +97,7 @@ class VoiceSound(Agent):
             ],
             "lip_sync": sorted({v["lipsync"] for v in lines.values()}),
         }
-        (audio_dir / "audio_manifest.json").write_text(json.dumps(manifest, indent=1))
+        (audio_dir / "audio_manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
         ctx.state.artifacts.update(
             {"lines": lines, "mouth_keys": mouth, "music": str(music_path), "mix": str(mix_path)}
         )

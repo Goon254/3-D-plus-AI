@@ -19,7 +19,7 @@ def sections() -> list[tuple[str, str, str]]:
     out = []
     for md in sorted(_DIR.glob("*.md")):
         doc, title, buf = md.stem, md.stem, []
-        for line in md.read_text().splitlines():
+        for line in md.read_text(encoding="utf-8").splitlines():
             if line.startswith("## "):
                 if buf:
                     out.append((doc, title, "\n".join(buf).strip()))

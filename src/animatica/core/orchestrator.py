@@ -384,7 +384,7 @@ class Studio:
             "tokens": u.total_tokens,
         }
         ctx.state.artifacts["usda"] = str(ctx.state.root / "scene.usda")
-        (ctx.state.root / "scene.usda").write_text(ctx.state.scene.to_usda())
+        (ctx.state.root / "scene.usda").write_text(ctx.state.scene.to_usda(), encoding="utf-8")
         ctx.state.save()
         ctx.log.event(
             "done",

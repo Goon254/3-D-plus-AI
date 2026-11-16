@@ -75,26 +75,26 @@ def main() -> None:
     for p in sorted((src / "log" / "previews").glob("iter*.png")):
         shutil.copy2(p, dst / "log" / "previews" / p.name)
     if (src / "project.json").exists():
-        data = json.loads((src / "project.json").read_text())
+        data = json.loads((src / "project.json").read_text(encoding="utf-8"))
         data.get("artifacts", {}).pop("mouth_keys", None)
         # make artifact paths relative to the showcase folder
         arts = data.get("artifacts", {})
         for k in ("final", "contact_sheet"):
             if arts.get(k):
                 rel = Path(arts[k]).relative_to(src.resolve() if Path(arts[k]).is_absolute() else src)
-                arts[k] = str((dst / rel).relative_to(ROOT))
-        (dst / "project.json").write_text(json.dumps(data, indent=1))
+                arts[k] = (dst / rel).relative_to(ROOT).as_posix()
+        (dst / "project.json").write_text(json.dumps(data, indent=1), encoding="utf-8")
         # previews in the log point at the original project; rewrite them to the copied folder
         log = dst / "log" / "production.jsonl"
         if log.exists():
             lines = []
-            for line in log.read_text().splitlines():
+            for line in log.read_text(encoding="utf-8").splitlines():
                 ev = json.loads(line)
                 if ev.get("preview"):
                     p = dst / "log" / "previews" / Path(ev["preview"]).name
-                    ev["preview"] = str(p.relative_to(ROOT)) if p.exists() else None
+                    ev["preview"] = p.relative_to(ROOT).as_posix() if p.exists() else None
                 lines.append(json.dumps(ev))
-            log.write_text("\n".join(lines) + "\n")
+            log.write_text("\n".join(lines) + "\n", encoding="utf-8")
         sys.path.insert(0, str(ROOT / "src"))
         import os
 

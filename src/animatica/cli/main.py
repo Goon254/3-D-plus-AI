@@ -97,7 +97,7 @@ def cmd_run_batch(args: argparse.Namespace) -> int:
     from ..core.engine import BlenderSession
     from ..core.protocol import BatchValidationError
 
-    data = json.loads(Path(args.batch).read_text())
+    data = json.loads(Path(args.batch).read_text(encoding="utf-8"))
     workdir = Path(args.workdir)
     with BlenderSession(workdir=workdir) as s:
         if args.blend:
