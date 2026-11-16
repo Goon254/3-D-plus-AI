@@ -427,7 +427,7 @@ DARK_FUR = "#2B1E1A"
 # shared rig interface; unknown species fall back to the generic round creature.
 SPECIES = {
     "fox": {
-        "ears": {"radius": 0.115, "depth": 0.34, "x": 0.15, "z": 0.47, "tilt": 16, "tip": True},
+        "ears": {"radius": 0.14, "depth": 0.42, "x": 0.16, "z": 0.5, "tilt": 18, "tip": True},
         "muzzle": {"radius": 0.13, "scale": [0.8, 1.4, 0.66], "y": -0.28, "z": 0.12},
         "tail": "bushy",
         "legs": True,
@@ -613,12 +613,14 @@ def critter_ops(
                 {
                     "op": "create_empty",
                     "id": f"hero_arm_pivot_{side}",
-                    "location": [0.15 * x, -0.17, -0.1],
+                    # the Animator keys the body's scale to ~1 (not the 0.85 above): legs measured for that,
+                    # so the paws rest on the floor (pivot 0.315 above the paw centre, body base 0.365)
+                    "location": [0.15 * x, -0.17, -0.08],
                     "parent": "hero_body",
                 },
-                sphere(f"hero_arm_{side}", 0.068, [0, 0, -0.13], f"hero_arm_pivot_{side}", [1, 1, 2.3]),
+                sphere(f"hero_arm_{side}", 0.068, [0, 0, -0.12], f"hero_arm_pivot_{side}", [1, 1, 2.0]),
                 sphere(
-                    f"hero_paw_{side}", 0.072, [0, -0.025, -0.24], f"hero_arm_pivot_{side}", [1, 1.3, 0.62]
+                    f"hero_paw_{side}", 0.072, [0, -0.025, -0.235], f"hero_arm_pivot_{side}", [1, 1.3, 0.62]
                 ),
             ]
             fur_parts.append(f"hero_haunch_{side}")

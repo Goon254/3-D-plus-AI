@@ -404,6 +404,8 @@ class Animator(Agent):
         body_half = 0.25 if plan.hero.kind == "robot" else 0.36
         robot = plan.hero.kind == "robot"
         dip_scale = 1.0 if robot else 0.0  # a critter has no treads to sink into: its dips become squash
+        # four-legged critters stand on their front paws: a full body lean would drive them into the floor
+        lean_mul = 0.5 if "hero_paw_L" in ctx.engine.known_ids else 1.0
 
         if not robot:  # a critter bounds in discrete hops (every frame keyed: a hop is only ~10 frames)
             hop_x, hop_lift, hop_land = hop_locomotion(xs, fps)
@@ -459,7 +461,7 @@ class Animator(Agent):
                 "keys": sample(
                     lambda f, t: [
                         r(
-                            rig.lean(t)
+                            lean_mul * rig.lean(t)
                             + 2.5 * math.sin(2 * math.pi * 2.5 * t) * min(1.0, at(f, speed) / 1.2),
                             2,
                         ),
