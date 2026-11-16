@@ -45,7 +45,7 @@ meerkat/tortoise design pass, the savannah set, voice casting, ambience, and the
   editable `scene.blend` and an `edit.mlt` timeline for Shotcut/Kdenlive.
 
 Hand edits survive `animatica continue` / `revise`. An **MCP server** exposes the batched tools. A
-**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **132 tests**
+**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **134 tests**
 (`pytest -q`, 1 skipped without Godot) pass locally. GitHub CI runs ruff, unit, bpy adapter and offline pipeline tests; status
 for the final SHA is at the bottom of this report. An hourly reviewer session scored the project, and
 its queue is in [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md).
@@ -65,7 +65,7 @@ animatica film "A lonely robot sits in a junkyard at dusk until a flower blooms.
 animatica revise output/hello-little-one "make the robot blue and slow down shot 2" --quality preview
 animatica game "a 2D platformer where a robot collects flowers" && godot --path output/game-*/godot
 animatica-mcp                        # MCP server (stdio) for Claude Desktop / Claude Code
-pytest -q                            # 132 tests (Blender/Godot/MCP tests skip if those are missing)
+pytest -q                            # 134 tests (Blender/Godot/MCP tests skip if those are missing)
 ```
 
 Each film writes `output/<project>/final.mp4` (video + audio + captions), `scene.blend`, `edit.mlt`,
