@@ -17,7 +17,7 @@ _WORD = re.compile(r"[a-z0-9]+")
 @lru_cache(maxsize=1)
 def sections() -> list[tuple[str, str, str]]:
     out = []
-    for md in sorted(_DIR.glob("*.md")):
+    for md in sorted(_DIR.rglob("*.md")):  # includes species/ notes
         doc, title, buf = md.stem, md.stem, []
         for line in md.read_text(encoding="utf-8").splitlines():
             if line.startswith("## "):

@@ -364,3 +364,12 @@ def test_critter_bone_rig_tail_follow_through_and_leg_tuck():
         )
 
     assert max(range(0, 12), key=corr) >= 4
+
+
+def test_species_notes_are_in_the_knowledge_base():
+    from animatica.knowledge import lookup
+
+    for animal in ("elephant", "giraffe", "zebra", "meerkat", "tortoise"):
+        hits = lookup(f"{animal} gait table", 1)
+        assert hits and hits[0]["doc"] == animal and "phase" in hits[0]["text"], animal
+    assert lookup("giraffe lateral couplets neck", 1)[0]["doc"] == "giraffe"

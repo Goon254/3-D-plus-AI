@@ -32,7 +32,7 @@ animatica-mcp = "animatica.mcp.server:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-animatica = ["knowledge/*.md", "knowledge/*.json", "core/schema/*.json"]
+animatica = ["knowledge/*.md", "knowledge/species/*.md", "knowledge/*.json", "core/schema/*.json"]
 
 [tool.ruff]
 line-length = 110
