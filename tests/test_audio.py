@@ -102,3 +102,39 @@ def test_soundfont_player_plays_real_samples_in_tune():
         assert abs(f - 440.0) < 6.0, (prog, f)
     drums = render([Note(0.0, 0.1, 63, 110, 0, bank=128)], 0.5, sf)
     assert np.abs(drums).max() > 0.05  # GM percussion (bank 128) sounds
+
+
+def test_pitch_shift_keeps_the_voice_pitch_without_hop_buzz():
+    # plain overlap-add imprinted a 93.75 Hz buzz (sr / hop) that a pitch tracker heard as the voice: WSOLA must
+    # land on the requested pitch and leave no energy at the hop rate
+    from animatica.audio.tts import _time_stretch, resample
+
+    sr = 24000
+    t = np.arange(sr * 2) / sr
+    tone = (np.sin(2 * np.pi * 150 * t) + 0.5 * np.sin(2 * np.pi * 300 * t)).astype(np.float32) * 0.3
+    for pitch in (1.32, 0.8):
+        y = _time_stretch(resample(tone, int(sr * pitch), sr), len(tone))
+        seg = y[2400:-2400] * np.hanning(len(y) - 4800)
+        spec = np.abs(np.fft.rfft(seg))
+        f = np.fft.rfftfreq(len(seg), 1 / sr)
+        assert abs(f[np.argmax(spec)] - 150 * pitch) < 2.0
+        assert spec[(f > 90) & (f < 98)].max() / spec.max() < 0.01
+
+
+def test_ambience_beds_and_footsteps():
+    from animatica.audio import ambience as am
+
+    for tod in ("dawn", "midday", "night"):
+        a = am.bed(tod, 6, water=tod == "dawn", seed=1)
+        rms = 20 * np.log10(np.sqrt(np.mean(a.astype(np.float64) ** 2)))
+        assert a.shape == (6 * am.SR, 2) and np.abs(a).max() <= 0.5 + 1e-6
+        assert abs(rms - (-34 if tod == "night" else -30)) < 0.5
+    night = am.bed("night", 6, seed=1).mean(axis=1)
+    spec = np.abs(np.fft.rfft(night))
+    f = np.fft.rfftfreq(len(night), 1 / am.SR)
+    assert spec[(f > 4000) & (f < 5500)].sum() > spec[(f > 5500) & (f < 7000)].sum()  # cricket trills
+    steps = am.footsteps_track("elephant", [(0.5, 0.0), (1.2, 0.3)], 2.0)
+    assert (
+        np.abs(steps[int(0.5 * am.SR) : int(0.8 * am.SR)]).max() > 0.1
+        and np.abs(steps[: int(0.4 * am.SR)]).max() == 0
+    )

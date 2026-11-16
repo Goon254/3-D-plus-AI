@@ -256,22 +256,40 @@ def _post(path: Path, voice: VoiceSpec) -> float:
 
 
 def _time_stretch(a: np.ndarray, target_len: int, win: int = 1024) -> np.ndarray:
+    """WSOLA time-stretch to ``target_len`` samples without changing pitch.
+
+    Plain overlap-add with fixed hops imprints the hop rate on the signal (a buzz at sr/hop and its
+    harmonics: 93.75 Hz at 24 kHz, which a pitch tracker heard as the voice). WSOLA shifts each frame by up to
+    a quarter window to line up with the natural continuation of the previous one, so the waveform stays
+    continuous and the voice keeps its own pitch.
+    """
     if len(a) < win * 2 or target_len <= 0:
         return resample(a, len(a), target_len) if len(a) else a
-    hop_out = win // 4
-    n_frames = max(1, (target_len - win) // hop_out + 1)
-    hop_in = (len(a) - win) / max(1, n_frames - 1)
+    hop = win // 2  # Hann at 50 % overlap sums to a constant
+    tol = win // 4
+    alpha = (len(a) - win) / max(1, target_len - win)  # input samples per output sample
+    n_frames = max(1, (target_len - win) // hop + 1)
+    pad = np.pad(a.astype(np.float32), (tol, win + tol))
+    w = np.hanning(win).astype(np.float32)
     out = np.zeros(target_len + win, np.float32)
     norm = np.zeros_like(out)
-    w = np.hanning(win).astype(np.float32)
+    prev = None  # input position of the previously copied frame
     for i in range(n_frames):
-        s = int(i * hop_in)
-        seg = a[s : s + win]
-        if len(seg) < win:
-            seg = np.pad(seg, (0, win - len(seg)))
-        o = i * hop_out
+        nominal = int(i * hop * alpha) + tol
+        if prev is None:
+            pos = nominal
+        else:
+            natural = pad[prev + hop : prev + hop + win]  # what would follow the last frame seamlessly
+            lo, hi = nominal - tol, nominal + tol
+            region = pad[lo : hi + win]
+            # cross-correlation of the continuation with every candidate start in [lo, hi]
+            c = np.correlate(region, natural, mode="valid")
+            pos = lo + int(np.argmax(c))
+        seg = pad[pos : pos + win]
+        o = i * hop
         out[o : o + win] += seg * w
         norm[o : o + win] += w
+        prev = pos
     out = out[:target_len] / np.maximum(norm[:target_len], 1e-3)
     return out
 

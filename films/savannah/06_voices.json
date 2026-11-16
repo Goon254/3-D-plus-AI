@@ -1,0 +1,19 @@
+{
+  "_about": "Voice casting for Tembo and the Singing Spring. Stock Kokoro-82M voices only (Apache-2.0 weights and voice packs; no cloning). pitch and rate are post-TTS multipliers in animatica.audio.tts.VoiceSpec. Samples are verbatim lines from 04_screenplay.md, used by scripts/savannah_voices.py for the distinctness check.",
+  "cast": {
+    "narrator": {"voice": "bm_fable", "pitch": 0.96, "rate": 0.9, "note": "warm storyteller, unhurried",
+                 "samples": ["Far away, where the grass grows golden and the sky goes on forever, the rains were late.",
+                             "Fast or slow, tall or small... it takes all of us."]},
+    "tembo": {"voice": "am_puck", "pitch": 1.32, "rate": 1.02, "note": "young elephant calf: eager, earnest, a little husky",
+              "samples": ["Morning, Zuri! Morning, Kiki! Water!", "Wait. We're not lost if we're together."]},
+    "zuri": {"voice": "af_bella", "pitch": 1.08, "rate": 1.08, "note": "young zebra: quick, bright, a show-off",
+             "samples": ["Your trunk's a hose with hiccups!", "That's the slow way. The grass is faster. Watch!"]},
+    "kiki": {"voice": "af_sky", "pitch": 1.38, "rate": 1.14, "note": "meerkat lookout: fast, high, nervous",
+             "samples": ["Thank you, Tembo. Very refreshing.", "She's gone. Nobody panic. Everybody panic!"]},
+    "neema": {"voice": "af_nicole", "pitch": 1.03, "rate": 0.95, "note": "young giraffe: soft, shy, warm",
+              "samples": ["A singing spring?", "There! Stripes!"]},
+    "bibi_kobe": {"voice": "bf_emma", "pitch": 0.76, "rate": 0.82, "note": "old leopard tortoise: slow, low, kind, wise",
+                  "samples": ["When I was young, there was a spring past the two baobabs that bow to each other.",
+                              "When you walk slowly, you learn to look up."]}
+  }
+}
