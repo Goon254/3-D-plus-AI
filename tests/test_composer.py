@@ -159,3 +159,17 @@ def test_fluidsynth_cues_sound_different_by_mood(tmp_path, cues):
     from animatica.audio.music import band_energy_ratio
 
     assert band_energy_ratio(a, 60.0, C.SR) < 0.02  # no rumble under the dialogue
+
+
+def test_soundfont_engine_renders_a_cue_with_real_samples(tmp_path):
+    import pytest
+
+    from animatica.audio import composer
+
+    if composer.find_soundfont() is None:
+        pytest.skip("no SoundFont cached")
+    cues = composer.load_cue_sheet(
+        composer.Path(__file__).resolve().parents[1] / "films/savannah/05_cue_sheet.json"
+    )
+    rep = composer.render_cue(composer.arrange(cues[1]), tmp_path, engine="soundfont")
+    assert rep["engine"] == "soundfont" and rep["rms_db"] > -40 and (tmp_path / rep["wav"]).exists()

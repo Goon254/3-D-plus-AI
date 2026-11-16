@@ -43,8 +43,9 @@ Kokoro voices (no cloning). Showcase renders are therefore covered by this repos
 * License: **MIT**. FluidR3 (c) 2000-2002, 2008 Frank Wen; mono conversion FluidR3Mono (c) 2014-17 Michael Cowgill;
   distributed with MuseScore 3.6.2 (`share/sound/FluidR3Mono_License.md`, saved next to the font). Rendered music made
   with it may be used freely; the notices travel with the font file.
-* Why not GeneralUser GS: its licence allows commercial music, but its author cannot vouch for every sample's
-  origin, and Debian reviewers flagged it; FluidR3 is MIT and in Debian main.
-* Why not FluidSynth: executing a downloaded binary was not approved in this environment, and the numpy player
+* Role: the **fallback bank**. With FluidSynth installed, the Composer renders with GeneralUser GS (see above).
+  Without it, the numpy player renders FluidR3Mono's real samples instead of the additive synth. FluidR3 is MIT
+  and in Debian main, so it is the low-risk default to cache.
+* Why a numpy player: running a downloaded FluidSynth binary was not approved on the owner's Windows machine; the player
   covers what the score needs (zones, tuning, loops, volume envelope, SF3 Ogg samples).
 

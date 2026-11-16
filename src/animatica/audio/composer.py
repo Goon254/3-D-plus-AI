@@ -667,6 +667,7 @@ def find_soundfont() -> Path | None:
     cache = Path(os.environ.get("ANIMATICA_CACHE", Path.home() / ".cache" / "animatica"))
     cands += [
         str(cache / "soundfonts" / "GeneralUser-GS.sf2"),
+        str(cache / "soundfonts" / "FluidR3Mono_GM.sf3"),  # MIT; the numpy SoundFont player reads SF3 too
         "/usr/share/sounds/sf2/FluidR3_GM.sf2",
         "/usr/share/soundfonts/FluidR3_GM.sf2",
     ]
@@ -688,7 +689,11 @@ def fluidsynth_bin() -> str | None:
 
 
 def renderer() -> str:
-    return "fluidsynth" if fluidsynth_bin() and find_soundfont() else "numpy"
+    """FluidSynth when its binary and a SoundFont are installed; otherwise real SoundFont samples played by the
+    numpy player (:mod:`animatica.audio.soundfont`); the additive synth only when no SoundFont is cached."""
+    if fluidsynth_bin() and find_soundfont():
+        return "fluidsynth"
+    return "soundfont" if find_soundfont() else "numpy"
 
 
 def _read(path: Path) -> np.ndarray:
@@ -759,6 +764,37 @@ def _family(program: int) -> str:
     if 48 <= program <= 55 or 88 <= program <= 95 or program == 44:
         return "pad"
     return "wind"
+
+
+def _render_soundfont(arr: Arrangement) -> np.ndarray:
+    """Real instrument samples without FluidSynth: every track through the numpy SoundFont player (drum
+    channel = GM percussion bank 128), honouring each track's volume (CC7) and pan (CC10)."""
+    from . import soundfont as sfp
+
+    spb = 60.0 / arr.bpm
+    notes = []
+    for tr in arr.tracks:
+        drum = tr.channel == DRUM_CHANNEL
+        pan, gain = tr.pan / 63.5 - 1.0, (tr.volume / 127) ** 2
+        for nt in tr.notes:
+            notes.append(
+                sfp.Note(
+                    nt.start * spb,
+                    nt.dur * spb,
+                    nt.pitch,
+                    nt.vel,
+                    0 if drum else tr.program,
+                    bank=128 if drum else 0,
+                    pan=pan,
+                    gain=gain,
+                )
+            )
+    seconds = arr.bars * 4 * spb + 2.5
+    out = sfp.render(notes, seconds, sfp.load(str(find_soundfont())), sr=SR)
+    # a little room: the same short early-reflection the numpy synth uses, so both engines sit alike in the mix
+    d = int(0.07 * SR)
+    out[d:] += 0.18 * out[:-d, ::-1]
+    return out
 
 
 def _render_numpy(arr: Arrangement) -> np.ndarray:
@@ -834,7 +870,12 @@ def render_cue(arr: Arrangement, out_dir: str | Path, tail: float = 1.5, engine:
     out_dir.mkdir(parents=True, exist_ok=True)
     mid = write_midi(out_dir / f"{arr.cue.id}.mid", arr.tracks, arr.bpm)
     engine = engine or renderer()
-    audio = _render_fluidsynth(mid) if engine == "fluidsynth" else _render_numpy(arr)
+    if engine == "fluidsynth":
+        audio = _render_fluidsynth(mid)
+    elif engine == "soundfont":
+        audio = _render_soundfont(arr)
+    else:
+        audio = _render_numpy(arr)
     n = int((arr.cue.seconds + tail) * SR)
     audio = audio[:n] if len(audio) >= n else np.pad(audio, ((0, n - len(audio)), (0, 0)))
     audio = highpass(audio, 70.0, sr=SR, slope_hz=30.0)  # no rumble under dialogue
