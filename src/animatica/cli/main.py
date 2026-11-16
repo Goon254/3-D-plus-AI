@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -15,7 +16,7 @@ DEMO_PROMPT = (
 def _studio(args: argparse.Namespace):
     from ..core.orchestrator import Studio
 
-    opts = {"quality": args.quality, "critic_iterations": args.critic_iterations}
+    opts = {"quality": args.quality, "critic_iterations": args.critic_iterations, "device": args.device}
     if getattr(args, "no_render", False):
         opts["no_render"] = True
     if getattr(args, "tts", None):
@@ -53,6 +54,7 @@ def cmd_continue(args: argparse.Namespace) -> int:
         options={
             "quality": args.quality,
             "critic_iterations": args.critic_iterations,
+            "device": args.device,
             **({"no_render": True} if args.no_render else {}),
         },
     )
@@ -69,6 +71,7 @@ def cmd_revise(args: argparse.Namespace) -> int:
         options={
             "quality": args.quality,
             "critic_iterations": args.critic_iterations,
+            "device": args.device,
             **({"no_render": True} if args.no_render else {}),
         },
     )
@@ -78,7 +81,7 @@ def cmd_revise(args: argparse.Namespace) -> int:
 def cmd_render(args: argparse.Namespace) -> int:
     from ..core.continuation import render_project
 
-    render_project(args.project, quality=args.quality)
+    render_project(args.project, quality=args.quality, device=args.device)
     return 0
 
 
@@ -120,12 +123,15 @@ def cmd_doctor(args: argparse.Namespace) -> int:
 
     from ..audio import lipsync, tts
     from ..core import engine
+    from ..games import godot
 
     checks = {
         "blender": " ".join(engine.blender_command()[:3]) if engine.blender_available() else None,
         "ffmpeg": shutil.which("ffmpeg"),
         "tts_engines": tts.available_engines(),
         "rhubarb": lipsync.find_rhubarb(),
+        "render_devices": engine.render_devices(),
+        "godot": godot.godot_bin(),
         "anthropic_key": bool(__import__("os").environ.get("ANTHROPIC_API_KEY")),
     }
     print(json.dumps(checks, indent=1))
@@ -152,6 +158,14 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="animatica", description="AI-native animation & game studio")
     sub = p.add_subparsers(dest="cmd", required=True)
 
+    def device_arg(sp: argparse.ArgumentParser) -> None:
+        sp.add_argument(
+            "--device",
+            default=os.environ.get("ANIMATICA_RENDER_DEVICE", "auto"),
+            choices=["auto", "cpu", "cuda", "optix"],
+            help="Cycles device: auto = OptiX on NVIDIA RTX, else CUDA, else CPU (a missing GPU falls back to CPU)",
+        )
+
     def common(sp: argparse.ArgumentParser, render: bool = True) -> None:
         sp.add_argument(
             "--llm",
@@ -162,6 +176,7 @@ def build_parser() -> argparse.ArgumentParser:
         if render:
             sp.add_argument("--quality", default="final", choices=["ci", "preview", "draft", "final", "high"])
             sp.add_argument("--critic-iterations", type=int, default=3)
+            device_arg(sp)
             sp.add_argument(
                 "--no-render", action="store_true", help="build and review the scene, skip the final render"
             )
@@ -202,6 +217,7 @@ def build_parser() -> argparse.ArgumentParser:
     rr = sub.add_parser("render", help="re-render a project's .blend + soundtrack to final.mp4")
     rr.add_argument("project")
     rr.add_argument("--quality", default="final", choices=["ci", "preview", "draft", "final", "high"])
+    device_arg(rr)
     rr.set_defaults(fn=cmd_render)
 
     lg = sub.add_parser("log", help="write the production log viewer (static HTML)")

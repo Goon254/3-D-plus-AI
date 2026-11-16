@@ -332,6 +332,9 @@ class SetWorld(_Op):
     viewport_tint: str | None = None
 
 
+RenderDevice = Literal["auto", "cpu", "cuda", "optix"]
+
+
 class SetRender(_Op):
     op: Literal["set_render"]
     engine: Literal["workbench", "eevee", "cycles"] | None = None
@@ -340,6 +343,8 @@ class SetRender(_Op):
     fps: int | None = Field(None, ge=1, le=240)
     look: str | None = None
     exposure: float | None = Field(None, ge=-10, le=10)
+    # Cycles compute device. auto = OptiX > CUDA > CPU; an unavailable GPU falls back to CPU with a warning.
+    device: RenderDevice | None = None
 
 
 class RenderPreview(_Op):
@@ -349,6 +354,7 @@ class RenderPreview(_Op):
     camera: str = "auto"
     resolution: tuple[int, int] = (480, 270)
     engine: Literal["workbench", "eevee", "cycles"] = "workbench"
+    device: RenderDevice | None = None
 
 
 class RenderFinal(_Op):
@@ -357,6 +363,7 @@ class RenderFinal(_Op):
     frame_start: int | None = None
     frame_end: int | None = None
     frame_step: int = Field(1, ge=1, le=100)
+    device: RenderDevice | None = None
 
 
 class Save(_Op):

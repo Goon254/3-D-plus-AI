@@ -9,6 +9,7 @@ import time
 import bpy
 import mathutils
 
+from . import devices
 from .common import (
     ID_PROP,
     TAGS_PROP,
@@ -25,6 +26,16 @@ from .common import (
 class RenderOps:
     """Mixin for :class:`Executor` (expects ``self.obj``, ``self.scene``, ``self._new_object``, ``self.workdir``)."""
 
+    _device_request: str | None = None  # last ``set_render.device``; None = $ANIMATICA_RENDER_DEVICE / auto
+
+    def _use_device(self, op: dict, res: dict) -> None:
+        """Select the Cycles device for the coming render (op ``device`` > session > env > auto)."""
+        label, warnings = devices.configure(self.scene, op.get("device") or self._device_request)
+        for w in warnings:
+            if w not in res["warnings"]:
+                res["warnings"].append(w)
+        res.setdefault("data", {})["device"] = label
+
     def op_set_render(self, op: dict, res: dict) -> None:
         s = self.scene
         eng = op.get("engine")
@@ -33,7 +44,6 @@ class RenderOps:
                 eng
             ]
             if eng == "cycles":
-                s.cycles.device = "CPU"
                 fast_cycles(s)
                 try:
                     s.cycles.use_denoising = True
@@ -43,6 +53,10 @@ class RenderOps:
         if eng:
             workbench_setup(s)
             glow_visibility(s, eng != "workbench")
+        if op.get("device"):
+            self._device_request = devices.requested_device(op["device"])
+        if s.render.engine == "CYCLES" and (eng or op.get("device")):
+            self._use_device(op, res)
         if op.get("resolution"):
             s.render.resolution_x, s.render.resolution_y = op["resolution"]
             s.render.resolution_percentage = 100
@@ -85,7 +99,9 @@ class RenderOps:
 
     def op_render_preview(self, op: dict, res: dict) -> None:
         s = self.scene
-        path = op.get("path") or os.path.join(self.workdir, "previews", f"{res['batch_id']}.png")
+        path = os.path.abspath(
+            op.get("path") or os.path.join(self.workdir, "previews", f"{res['batch_id']}.png")
+        )
         os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
         saved = (
             s.render.engine,
@@ -113,7 +129,7 @@ class RenderOps:
                 fast_cycles(s)
                 s.cycles.samples = int(op.get("samples", 12))
                 s.cycles.use_denoising = True
-                s.cycles.device = "CPU"
+                self._use_device(op, res)
             glow_visibility(s, eng != "workbench")
             if eng == "workbench":
                 workbench_setup(s)
@@ -151,7 +167,8 @@ class RenderOps:
 
     def op_render_final(self, op: dict, res: dict) -> None:
         s = self.scene
-        out = op["output_dir"]
+        # absolute: Blender does not resolve a bare relative render path against the cwd (Windows: no frames)
+        out = os.path.abspath(op["output_dir"])
         os.makedirs(out, exist_ok=True)
         s.render.filepath = os.path.join(out, "frame_")
         s.render.image_settings.file_format = "PNG"
@@ -162,9 +179,20 @@ class RenderOps:
         if op.get("frame_end") is not None:
             s.frame_end = op["frame_end"]
         s.frame_step = op.get("frame_step", 1)
+        if s.render.engine == "CYCLES":
+            self._use_device(op, res)
         t0 = time.time()
         try:
-            bpy.ops.render.render(animation=True)
+            try:
+                bpy.ops.render.render(animation=True)
+            except RuntimeError as e:
+                if s.render.engine != "CYCLES" or s.cycles.device != "GPU":
+                    raise
+                # GPU out of memory / kernel failure: finish the film on the CPU rather than fail it
+                res["warnings"].append(f"GPU render failed ({str(e)[:160]}); retrying on CPU")
+                devices.force_cpu(s)
+                res["data"]["device"] = "CPU"
+                bpy.ops.render.render(animation=True)
         finally:
             s.frame_start, s.frame_end, s.frame_step = fs, fe, 1
         res["data"]["frames_dir"] = out

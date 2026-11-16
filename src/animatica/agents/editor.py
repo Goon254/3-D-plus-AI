@@ -44,6 +44,11 @@ class Editor(Agent):
                 "resolution": list(res),
                 "samples": samples,
                 "fps": plan.fps,
+                **(
+                    {"device": ctx.options["device"]}
+                    if engine == "cycles" and ctx.options.get("device")
+                    else {}
+                ),
             },
         ]
         if mix:
@@ -74,10 +79,13 @@ class Editor(Agent):
         if not r.ok:
             raise RuntimeError(f"render failed: {r.errors}")
         secs = r.data.get("render_seconds", 0)
+        for w in r.warnings:
+            ctx.log.event("render", self.role, f"warning: {w}")
         ctx.log.event(
             "render",
             self.role,
-            f"rendered in {secs:.0f}s ({secs / max(plan.frame_end, 1):.2f}s/frame)",
+            f"rendered in {secs:.0f}s ({secs / max(plan.frame_end, 1):.2f}s/frame)"
+            + (f" on {r.data['device']}" if r.data.get("device") else ""),
             render_seconds=secs,
         )
         out = root / "final.mp4"

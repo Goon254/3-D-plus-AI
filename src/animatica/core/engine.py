@@ -66,6 +66,27 @@ def blender_available() -> bool:
         return False
 
 
+_PROBE = (
+    "import json, sys; sys.path.insert(0, sys.argv[1]); from animatica_blender import devices; "
+    "found = devices.probe(); print(json.dumps({'gpus': found, 'auto': devices.choose_backend('auto', found)[0]}))"
+)
+
+
+def render_devices() -> dict | None:
+    """GPUs Cycles can use and what ``--device auto`` resolves to, probed in the (GPL) adapter's
+    interpreter so this process never imports bpy. ``None`` if only a Blender binary is available."""
+    py = _bpy_python()
+    if not py:
+        return None
+    try:
+        out = subprocess.run(
+            [py, "-c", _PROBE, str(ADAPTER_DIR)], capture_output=True, text=True, timeout=180
+        )
+        return json.loads(out.stdout.strip().splitlines()[-1])
+    except (OSError, subprocess.TimeoutExpired, json.JSONDecodeError, IndexError):
+        return None
+
+
 class _Session:
     known_ids: set[str]
 

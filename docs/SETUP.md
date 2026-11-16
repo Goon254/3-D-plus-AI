@@ -59,6 +59,42 @@ animatica dev doctor
 * Not set → deterministic offline **scripted** provider. Everything (including CI) runs without keys.
   No key was available tonight, so every render in `examples/` used the scripted provider.
 
-## 5. Godot (games track)
+## 5. Windows + NVIDIA GPU (tested 2026-11-16)
+
+Machine: Windows 11, Ryzen 9 9955HX (16 cores / 32 threads), 16 GB RAM, **RTX 5060 Laptop GPU (8 GB)**,
+driver 591.97, Python 3.13, `bpy==5.3.0` in `.venv`, ffmpeg from winget.
+
+```bash
+py -3.13 -m venv .venv && .venv/Scripts/pip install -e ".[dev,tts,mcp]" bpy==5.3.0
+bash scripts/setup_assets.sh --godot   # from Git Bash: fetches the *Windows* Rhubarb + Godot builds
+.venv/Scripts/animatica dev doctor     # kokoro, rhubarb.exe, godot, and render_devices: {"auto": "OPTIX"}
+```
+
+* `animatica dev doctor` lists the GPUs Cycles can use (`render_devices`), probed in the GPL adapter process.
+* **`--device auto|cpu|cuda|optix`** on `film`/`demo`/`continue`/`revise`/`render` (or `ANIMATICA_RENDER_DEVICE`).
+  `auto` (default) = OptiX on RTX cards, else CUDA, else CPU. An explicit `optix`/`cuda` on a machine without
+  one renders on CPU with a warning in the log; a GPU render error mid-film retries on CPU. The critic's Cycles
+  previews use the same device.
+* Windows fixes made while setting this up: render output paths are made absolute (Blender wrote *no*
+  frames for a relative `--out output` on Windows), MLT paths are POSIX, script-mode timeouts use
+  `sys.settrace` where `SIGALRM` doesn't exist (the sandbox test hung forever before), and Rhubarb/Godot
+  are found as `rhubarb.exe` / `Godot_*_win64_console.exe`.
+
+### Benchmark: one frame, CPU vs OptiX
+
+`python scripts/bench_device.py examples/showcase/hello-little-one-hd/scene.blend --frame 300 --warm 4`
+(dialogue close-up, AgX, OIDN denoise, adaptive sampling; fresh adapter process per device):
+
+| Quality | Device | First frame (incl. kernel load + BVH) | Steady state |
+|---|---|---|---|
+| `final` 960×540, 16 spp | CPU (32 threads) | 1.31 s | **1.06 s/frame** |
+| `final` 960×540, 16 spp | OptiX RTX 5060 | 1.19 s | **0.33 s/frame** (3.2×) |
+| `high` 1280×720, 48 spp | CPU (32 threads) | 5.31 s | **5.70 s/frame** |
+| `high` 1280×720, 48 spp | OptiX RTX 5060 | 2.29 s | **1.41 s/frame** (4.0×) |
+
+A full 21 s film (504 frames) at `final` is ≈ 3 min on OptiX vs ≈ 9 min on this CPU (and ≈ 90 min on the
+2-vCPU cloud sandbox in §1). OptiX output matches CPU (`tests/test_render_device.py` compares the two).
+
+## 6. Godot (games track)
 
 See `docs/GAMES.md` once Milestone 7 lands.

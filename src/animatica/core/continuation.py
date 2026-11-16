@@ -346,8 +346,8 @@ def revise_project(
     return state
 
 
-def render_project(project: str | Path, quality: str = "final") -> ProjectState:
-    root, state, studio, log = _open(project, "scripted", {"quality": quality}, "render")
+def render_project(project: str | Path, quality: str = "final", device: str = "auto") -> ProjectState:
+    root, state, studio, log = _open(project, "scripted", {"quality": quality, "device": device}, "render")
     with BlenderSession(workdir=root / "log") as engine:
         engine.open(state.blend, workdir=root / "log")
         ctx = Context(state, engine, log, studio.provider, Budget(), dict(studio.options))

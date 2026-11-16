@@ -191,6 +191,7 @@ class Studio:
             "quality": "final",
             "preview_engine": "cycles",
             "critic_iterations": 3,
+            "device": "auto",
             **(options or {}),
         }
         self.budget = budget or Budget(max_critic_iterations=int(self.options["critic_iterations"]))

@@ -101,6 +101,7 @@ class Critic(Agent):
                     "path": path,
                     "resolution": [480, 270],
                     "engine": ctx.options.get("preview_engine", "cycles"),
+                    **({"device": ctx.options["device"]} if ctx.options.get("device") else {}),
                 }
             )
         pr = ctx.engine.run_batch(
