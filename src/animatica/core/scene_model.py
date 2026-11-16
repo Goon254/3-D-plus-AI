@@ -38,6 +38,7 @@ _CREATE_TYPES = {
     "create_armature": "armature",
     "create_skin_mesh": "mesh",
     "create_metaball_mesh": "mesh",
+    "scatter": "mesh",
     "import_asset": "empty",
 }
 

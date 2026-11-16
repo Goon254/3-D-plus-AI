@@ -52,6 +52,26 @@ class MaterialOps:
             links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
             color_out = ramp.outputs["Color"]
         normal_out = None
+        if spec.get("tip_color"):
+            # vertical gradient in object space: darker at the root, sun-bleached at the tip (grass blades)
+            tcg = nodes.new("ShaderNodeTexCoord")
+            sxyz = nodes.new("ShaderNodeSeparateXYZ")
+            links.new(tcg.outputs["Object"], sxyz.inputs[0])
+            mr = nodes.new("ShaderNodeMapRange")
+            mr.inputs["From Max"].default_value = spec.get("tip_height", 0.5)
+            links.new(sxyz.outputs["Z"], mr.inputs["Value"])
+            g = nodes.new("ShaderNodeMix")
+            g.data_type = "RGBA"
+            links.new(mr.outputs["Result"], g.inputs["Factor"])
+            if color_out is not None:
+                links.new(color_out, g.inputs["A"])
+            else:
+                g.inputs["A"].default_value = (*rgb, 1)
+            g.inputs["B"].default_value = (*hex_to_rgb(spec["tip_color"]), 1)
+            color_out = g.outputs["Result"]
+        if spec.get("transmission") and "Transmission Weight" in bsdf.inputs:
+            bsdf.inputs["Transmission Weight"].default_value = spec["transmission"]
+            bsdf.inputs["IOR"].default_value = spec.get("ior", 1.33)
         if spec.get("pattern"):
             color_out, pat_height = self._pattern(nodes, links, spec, rgb, color_out)
             if pat_height is not None:  # scute seams / scale crevices are carved, not just painted

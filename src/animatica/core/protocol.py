@@ -94,9 +94,13 @@ class MaterialSpec(BaseModel):
     fur: float = Field(0.0, ge=0, le=1)  # short coat: fine streak bump + soft sheen rim
     fur_scale: float = Field(220.0, gt=0, le=5000)  # streaks per metre
     wrinkles: float = Field(0.0, ge=0, le=1)  # creased skin bump (elephant)
+    tip_color: str | None = None  # vertical gradient: base_color at z=0 -> tip_color at tip_height (grass)
+    tip_height: float = Field(0.5, gt=0, le=100)
+    transmission: float = Field(0.0, ge=0, le=1)  # water / glass
+    ior: float = Field(1.33, ge=1, le=3)
     wrinkle_scale: float = Field(12.0, gt=0, le=1000)
 
-    @field_validator("base_color", "emission", "fade_to", "sheen_tint", "pattern_color")
+    @field_validator("base_color", "emission", "fade_to", "sheen_tint", "pattern_color", "tip_color")
     @classmethod
     def _hex(cls, v: str | None) -> str | None:
         if v is not None and not re.fullmatch(r"#[0-9A-Fa-f]{6}", v):
@@ -314,6 +318,31 @@ class SnapToSurface(_Op):
         return [self.target, self.surface]
 
 
+class Scatter(_Op):
+    """Geometry-nodes instancing: ``instance`` copies scattered over mesh ``surface`` (grass, reeds, rocks),
+    with random yaw/scale, an optional travelling wind sway, cleared circles (paths, water) and circles where
+    the copies stay short (so feet stay visible in the action area)."""
+
+    op: Literal["scatter"]
+    id: str  # the modifier carrier: a new object holding the scattered instances
+    surface: str
+    instance: str
+    density: float = Field(10.0, gt=0, le=5000)  # per square metre
+    seed: int = 0
+    scale: tuple[float, float] = (0.7, 1.3)
+    clear: list[tuple[float, float, float]] = Field(default_factory=list)  # (x, y, radius): nothing grows
+    short: list[tuple[float, float, float]] = Field(default_factory=list)  # (x, y, radius): kept low
+    short_scale: float = Field(0.35, gt=0, le=1)
+    wind: float = Field(0.0, ge=0, le=1)  # sway amplitude (radians-ish); gusts travel across the field
+    wind_speed: float = Field(0.6, ge=0, le=20)
+
+    def creates(self) -> list[str]:
+        return [self.id]
+
+    def references(self) -> list[str]:
+        return [self.surface, self.instance]
+
+
 class AddBoneConstraint(_Op):
     """A constraint on a pose bone. ``ik``: two-bone legs reach ``subject`` (a foot target), bending toward
     ``pole``; ``damped_track``: aim the bone at ``subject`` (look-at); ``copy_rotation``."""
@@ -456,6 +485,9 @@ class SetWorld(_Op):
     # Workbench/viewport-only colour grade (multiplies every non-emissive material's viewport colour;
     # Cycles/EEVEE are unaffected). Night scenes use it so the flat-colour preview reads as night.
     viewport_tint: str | None = None
+    stars: float = Field(0.0, ge=0, le=1)  # a procedural starfield above the horizon (night)
+    clouds: float = Field(0.0, ge=0, le=1)  # soft cumulus wisps in the sky
+    cloud_color: str = "#FFFFFF"
 
 
 RenderDevice = Literal["auto", "cpu", "cuda", "optix"]
@@ -558,6 +590,7 @@ OP_CLASSES: tuple[type[_Op], ...] = (
     AddBoneConstraint,
     SetMaterialByBone,
     SnapToSurface,
+    Scatter,
     InsertKeyframes,
     ClearAnimation,
     SetFrameRange,

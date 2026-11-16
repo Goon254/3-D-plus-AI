@@ -146,3 +146,19 @@ def test_faces_mouth_brows_and_expressions():
     assert (face["mouth"], "shape_key:open") in props and (face["mouth"], "shape_key:frown") in props
     opens = next(o for o in fk if o["property"] == "shape_key:open")["keys"]
     assert opens[0][0] == 1 + 12  # lip sync starts where the line starts
+
+
+def test_savannah_set_ops_validate_for_every_time_of_day():
+    from animatica.sets.savannah import SKY, Layout, grass_tuft, savannah_set
+
+    v, f = grass_tuft()
+    assert len(f) == 9 * 4 and all(len(face) == 4 for face in f)
+    for tod in SKY:
+        ops = savannah_set(Layout(water=(3.0, 8.0, 3.0)), tod)
+        validate_batch({"batch_id": "s", "ops": ops})
+        kinds = {o["op"] for o in ops}
+        assert {"scatter", "create_metaball_mesh", "set_world", "add_light"} <= kinds
+        grass = next(o for o in ops if o["op"] == "scatter" and o["id"] == "grass")
+        assert grass["clear"] and grass["short"]  # water kept clear, action area short
+        world = next(o for o in ops if o["op"] == "set_world")
+        assert (world["stars"] > 0) == (tod == "night")

@@ -91,6 +91,7 @@ _CREATE_OPS = {
     "create_mesh",
     "create_skin_mesh",
     "create_metaball_mesh",
+    "scatter",
     "create_empty",
     "add_light",
     "add_camera",

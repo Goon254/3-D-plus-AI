@@ -442,6 +442,122 @@ class SceneOps:
         "limit_location": "LIMIT_LOCATION",
     }
 
+    def op_scatter(self, op: dict, res: dict) -> None:
+        surf, inst = self.obj(op["surface"]), self.obj(op["instance"])
+        mesh = bpy.data.meshes.new(op["id"] + "_mesh")  # an empty carrier: the modifier reads the surface
+        o = self._new_object({"id": op["id"]}, mesh)
+        ng = bpy.data.node_groups.new(op["id"] + "_scatter", "GeometryNodeTree")
+        ng.interface.new_socket("Geometry", in_out="INPUT", socket_type="NodeSocketGeometry")
+        ng.interface.new_socket("Geometry", in_out="OUTPUT", socket_type="NodeSocketGeometry")
+        n, ln = ng.nodes, ng.links
+        n.new("NodeGroupInput")
+        gout = n.new("NodeGroupOutput")
+        sinfo = n.new("GeometryNodeObjectInfo")
+        sinfo.inputs["Object"].default_value = surf
+        sinfo.transform_space = "RELATIVE"
+        dist = n.new("GeometryNodeDistributePointsOnFaces")
+        dist.distribute_method = "RANDOM"
+        dist.inputs["Density"].default_value = op.get("density", 10.0)
+        dist.inputs["Seed"].default_value = op.get("seed", 0)
+        ln.new(sinfo.outputs["Geometry"], dist.inputs["Mesh"])
+        pos = n.new("GeometryNodeInputPosition")
+        points = dist.outputs["Points"]
+        # cleared circles: delete points within (x, y, r)
+        for cx, cy, r in op.get("clear", []):
+            d = n.new("ShaderNodeVectorMath")
+            d.operation = "DISTANCE"
+            sep_c = n.new("ShaderNodeVectorMath")
+            sep_c.operation = "MULTIPLY"
+            sep_c.inputs[1].default_value = (1.0, 1.0, 0.0)  # distance on the ground plane
+            ln.new(pos.outputs["Position"], sep_c.inputs[0])
+            ln.new(sep_c.outputs["Vector"], d.inputs[0])
+            d.inputs[1].default_value = (cx, cy, 0.0)
+            lt = n.new("FunctionNodeCompare")
+            lt.data_type, lt.operation = "FLOAT", "LESS_THAN"
+            ln.new(d.outputs["Value"], lt.inputs["A"])
+            lt.inputs["B"].default_value = r
+            delete = n.new("GeometryNodeDeleteGeometry")
+            delete.domain = "POINT"
+            ln.new(points, delete.inputs["Geometry"])
+            ln.new(lt.outputs["Result"], delete.inputs["Selection"])
+            points = delete.outputs["Geometry"]
+        # scale: random, shrunk inside the "short" circles (smoothly, from the edge inward)
+        rnd_s = n.new("FunctionNodeRandomValue")
+        rnd_s.data_type = "FLOAT"
+        lo, hi = op.get("scale", (0.7, 1.3))
+        rnd_s.inputs["Min"].default_value, rnd_s.inputs["Max"].default_value = lo, hi
+        rnd_s.inputs["Seed"].default_value = op.get("seed", 0) + 7
+        scale = rnd_s.outputs["Value"]
+        for cx, cy, r in op.get("short", []):
+            flat = n.new("ShaderNodeVectorMath")
+            flat.operation = "MULTIPLY"
+            flat.inputs[1].default_value = (1.0, 1.0, 0.0)
+            ln.new(pos.outputs["Position"], flat.inputs[0])
+            d = n.new("ShaderNodeVectorMath")
+            d.operation = "DISTANCE"
+            ln.new(flat.outputs["Vector"], d.inputs[0])
+            d.inputs[1].default_value = (cx, cy, 0.0)
+            mr = n.new("ShaderNodeMapRange")
+            mr.inputs["From Min"].default_value = r * 0.6
+            mr.inputs["From Max"].default_value = r
+            mr.inputs["To Min"].default_value = op.get("short_scale", 0.35)
+            mr.inputs["To Max"].default_value = 1.0
+            ln.new(d.outputs["Value"], mr.inputs["Value"])
+            mul = n.new("ShaderNodeMath")
+            mul.operation = "MULTIPLY"
+            ln.new(scale, mul.inputs[0])
+            ln.new(mr.outputs["Result"], mul.inputs[1])
+            scale = mul.outputs[0]
+        # rotation: random yaw, plus a wind lean that travels across the field (noise of position + time)
+        rnd_r = n.new("FunctionNodeRandomValue")
+        rnd_r.data_type = "FLOAT"
+        rnd_r.inputs["Min"].default_value, rnd_r.inputs["Max"].default_value = 0.0, 6.2832
+        rnd_r.inputs["Seed"].default_value = op.get("seed", 0) + 13
+        rot = n.new("ShaderNodeCombineXYZ")
+        ln.new(rnd_r.outputs["Value"], rot.inputs["Z"])
+        if op.get("wind"):
+            t = n.new("GeometryNodeInputSceneTime")
+            off = n.new("ShaderNodeVectorMath")
+            off.operation = "SCALE"
+            ln.new(pos.outputs["Position"], off.inputs[0])
+            off.inputs["Scale"].default_value = 0.35
+            drift = n.new("ShaderNodeCombineXYZ")
+            sp_t = n.new("ShaderNodeMath")
+            sp_t.operation = "MULTIPLY"
+            sp_t.inputs[1].default_value = op.get("wind_speed", 0.6)
+            ln.new(t.outputs["Seconds"], sp_t.inputs[0])
+            ln.new(sp_t.outputs[0], drift.inputs["X"])
+            ln.new(sp_t.outputs[0], drift.inputs["Y"])
+            v = n.new("ShaderNodeVectorMath")
+            v.operation = "ADD"
+            ln.new(off.outputs["Vector"], v.inputs[0])
+            ln.new(drift.outputs["Vector"], v.inputs[1])
+            nz = n.new("ShaderNodeTexNoise")
+            nz.noise_dimensions = "3D"
+            nz.inputs["Scale"].default_value = 1.0
+            ln.new(v.outputs["Vector"], nz.inputs["Vector"])
+            lean = n.new("ShaderNodeMath")
+            lean.operation = "MULTIPLY_ADD"
+            lean.inputs[1].default_value = op["wind"] * 2.0
+            lean.inputs[2].default_value = -op["wind"] * 0.8
+            ln.new(nz.outputs["Fac"], lean.inputs[0])
+            ln.new(lean.outputs[0], rot.inputs["X"])
+        iinfo = n.new("GeometryNodeObjectInfo")
+        iinfo.inputs["Object"].default_value = inst
+        iinfo.inputs["As Instance"].default_value = True
+        iop = n.new("GeometryNodeInstanceOnPoints")
+        ln.new(points, iop.inputs["Points"])
+        ln.new(iinfo.outputs["Geometry"], iop.inputs["Instance"])
+        ln.new(rot.outputs["Vector"], iop.inputs["Rotation"])
+        ln.new(scale, iop.inputs["Scale"])
+        ln.new(iop.outputs["Instances"], gout.inputs["Geometry"])
+        mod = o.modifiers.new("scatter", "NODES")
+        mod.node_group = ng
+        # (templates stay renderable: an object disabled for render may not be evaluated for the instancer;
+        # callers park them out of sight, e.g. below the ground)
+        bpy.context.view_layer.update()
+        res["created"].append(o.name)
+
     def op_snap_to_surface(self, op: dict, res: dict) -> None:
         o, surf = self.obj(op["target"]), self.obj(op["surface"])
         if surf.type != "MESH":
@@ -516,7 +632,75 @@ class SceneOps:
         remap.inputs[2].default_value = 0.5
         nt.links.new(sep.outputs["Z"], remap.inputs[0])
         nt.links.new(remap.outputs[0], ramp.inputs["Fac"])
-        nt.links.new(ramp.outputs["Color"], bg.inputs["Color"])
+        sky = ramp.outputs["Color"]
+        if op.get("clouds"):
+            # soft wisps: stretched noise on the sky dome, faded out toward the horizon and the zenith
+            mp = nt.nodes.new("ShaderNodeMapping")
+            mp.inputs["Scale"].default_value = (1.0, 1.0, 3.5)
+            nt.links.new(tc.outputs["Generated"], mp.inputs["Vector"])
+            cn = nt.nodes.new("ShaderNodeTexNoise")
+            cn.inputs["Scale"].default_value = 2.2
+            cn.inputs["Detail"].default_value = 6.0
+            cn.inputs["Roughness"].default_value = 0.55
+            nt.links.new(mp.outputs["Vector"], cn.inputs["Vector"])
+            cr = nt.nodes.new("ShaderNodeMapRange")
+            cr.inputs["From Min"].default_value = 0.62 - 0.12 * op["clouds"]
+            cr.inputs["From Max"].default_value = 0.78
+            nt.links.new(cn.outputs["Fac"], cr.inputs["Value"])
+            band = nt.nodes.new("ShaderNodeMapRange")  # only between ~5 and ~50 degrees above the horizon
+            band.inputs["From Min"].default_value = 0.02
+            band.inputs["From Max"].default_value = 0.12
+            nt.links.new(sep.outputs["Z"], band.inputs["Value"])
+            mul = nt.nodes.new("ShaderNodeMath")
+            mul.operation = "MULTIPLY"
+            nt.links.new(cr.outputs["Result"], mul.inputs[0])
+            nt.links.new(band.outputs["Result"], mul.inputs[1])
+            cmix = nt.nodes.new("ShaderNodeMix")
+            cmix.data_type = "RGBA"
+            nt.links.new(mul.outputs[0], cmix.inputs["Factor"])
+            nt.links.new(sky, cmix.inputs["A"])
+            cmix.inputs["B"].default_value = (*hex_to_rgb(op.get("cloud_color", "#FFFFFF")), 1)
+            sky = cmix.outputs["Result"]
+        if op.get("stars"):
+            # point stars: tiny Voronoi cells lit where the distance is smallest, twinkle-free, above the horizon
+            vor = nt.nodes.new("ShaderNodeTexVoronoi")
+            vor.inputs["Scale"].default_value = 420.0
+            vor.inputs["Randomness"].default_value = 1.0
+            nt.links.new(tc.outputs["Generated"], vor.inputs["Vector"])
+            pts = nt.nodes.new("ShaderNodeMapRange")
+            pts.inputs["From Min"].default_value = 0.09
+            pts.inputs["From Max"].default_value = 0.0
+            nt.links.new(vor.outputs["Distance"], pts.inputs["Value"])
+            thin = nt.nodes.new("ShaderNodeMath")  # most cells are dark: keep ~1 in 4 as stars
+            thin.operation = "GREATER_THAN"
+            thin.inputs[1].default_value = 1.0 - 0.3 * op["stars"]
+            nt.links.new(vor.outputs["Color"], thin.inputs[0])
+            above = nt.nodes.new("ShaderNodeMapRange")
+            above.inputs["From Min"].default_value = 0.03
+            above.inputs["From Max"].default_value = 0.2
+            nt.links.new(sep.outputs["Z"], above.inputs["Value"])
+            m1 = nt.nodes.new("ShaderNodeMath")
+            m1.operation = "MULTIPLY"
+            nt.links.new(pts.outputs["Result"], m1.inputs[0])
+            nt.links.new(thin.outputs[0], m1.inputs[1])
+            m2 = nt.nodes.new("ShaderNodeMath")
+            m2.operation = "MULTIPLY"
+            nt.links.new(m1.outputs[0], m2.inputs[0])
+            nt.links.new(above.outputs["Result"], m2.inputs[1])
+            m3 = nt.nodes.new("ShaderNodeMath")
+            m3.operation = "MULTIPLY"
+            m3.inputs[1].default_value = 6.0 * op["stars"]
+            nt.links.new(m2.outputs[0], m3.inputs[0])
+            add = nt.nodes.new("ShaderNodeMix")
+            add.data_type, add.blend_type = "RGBA", "ADD"
+            add.inputs["Factor"].default_value = 1.0
+            nt.links.new(sky, add.inputs["A"])
+            starcol = nt.nodes.new("ShaderNodeCombineColor")
+            for c in ("Red", "Green", "Blue"):
+                nt.links.new(m3.outputs[0], starcol.inputs[c])
+            nt.links.new(starcol.outputs["Color"], add.inputs["B"])
+            sky = add.outputs["Result"]
+        nt.links.new(sky, bg.inputs["Color"])
         nt.links.new(bg.outputs[0], out.inputs[0])
         el = ramp.color_ramp.elements
         ground = op.get("ground") or op.get("horizon", "#F2B880")
