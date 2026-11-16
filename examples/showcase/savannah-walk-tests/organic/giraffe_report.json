@@ -1,0 +1,26 @@
+{
+ "species": "giraffe",
+ "gait": "walk",
+ "frames": 210,
+ "leg_m": 1.53,
+ "speed_mps": 0.968,
+ "max_stance_slide_mm": 0.0,
+ "max_ik_miss_mm": 0.07,
+ "worst_miss": {
+  "leg": "LH",
+  "frame": 55,
+  "stance": false,
+  "tip": [
+   -2.1924,
+   0.14,
+   0.235
+  ],
+  "want": [
+   -2.192,
+   0.14,
+   0.235
+  ]
+ },
+ "render_s": 43.5,
+ "device": "OPTIX: NVIDIA GeForce RTX 5060 Laptop GPU"
+}

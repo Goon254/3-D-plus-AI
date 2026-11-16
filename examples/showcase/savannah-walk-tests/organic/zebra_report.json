@@ -1,0 +1,26 @@
+{
+ "species": "zebra",
+ "gait": "walk",
+ "frames": 210,
+ "leg_m": 0.777,
+ "speed_mps": 0.727,
+ "max_stance_slide_mm": 0.0,
+ "max_ik_miss_mm": 0.07,
+ "worst_miss": {
+  "leg": "RH",
+  "frame": 43,
+  "stance": false,
+  "tip": [
+   -1.8761,
+   -0.13,
+   0.1281
+  ],
+  "want": [
+   -1.876,
+   -0.13,
+   0.128
+  ]
+ },
+ "render_s": 47.6,
+ "device": "OPTIX: NVIDIA GeForce RTX 5060 Laptop GPU"
+}

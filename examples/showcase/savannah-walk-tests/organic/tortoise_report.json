@@ -1,0 +1,26 @@
+{
+ "species": "tortoise",
+ "gait": "walk",
+ "frames": 210,
+ "leg_m": 0.149,
+ "speed_mps": 0.036,
+ "max_stance_slide_mm": 0.0,
+ "max_ik_miss_mm": 0.07,
+ "worst_miss": {
+  "leg": "LF",
+  "frame": 80,
+  "stance": false,
+  "tip": [
+   0.1735,
+   0.22,
+   0.0559
+  ],
+  "want": [
+   0.174,
+   0.22,
+   0.056
+  ]
+ },
+ "render_s": 58.6,
+ "device": "OPTIX: NVIDIA GeForce RTX 5060 Laptop GPU"
+}

@@ -1,0 +1,26 @@
+{
+ "species": "elephant",
+ "gait": "walk",
+ "frames": 210,
+ "leg_m": 0.556,
+ "speed_mps": 0.438,
+ "max_stance_slide_mm": 0.0,
+ "max_ik_miss_mm": 0.07,
+ "worst_miss": {
+  "leg": "RF",
+  "frame": 95,
+  "stance": false,
+  "tip": [
+   0.0514,
+   -0.19,
+   0.1234
+  ],
+  "want": [
+   0.051,
+   -0.19,
+   0.123
+  ]
+ },
+ "render_s": 58.9,
+ "device": "OPTIX: NVIDIA GeForce RTX 5060 Laptop GPU"
+}
