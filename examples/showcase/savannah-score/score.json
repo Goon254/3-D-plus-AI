@@ -1,0 +1,410 @@
+{
+  "cue_sheet": "films/savannah/05_cue_sheet.json",
+  "renderer": "fluidsynth",
+  "cues": [
+    {
+      "id": "sc01",
+      "scene": "TITLE + SC1 dawn, the old watering hole",
+      "intent": "wonder turning to worry",
+      "seconds": 27.0,
+      "key": "D",
+      "modes": [
+        "major",
+        "minor"
+      ],
+      "moods": [
+        "wonder",
+        "worry"
+      ],
+      "bpm": 62.2,
+      "bars": 7,
+      "programs": [
+        32,
+        49,
+        108
+      ],
+      "motifs": [
+        "main",
+        "main"
+      ],
+      "reprise_of": null,
+      "fingerprint": "cb9d0b85f7c7",
+      "engine": "fluidsynth",
+      "rms_db": -22.2,
+      "centroid_hz": 722,
+      "midi": "sc01.mid",
+      "wav": "sc01.wav"
+    },
+    {
+      "id": "sc02",
+      "scene": "SC2 morning, the puddle",
+      "intent": "comedy, then embarrassment",
+      "seconds": 32.0,
+      "key": "F",
+      "modes": [
+        "major",
+        "minor"
+      ],
+      "moods": [
+        "comedy",
+        "droop"
+      ],
+      "bpm": 120.0,
+      "bars": 16,
+      "programs": [
+        12,
+        32,
+        45,
+        49,
+        58,
+        72,
+        108
+      ],
+      "motifs": [
+        "tembo",
+        "kiki",
+        "zuri",
+        "tembo",
+        "tembo",
+        "tembo"
+      ],
+      "reprise_of": null,
+      "fingerprint": "03e14379a228",
+      "engine": "fluidsynth",
+      "rms_db": -20.4,
+      "centroid_hz": 536,
+      "midi": "sc02.mid",
+      "wav": "sc02.wav"
+    },
+    {
+      "id": "sc03",
+      "scene": "SC3 morning, the singing spring",
+      "intent": "mystery, then hope, then resolve",
+      "seconds": 42.0,
+      "key": "A",
+      "modes": [
+        "dorian",
+        "major",
+        "mixolydian"
+      ],
+      "moods": [
+        "mystery",
+        "tender",
+        "adventure"
+      ],
+      "bpm": 74.3,
+      "bars": 13,
+      "programs": [
+        12,
+        32,
+        46,
+        48,
+        49,
+        53,
+        58,
+        108
+      ],
+      "motifs": [
+        "bibi",
+        "bibi",
+        "tembo",
+        "tembo",
+        "main"
+      ],
+      "reprise_of": null,
+      "fingerprint": "ef104d45e16c",
+      "engine": "fluidsynth",
+      "rms_db": -22.3,
+      "centroid_hz": 421,
+      "midi": "sc03.mid",
+      "wav": "sc03.wav"
+    },
+    {
+      "id": "sc04",
+      "scene": "SC4 midday, the journey",
+      "intent": "fun and games, then one quiet breath",
+      "seconds": 36.0,
+      "key": "G",
+      "modes": [
+        "major",
+        "mixolydian"
+      ],
+      "moods": [
+        "adventure",
+        "tender"
+      ],
+      "bpm": 113.3,
+      "bars": 17,
+      "programs": [
+        12,
+        32,
+        45,
+        46,
+        48,
+        49,
+        53,
+        58,
+        72,
+        73
+      ],
+      "motifs": [
+        "zuri",
+        "kiki",
+        "neema",
+        "zuri",
+        "kiki",
+        "bibi",
+        "tembo"
+      ],
+      "reprise_of": null,
+      "fingerprint": "ec847df7689f",
+      "engine": "fluidsynth",
+      "rms_db": -20.4,
+      "centroid_hz": 654,
+      "midi": "sc04.mid",
+      "wav": "sc04.wav"
+    },
+    {
+      "id": "sc05",
+      "scene": "SC5 afternoon, the fork",
+      "intent": "conflict",
+      "seconds": 26.0,
+      "key": "E",
+      "modes": [
+        "dorian",
+        "minor"
+      ],
+      "moods": [
+        "tension",
+        "tension"
+      ],
+      "bpm": 92.3,
+      "bars": 10,
+      "programs": [
+        12,
+        32,
+        44,
+        45,
+        53,
+        72
+      ],
+      "motifs": [
+        "bibi",
+        "zuri",
+        "kiki",
+        "kiki"
+      ],
+      "reprise_of": null,
+      "fingerprint": "193ff6091e3f",
+      "engine": "fluidsynth",
+      "rms_db": -21.2,
+      "centroid_hz": 565,
+      "midi": "sc05.mid",
+      "wav": "sc05.wav"
+    },
+    {
+      "id": "sc06",
+      "scene": "SC6 late afternoon, stripes in the grass",
+      "intent": "worry, then a small triumph for Neema, then relief",
+      "seconds": 36.0,
+      "key": "B",
+      "modes": [
+        "major",
+        "minor"
+      ],
+      "moods": [
+        "mystery",
+        "soaring",
+        "tender"
+      ],
+      "bpm": 73.3,
+      "bars": 11,
+      "programs": [
+        32,
+        46,
+        48,
+        49,
+        52,
+        53,
+        72,
+        73,
+        108
+      ],
+      "motifs": [
+        "zuri",
+        "zuri",
+        "neema",
+        "neema",
+        "zuri"
+      ],
+      "reprise_of": null,
+      "fingerprint": "8f09f83d0c6a",
+      "engine": "fluidsynth",
+      "rms_db": -21.0,
+      "centroid_hz": 837,
+      "midi": "sc06.mid",
+      "wav": "sc06.wav"
+    },
+    {
+      "id": "sc07",
+      "scene": "SC7 sunset, lost together",
+      "intent": "the low point, tender, then the hero's choice",
+      "seconds": 26.0,
+      "key": "D",
+      "modes": [
+        "major",
+        "minor"
+      ],
+      "moods": [
+        "sad",
+        "solo"
+      ],
+      "bpm": 55.4,
+      "bars": 6,
+      "programs": [
+        12,
+        49,
+        58,
+        108
+      ],
+      "motifs": [
+        "tembo",
+        "tembo",
+        "tembo"
+      ],
+      "reprise_of": null,
+      "fingerprint": "d2dc1c528438",
+      "engine": "fluidsynth",
+      "rms_db": -23.1,
+      "centroid_hz": 501,
+      "midi": "sc07.mid",
+      "wav": "sc07.wav"
+    },
+    {
+      "id": "sc08",
+      "scene": "SC8 night, what everyone notices",
+      "intent": "wonder; each gift clicks into place",
+      "seconds": 30.0,
+      "key": "Eb",
+      "modes": [
+        "lydian"
+      ],
+      "moods": [
+        "night"
+      ],
+      "bpm": 64.0,
+      "bars": 8,
+      "programs": [
+        8,
+        12,
+        45,
+        52,
+        53,
+        58,
+        72,
+        73
+      ],
+      "motifs": [
+        "bibi",
+        "kiki",
+        "neema",
+        "zuri",
+        "tembo",
+        "bibi"
+      ],
+      "reprise_of": null,
+      "fingerprint": "5eb33b1096ef",
+      "engine": "fluidsynth",
+      "rms_db": -22.4,
+      "centroid_hz": 848,
+      "midi": "sc08.mid",
+      "wav": "sc08.wav"
+    },
+    {
+      "id": "sc09",
+      "scene": "SC9 night, the singing spring",
+      "intent": "climax and triumph",
+      "seconds": 40.0,
+      "key": "C",
+      "modes": [
+        "major",
+        "minor"
+      ],
+      "moods": [
+        "tension",
+        "build",
+        "triumph",
+        "comedy"
+      ],
+      "bpm": 102.0,
+      "bars": 17,
+      "programs": [
+        12,
+        32,
+        44,
+        45,
+        48,
+        49,
+        52,
+        53,
+        58,
+        72,
+        73,
+        108
+      ],
+      "motifs": [
+        "tembo",
+        "tembo",
+        "neema",
+        "zuri",
+        "kiki",
+        "bibi",
+        "main",
+        "tembo"
+      ],
+      "reprise_of": null,
+      "fingerprint": "4411a53e70aa",
+      "engine": "fluidsynth",
+      "rms_db": -21.3,
+      "centroid_hz": 587,
+      "midi": "sc09.mid",
+      "wav": "sc09.wav"
+    },
+    {
+      "id": "sc10",
+      "scene": "SC10 dawn, home + END CARD",
+      "intent": "warm resolution",
+      "seconds": 27.0,
+      "key": "D",
+      "modes": [
+        "major"
+      ],
+      "moods": [
+        "triumph",
+        "solo"
+      ],
+      "bpm": 88.9,
+      "bars": 10,
+      "programs": [
+        12,
+        32,
+        52,
+        108
+      ],
+      "motifs": [
+        "main",
+        "main",
+        "main"
+      ],
+      "reprise_of": "sc01",
+      "fingerprint": "adb77686b152",
+      "engine": "fluidsynth",
+      "rms_db": -24.0,
+      "centroid_hz": 611,
+      "midi": "sc10.mid",
+      "wav": "sc10.wav"
+    }
+  ],
+  "score": "score.wav",
+  "score_lufs": -18.9
+}

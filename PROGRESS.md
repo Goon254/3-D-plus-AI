@@ -1,5 +1,29 @@
 # PROGRESS — morning report (overnight build, 2026-11-15)
 
+## 0. Savannah film — owner's top priority (CHALLENGE-SAVANNAH.md)
+
+Status 11-16 21:48 UTC ([review](docs/reviews/2026-11-16T2148Z.md)): **pre-production.** Done so far:
+
+* Species research notes (elephant, giraffe, zebra, meerkat, leopard tortoise): `src/animatica/knowledge/species/`.
+* Story: premise and beats, draft 1, story-editor critique, production screenplay (10 scenes, ≈5:20): `films/savannah/`.
+* Creatures: species body plans on bone rigs with IK legs and a foot-locked gait planner; walk tests for all five,
+  0.0 mm measured stance slide: [`examples/showcase/savannah-walk-tests/`](examples/showcase/savannah-walk-tests/).
+* Score: a Composer with per-scene cues and six character leitmotifs, rendered with FluidSynth + GeneralUser GS:
+  [`examples/showcase/savannah-score/score.m4a`](examples/showcase/savannah-score/score.m4a) (5:22, not yet cut to picture).
+  Reproduce: `python scripts/savannah_score.py`.
+
+Scorecard (strict): story 8 (script), character design 5, motion 6, visuals 3, voices 1, music 7, mix 1. Next: faces +
+meerkat/tortoise design pass, the savannah set, voice casting, ambience, and the scene production pipeline (see
+[docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md) P1-SAVANNAH).
+
+### Needs you
+
+* **Listen to the score** (`examples/showcase/savannah-score/score.m4a`); the cloud reviewer has no speakers.
+* **Install FluidSynth on the laptop** and put it on PATH (or place `fluidsynth.exe` in
+  `%USERPROFILE%\.cache\animatica\fluidsynth\bin\`), then rerun `scripts/setup_assets.sh` from Git Bash to fetch the
+  SoundFont. Without it the Composer falls back to its numpy synth.
+* An `ANTHROPIC_API_KEY` would let the live Anthropic provider path run once (still never run).
+
 ## 1. Headline
 
 **`animatica film "<prompt>"` works end to end with no human input and no API key.**
@@ -20,7 +44,7 @@
   editable `scene.blend` and an `edit.mlt` timeline for Shotcut/Kdenlive.
 
 Hand edits survive `animatica continue` / `revise`. An **MCP server** exposes the batched tools. A
-**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **98 tests**
+**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **132 tests**
 (`pytest -q`, 1 skipped without Godot) pass locally. GitHub CI runs ruff, unit, bpy adapter and offline pipeline tests; status
 for the final SHA is at the bottom of this report. An hourly reviewer session scored the project, and
 its queue is in [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md).
@@ -40,7 +64,7 @@ animatica film "A lonely robot sits in a junkyard at dusk until a flower blooms.
 animatica revise output/hello-little-one "make the robot blue and slow down shot 2" --quality preview
 animatica game "a 2D platformer where a robot collects flowers" && godot --path output/game-*/godot
 animatica-mcp                        # MCP server (stdio) for Claude Desktop / Claude Code
-pytest -q                            # 98 tests (Blender/Godot/MCP tests skip if those are missing)
+pytest -q                            # 132 tests (Blender/Godot/MCP tests skip if those are missing)
 ```
 
 Each film writes `output/<project>/final.mp4` (video + audio + captions), `scene.blend`, `edit.mlt`,
@@ -118,7 +142,7 @@ beat doesn't carry the hero out of frame, the HD showcase is stale (floating sla
   acting.
 * **Render cost:** Cycles CPU ≈10–13 s/frame at 960×540 on 2 cores (~90 min per 21 s). `preview`
   (Workbench, flat colours) takes 2 minutes.
-* **Music is procedural numpy:** clean but generic. FluidSynth/MuseScore are queued.
+* **Music:** the short films still use the procedural numpy bed (clean but generic). The savannah score uses the new Composer (FluidSynth + GeneralUser GS, leitmotifs per character); wiring it into `film` is queued.
 * **Script mode is a guard-rail, not a sandbox.** The **live add-on is untested** in the Blender UI.
 * **Games:** one template genre with polygon art; no exported builds.
 

@@ -1,0 +1,69 @@
+{
+  "film": "Tembo and the Singing Spring",
+  "notes": "One cue per scene, from the per-scene intent and music notes in 04_screenplay.md. Title card is folded into sc01 and the end card into sc10. Keys move with the story: D (home) -> F (comedy) -> G/E (journey, worry) -> D minor/major (low point) -> Eb lydian (night) -> C (climax) -> D (home again). Rendered by animatica.audio.composer.",
+  "cues": [
+    {"id": "sc01", "scene": "TITLE + SC1 dawn, the old watering hole", "seconds": 27, "key": "D", "bpm": 66,
+     "intent": "wonder turning to worry",
+     "sections": [
+       {"at": 0.0, "mood": "wonder", "motifs": ["main"]},
+       {"at": 0.62, "mood": "worry", "motifs": ["main"]}
+     ]},
+    {"id": "sc02", "scene": "SC2 morning, the puddle", "seconds": 32, "key": "F", "bpm": 118,
+     "intent": "comedy, then embarrassment",
+     "sections": [
+       {"at": 0.0, "mood": "comedy", "motifs": ["tembo", "kiki", "zuri", "tembo"]},
+       {"at": 0.84, "mood": "droop", "motifs": ["tembo"]}
+     ]},
+    {"id": "sc03", "scene": "SC3 morning, the singing spring", "seconds": 42, "key": "A", "bpm": 76,
+     "intent": "mystery, then hope, then resolve",
+     "sections": [
+       {"at": 0.0, "mood": "mystery", "motifs": ["bibi"]},
+       {"at": 0.42, "mood": "tender", "motifs": ["tembo"]},
+       {"at": 0.62, "mood": "adventure", "motifs": ["main", "neema"]}
+     ]},
+    {"id": "sc04", "scene": "SC4 midday, the journey", "seconds": 36, "key": "G", "bpm": 112,
+     "intent": "fun and games, then one quiet breath",
+     "sections": [
+       {"at": 0.0, "mood": "adventure", "motifs": ["zuri", "kiki", "neema"]},
+       {"at": 0.68, "mood": "tender", "motifs": ["bibi", "tembo"]}
+     ]},
+    {"id": "sc05", "scene": "SC5 afternoon, the fork", "seconds": 26, "key": "E", "bpm": 88,
+     "intent": "conflict",
+     "sections": [
+       {"at": 0.0, "mood": "tension", "motifs": ["bibi", "zuri"]},
+       {"at": 0.6, "mood": "tension", "motifs": ["kiki"], "mode": "dorian"}
+     ]},
+    {"id": "sc06", "scene": "SC6 late afternoon, stripes in the grass", "seconds": 36, "key": "B", "bpm": 72,
+     "intent": "worry, then a small triumph for Neema, then relief",
+     "sections": [
+       {"at": 0.0, "mood": "mystery", "motifs": ["zuri"], "mode": "minor"},
+       {"at": 0.36, "mood": "soaring", "motifs": ["neema"]},
+       {"at": 0.74, "mood": "tender", "motifs": ["zuri"]}
+     ]},
+    {"id": "sc07", "scene": "SC7 sunset, lost together", "seconds": 26, "key": "D", "bpm": 60,
+     "intent": "the low point, tender, then the hero's choice",
+     "sections": [
+       {"at": 0.0, "mood": "sad", "motifs": ["tembo"]},
+       {"at": 0.72, "mood": "solo", "motifs": ["tembo"]}
+     ]},
+    {"id": "sc08", "scene": "SC8 night, what everyone notices", "seconds": 30, "key": "Eb", "bpm": 64,
+     "intent": "wonder; each gift clicks into place",
+     "sections": [
+       {"at": 0.0, "mood": "night", "motifs": ["bibi", "kiki", "neema", "zuri", "tembo"], "layered": true}
+     ]},
+    {"id": "sc09", "scene": "SC9 night, the singing spring", "seconds": 40, "key": "C", "bpm": 100,
+     "intent": "climax and triumph",
+     "sections": [
+       {"at": 0.0, "mood": "tension", "motifs": ["tembo"]},
+       {"at": 0.3, "mood": "build", "motifs": ["neema", "zuri", "kiki", "bibi"], "layered": true},
+       {"at": 0.55, "mood": "triumph", "motifs": ["main"], "double": 52},
+       {"at": 0.85, "mood": "comedy", "motifs": ["tembo"]}
+     ]},
+    {"id": "sc10", "scene": "SC10 dawn, home + END CARD", "seconds": 27, "key": "D", "bpm": 92,
+     "intent": "warm resolution", "reprise_of": "sc01",
+     "sections": [
+       {"at": 0.0, "mood": "triumph", "motifs": ["main"], "double": 52},
+       {"at": 0.7, "mood": "solo", "motifs": ["main"]}
+     ]}
+  ]
+}
