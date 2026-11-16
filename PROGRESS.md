@@ -20,8 +20,8 @@
   editable `scene.blend` and an `edit.mlt` timeline for Shotcut/Kdenlive.
 
 Hand edits survive `animatica continue` / `revise`. An **MCP server** exposes the batched tools. A
-**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **71 tests**
-(`pytest -q`) pass locally. GitHub CI runs ruff, unit, bpy adapter and offline pipeline tests; status
+**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **98 tests**
+(`pytest -q`, 1 skipped without Godot) pass locally. GitHub CI runs ruff, unit, bpy adapter and offline pipeline tests; status
 for the final SHA is at the bottom of this report. An hourly reviewer session scored the project, and
 its queue is in [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md).
 
@@ -40,7 +40,7 @@ animatica film "A lonely robot sits in a junkyard at dusk until a flower blooms.
 animatica revise output/hello-little-one "make the robot blue and slow down shot 2" --quality preview
 animatica game "a 2D platformer where a robot collects flowers" && godot --path output/game-*/godot
 animatica-mcp                        # MCP server (stdio) for Claude Desktop / Claude Code
-pytest -q                            # 89 tests (Blender/Godot/MCP tests skip if those are missing)
+pytest -q                            # 98 tests (Blender/Godot/MCP tests skip if those are missing)
 ```
 
 Each film writes `output/<project>/final.mp4` (video + audio + captions), `scene.blend`, `edit.mlt`,
@@ -89,6 +89,12 @@ is the production log viewer: every agent decision, every batch, every critique 
 | 9 | Polish | **partial** | README + quickstart + Makefile, CONTRIBUTING (DCO), issue templates, `docs/BLENDER_FEATURE_MAP.md`, `docs/GAMES.md`. No GIF, no web UI |
 
 ## 5. Known issues & honest quality assessment
+
+**Update 11-16 19:00** ([review](docs/reviews/2026-11-16T1900Z.md)): the lantern now really glows (its point light was
+trapped inside the opaque glass; a warm ~1 m pool on the snow and warm light on the fox's face), the critter close-up
+no longer clips a sliver of the lantern (new critic `prop_sliver`, the frame tightens from the bottom), snow has a few
+large rocks instead of ash-like specks, and the fur has a sheen rim. Stills in the review. **The HD fox showcase (re-rendered at `1a4066c`
+with the bone rig) was built before these fixes: re-render it on the GPU.** Scores ≈8.5 (visual 8, animation 8, audio 8); gate not met.
 
 **Update 14:15** ([review](docs/reviews/2026-11-15T1415Z.md)): exits now leave the frame (camera holds on the set),
 night reads as night in previews, the ground has grit/bump/pebbles, and scrap heaps are smooth with junk on the crest. The critter

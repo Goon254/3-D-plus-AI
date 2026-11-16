@@ -23,6 +23,7 @@ answer fails validation, the agent falls back to the deterministic scripted answ
 | behind_camera | subject behind the camera | camera `azimuth_add 15` |
 | floor_intersection / floating | hero lowest point < −3 cm or > 8 cm (outside hops) | animator `floor_offset` |
 | prop_off_frame | the prop leaves frame in shots about it | camera `fill_mul 0.85` |
+| prop_sliver | in a dialogue single, the prop is 0–25 % in frame (a stray-looking edge sliver) | camera `lift_frac` (raise the bottom edge) |
 | mouth_static | mouth shape keys ~0 during a dialogue line | redo voice + animation |
 | too_dark / blown_out | preview mean luminance < 0.07 or > 0.82, or clipping | lighting `exposure ±` |
 | static_shot | nothing moves and the camera is static | (minor note) |
