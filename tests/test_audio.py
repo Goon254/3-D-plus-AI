@@ -83,3 +83,22 @@ def test_rhubarb_is_used_when_installed(tmp_path):
     # the Windows build prints nothing on stdout with -q: this used to fall back to "amplitude" silently
     assert engine == "rhubarb"
     assert cues and abs(cues[-1].end - res["duration"]) < 0.2
+
+
+def test_soundfont_player_plays_real_samples_in_tune():
+    import pytest
+
+    from animatica.audio.soundfont import Note, default_soundfont, load, render, render_note
+
+    path = default_soundfont()
+    if path is None:
+        pytest.skip("no SoundFont installed (scripts/setup_assets.sh)")
+    sf = load(str(path))
+    sr = 44100
+    for prog in (73, 12, 48):  # flute, marimba, strings: a held A4 is at 440 Hz
+        a = render_note(sf, 0, prog, 69, 100, 1.2)[:, 0][int(0.15 * sr) : int(1.1 * sr)]
+        spec = np.abs(np.fft.rfft(a * np.hanning(len(a)), 1 << 17))
+        f = np.fft.rfftfreq(1 << 17, 1 / sr)[np.argmax(spec)]
+        assert abs(f - 440.0) < 6.0, (prog, f)
+    drums = render([Note(0.0, 0.1, 63, 110, 0, bank=128)], 0.5, sf)
+    assert np.abs(drums).max() > 0.05  # GM percussion (bank 128) sounds

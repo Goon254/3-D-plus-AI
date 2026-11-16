@@ -35,3 +35,16 @@ Animatica's own code** (procedural recipes and numpy synthesis) — no external 
 its rendering uses GeneralUser GS instrument samples, whose license allows commercial music, so the
 rendered audio is covered by this repository's license with a credit to the SoundFont. Voices are stock
 Kokoro voices (no cloning). Showcase renders are therefore covered by this repository's license.
+
+## FluidR3Mono_GM SoundFont (music samples)
+
+* What: General MIDI SoundFont used by the composer (`src/animatica/audio/soundfont.py`, a numpy sample player; no
+  external synthesizer). Downloaded to `~/.cache/animatica/soundfonts/` by `scripts/setup_assets.sh`, **not committed**.
+* License: **MIT**. FluidR3 (c) 2000-2002, 2008 Frank Wen; mono conversion FluidR3Mono (c) 2014-17 Michael Cowgill;
+  distributed with MuseScore 3.6.2 (`share/sound/FluidR3Mono_License.md`, saved next to the font). Rendered music made
+  with it may be used freely; the notices travel with the font file.
+* Why not GeneralUser GS: its licence allows commercial music, but its author cannot vouch for every sample's
+  origin, and Debian reviewers flagged it; FluidR3 is MIT and in Debian main.
+* Why not FluidSynth: executing a downloaded binary was not approved in this environment, and the numpy player
+  covers what the score needs (zones, tuning, loops, volume envelope, SF3 Ogg samples).
+

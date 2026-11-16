@@ -57,4 +57,12 @@ if [ ! -f "$SF2" ]; then
   mv "$SF2.part" "$SF2"
 fi
 command -v fluidsynth >/dev/null || echo "note: fluidsynth not on PATH; the Composer will use its numpy fallback synth"
+# SoundFont for the composer's real-instrument cues: FluidR3Mono_GM (MIT; FluidR3 by Frank Wen, mono
+# conversion by Michael Cowgill), as shipped with MuseScore 3.6.2. Data only: rendered by our numpy player.
+mkdir -p "$CACHE/soundfonts"
+if [ ! -f "$CACHE/soundfonts/FluidR3Mono_GM.sf3" ]; then
+  echo "downloading FluidR3Mono_GM.sf3"
+  curl -fsSL --retry 3 -o "$CACHE/soundfonts/FluidR3Mono_GM.sf3" https://github.com/musescore/MuseScore/raw/3.6.2/share/sound/FluidR3Mono_GM.sf3
+  curl -fsSL --retry 3 -o "$CACHE/soundfonts/FluidR3Mono_License.md" https://raw.githubusercontent.com/musescore/MuseScore/3.6.2/share/sound/FluidR3Mono_License.md
+fi
 echo "assets ready in $CACHE"
