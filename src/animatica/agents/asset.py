@@ -453,6 +453,67 @@ SPECIES["dog"]["tail"] = "long"
 SPECIES["dog"]["chest"] = None
 
 
+def critter_rig_ops(tail: str | None) -> list[dict[str, Any]]:
+    """Bone rig for four-legged critters: a 3-bone tail chain (follow-through that *bends*) and two-bone
+    legs (tuck in the air, reach before landing). Coordinates are hero_body-local, matching the parts above;
+    binds keep each part's local transform. The Animator drives it with ``bone:<name>.rotation`` keys."""
+    d = (0.0, math.cos(math.radians(42)), math.sin(math.radians(42)))  # along the plume
+    t = [(0.0, 0.3 + d[1] * 0.19 * k, -0.02 + d[2] * 0.19 * k) for k in range(4)]
+    bones: list[dict[str, Any]] = [
+        {
+            "name": f"tail_{k}",
+            "head": list(t[k]),
+            "tail": list(t[k + 1]),
+            **({"parent": f"tail_{k - 1}"} if k else {}),
+        }
+        for k in range(3)
+    ]
+    for side, x in (("L", 1), ("R", -1)):
+        bones += [
+            {"name": f"leg_F{side}_0", "head": [0.15 * x, -0.17, -0.08], "tail": [0.15 * x, -0.175, -0.2]},
+            {
+                "name": f"leg_F{side}_1",
+                "head": [0.15 * x, -0.175, -0.2],
+                "tail": [0.15 * x, -0.195, -0.33],
+                "parent": f"leg_F{side}_0",
+            },
+            {"name": f"leg_H{side}_0", "head": [0.17 * x, 0.15, -0.14], "tail": [0.17 * x, 0.14, -0.24]},
+            {
+                "name": f"leg_H{side}_1",
+                "head": [0.17 * x, 0.14, -0.24],
+                "tail": [0.17 * x, 0.1, -0.305],
+                "parent": f"leg_H{side}_0",
+            },
+        ]
+    ops: list[dict[str, Any]] = [
+        {
+            "op": "create_armature",
+            "id": "hero_rig",
+            "parent": "hero_body",
+            "bones": bones,
+            "tags": ["hero", "rig"],
+        }
+    ]
+
+    def bind(mesh: str, bone: str | None = None, chain: list[str] | None = None) -> dict[str, Any]:
+        op: dict[str, Any] = {"op": "bind_mesh_to_armature", "mesh": mesh, "armature": "hero_rig"}
+        op.update({"bones": chain} if chain else {"bone": bone})
+        return op
+
+    if tail in ("bushy", "long"):
+        ops += [bind("hero_tail", chain=["tail_0", "tail_1", "tail_2"]), bind("hero_tail_tip", "tail_2")]
+    elif tail:
+        ops.append(bind("hero_tail", "tail_0"))
+    for side in ("L", "R"):
+        ops += [
+            bind(f"hero_arm_{side}", chain=[f"leg_F{side}_0", f"leg_F{side}_1"]),
+            bind(f"hero_paw_{side}", f"leg_F{side}_1"),
+            bind(f"hero_haunch_{side}", f"leg_H{side}_0"),
+            bind(f"hero_foot_{side}", f"leg_H{side}_1"),
+        ]
+    return ops
+
+
 def critter_ops(
     color: str, eye: str, trim: str, scale: float = 1.0, species: str = "creature", **_: Any
 ) -> list[dict[str, Any]]:
@@ -609,7 +670,7 @@ def critter_ops(
             # hind legs are haunches + paws on the root
             ops += [
                 sphere(f"hero_haunch_{side}", 0.15, [0.17 * x, 0.15, -0.14], "hero_body", [0.85, 1.05, 1.0]),
-                sphere(f"hero_foot_{side}", 0.085, [0.17 * x, 0.1, 0.045], "hero_root", [1, 1.45, 0.55]),
+                sphere(f"hero_foot_{side}", 0.085, [0.17 * x, 0.1, 0.06], "hero_root", [1, 1.45, 0.55]),
                 {
                     "op": "create_empty",
                     "id": f"hero_arm_pivot_{side}",
@@ -666,6 +727,8 @@ def critter_ops(
     else:
         nose_loc, mouth_loc, nose_r = [0, -0.3, 0.19], [0, -0.29, 0.13], 0.03
     # a snout mouth is bigger and opens wider, so a whispered line still reads (review 11-16 17:25)
+    if sp.get("legs"):
+        ops += critter_rig_ops(tail)
     verts, faces, keys = (
         mouth_mesh(0.075, 0.01, open_mul=6.0) if not muzzle else mouth_mesh(0.075, 0.012, open_mul=7.0)
     )

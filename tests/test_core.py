@@ -262,3 +262,57 @@ def test_acting_beats_discovery_pause_and_glance_after_the_line(tmp_path, prompt
     assert rig.head_turn(g) == pytest.approx(cheat, abs=1)
     assert rig.head_turn(g + 0.6) > cheat + 20 and rig.head_nod(g + 0.6) > rig.head_nod(g) + 6
     assert rig.head_turn(g + 1.35) == pytest.approx(cheat, abs=1)
+
+
+def test_critter_bone_rig_tail_follow_through_and_leg_tuck():
+    import math
+
+    from animatica.agents.animator import Rig, critter_bone_keys, hop_leg_phases, hop_locomotion
+    from animatica.agents.asset import critter_ops
+
+    # the fox recipe builds an armature (3-bone tail, 2-bone legs) and binds its parts to it
+    ops = critter_ops("#E0712B", "#7FE7FF", "#333333", species="fox")
+    arm = next(o for o in ops if o["op"] == "create_armature")
+    names = {b["name"] for b in arm["bones"]}
+    assert {"tail_0", "tail_1", "tail_2"} <= names and {
+        f"leg_{s}{side}_{i}" for s in "FH" for side in "LR" for i in (0, 1)
+    } <= names
+    binds = {o["mesh"]: o for o in ops if o["op"] == "bind_mesh_to_armature"}
+    assert (
+        binds["hero_tail"]["bones"] == ["tail_0", "tail_1", "tail_2"]
+        and binds["hero_paw_L"]["bone"] == "leg_FL_1"
+    )
+    assert not any(
+        o["op"] == "create_armature" for o in critter_ops("#E8A15A", "#7FE7FF", "#333333")
+    )  # generic
+
+    # a critter hopping 2 m: legs tuck in the air and are neutral on contact; the tail chain overlaps
+    fps, n = 24, 96
+    xs = [min(2.0, max(0.0, (i - 12) / 60 * 2.0)) for i in range(n)]
+    hx, lift, land = hop_locomotion(xs, fps)
+    phases = hop_leg_phases(lift)
+    accel = [0.0] * n
+    accel[12], accel[72] = 0.6, -0.6  # start / stop impulses for the tail spring
+    from animatica.agents.animator import spring
+
+    antenna = spring(accel, 1 / fps, k=80, c=6, gain=4.0)
+    ops = critter_bone_keys(Rig(), list(range(1, n + 1)), fps, hx, lift, land, antenna, [0.0] * n)
+    by = {o["property"]: {k[0]: k[1] for k in o["keys"]} for o in ops}
+    assert len(by) == 3 + 8
+    air = [i + 1 for i, (rise, fall) in enumerate(phases) if rise > 0.9]
+    ground = [i + 1 for i in range(n) if lift[i] == 0 and land[i] == 0]
+    assert air and ground
+    assert all(by["bone:leg_FL_1.rotation"][f][0] > 40 for f in air)  # front wrist folds on the way up
+    assert all(abs(by["bone:leg_HL_0.rotation"][f][0]) < 6 for f in ground)  # standing: legs plumb
+    # overlapping action: the tail tip repeats the base bone's motion ~6 frames later
+    t0 = [by["bone:tail_0.rotation"][f][0] for f in range(1, n + 1)]
+    t2 = [by["bone:tail_2.rotation"][f][0] for f in range(1, n + 1)]
+
+    def corr(lag):
+        a, b = t0[: n - lag], t2[lag:]
+        ma, mb = sum(a) / len(a), sum(b) / len(b)
+        return sum((x - ma) * (y - mb) for x, y in zip(a, b)) / math.sqrt(
+            sum((x - ma) ** 2 for x in a) * sum((y - mb) ** 2 for y in b) + 1e-9
+        )
+
+    assert max(range(0, 12), key=corr) >= 4

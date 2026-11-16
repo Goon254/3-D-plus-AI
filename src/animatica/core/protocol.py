@@ -597,7 +597,9 @@ def validate_batch(data: dict[str, Any] | Batch, existing_ids: set[str] | None =
             if op.index is not None and True in kinds:
                 errors.append(f"{p}: 'index' given, values must be scalars")
             vec_props = {"location", "rotation", "scale", "light.color"}
-            is_vec = op.property in vec_props or re.fullmatch(r"bone:.+\.(rotation|location|scale)", op.property)
+            is_vec = op.property in vec_props or re.fullmatch(
+                r"bone:.+\.(rotation|location|scale)", op.property
+            )
             if op.index is None and is_vec and False in kinds:
                 errors.append(f"{p}: property {op.property!r} needs vector values or an 'index'")
             if not re.fullmatch(

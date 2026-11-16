@@ -173,6 +173,7 @@ HERO_ANIMATED = [
     "prop",
     "hero_elbow_L",
     "hero_elbow_R",
+    "hero_rig",
 ]
 
 

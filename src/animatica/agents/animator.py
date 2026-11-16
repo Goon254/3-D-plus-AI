@@ -166,6 +166,120 @@ def hop_locomotion(
     return out_x, lift, land
 
 
+def hop_leg_phases(lift: list[float]) -> list[tuple[float, float]]:
+    """Per frame ``(rise, fall)`` in 0..1 from a hop arc: how strongly the critter is pushing off / tucked
+    (rising half of the arc) or reaching for the ground (falling half)."""
+    out = []
+    for i, h in enumerate(lift):
+        if h <= 1e-4:
+            out.append((0.0, 0.0))
+            continue
+        nxt = lift[i + 1] if i + 1 < len(lift) else 0.0
+        amt = min(1.0, h / 0.08)
+        out.append((amt, 0.0) if nxt >= h else (0.0, amt))
+    return out
+
+
+def critter_bone_keys(
+    rig: Rig,
+    frames: list[int],
+    fps: int,
+    xs: list[float],
+    lift: list[float],
+    land: list[float],
+    antenna: list[float],
+    arm_lag: list[float],
+    lean: Callable[[float], float] = lambda t: 0.0,
+) -> list[dict[str, Any]]:
+    """Keys for the critter bone rig (see ``asset.critter_rig_ops``).
+
+    Tail: the root-acceleration spring drives the base bone; each further bone repeats it a few frames later
+    and weaker, plus a travelling side-to-side wave, so the plume bends and overlaps instead of swinging as
+    one rigid piece. It also lags the hop's vertical motion (drops on take-off, flicks up on landing).
+    Legs (negative X = forward): push off with the hind legs and tuck the front paws on the way up; reach
+    forward with the front paws and tuck the hind legs on the way down; knees give on landing. The front
+    legs also carry the performance's reach/wave curves (clamped: a fox waves a paw, not a whole arm).
+    The legs counter-rotate the body's lean so they stay plumb and the paws stay planted.
+    """
+    n = len(xs)
+    phases = hop_leg_phases(lift)
+
+    def at(f: int, series: list[Any]) -> Any:
+        return series[min(n - 1, max(0, f - 1))]
+
+    vz = [0.0] + [(b - a) * fps for a, b in zip(lift, lift[1:])]
+    az = [0.0] + [(b - a) * fps for a, b in zip(vz, vz[1:])]
+    vspring = spring(az, 1 / fps, k=70, c=7, gain=0.06)
+
+    def r(v: float) -> float:
+        return round(v, 2)
+
+    def keys(fn: Callable[[int, float], list[float]]) -> list[list[Any]]:
+        return [[f, [r(v) for v in fn(f, (f - 1) / fps)], "BEZIER"] for f in frames]
+
+    ops: list[dict[str, Any]] = []
+    for k in range(3):
+        lag = 3 * k  # frames of delay per bone: overlapping action down the chain
+        gain = (0.9, 0.75, 0.6)[k]
+
+        def tail_rot(f: int, t: float, k: int = k, lag: int = lag, gain: float = gain) -> list[float]:
+            g = f - lag
+            lift_x = -math.degrees(at(g, vspring)) * (1 + 0.5 * k)
+            return [
+                math.degrees(at(g, antenna)) * gain + 3 * math.sin(2 * math.pi * t / 1.7 - 0.6 * k) + lift_x,
+                0.0,
+                (5 + 3 * k) * math.sin(2 * math.pi * t / 1.9 - 0.7 * k),
+            ]
+
+        ops.append(
+            {
+                "op": "insert_keyframes",
+                "target": "hero_rig",
+                "property": f"bone:tail_{k}.rotation",
+                "keys": keys(tail_rot),
+            }
+        )
+    for side, curve, s in (("L", rig.arm_L, 1), ("R", rig.arm_R, -1)):
+
+        def front0(f: int, t: float, c: Curve = curve, s: int = s) -> list[float]:
+            rise, fall = at(f, phases)
+            act = (
+                max(-75.0, c(t))
+                + math.degrees(at(f, arm_lag)) * 0.5
+                + 2 * math.sin(2 * math.pi * t / 2.6 + s)
+            )
+            return [act + 22 * rise - 32 * fall - lean(t), 0.0, 0.0]
+
+        def front1(f: int, t: float, c: Curve = curve) -> list[float]:
+            rise, fall = at(f, phases)
+            curl = 0.35 * max(0.0, -max(-75.0, c(t)))  # a raised paw curls at the wrist
+            return [55 * rise - 6 * fall + 22 * at(f, land) + curl, 0.0, 0.0]
+
+        def hind0(f: int, t: float) -> list[float]:
+            rise, fall = at(f, phases)
+            return [32 * rise - 26 * fall - lean(t), 0.0, 0.0]
+
+        def hind1(f: int, t: float) -> list[float]:
+            rise, fall = at(f, phases)
+            return [-10 * rise + 42 * fall + 18 * at(f, land), 0.0, 0.0]
+
+        for bone, fn in (
+            (f"leg_F{side}_0", front0),
+            (f"leg_F{side}_1", front1),
+            (f"leg_H{side}_0", hind0),
+            (f"leg_H{side}_1", hind1),
+        ):
+            ops.append(
+                {
+                    "op": "insert_keyframes",
+                    "target": "hero_rig",
+                    "property": f"bone:{bone}.rotation",
+                    "keys": keys(fn),
+                }
+            )
+    return ops
+
+
 def default_performance(plan: dict[str, Any]) -> dict[str, Any]:
     out = {}
     for s in plan["shots"]:
@@ -556,6 +670,18 @@ class Animator(Agent):
                         ]
                     ),
                 }
+            )
+        if "hero_rig" in ctx.engine.known_ids and not robot:
+            ops += critter_bone_keys(
+                rig,
+                frames,
+                fps,
+                xs,
+                hop_lift,
+                hop_land,
+                antenna,
+                arm_lag,
+                lean=lambda t: lean_mul * rig.lean(t),
             )
         if (
             "hero_elbow_L" in ctx.engine.known_ids
