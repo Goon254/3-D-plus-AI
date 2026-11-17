@@ -1,0 +1,98 @@
+{
+ "character": "neema",
+ "species": "giraffe",
+ "version": "v2",
+ "score": 9.88,
+ "ready": true,
+ "hard_failures": [],
+ "pending": [],
+ "failed_checks": [],
+ "motion_checks": [
+  {
+   "id": "motion:eye_socket",
+   "passed": true,
+   "message": "eye socket: ok"
+  },
+  {
+   "id": "motion:brow_float",
+   "passed": true,
+   "message": "brow float: ok"
+  },
+  {
+   "id": "motion:lid_float",
+   "passed": true,
+   "message": "lid float: ok"
+  },
+  {
+   "id": "motion:texture_swim",
+   "passed": true,
+   "message": "texture swim: ok"
+  },
+  {
+   "id": "motion:mouth_float",
+   "passed": true,
+   "message": "mouth off the skin by -0% of its size"
+  },
+  {
+   "id": "motion:foot_slide",
+   "passed": true,
+   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 61 mm)"
+  },
+  {
+   "id": "motion:ground",
+   "passed": true,
+   "message": "feet sink up to 0.0 mm below their rest height (limit 46 mm)"
+  }
+ ],
+ "critique": {
+  "silhouette_species": "giraffe",
+  "thumbnail_species": "young giraffe",
+  "appeal": 8
+ },
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.475,
+  "top_dip": 0.0,
+  "throat": 0.0208,
+  "lift": 1.5833,
+  "dark_blob": 0.0055,
+  "expression_happy": 0.1029,
+  "expression_surprised": 0.1423
+ },
+ "runner_ups": [
+  {
+   "file": "runner_up_1.jpg",
+   "score": 9.96,
+   "morph": {
+    "head": 0.94,
+    "eye": 1.12,
+    "ear": 1.1,
+    "snout": 1.0,
+    "leg": 1.0,
+    "neck": 1.0,
+    "lift_dark": 0.0
+   }
+  },
+  {
+   "file": "runner_up_2.jpg",
+   "score": 9.91,
+   "morph": {
+    "head": 1.06,
+    "eye": 1.0,
+    "ear": 0.9,
+    "snout": 1.0,
+    "leg": 1.12,
+    "neck": 1.0,
+    "lift_dark": 0.6
+   }
+  }
+ ],
+ "motion_test": {
+  "file": "motion.mp4",
+  "from_take": "output/rig-stress/neema/motion.mp4",
+  "clip_start_s": 2.98,
+  "line": "There! I see her stripes!",
+  "turn_degrees": 90,
+  "sit_stand": "bow and rise (no sit pose)"
+ }
+}

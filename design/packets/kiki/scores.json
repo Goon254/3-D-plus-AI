@@ -1,0 +1,109 @@
+{
+ "character": "kiki",
+ "species": "meerkat",
+ "version": "v4",
+ "score": 9.82,
+ "ready": false,
+ "hard_failures": [],
+ "pending": [],
+ "failed_checks": [
+  {
+   "id": "critic:appeal",
+   "hard": false,
+   "message": "art-director appeal 7/10 (min 8)"
+  }
+ ],
+ "motion_checks": [
+  {
+   "id": "motion:eye_socket",
+   "passed": true,
+   "message": "eye socket: ok"
+  },
+  {
+   "id": "motion:brow_float",
+   "passed": true,
+   "message": "brow float: ok"
+  },
+  {
+   "id": "motion:lid_float",
+   "passed": true,
+   "message": "lid float: ok"
+  },
+  {
+   "id": "motion:texture_swim",
+   "passed": true,
+   "message": "texture swim: ok"
+  },
+  {
+   "id": "motion:mouth_float",
+   "passed": true,
+   "message": "mouth off the skin by 9% of its size"
+  },
+  {
+   "id": "motion:foot_slide",
+   "passed": true,
+   "message": "worst planted-foot drift 0.6 mm per frame (RF at frame 152; limit 4 mm)"
+  },
+  {
+   "id": "motion:ground",
+   "passed": true,
+   "message": "feet sink up to 0.0 mm below their rest height (limit 3 mm)"
+  },
+  {
+   "id": "motion:sentinel_tail",
+   "passed": true,
+   "message": "in the sentinel the tail tip comes down to -12 mm (the tripod wants the ground)"
+  }
+ ],
+ "critique": {
+  "silhouette_species": "meerkat standing sentinel",
+  "thumbnail_species": "meerkat",
+  "appeal": 7
+ },
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.2838,
+  "top_dip": 0.027,
+  "throat": 0.2838,
+  "lift": 0.6081,
+  "dark_blob": 0.0402,
+  "expression_happy": 0.0317,
+  "expression_surprised": 0.0366
+ },
+ "runner_ups": [
+  {
+   "file": "runner_up_1.jpg",
+   "score": 10.0,
+   "morph": {
+    "head": 1.1,
+    "eye": 1.08,
+    "ear": 1.0,
+    "snout": 1.0,
+    "leg": 1.0,
+    "neck": 1.0,
+    "lift_dark": 0.0
+   }
+  },
+  {
+   "file": "runner_up_2.jpg",
+   "score": 10.0,
+   "morph": {
+    "head": 0.94,
+    "eye": 1.12,
+    "ear": 1.1,
+    "snout": 1.0,
+    "leg": 1.0,
+    "neck": 1.0,
+    "lift_dark": 0.0
+   }
+  }
+ ],
+ "motion_test": {
+  "file": "motion.mp4",
+  "from_take": "output/rig-stress/kiki/motion.mp4",
+  "clip_start_s": 3.49,
+  "line": "Danger! Oh. It's a rock.",
+  "turn_degrees": 90,
+  "sit_stand": "sentinel drop and rise"
+ }
+}

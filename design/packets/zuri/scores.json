@@ -1,0 +1,116 @@
+{
+ "character": "zuri",
+ "species": "zebra",
+ "version": "v2",
+ "score": 7.64,
+ "ready": false,
+ "hard_failures": [
+  "read:silhouette"
+ ],
+ "pending": [],
+ "failed_checks": [
+  {
+   "id": "face:happy",
+   "hard": false,
+   "message": "happy changes 2.4% of the face close-up (min 3%): the expression doesn't read"
+  },
+  {
+   "id": "read:silhouette",
+   "hard": true,
+   "message": "silhouette read as 'pony with an upright mane': misread as pony (a known confusion)"
+  },
+  {
+   "id": "critic:appeal",
+   "hard": false,
+   "message": "art-director appeal 7/10 (min 8)"
+  }
+ ],
+ "motion_checks": [
+  {
+   "id": "motion:eye_socket",
+   "passed": true,
+   "message": "eye socket: ok"
+  },
+  {
+   "id": "motion:brow_float",
+   "passed": true,
+   "message": "brow float: ok"
+  },
+  {
+   "id": "motion:lid_float",
+   "passed": true,
+   "message": "lid float: ok"
+  },
+  {
+   "id": "motion:texture_swim",
+   "passed": true,
+   "message": "texture swim: ok"
+  },
+  {
+   "id": "motion:mouth_float",
+   "passed": true,
+   "message": "mouth off the skin by 0% of its size"
+  },
+  {
+   "id": "motion:foot_slide",
+   "passed": true,
+   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 31 mm)"
+  },
+  {
+   "id": "motion:ground",
+   "passed": true,
+   "message": "feet sink up to 0.0 mm below their rest height (limit 23 mm)"
+  }
+ ],
+ "critique": {
+  "silhouette_species": "pony with an upright mane",
+  "thumbnail_species": "zebra",
+  "appeal": 7
+ },
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.4322,
+  "top_dip": 0.0,
+  "throat": 0.4322,
+  "lift": 0.4322,
+  "dark_blob": 0.0428,
+  "expression_happy": 0.0242,
+  "expression_surprised": 0.0415
+ },
+ "runner_ups": [
+  {
+   "file": "runner_up_1.jpg",
+   "score": 10.0,
+   "morph": {
+    "head": 1.1,
+    "eye": 1.08,
+    "ear": 1.0,
+    "snout": 1.0,
+    "leg": 1.0,
+    "neck": 1.0,
+    "lift_dark": 0.0
+   }
+  },
+  {
+   "file": "runner_up_2.jpg",
+   "score": 10.0,
+   "morph": {
+    "head": 1.0,
+    "eye": 1.15,
+    "ear": 1.0,
+    "snout": 0.88,
+    "leg": 1.0,
+    "neck": 0.92,
+    "lift_dark": 0.0
+   }
+  }
+ ],
+ "motion_test": {
+  "file": "motion.mp4",
+  "from_take": "output/rig-stress/zuri/motion.mp4",
+  "clip_start_s": 3.81,
+  "line": "I thought fastest was best. I'm sorry.",
+  "turn_degrees": 90,
+  "sit_stand": "bow and rise (no sit pose)"
+ }
+}

@@ -94,3 +94,10 @@ Recorded critique: **9.85, ready** on the rubric (appeal 8).
 `loop.json` (every candidate's score and morph, the winner, the two runner-ups) and `r0_contact.jpg` for each
 character. All five winners are the base design: without a vision critic every candidate passes the automatic checks,
 and the tie-break keeps the smallest change.
+
+## Design packets (2026-11-17)
+
+The five packets for owner approval are in [`packets/`](packets/README.md): sheet, a 10-second motion test with the
+character's line (from the rig stress take, DECISIONS #61), scores and the loop's two runner-ups. On the rubric,
+Tembo (9.87) and Neema (9.88) are ready. Kiki (9.82) and Bibi Kobe (9.68) are held back by appeal 7. Zuri (7.64)
+still fails the silhouette read (pony), so her packet asks for notes on the body plan, not approval.

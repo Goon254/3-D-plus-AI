@@ -1,0 +1,109 @@
+{
+ "character": "bibi_kobe",
+ "species": "tortoise",
+ "version": "v2",
+ "score": 9.68,
+ "ready": false,
+ "hard_failures": [],
+ "pending": [],
+ "failed_checks": [
+  {
+   "id": "face:surprised",
+   "hard": false,
+   "message": "surprised changes 2.1% of the face close-up (min 3%): the expression doesn't read"
+  },
+  {
+   "id": "critic:appeal",
+   "hard": false,
+   "message": "art-director appeal 7/10 (min 8)"
+  }
+ ],
+ "motion_checks": [
+  {
+   "id": "motion:eye_socket",
+   "passed": true,
+   "message": "eye socket: ok"
+  },
+  {
+   "id": "motion:brow_float",
+   "passed": true,
+   "message": "brow float: ok"
+  },
+  {
+   "id": "motion:lid_float",
+   "passed": true,
+   "message": "lid float: ok"
+  },
+  {
+   "id": "motion:texture_swim",
+   "passed": true,
+   "message": "texture swim: ok"
+  },
+  {
+   "id": "motion:mouth_float",
+   "passed": true,
+   "message": "mouth off the skin by -1% of its size"
+  },
+  {
+   "id": "motion:foot_slide",
+   "passed": true,
+   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 6 mm)"
+  },
+  {
+   "id": "motion:ground",
+   "passed": true,
+   "message": "feet sink up to 0.0 mm below their rest height (limit 4 mm)"
+  }
+ ],
+ "critique": {
+  "silhouette_species": "tortoise",
+  "thumbnail_species": "leopard tortoise",
+  "appeal": 7
+ },
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.0,
+  "top_dip": 0.0,
+  "throat": 0.0,
+  "lift": -0.1991,
+  "dark_blob": 0.0075,
+  "expression_happy": 0.031,
+  "expression_surprised": 0.0213
+ },
+ "runner_ups": [
+  {
+   "file": "runner_up_1.jpg",
+   "score": 10.0,
+   "morph": {
+    "head": 1.1,
+    "eye": 1.08,
+    "ear": 1.0,
+    "snout": 1.0,
+    "leg": 1.0,
+    "neck": 1.0,
+    "lift_dark": 0.0
+   }
+  },
+  {
+   "file": "runner_up_2.jpg",
+   "score": 10.0,
+   "morph": {
+    "head": 0.94,
+    "eye": 1.12,
+    "ear": 1.1,
+    "snout": 1.0,
+    "leg": 1.0,
+    "neck": 1.0,
+    "lift_dark": 0.0
+   }
+  }
+ ],
+ "motion_test": {
+  "file": "motion.mp4",
+  "from_take": "output/rig-stress/bibi_kobe/motion.mp4",
+  "clip_start_s": 5.51,
+  "line": "When you walk slowly, you learn to look up.",
+  "turn_degrees": 18,
+  "sit_stand": "bow and rise (no sit pose)"
+ }
+}

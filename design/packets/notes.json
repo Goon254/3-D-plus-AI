@@ -1,0 +1,53 @@
+{
+ "kiki": {
+  "name": "Kiki",
+  "summary": "v4 fixes the review's mongoose read: a crisp dark eye mask, a slim, smooth barrel on shorter bent legs, dark paws only, a snout tapering out of the face and a tucked belly. Since v2 her tail hung detached below the rump in the sentinel; it now rides the hips (DECISIONS #55).",
+  "motion": "she walks on all fours, turns toward the camera, rises back into the sentinel (her sit/stand), turns her head left and right, runs through every expression, then says her line",
+  "open": [
+   "The rump still reads round from the side, and the legs are a touch long for a meerkat on all fours.",
+   "At 96 px the round mask leans a little toward a raccoon (the reviewer's note on the recorded critique).",
+   "Appeal 7: the critic wants more charm in the face before 'ready'."
+  ],
+  "runners": "Both runner-ups are small head and eye morphs. The loop scored them 10.0 *without* a species read (no vision key on this machine), so they aren't comparable with the current design's score, which includes the recorded critique. They're here so you can say whether a bigger head reads better."
+ },
+ "zuri": {
+  "name": "Zuri",
+  "summary": "v2: the stripes wrap the body as chevrons with no bullseyes on the chest, forehead or rump; an upright brush mane stands on the neck's crest; the ears are bigger; the muzzle is smaller and charcoal-brown (DECISIONS #56).",
+  "open": [
+   "Hard failure: her silhouette alone still reads as a pony (long thin legs, horse body). The thumbnail reads as a zebra, because the stripes carry it. She needs a shorter-legged, stockier body plan, and the design loop has no 'shorter legs' morph yet.",
+   "Not ready: please give notes on the silhouette direction (stockier foal? bigger head? shorter legs?) rather than approve."
+  ],
+  "runners": "Runner-up 1 is a bigger head and eyes; runner-up 2 has bigger eyes, a shorter snout and a shorter neck (a younger look). The loop scored both 10.0 without a species read, so neither has been checked against the pony read."
+ },
+ "bibi_kobe": {
+  "name": "Bibi Kobe",
+  "summary": "v2: the carapace is its own mesh: a high dome with a flared rim, raised scutes with grooves at every seam, leopard-tortoise rays painted per vertex on the real plates, no holes and no pale plastron showing (DECISIONS #57).",
+  "motion": "she walks, turns about 18 degrees toward the camera (she walks 3.6 cm/s, so a full turn would take 16 s; turning on the spot isn't planned yet), bows and comes back up (she has no sit pose), turns her head, runs through every expression, then says her line",
+  "open": [
+   "The marginal plates hang a little like a skirt from the side.",
+   "Appeal 7.",
+   "Motion: she can't yet turn on the spot (the planner only steps as the body travels), and she has no sit pose."
+  ],
+  "runners": "Both runner-ups are small head and eye morphs, scored 10.0 by the loop without a species read, so they aren't comparable with the current design's score."
+ },
+ "tembo": {
+  "name": "Tembo",
+  "summary": "v2: cupped, thick ears with a rolled top rim (no more fins edge-on from 3/4); eyes rest open instead of sleepy; darker brows; a laugh and an 'O' in the expressions (DECISIONS #58).",
+  "motion": "he walks, turns toward the camera, bows and comes back up (no sit pose on this rig), turns his head, runs through every expression, then says his line",
+  "open": [
+   "His surprised 'O' mouth is hidden behind the trunk from most angles (accepted: the eyes and brows carry surprise).",
+   "No sit pose on the rig yet: the take bows and rises instead."
+  ],
+  "runners": "Both runner-ups are small head and eye morphs, scored 10.0 by the loop without a species read. The current design is ready on the rubric (9.84, with the recorded critique)."
+ },
+ "neema": {
+  "name": "Neema",
+  "summary": "v2: sturdier legs and hooves, a much bigger head and eyes so her face reads at 96 px on a 3 m animal, brows resting higher so she no longer scowls (DECISIONS #59).",
+  "motion": "she walks, turns toward the camera, bows and comes back up (no sit pose on this rig), turns her head, runs through every expression, then says her line",
+  "open": [
+   "The rig stress test caught her brows floating 16 % of their size off the skin on 'surprised'; the lift is now capped (`brow_max` 0.7, 8 %). The motion clip has the fix; the sheet's surprised panel was rendered before it and still shows the higher brows. A fresh sheet needs a new critique, so it waits for your notes.",
+   "No sit pose on the rig yet: the take bows and rises instead."
+  ],
+  "runners": "Runner-up 1 is a smaller head with bigger eyes and ears; runner-up 2 is a slightly bigger head, smaller ears, longer legs and a lighter coat. The loop scored them 9.96 and 9.91 without a species read."
+ }
+}
