@@ -561,6 +561,19 @@ def _chatterbox_post(text: str, src: Path, out: Path, voice: VoiceSpec, words: l
     return len(a) / sr
 
 
+def asr_prompt(text: str) -> str:
+    """The proper names in a line (capitalised words that don't start a sentence), primed into Whisper so it
+    spells the cast's names as written ("Neema", not "Nima")."""
+    seen: list[str] = []
+    start = True
+    for tok in text.replace("*", "").split():
+        word = tok.strip(".,!?;:\"'()")
+        if not start and word[:1].isupper() and word[1:].islower() and word not in seen:
+            seen.append(word)
+        start = tok.endswith((".", "!", "?"))
+    return ", ".join(seen) + "." if seen else ""
+
+
 def _drift_st(take: Path, ref: Path) -> float:
     """Semitones between the take's median pitch and its conditioning take's (0 if either is unvoiced)."""
     from .voice_fx import f0_median
@@ -685,6 +698,7 @@ def synthesize_batch(items: list[tuple[str, str | Path, VoiceSpec | None]]) -> l
                     "seed": zlib.crc32(text.encode("utf-8")) % 1000,
                     "max_wer": CHATTERBOX_MAX_WER,
                     "tries": 3,
+                    "prompt": asr_prompt(text),
                 }
             )
         try:

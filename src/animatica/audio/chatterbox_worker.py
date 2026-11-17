@@ -4,7 +4,7 @@ A standalone script that runs in its own venv: torch is not a project dependency
 it. ``animatica.audio.tts`` calls it with JSON on stdin and reads JSON on stdout:
 
     {"device": "auto"|"cuda"|"cpu",
-     "takes": [{"text", "out", "ref", "exaggeration"?, "cfg"?, "seed"?, "max_wer"?, "tries"?}, ...]}
+     "takes": [{"text", "out", "ref", "exaggeration"?, "cfg"?, "seed"?, "max_wer"?, "tries"?, "prompt"?}, ...]}
     -> {"ok": true, "device": "cuda", "results": [{"path", "sample_rate", "duration", "heard", "wer",
                                                    "tries", "words": [[word, start, end], ...]}, ...]}
 
@@ -44,7 +44,8 @@ def _write(path: str, a, sr: int) -> None:
 
 
 def _norm(s: str) -> list[str]:
-    return re.sub(r"[^a-z' ]", " ", s.lower().replace("-", " ")).split()
+    # "lamp-post" and "lamppost" are the same word to a listener
+    return re.sub(r"[^a-z' ]", " ", s.lower().replace("-", "")).split()
 
 
 def wer(ref: str, hyp: str) -> float:

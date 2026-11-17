@@ -282,3 +282,16 @@ def test_chatterbox_post_emphasis_and_alignment():
     )
     b, cut = tts._trim(a, sr)
     assert abs(cut / sr - 0.45) < 0.02 and len(b) < len(a)
+
+
+def test_asr_prompt_names_and_hyphen_wer():
+    import importlib.util
+
+    from animatica.audio import tts
+
+    assert tts.asr_prompt("And stand up straight, Neema, you lovely lamp-post!") == "Neema."
+    assert tts.asr_prompt("Morning, Zuri! Morning, Kiki! Water!") == "Zuri, Kiki."
+    spec = importlib.util.spec_from_file_location("cbw", tts.CHATTERBOX_WORKER)
+    cbw = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cbw)
+    assert cbw.wer("you lovely lamp-post", "You lovely lamppost.") == 0.0
