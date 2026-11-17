@@ -2,8 +2,8 @@
 
 ## 0. Savannah film — owner's top priority (CHALLENGE-SAVANNAH.md)
 
-Status 11-17 01:30 UTC ([review](docs/reviews/2026-11-17T0130Z.md)): **production has started: SC 2 is the first
-produced scene.** Done so far:
+Status 11-17 03:36 UTC ([review](docs/reviews/2026-11-17T0336Z.md)): **SC 2 now plays its gag in the picture**
+(Tembo drinks, the trunk "hiccups" a jet of water onto Kiki, Neema ducks, heads turn to whoever speaks). Done so far:
 
 * Species research notes (elephant, giraffe, zebra, meerkat, leopard tortoise): `src/animatica/knowledge/species/`.
 * Story: premise and beats, draft 1, story-editor critique, production screenplay (10 scenes, ≈5:20): `films/savannah/`.
@@ -19,14 +19,16 @@ produced scene.** Done so far:
   --quality preview|draft|final` → a mixed scene MP4 with lines timed from the real voices, cuts on the lines, cameras
   framed on the measured heads, and the scene's own music cue re-timed to it. First result:
   [`savannah-scenes/sc02_preview.mp4`](examples/showcase/savannah-scenes/) (Cycles CPU preview, 480×270, 12 fps).
+* **Acting** (new): automatic eyelines plus spec-driven gestures (trunk drink and spray with a keyed water jet, head
+  duck, ear droop, head shake, nod, look-at) layered over the gaits; cameras swing around animals standing in the
+  sight line (DECISIONS #49, #50). Preview stills: `python scripts/savannah_scene.py sc02 --at 10.3,11.3`.
 
-Scorecard (strict, 11-17): story 8 (script), character design 6, motion 6, visuals 6, voices 6, music 7, mix 7. Next:
-the specs for SC 3–10, the acting gestures the gags need (trunk spray, head duck, ear droop, eyelines), the film edit,
-then the full GPU render on the laptop (see [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md) P1-SAVANNAH).
+Scorecard (strict, 11-17 03:36): story 8 (script), character design 7, motion 7, visuals 6, voices 7, music 7, mix 7.
+Next: the specs for SC 3–10, the film edit, SC 2 polish, then the full GPU render on the laptop (see [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md) P1-SAVANNAH).
 
 ### Needs you
 
-* **Laptop session: render SC 2 at final quality** on the RTX 5060 (`python scripts/savannah_scene.py sc02 --quality
+* **Laptop session: render SC 2 at final quality** (now with the gag, eyelines and the new eyes) on the RTX 5060 (`python scripts/savannah_scene.py sc02 --quality
   final`, OptiX, ~530 frames at 1280×720) and commit a ≤ 25 MB cut to `examples/showcase/savannah-scenes/`.
 * **Listen to the score** (`examples/showcase/savannah-score/score.m4a`); the cloud reviewer has no speakers.
 * **Install FluidSynth on the laptop** and put it on PATH (or place `fluidsynth.exe` in
