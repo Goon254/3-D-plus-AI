@@ -11,18 +11,20 @@ that raised it.
 
 ## P0-DESIGN — DESIGN_STAGE.md (owner's top priority; film production paused)
 
-Status 11-17 09:36: Kiki v2 is built (sentinel reads, on all fours not yet). 06:36: the design-sheet renderer, rubric, recorded/live critic and best-of-N loop exist
+Status 11-17 12:36: Kiki v3 7.4 (sentinel reads; thumbnail reads as a mongoose); happy reads on four of five. 09:36: Kiki v2 is built (sentinel reads, on all fours not yet). 06:36: the design-sheet renderer, rubric, recorded/live critic and best-of-N loop exist
 (`animatica.design`, `scripts/design_sheet.py`, `scripts/design_loop.py`, DECISIONS #52). Baseline sheets and scores:
 `design/baseline/`. Morphs only change head, eye, ear, snout, leg and neck sizes; everything below needs base-mesh
 or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
 
-- [ ] **Kiki on all fours reads as a puppy / mongoose** (v2 5.2, was 2.6). *v2 (cloud, DECISIONS #53, `design/kiki/v2/`):
-  a shorter, deeper body, a bigger raised head, a short tapering tail, dark crescent ears, coat-shade legs and larger eye
-  patches. The sentinel now stands straight with paws tucked and a tripod tail, and **its silhouette reads as a
-  meerkat** ✔.* Still open: no chin or throat line (neck notch 0.114 < 0.15). The neck should enter the back of the
-  skull, with a visible jaw corner. The pale snout is a separate tube in profile: taper it out of the face as one cone
-  (the `organic` nose mass, not the muzzle ellipsoid). The belly should tuck up behind the ribs. Then run
-  `python scripts/design_loop.py kiki`. — [review 11-17 09:36](reviews/2026-11-17T0936Z.md)
+- [ ] **Kiki on all fours: the thumbnail reads as a mongoose** (v3 7.4, v2 5.2, v1 2.6). *v3 (cloud, DECISIONS #54,
+  `design/kiki/v3/`): the head is carried forward with a nape and a throat line (neck notch 0.27 ✔), the snout is one
+  cone out of the face ✔, the waist is tucked, and the sentinel stands with the head level ✔.* Still open (thumbnail):
+  * crisper, darker eye patches that carry at 96 px;
+  * a slimmer, smoother barrel (the metaball bumps and back bands make it lumpy);
+  * shorter, slightly bent legs with the dark shade on the paws only, not socks;
+  * maybe the tail carried in a raised curve while walking.
+
+  Then re-sheet and record a critique on the same sheet (`design_sheet.py ... --rescore`). — [review 11-17 12:36](reviews/2026-11-17T1236Z.md)
 - [ ] **Zuri's silhouette reads as a horse**: a thicker upright brush mane and larger, rounder ears. Stripes form
   bullseye rings on the chest, face front and rump (projected along one axis): they must wrap the body, with
   chevrons on the rump. The black muzzle ball reads as a clown nose: blend it into the face.
@@ -33,6 +35,9 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
   shape and a rolled top edge. His neutral upper lids sit low (he looks sleepy).
 - [ ] **Expressions don't read** at sheet size: happy changes only 1.8–3.5 % of the face close-up (the soft check
   wants 3 %). Make the smile wider, lift the cheeks and lower lids, widen surprised eyes more.
+  *11-17 12:36 (DECISIONS #54): lower-lid `cheek` key ("smiling eyes"), higher brows, a wider smile. Happy is now 3.2–5.1 %
+  on Kiki, Tembo, Neema and Bibi ✔. Open: Zuri 2.6 % (the mouth hides under the muzzle ball, so it goes with her muzzle
+  fix); surprised is 3.6–4 %, so it could open wider.* — [review 11-17 12:36](reviews/2026-11-17T1236Z.md)
 - [ ] **Neema**: thin legs and a small head, so her eyes barely read at 96 px. Try `head` 1.1, `leg` 1.15 in the loop.
 - [ ] **Rig stress test** (DESIGN_STAGE §5): walk, turn, sit/stand, head turns, blinks, all expressions, a lip-sync
   line, with the existing `rig_probe` checks. Feed the results into the rubric before any packet.

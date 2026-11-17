@@ -53,3 +53,11 @@ A 512 px sheet with a recorded critique and score: 5.2, not ready. The sentinel 
 all fours the thumbnail reads as a puppy or mongoose, there is no throat line (neck notch 0.114) and the snout is a
 tube. See [review 09:36](../docs/reviews/2026-11-17T0936Z.md).
 
+## kiki/v3/ — head forward, cone snout, smiling eyes (cloud 2026-11-17 12:36, DECISIONS #54)
+
+512 px sheet with a recorded critique: **7.4**, not ready. The sentinel reads as a meerkat with the head level. On
+all fours the head is carried forward with a nape and a throat line (neck notch 0.27), and the snout is one cone.
+The thumbnail now reads as a **mongoose**: the right family, still a misread. Open: a bulky, lumpy barrel; stilt legs
+with dark socks; eye patches too soft at 96 px. Re-score without re-rendering: `python scripts/design_sheet.py kiki
+--tag v3 --out <dir> --rescore`. See [review 12:36](../docs/reviews/2026-11-17T1236Z.md).
+

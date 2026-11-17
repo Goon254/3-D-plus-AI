@@ -1,0 +1,15 @@
+{
+  "reviewer": "cloud reviewer 2026-11-17 12:36 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "0884728ab2317d99214581c5678e3e37bc1643a81f28bfe2ecae83a6ad48e68d",
+  "silhouette_species": "meerkat standing sentinel",
+  "thumbnail_species": "mongoose",
+  "issues": [
+    "sentinel reads as a meerkat; the head is now level on an upright neck (the neck rises 69 deg and the head bends the rest)",
+    "on all fours the head is carried forward with a nape dip and a chin/throat line (neck notch 0.27): no more raised dog head",
+    "the snout tapers out of the face as one cone with a pale lower jaw; no separate tube",
+    "the 96 px thumbnail on all fours reads as a mongoose (right family, not yet unmistakably a meerkat): the barrel body is still bulky and lumpy, the legs are stilts with dark socks, and the eye patches are too soft to carry at 96 px",
+    "happy now reads (lower lids pushed up, wider smile, 3.2 %)"
+  ],
+  "appeal": 6
+}

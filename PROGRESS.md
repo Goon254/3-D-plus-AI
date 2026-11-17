@@ -4,6 +4,12 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Cloud session 11-17 12:36 UTC ([review](docs/reviews/2026-11-17T1236Z.md), DECISIONS #54): **Kiki v3**: the head
+is carried forward with a nape and a throat line, the snout is one cone out of the face, and the sentinel stands with
+the head level. **Happy now reads** for four of the five (smiling eyes, wider smile). `design_sheet.py --rescore`
+lets a recorded critique stick to its sheet. Kiki 5.2 → 7.4: the sentinel reads as a meerkat, and the thumbnail on
+all fours reads as a mongoose (next: crisper patches, a slimmer barrel, shorter legs): [`design/kiki/v3/`](design/kiki/v3/).
+
 Cloud session 11-17 09:36 UTC ([review](docs/reviews/2026-11-17T0936Z.md), DECISIONS #53): **Kiki v2**: a new
 meerkat base (shorter deeper body, bigger raised head, short tapering tail, dark ears, coat-shade legs, visible eye
 patches) and an upright sentinel with paws tucked and a tripod tail, whose silhouette now reads as a meerkat. On all
