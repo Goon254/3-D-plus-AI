@@ -83,6 +83,9 @@ class MaterialSpec(BaseModel):
     fade_to: str | None = None  # aerial perspective: blend toward this colour with distance from origin
     fade_start: float = Field(15.0, ge=0)
     fade_end: float = Field(90.0, gt=0)
+    # how much of the faded colour is emitted (1: distant things glow at the haze colour regardless of light;
+    # under a high sun lower it, or the far ground and hills blow out to white)
+    fade_glow: float = Field(1.0, ge=0, le=1)
     radial_glow: bool = False  # emission fades to transparent at the edges (sun/moon halos)
     # fine surface detail: a second, small-scale noise darkens specks (grit, gravel) and drives a bump
     grain: float = Field(0.0, ge=0, le=1)
@@ -360,6 +363,9 @@ class Scatter(_Op):
     clear: list[tuple[float, float, float]] = Field(default_factory=list)  # (x, y, radius): nothing grows
     short: list[tuple[float, float, float]] = Field(default_factory=list)  # (x, y, radius): kept low
     short_scale: float = Field(0.35, gt=0, le=1)
+    # (x, y, radius, multiplier): denser inside, fading out to the base density at the edge. Points are scattered
+    # at the highest density and thinned at random per point, so there is no grid and no rows.
+    dense: list[tuple[float, float, float, float]] = Field(default_factory=list)
     wind: float = Field(0.0, ge=0, le=1)  # sway amplitude (radians-ish); gusts travel across the field
     wind_speed: float = Field(0.6, ge=0, le=20)
 

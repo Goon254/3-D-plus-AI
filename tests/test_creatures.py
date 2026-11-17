@@ -208,3 +208,21 @@ def test_rig_checks_thresholds():
     checks = sorted(i.check for i in rig_checks(rep(0.3, 0.05, 0.02))[0])
     assert checks == ["eye_socket", "lid_float", "texture_swim"]
     assert [i.message for i in rig_checks(rep(0.78, 0.0, 0.0))[0]][0].endswith("of its diameter")
+
+
+def test_savannah_set_dense_grass_canopy_clumps_and_warm_haze():
+    from animatica.core.protocol import validate_batch
+    from animatica.sets.savannah import Layout, dense_regions, savannah_set
+
+    lay = Layout(action=[(0.0, 2.0, 4.0)])
+    ((x, y, r, m),) = dense_regions(lay)
+    assert y < 2.0 - 4.0 and m > 1  # in front of the action, on the camera side
+    ops = savannah_set(lay, "midday")
+    validate_batch({"batch_id": "set", "ops": ops})
+    grass = next(o for o in ops if o["op"] == "scatter" and o["id"] == "grass")
+    assert grass["dense"] == [[x, y, r, m]]
+    canopy = next(o for o in ops if o["op"] == "create_metaball_mesh" and o["id"].endswith("_canopy"))
+    assert len(canopy["elements"]) >= 10  # many clumps, not one cushion
+    hills = next(o for o in ops if o["op"] == "set_material" and o["material"].get("name") == "mountains")
+    r_, g_, b_ = (int(hills["material"]["base_color"][i : i + 2], 16) for i in (1, 3, 5))
+    assert r_ > b_ and hills["material"]["fade_glow"] < 0.5  # warm, and not blown out by the haze glow

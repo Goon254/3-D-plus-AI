@@ -194,7 +194,11 @@ class MaterialOps:
             em.inputs["A"].default_value = (0, 0, 0, 1)
             em.inputs["B"].default_value = (*hex_to_rgb(spec["fade_to"]), 1)
             links.new(em.outputs["Result"], bsdf.inputs["Emission Color"])
-            links.new(mr.outputs["Result"], bsdf.inputs["Emission Strength"])
+            glow = nodes.new("ShaderNodeMath")
+            glow.operation = "MULTIPLY"
+            glow.inputs[1].default_value = spec.get("fade_glow", 1.0)
+            links.new(mr.outputs["Result"], glow.inputs[0])
+            links.new(glow.outputs[0], bsdf.inputs["Emission Strength"])
         if color_out is not None:
             links.new(color_out, bsdf.inputs["Base Color"])
         if normal_out is not None:

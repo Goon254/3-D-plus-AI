@@ -18,6 +18,8 @@ V3 = tuple[float, float, float]
 SKY: dict[str, dict[str, Any]] = {
     # zenith, horizon, glow, sun elevation/azimuth (deg), sun colour/energy, world strength, stars, clouds
     "dawn": {
+        "haze": "#E8C6A0",
+        "hills": "#9C8FA6",
         "zenith": "#6E8CC6",
         "horizon": "#F6C38C",
         "glow": "#EFA07E",
@@ -31,9 +33,11 @@ SKY: dict[str, dict[str, Any]] = {
         "cloud": "#FFD9C0",
     },
     "midday": {
+        "haze": "#C9B48A",
+        "hills": "#8A7560",
         "zenith": "#3E7ED0",
-        "horizon": "#D4E6F2",
-        "glow": "#A9CDEB",
+        "horizon": "#CADBE4",
+        "glow": "#D9DDD2",  # a faintly warm, dusty glow low in the sky
         "elev": 62,
         "az": 160,
         "sun": "#FFF3E0",
@@ -44,6 +48,8 @@ SKY: dict[str, dict[str, Any]] = {
         "cloud": "#FFFFFF",
     },
     "afternoon": {
+        "haze": "#D2BA90",
+        "hills": "#9E8876",
         "zenith": "#4C7FC4",
         "horizon": "#EBD8B0",
         "glow": "#E9C58E",
@@ -57,6 +63,8 @@ SKY: dict[str, dict[str, Any]] = {
         "cloud": "#FFF2E0",
     },
     "sunset": {
+        "haze": "#E9B07E",
+        "hills": "#8E6F7E",
         "zenith": "#5868AC",
         "horizon": "#F5AE66",
         "glow": "#E57F66",
@@ -70,6 +78,8 @@ SKY: dict[str, dict[str, Any]] = {
         "cloud": "#F7A88A",
     },
     "night": {
+        "haze": "#1E2A4E",
+        "hills": "#1A2240",
         "zenith": "#060A1E",
         "horizon": "#1C2850",
         "glow": "#2A3666",
@@ -101,6 +111,10 @@ class Layout:
     paths: list[tuple[float, float, float]] = field(default_factory=list)  # grass cleared (x, y, r)
     reeds_at: float = 90.0  # degrees: which side of the water the reeds grow on (90 = the back, +Y)
     grass_density: float = 14.0
+    # grass gets denser toward the cameras: (x, y, radius, density multiplier); default: in front of each action
+    # circle on the camera side (-Y), see dense_regions()
+    dense: list[tuple[float, float, float, float]] | None = None
+    camera_side: tuple[float, float] = (0.0, -1.0)
     grass_extent: float = 34.0
     seed: int = 7
 
@@ -192,39 +206,58 @@ def acacia_ops(tid: str, at: tuple[float, float], scale: float, seed: int) -> li
             ),
         },
     ]
-    # the flat canopy: overlapping flattened clumps at the branch tips plus a layer over the middle
+    # the canopy: layered foliage clumps with sky between them, not one cushion. An upper tier of flattened
+    # clumps on jittered rings over the crown (some positions skipped: gaps), a lower tier hanging under the
+    # branch tips. Small metaball radii relative to their spacing keep the clumps apart.
     els = []
     top = max(t[2] for t in tips)
-    for t in tips:
+    crown = max(math.dist(t[:2], fork[:2]) for t in tips) + 0.7 * s
+    cx, cy = (
+        sum(t[0] for t in tips) / len(tips) * 0.5 + fork[0] * 0.5,
+        sum(t[1] for t in tips) / len(tips) * 0.5 + fork[1] * 0.5,
+    )
+
+    def clump(x: float, y: float, z: float, r: float, flat: float) -> None:
         els.append(
             {
                 "type": "ellipsoid",
-                "co": [round(t[0], 3), round(t[1], 3), round(top + 0.15 * s, 3)],
-                "radius": round(1.5 * s / 0.575, 3),
-                "size": [1.0, 1.0, 0.32],
+                "co": [round(x, 3), round(y, 3), round(z, 3)],
+                "radius": round(r / 0.575, 3),
+                "size": [1.0, 1.0, flat],
             }
         )
-    els.append(
-        {
-            "type": "ellipsoid",
-            "co": [round(fork[0], 3), round(fork[1], 3), round(top + 0.3 * s, 3)],
-            "radius": round(2.2 * s / 0.575, 3),
-            "size": [1.0, 1.0, 0.25],
-        }
-    )
+
+    clump(cx, cy, top + 0.35 * s, 0.75 * s, 0.4)
+    for ring, n, rr in ((0.45, 6, 0.62), (0.85, 11, 0.55)):
+        a0 = rng.uniform(0, 2 * math.pi)
+        for k in range(n):
+            if rng.random() < 0.22:
+                continue  # a gap in the canopy
+            a = a0 + 2 * math.pi * (k + rng.uniform(-0.2, 0.2)) / n
+            d = crown * ring * rng.uniform(0.9, 1.1)
+            clump(
+                cx + math.cos(a) * d,
+                cy + math.sin(a) * d,
+                top + rng.uniform(0.05, 0.3) * s - ring * 0.25 * s,
+                rr * s * rng.uniform(0.8, 1.15),
+                rng.uniform(0.32, 0.45),
+            )
+    for t in tips:  # the lower tier, under and just outside each branch tip
+        a = math.atan2(t[1] - fork[1], t[0] - fork[0]) + rng.uniform(-0.4, 0.4)
+        clump(t[0] + math.cos(a) * 0.4 * s, t[1] + math.sin(a) * 0.4 * s, top - 0.45 * s, 0.5 * s, 0.42)
     ops += [
         {
             "op": "create_metaball_mesh",
             "id": f"{tid}_canopy",
             "elements": els,
-            "resolution": round(0.12 * s, 3),
+            "resolution": round(0.09 * s, 3),
             "tags": ["set", "tree"],
         },
         {
             "op": "add_modifier",
             "target": f"{tid}_canopy",
             "type": "displace",
-            "params": {"noise_scale": 0.9 * s, "strength": 0.35 * s},
+            "params": {"noise_scale": 0.35 * s, "strength": 0.28 * s},  # leafy, broken edges
         },
         {
             "op": "set_material",
@@ -439,11 +472,24 @@ def sky_ops(tod: str) -> list[dict[str, Any]]:
     ]
 
 
+def dense_regions(layout: Layout) -> list[tuple[float, float, float, float]]:
+    """Where the grass thickens: between each action circle and the cameras (foreground grass reads as depth;
+    sparse tufts near the lens read as rows)."""
+    if layout.dense is not None:
+        return layout.dense
+    hx, hy = layout.camera_side
+    return [(x + hx * (r + 4.0), y + hy * (r + 4.0), r + 3.0, 2.6) for x, y, r in layout.action]
+
+
 def savannah_set(layout: Layout, tod: str = "sunset") -> list[dict[str, Any]]:
     """Ops for a full savannah set at time of day ``tod``."""
     rng = random.Random(layout.seed)
-    horizon = SKY[tod]["horizon"]
-    haze = {"fade_to": horizon, "fade_start": 18.0, "fade_end": 140.0}
+    # aerial perspective: distance fades into a warm, dusty haze (not the sky's horizon colour, which made the
+    # midday hills and the far grass read white); midday haze starts closer (heat and dust)
+    hz = SKY[tod]["haze"]
+    near, far = (14.0, 115.0) if tod in ("midday", "afternoon") else (18.0, 140.0)
+    glow = {"midday": 0.2, "afternoon": 0.3, "dawn": 0.6, "sunset": 0.65}.get(tod, 1.0)
+    haze = {"fade_to": hz, "fade_start": near, "fade_end": far, "fade_glow": glow}
     ops: list[dict[str, Any]] = [
         {
             "op": "create_primitive",
@@ -458,6 +504,7 @@ def savannah_set(layout: Layout, tod: str = "sunset") -> list[dict[str, Any]]:
             "material": _m(
                 GROUND,
                 1.0,
+                specular=0.0,  # no grazing-angle sheen: it lit the far ground into a white strip
                 noise=0.4,
                 noise_scale=0.35,
                 grain=0.35,
@@ -510,8 +557,9 @@ def savannah_set(layout: Layout, tod: str = "sunset") -> list[dict[str, Any]]:
             "surface": "grass_field",
             "instance": "grass_tuft",
             "density": layout.grass_density,
+            "dense": [list(c) for c in dense_regions(layout)],
             "seed": layout.seed,
-            "scale": (0.7, 1.5),
+            "scale": (0.6, 1.6),
             "clear": [list(c) for c in clear],
             "short": [list(c) for c in layout.action],
             "short_scale": 0.3,
@@ -597,7 +645,7 @@ def savannah_set(layout: Layout, tod: str = "sunset") -> list[dict[str, Any]]:
                 "material": _m("#7D7066", 0.9, noise=0.3, noise_scale=4.0, bump=0.3, **haze, name="rocks"),
             }
         )
-    # distant mountains: a hazy blue band (they dissolve into the horizon colour with distance)
+    # distant hills: warm, hazy humps (they dissolve into the haze colour with distance)
     # far and low (a few degrees above the horizon), many overlapping humps -> a ridgeline, not dunes
     mts = []
     for i in range(16):
@@ -624,7 +672,15 @@ def savannah_set(layout: Layout, tod: str = "sunset") -> list[dict[str, Any]]:
             "op": "set_material",
             "targets": mts,
             "material": _m(
-                "#8C93AC", 1.0, fade_to=horizon, fade_start=150.0, fade_end=470.0, name="mountains"
+                SKY[tod]["hills"],
+                1.0,
+                noise=0.25,
+                noise_scale=0.02,
+                fade_to=hz,
+                fade_start=120.0,
+                fade_end=560.0,
+                fade_glow=glow,
+                name="mountains",
             ),
         }
     )

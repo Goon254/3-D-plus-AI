@@ -494,11 +494,57 @@ class SceneOps:
         sinfo.transform_space = "RELATIVE"
         dist = n.new("GeometryNodeDistributePointsOnFaces")
         dist.distribute_method = "RANDOM"
-        dist.inputs["Density"].default_value = op.get("density", 10.0)
+        dense = op.get("dense", [])
+        top = max([1.0] + [float(c[3]) for c in dense])
+        dist.inputs["Density"].default_value = op.get("density", 10.0) * top
         dist.inputs["Seed"].default_value = op.get("seed", 0)
         ln.new(sinfo.outputs["Geometry"], dist.inputs["Mesh"])
         pos = n.new("GeometryNodeInputPosition")
         points = dist.outputs["Points"]
+        if dense:
+            # keep each point with probability mult(pos) / top, mult = 1 outside the circles, rising smoothly
+            # to the circle's multiplier toward its centre (max over circles)
+            mult = None
+            for cx, cy, r, m in dense:
+                flat = n.new("ShaderNodeVectorMath")
+                flat.operation = "MULTIPLY"
+                flat.inputs[1].default_value = (1.0, 1.0, 0.0)
+                ln.new(pos.outputs["Position"], flat.inputs[0])
+                d = n.new("ShaderNodeVectorMath")
+                d.operation = "DISTANCE"
+                ln.new(flat.outputs["Vector"], d.inputs[0])
+                d.inputs[1].default_value = (cx, cy, 0.0)
+                mr = n.new("ShaderNodeMapRange")
+                mr.interpolation_type = "SMOOTHSTEP"
+                mr.inputs["From Min"].default_value = r
+                mr.inputs["From Max"].default_value = r * 0.4
+                mr.inputs["To Min"].default_value = 1.0
+                mr.inputs["To Max"].default_value = m
+                ln.new(d.outputs["Value"], mr.inputs["Value"])
+                if mult is None:
+                    mult = mr.outputs["Result"]
+                else:
+                    mx = n.new("ShaderNodeMath")
+                    mx.operation = "MAXIMUM"
+                    ln.new(mult, mx.inputs[0])
+                    ln.new(mr.outputs["Result"], mx.inputs[1])
+                    mult = mx.outputs[0]
+            keep = n.new("ShaderNodeMath")
+            keep.operation = "DIVIDE"
+            ln.new(mult, keep.inputs[0])
+            keep.inputs[1].default_value = top
+            rnd_k = n.new("FunctionNodeRandomValue")
+            rnd_k.data_type = "FLOAT"
+            rnd_k.inputs["Seed"].default_value = op.get("seed", 0) + 29
+            drop = n.new("FunctionNodeCompare")
+            drop.data_type, drop.operation = "FLOAT", "GREATER_THAN"
+            ln.new(rnd_k.outputs["Value"], drop.inputs["A"])
+            ln.new(keep.outputs[0], drop.inputs["B"])
+            thin = n.new("GeometryNodeDeleteGeometry")
+            thin.domain = "POINT"
+            ln.new(points, thin.inputs["Geometry"])
+            ln.new(drop.outputs["Result"], thin.inputs["Selection"])
+            points = thin.outputs["Geometry"]
         # cleared circles: delete points within (x, y, r)
         for cx, cy, r in op.get("clear", []):
             d = n.new("ShaderNodeVectorMath")
