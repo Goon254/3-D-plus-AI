@@ -254,8 +254,9 @@ SPECIES: dict[str, Species] = {
         head_size=(0.21, 0.48, 0.25),
         head_pitch=40.0,
         eye=(0.095, -0.07, 0.06, 0.058),
-        # big, round-tipped ears (a zebra's are broader than a horse's): part of the species read
-        ear=("leaf", (0.085, 0.04, 0.18), (0.07, 0.12, 0.15), (-10.0, 0.0, 16.0)),
+        # big, round-tipped ears (a zebra's are broader than a horse's): part of the species read. The base sits 8.5 cm
+        # up the head, sunk ~1 cm into it: at 15 cm the ears hovered 3.6 cm above the head (qa part_float)
+        ear=("leaf", (0.085, 0.04, 0.18), (0.07, 0.12, 0.085), (-10.0, 0.0, 16.0)),
         tail=Chain((0.0, 0.5, 0.14), (0.0, 0.63, -0.3), 3, 0.032, 0.018),
         tuft=0.055,
         coat=_m(

@@ -293,8 +293,9 @@ class RenderOps:
                 mw = to_s @ oe.matrix_world
                 best = None
                 step = max(1, len(me.vertices) // 300)
-                for v in me.vertices[::step]:
-                    p = mw @ v.co
+                verts = me.vertices
+                for k in range(0, len(verts), step):  # bpy collections don't take slice steps
+                    p = mw @ verts[k].co
                     loc, nrm, _i, _d = tree.find_nearest(p)
                     if loc is None:
                         continue

@@ -26,6 +26,7 @@ v2: the stripes wrap the body as chevrons with no bullseyes on the chest, forehe
 
 ## Still open
 
+* Her ears hover about 3.6 cm above the head in this sheet's 3/4 view and in the motion test (no check measured it then). Fixed in code after the packet was built (DECISIONS #62: the ears now sit on the head, and a new hard check, `part_float`, catches any part off its base); the sheet and clip will be re-rendered with her v3 body.
 * Hard failure: her silhouette alone still reads as a pony (long thin legs, horse body). The thumbnail reads as a zebra, because the stripes carry it. She needs a shorter-legged, stockier body plan, and the design loop has no 'shorter legs' morph yet.
 * Not ready: please give notes on the silhouette direction (stockier foal? bigger head? shorter legs?) rather than approve.
 

@@ -4,6 +4,9 @@
   depth does not drift more than :data:`EYE_DRIFT` of the diameter as the head and neck move (an eye that
   "pops" out of its socket when the rig bends). ``brow_float`` / ``lid_float``: a brow or lid whose closest
   point is more than :data:`SKIN_GAP` of its size off the skin.
+* ``part_float``: an appendage (ear, mane, ossicone, muzzle, nose) whose closest point is more than
+  :data:`PART_GAP` of its size off the mesh it grows from (:func:`part_seating`). Zuri v2's ears hovered 3.6 cm
+  (20 %) above her head in the packet's motion test and no check saw it: the side silhouette hides the gap.
 * ``texture_swim``: the texture coordinates of each deforming coat (zebra stripes, giraffe patches, tortoise
   scales) must not move as the rig deforms: p95 drift under :data:`SWIM_P95` metres. Coats that read
   ``rest_position`` measure 0; Object coordinates (the deformed position) measure the full body motion.
@@ -22,6 +25,7 @@ EYE_EMBED = (0.5, 0.8)
 EYE_DRIFT = 0.1  # share of the eye's diameter
 SKIN_GAP = 0.12  # share of the brow's / lid's size
 SWIM_P95 = 0.002  # metres
+PART_GAP = 0.03  # share of the part's size: an appendage must touch (or sink into) what it grows from
 
 
 def deforming_meshes(meta: CreatureMeta) -> list[str]:
@@ -32,13 +36,36 @@ def deforming_meshes(meta: CreatureMeta) -> list[str]:
     return out
 
 
-def rig_probe(meta: CreatureMeta, frames: list[int], brows: bool = True) -> dict[str, Any]:
-    """An ``inspect`` op measuring eye seating, brow/lid contact and coat swim over ``frames``."""
+def part_seating(meta: CreatureMeta, extras: list[str], muzzle: bool) -> list[dict[str, str]]:
+    """``skin`` seating pairs for the appendages: each ear, extra (by id, as in ``Species.extras``) and the
+    muzzle against the mesh it grows from. Ears grow from the body mesh even where the head is separate
+    (the elephant's sit on the neck), ossicone tips from their ossicone, the nose from the muzzle."""
+    cid, body = meta.cid, f"{meta.cid}_body"
+    pairs = [{"target": f"{cid}_{b}", "surface": body, "kind": "skin"} for b in meta.ear_bones]
+    if muzzle:
+        pairs.append({"target": f"{cid}_muzzle", "surface": body, "kind": "skin"})
+    for ex in extras:
+        if ex.startswith("ossitip_"):
+            surf = f"{cid}_ossicone_{ex.rsplit('_', 1)[1]}"
+        elif ex == "nose" and muzzle:
+            surf = f"{cid}_muzzle"
+        else:
+            surf = body
+        pairs.append({"target": f"{cid}_{ex}", "surface": surf, "kind": "skin"})
+    return pairs
+
+
+def rig_probe(
+    meta: CreatureMeta, frames: list[int], brows: bool = True, parts: list[dict[str, str]] | None = None
+) -> dict[str, Any]:
+    """An ``inspect`` op measuring eye seating, brow/lid contact, appendage contact (``parts``, from
+    :func:`part_seating`) and coat swim over ``frames``."""
     surf = meta.head_surface or f"{meta.cid}_body"
     seating = [{"target": e, "surface": surf, "kind": "eye"} for e in meta.eyes]
     seating += [{"target": lid, "surface": surf, "kind": "skin"} for lid in meta.lids]
     if brows:
         seating += [{"target": f"{meta.cid}_brow_{s}", "surface": surf, "kind": "skin"} for s in ("L", "R")]
+    seating += parts or []
     return {
         "op": "inspect",
         "subjects": [meta.root],
@@ -48,7 +75,9 @@ def rig_probe(meta: CreatureMeta, frames: list[int], brows: bool = True) -> dict
     }
 
 
-def rig_checks(report: dict[str, Any], shot: str = "rig") -> tuple[list[Issue], dict[str, Any]]:
+def rig_checks(
+    report: dict[str, Any], shot: str = "rig", parts: list[dict[str, str]] | None = None
+) -> tuple[list[Issue], dict[str, Any]]:
     """Issues from an ``inspect`` report made by :func:`rig_probe`, plus a summary (worst values)."""
     issues: list[Issue] = []
     embeds: dict[str, list[float]] = {}
@@ -79,7 +108,14 @@ def rig_checks(report: dict[str, Any], shot: str = "rig") -> tuple[list[Issue], 
                     shot, "eye_socket", "error", f"{tid} moves in its socket by {hi - lo:.0%} of its diameter"
                 )
             )
+    part_ids = {p["target"] for p in parts or []}
     for tid, gs in gaps.items():
+        if tid in part_ids:
+            if max(gs) > PART_GAP:
+                issues.append(
+                    Issue(shot, "part_float", "error", f"{tid} floats {max(gs):.0%} of its size off its base")
+                )
+            continue
         if max(gs) > SKIN_GAP:
             kind = "brow_float" if "_brow_" in tid else "lid_float"
             issues.append(

@@ -545,3 +545,28 @@ def test_transparent_render_gives_an_exact_silhouette(fresh, tmp_path):
     assert im.mode == "RGBA"
     a = np.asarray(im.getchannel("A"))
     assert a[0, 0] == 0 and a[32, 32] == 255  # world is transparent, the ball is opaque
+
+
+@pytest.mark.blender
+@pytest.mark.parametrize("species", ["elephant", "giraffe", "zebra", "meerkat", "tortoise"])
+def test_cast_appendages_touch_their_base(fresh, species):
+    """Every ear, mane, ossicone, muzzle and nose touches what it grows from at rest (the hovering-ear class:
+    a side silhouette hides it, so the sheet's floating-parts check can't). Also exercises ``seating`` on a
+    dense part mesh (the elephant's cupped ears: bpy collections reject slice steps)."""
+    from animatica.creatures.build import build_creature
+    from animatica.creatures.qa import PART_GAP, part_seating, rig_checks
+    from animatica.creatures.species import SPECIES
+
+    sp = SPECIES[species]
+    ops, meta = build_creature(species, sp, at=(0.0, 0.0), yaw=90.0)
+    run(fresh, *ops)
+    parts = part_seating(meta, [e.id for e in sp.extras], bool(sp.muzzle))
+    if not parts:
+        return
+    rep = run(fresh, {"op": "inspect", "subjects": [meta.root], "frames": [1], "seating": parts}).data[
+        "inspect"
+    ]
+    seated = rep["frames"]["1"]["seating"]
+    assert set(seated) == {p["target"] for p in parts}
+    issues, _ = rig_checks(rep, species, parts)
+    assert not issues, [i.message for i in issues] + [f"limit {PART_GAP:.0%}"]

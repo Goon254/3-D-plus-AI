@@ -413,3 +413,31 @@ def test_glide_waypoints_are_walked_through_without_stopping():
     assert path_xy(glide, 2.0) == (1, 1) and path_xy(glide, 0.0) == (0, 0)
     # it stays on the polyline: halfway in time (eased) is the corner
     assert math.dist(path_xy(glide, 1.0), (1, 0)) < 1e-9
+
+
+def test_part_float_check():
+    """An appendage off its base is a hard error of its own, not a lid warning (Zuri v2's hovering ears)."""
+    from animatica.creatures.qa import PART_GAP, part_seating, rig_checks
+    from animatica.creatures.species import SPECIES
+
+    class Meta:
+        cid = "zebra"
+        ear_bones = ["ear_L", "ear_R"]
+
+    sp = SPECIES["zebra"]
+    parts = part_seating(Meta(), [e.id for e in sp.extras], True)  # type: ignore[arg-type]
+    assert {p["target"] for p in parts} >= {"zebra_ear_L", "zebra_ear_R", "zebra_muzzle", "zebra_mane"}
+    assert all(p["surface"] == "zebra_body" for p in parts)
+    g = SPECIES["giraffe"]
+    tips = {p["target"]: p["surface"] for p in part_seating(Meta(), [e.id for e in g.extras], True)}
+    assert tips["zebra_ossitip_L"] == "zebra_ossicone_L"
+
+    def rep(gap):
+        return {"frames": {"1": {"seating": {"zebra_ear_L": {"gap": gap, "size": 0.18}}}}}
+
+    assert rig_checks(rep(-0.01), parts=parts)[0] == []
+    issues = rig_checks(rep(0.036), parts=parts)[0]
+    assert [(i.check, i.severity) for i in issues] == [("part_float", "error")]
+    assert 0.036 / 0.18 > PART_GAP
+    # without the parts list the same gap is judged as a face part (back-compatible)
+    assert [i.check for i in rig_checks(rep(0.036))[0]] == ["lid_float"]

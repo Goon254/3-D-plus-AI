@@ -12,6 +12,7 @@ Measured on the deformed rig in Blender, every third frame (eyes, lids, brows, m
 
 * ``eye_socket``: each eye stays 50-80 % deep and does not drift in its socket (``creatures.qa``);
 * ``brow_float`` / ``lid_float`` / ``mouth_float``: no face part leaves the skin;
+* ``part_float``: ears, mane, ossicones, muzzle and nose touch what they grow from (``creatures.qa.part_seating``);
 * ``texture_swim``: the coat pattern is pinned to the rest pose;
 * ``foot_slide``: a planted foot drifts less than :data:`SLIDE_MAX` of the leg;
 * ``ground``: no foot sinks into the ground;
@@ -46,7 +47,7 @@ from animatica.creatures.face import BROW_COLOR, face_keys, face_ops, refresh_re
 from animatica.creatures.gait import GAITS, LEGS, Waypoint  # noqa: E402
 from animatica.creatures.gesture import Gesture, Rig, acting_layers  # noqa: E402
 from animatica.creatures.perform import plan_for, walk_keys  # noqa: E402
-from animatica.creatures.qa import rig_checks, rig_probe  # noqa: E402
+from animatica.creatures.qa import part_seating, rig_checks, rig_probe  # noqa: E402
 from animatica.creatures.species import CAST, SPECIES  # noqa: E402
 
 FPS = 24
@@ -243,7 +244,8 @@ def run(character: str, out: Path, render: bool, res: tuple[int, int], samples: 
         fkeys = face_keys(face, ch["track"], cues, FPS, 1, n, line_start=ch["line_start"])
         batch("anim", keys + fkeys)
         # face parts, eyes and coat: every third frame
-        probe = rig_probe(meta, list(range(1, n + 1, 3)))
+        parts = part_seating(meta, [ex.id for ex in sp.extras], bool(sp.muzzle))
+        probe = rig_probe(meta, list(range(1, n + 1, 3)), parts=parts)
         surf = (
             f"{meta.cid}_muzzle"
             if sp.muzzle
@@ -251,7 +253,7 @@ def run(character: str, out: Path, render: bool, res: tuple[int, int], samples: 
         )
         probe["seating"].append({"target": face["mouth"], "surface": surf, "kind": "skin"})
         rep = batch("probe", [probe])["inspect"]
-        issues, summary = rig_checks(rep, character)
+        issues, summary = rig_checks(rep, character, parts)
         # feet (and the sentinel's tail tip): every frame
         head = f"{meta.rig}:head"
         tails = [f"{meta.rig}:leg_{leg}_lo" for leg in LEGS] + [f"{meta.rig}:{meta.tail_bones[-1]}", head]
@@ -296,6 +298,7 @@ def run(character: str, out: Path, render: bool, res: tuple[int, int], samples: 
         ("eye_socket", True),
         ("brow_float", False),
         ("lid_float", False),
+        ("part_float", True),
         ("texture_swim", True),
     ):
         msgs = by_kind.get(kind, [])
