@@ -2,32 +2,40 @@
  "scene": "sc02",
  "title": "Morning - the puddle",
  "quality": "preview",
- "seconds": 22.0,
- "frames": 529,
+ "seconds": 22.5,
+ "frames": 541,
  "lines": [
   {
    "who": "tembo",
    "start": 6.4,
-   "end": 8.427,
-   "text": "Morning, Zuri! Morning, Kiki! Water!"
+   "end": 8.785,
+   "text": "Morning, Zuri! Morning, Kiki! Water!",
+   "engine": "kokoro",
+   "fallback": "[Errno 2] No such file or directory: '/root/.cache/animatica/chatterbox-venv/bin/python'"
   },
   {
    "who": "kiki",
-   "start": 11.827,
-   "end": 13.726,
-   "text": "Thank you, Tembo. Very refreshing."
+   "start": 12.185,
+   "end": 14.318,
+   "text": "Thank you, Tembo. Very refreshing.",
+   "engine": "kokoro",
+   "fallback": "[Errno 2] No such file or directory: '/root/.cache/animatica/chatterbox-venv/bin/python'"
   },
   {
    "who": "zuri",
-   "start": 14.226,
-   "end": 15.655,
-   "text": "Your trunk's a hose with hiccups!"
+   "start": 14.818,
+   "end": 16.29,
+   "text": "Your trunk's a hose with hiccups!",
+   "engine": "kokoro",
+   "fallback": "[Errno 2] No such file or directory: '/root/.cache/animatica/chatterbox-venv/bin/python'"
   },
   {
    "who": "zuri",
-   "start": 16.105,
-   "end": 18.878,
-   "text": "And stand up straight, Neema, you lovely lamp-post!"
+   "start": 16.74,
+   "end": 19.3,
+   "text": "And stand up straight, Neema, you lovely lamp-post!",
+   "engine": "kokoro",
+   "fallback": "[Errno 2] No such file or directory: '/root/.cache/animatica/chatterbox-venv/bin/python'"
   }
  ],
  "shots": [
@@ -44,18 +52,19 @@
    "end": 6.05,
    "note": "Tembo hurries in, Neema ambles behind, Kiki scurries to the mound",
    "location": [
-    2.205,
-    -11.992,
-    2.917
+    2.209,
+    -11.469,
+    2.916
    ],
    "aim": [
-    2.205,
-    2.745,
+    2.209,
+    3.261,
     1.641
    ],
    "lens": 30.0,
-   "frame_h": 9.947,
-   "distance": 14.736
+   "frame_h": 9.942,
+   "distance": 14.729,
+   "swing": 0.0
   },
   {
    "shot": 1,
@@ -64,44 +73,46 @@
     "tembo"
    ],
    "start": 6.05,
-   "end": 8.827,
+   "end": 9.185,
    "note": "",
    "location": [
-    0.467,
-    -2.735,
-    0.612
+    0.055,
+    0.466,
+    0.613
    ],
    "aim": [
-    1.254,
-    0.879,
-    0.72
+    0.485,
+    4.576,
+    0.721
    ],
    "lens": 40.0,
-   "frame_h": 1.872,
-   "distance": 3.698
+   "frame_h": 2.092,
+   "distance": 4.132,
+   "swing": 15.0
   },
   {
    "shot": 2,
-   "type": "mcu",
+   "type": "ms",
    "subjects": [
     "tembo"
    ],
-   "start": 8.827,
-   "end": 10.327,
-   "note": "the trunk dips, sucks, wobbles",
+   "start": 9.185,
+   "end": 11.035,
+   "note": "the trunk dips, sucks, wobbles: in profile, so the trunk reads against the sky and the water",
    "location": [
-    -0.755,
-    -3.987,
-    1.047
+    1.863,
+    1.434,
+    0.504
    ],
    "aim": [
-    1.025,
-    0.545,
-    1.102
+    0.48,
+    4.537,
+    0.593
    ],
-   "lens": 50.0,
-   "frame_h": 1.972,
-   "distance": 4.869
+   "lens": 40.0,
+   "frame_h": 1.72,
+   "distance": 3.397,
+   "swing": 0.0
   },
   {
    "shot": 3,
@@ -109,22 +120,23 @@
    "subjects": [
     "kiki"
    ],
-   "start": 10.327,
-   "end": 13.876,
+   "start": 11.035,
+   "end": 14.468,
    "note": "the spray hits Kiki",
    "location": [
-    -3.418,
-    2.618,
+    -3.422,
+    2.458,
     0.25
    ],
    "aim": [
-    -3.345,
-    3.678,
-    0.207
+    -3.338,
+    3.677,
+    0.213
    ],
    "lens": 40.0,
-   "frame_h": 0.538,
-   "distance": 1.062
+   "frame_h": 0.618,
+   "distance": 1.222,
+   "swing": 0.0
   },
   {
    "shot": 4,
@@ -132,22 +144,23 @@
    "subjects": [
     "zuri"
    ],
-   "start": 13.876,
-   "end": 15.755,
+   "start": 14.468,
+   "end": 16.39,
    "note": "",
    "location": [
-    -0.33,
-    -2.181,
-    0.716
+    -0.194,
+    -2.602,
+    0.717
    ],
    "aim": [
-    -1.312,
-    2.03,
-    0.842
+    -1.292,
+    2.106,
+    0.844
    ],
    "lens": 40.0,
-   "frame_h": 2.189,
-   "distance": 4.324
+   "frame_h": 2.447,
+   "distance": 4.834,
+   "swing": 0.0
   },
   {
    "shot": 5,
@@ -156,22 +169,23 @@
     "zuri",
     "neema"
    ],
-   "start": 15.755,
-   "end": 18.978,
+   "start": 16.39,
+   "end": 19.4,
    "note": "",
    "location": [
     1.345,
     -4.706,
-    2.089
+    1.949
    ],
    "aim": [
     1.345,
     3.15,
-    1.637
+    1.438
    ],
    "lens": 30.0,
    "frame_h": 5.303,
-   "distance": 7.856
+   "distance": 7.856,
+   "swing": 0.0
   },
   {
    "shot": 6,
@@ -179,27 +193,28 @@
    "subjects": [
     "tembo"
    ],
-   "start": 18.978,
-   "end": 22.0,
+   "start": 19.4,
+   "end": 22.5,
    "note": "Tembo's ears droop",
    "location": [
-    -0.435,
-    -3.206,
-    1.078
+    -0.456,
+    0.43,
+    1.081
    ],
    "aim": [
-    1.038,
-    0.545,
-    1.111
+    0.123,
+    4.418,
+    1.114
    ],
    "lens": 60.0,
    "frame_h": 1.36,
-   "distance": 4.03
+   "distance": 4.03,
+   "swing": 30.0
   }
  ],
  "cue": {
   "id": "sc02",
-  "bpm": 120.0,
+  "bpm": 117.3,
   "bars": 11,
   "moods": [
    "comedy",
@@ -216,16 +231,16 @@
   ],
   "engine": "soundfont"
  },
- "footsteps": 112,
+ "footsteps": 119,
  "sound": {
-  "seconds": 22.0,
+  "seconds": 22.5,
   "lines": 4,
-  "dialogue_clarity_db": 13.4,
+  "dialogue_clarity_db": 13.5,
   "music_rms_db": -20.3,
   "peak": 0.98
  },
  "warnings": [],
- "render_seconds": 1142.5,
- "wall_seconds": 1191.7,
- "mp4": "output/savannah/sc02/sc02.mp4"
+ "render_seconds": 1165.3,
+ "wall_seconds": 1216.4,
+ "mp4": "/tmp/claude-0/out/sc02/sc02.mp4"
 }
