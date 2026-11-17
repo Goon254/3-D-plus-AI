@@ -1,34 +1,40 @@
 {
  "voices": {
   "narrator": {
-   "voice": "bm_fable",
+   "voice": "bm_fable:0.8+bm_lewis:0.2",
+   "shift_semitones": 0.0,
    "f0_hz": 114.0,
-   "centroid_hz": 1121
+   "centroid_hz": 1733
   },
   "tembo": {
-   "voice": "am_puck",
-   "f0_hz": 168.3,
-   "centroid_hz": 618
+   "voice": "am_eric:0.5+af_sky:0.5",
+   "shift_semitones": 1.01,
+   "f0_hz": 175.2,
+   "centroid_hz": 539
   },
   "zuri": {
-   "voice": "af_bella",
-   "f0_hz": 218.3,
-   "centroid_hz": 467
+   "voice": "af_bella:0.6+af_jessica:0.4",
+   "shift_semitones": 0.0,
+   "f0_hz": 200.0,
+   "centroid_hz": 721
   },
   "kiki": {
-   "voice": "af_sky",
-   "f0_hz": 239.7,
-   "centroid_hz": 615
+   "voice": "bf_alice:0.7+af_jessica:0.3",
+   "shift_semitones": 1.96,
+   "f0_hz": 252.6,
+   "centroid_hz": 860
   },
   "neema": {
-   "voice": "af_nicole",
-   "f0_hz": 157.5,
-   "centroid_hz": 359
+   "voice": "af_nicole:0.7+af_sky:0.3",
+   "shift_semitones": 0.0,
+   "f0_hz": 154.8,
+   "centroid_hz": 477
   },
   "bibi_kobe": {
-   "voice": "bf_emma",
-   "f0_hz": 144.1,
-   "centroid_hz": 565
+   "voice": "bf_emma:0.55+af_alloy:0.45",
+   "shift_semitones": -2.0,
+   "f0_hz": 152.9,
+   "centroid_hz": 857
   }
  },
  "clashes": []
