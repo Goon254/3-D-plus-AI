@@ -61,3 +61,11 @@ The thumbnail now reads as a **mongoose**: the right family, still a misread. Op
 with dark socks; eye patches too soft at 96 px. Re-score without re-rendering: `python scripts/design_sheet.py kiki
 --tag v3 --out <dir> --rescore`. See [review 12:36](../docs/reviews/2026-11-17T1236Z.md).
 
+
+## kiki/v4/ — crisp mask, slim barrel, dark paws only, a sentinel tail that stays on (laptop GPU 2026-11-17, DECISIONS #55)
+
+512 px sheet (OptiX, ~10 s) with a recorded critique: **9.76**, not ready (appeal 7). The silhouette reads as a
+meerkat in sentinel, and the 96 px thumbnail on all fours now reads as a **meerkat**. The rump end is weighted to the
+hips, so the sentinel tail no longer floats below the body; that was a v2–v3 bug no review caught, and the
+floating-part check now runs on the pose silhouette too. Open: the rump is round from the back, and the legs are
+still a touch long.

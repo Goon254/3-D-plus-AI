@@ -146,11 +146,30 @@ def eye_patch_marks(sp: Species) -> dict[str, Any]:
                 "at": _r(_add(fr.centre, back), 5),
                 "radii": _r((er * 1.7, er * 2.9, er * 1.9), 5),
                 "color": color,
-                "soft": 0.55,
+                "soft": sp.patch_soft,
                 "strength": strength,
             }
         )
     return {"marks": marks}
+
+
+def rump_rigid(sp: Species) -> list[dict[str, Any]]:
+    """A species that rises onto its hind legs (the meerkat's sentinel) carries its rump on the hips bone.
+    Auto weights hand the rump to the planted thigh bones, which stay level while the body pitches up, so
+    the rump stayed up by the knees and the tail root (on the hips) hung 4-5 cm below it, detached."""
+    if sp.default_pose != "sentinel":
+        return []
+    W, L, D = sp.torso
+    y = sp.torso_at[1] + 0.52 * L  # the rump end, behind the hip joints, out to the tail root
+    z = sp.torso_at[2] - y * math.tan(math.radians(sp.torso_rot))
+    return [
+        {
+            "bone": "hips",
+            "center": _r((0.0, y, z)),
+            "radii": _r((W * 0.6, L * 0.34, D * 0.85)),
+            "falloff": 0.45,
+        }
+    ]
 
 
 def build_creature(
@@ -576,7 +595,7 @@ def build_creature(
         body = f"{cid}_body"
         if body_style == "metaball":
             g = body_graph(sp, leg_pts, shell=sp.shell is not None, include_tail=False)
-            els, res_m = metaball_elements(g)
+            els, res_m = metaball_elements(g, sp.smooth)
             ops.append(
                 {
                     "op": "create_metaball_mesh",
@@ -695,17 +714,20 @@ def build_creature(
                 + (["head", "trunk_"] if sp.separate_head else []),
                 # the skull is rigid: the head's skin follows the head bone alone (blending into the neck
                 # over the outer shell), so the eyes, lids and brows on that bone stay in their sockets
-                "rigid": []
-                if sp.separate_head
-                else [
-                    {
-                        "bone": "head",
-                        "center": _r(sp.head_at),
-                        "radii": _r(_scale(sp.head_size, 0.62)),
-                        "pitch": sp.head_pitch,
-                        "falloff": 0.4,
-                    }
-                ],
+                "rigid": (
+                    []
+                    if sp.separate_head
+                    else [
+                        {
+                            "bone": "head",
+                            "center": _r(sp.head_at),
+                            "radii": _r(_scale(sp.head_size, 0.62)),
+                            "pitch": sp.head_pitch,
+                            "falloff": 0.4,
+                        }
+                    ]
+                )
+                + rump_rigid(sp),
             },
             {
                 "op": "set_material_by_bone",

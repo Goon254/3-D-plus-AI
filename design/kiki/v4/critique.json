@@ -1,0 +1,15 @@
+{
+  "reviewer": "laptop GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "03daacb466b45f58893d714d895922a82933dda4741cfbd0e40cc776b61decaf",
+  "silhouette_species": "meerkat standing sentinel",
+  "thumbnail_species": "meerkat",
+  "issues": [
+    "the sentinel tail now grows out of the rump (v3's tail root hung ~3 cm below the body, detached: the rump was weighted to the planted thighs)",
+    "96 px on all fours: crisp dark eye mask, slim tucked barrel, dark-tipped tail; reads as a meerkat, though the round mask leans a little toward a raccoon",
+    "dark shade only on the paws now (no socks); the back bands are fewer and faint",
+    "still: the rump is round from the back and the legs are a touch long for a meerkat",
+    "happy and surprised are still subtle on the face close-up (3.2 % / 3.7 %)"
+  ],
+  "appeal": 7
+}

@@ -82,6 +82,11 @@ class Species:
     # head a chin and throat line where the neck enters, so the head never slopes straight into the chest
     jaw: float = 0.0
     belly_tuck: float = 0.0  # 0..1: the loins and belly draw up behind the ribcage (a lean waist, not a tube)
+    # 0..1: denser metaball runs and a finer surface, so a small body is smooth instead of lumpy (bumps
+    # between the overlapping balls show at sheet size on a 30 cm animal)
+    smooth: float = 0.0
+    # the eye patch's edge: the share of its radius over which it fades (lower = crisper)
+    patch_soft: float = 0.55
 
 
 def _m(color: str, rough: float = 0.75, **kw: Any) -> dict[str, Any]:
@@ -286,17 +291,18 @@ SPECIES: dict[str, Species] = {
     "meerkat": Species(
         name="meerkat",
         # length/depth 2.04: a meerkat, not a weasel tube (2.8) nor a hamster ball (1.6)
-        body_z=0.13,
-        torso=(0.096, 0.198, 0.097),
+        # v4: a slimmer barrel on shorter, slightly bent legs (v3 read as a mongoose: bulky body, stilts)
+        body_z=0.118,
+        torso=(0.086, 0.198, 0.09),
         torso_at=(0.0, 0.0, 0.0),
         torso_rot=4.0,
         shoulder=(0.027, -0.07, -0.016),
         hip=(0.031, 0.068, -0.012),
         fore_foot=(0.028, -0.072),
         hind_foot=(0.032, 0.07),
-        leg_r=(0.018, 0.0125, 0.023, 0.014),
+        leg_r=(0.016, 0.0125, 0.0185, 0.0135),  # v4: slimmer haunches (v3 had bulbous hips)
         foot=("paw", 0.012, 0.01),
-        knee_bend=0.2,
+        knee_bend=0.3,
         # the head is carried forward and only a little up on a neck that enters the back of the skull, so
         # there is a nape and a throat line (a mongoose-family profile, not a dog's raised head)
         neck=Chain((0.0, -0.092, 0.018), (0.0, -0.142, 0.05), 2, 0.026, 0.017),
@@ -320,17 +326,25 @@ SPECIES: dict[str, Species] = {
                 0.85,
                 pattern="bands",
                 pattern_color="#9E774A",
-                pattern_scale=9.0,
-                pattern_width=0.12,
+                pattern_scale=6.0,
+                pattern_width=0.1,
                 pattern_axis="y",
-                pattern_distort=3.0,
-                pattern_above=0.02,
+                pattern_distort=2.0,
+                pattern_above=0.024,
                 pattern_fade=0.014,
                 fur=0.6,
                 fur_scale=500.0,
             ),
-            # a darker shade of the coat, not near-black (black "boots" read as a costume)
-            "paw": _m("#7A5734", 0.8, fur=0.4, fur_scale=500.0),
+            # the coat down the leg, darkening only over the paw itself (v3's dark lower legs read as socks)
+            "paw": _m(
+                "#B68A56",
+                0.82,
+                fur=0.5,
+                fur_scale=500.0,
+                marks=[
+                    {"at": [0.0, 0.0, -0.118], "radii": [1.0, 1.0, 0.026], "color": "#6E4E2E", "soft": 0.6}
+                ],
+            ),
             "ear": _m("#3A281A", 0.8),
             "muzzle": _m("#BE925C", 0.8, fur=0.4, fur_scale=500.0),
             "nose": _m("#1E1612", 0.4),
@@ -349,9 +363,11 @@ SPECIES: dict[str, Species] = {
         # the waist tucks up behind the ribs
         snout_tip=((0.0, -0.072, -0.017), 0.0065),
         jaw=0.36,
-        belly_tuck=0.6,
+        belly_tuck=0.85,
         # the meerkat's dark "spectacles", painted softly round the eyes (the eyes stay visible in them)
-        eye_patch=("#3A2818", 0.95),
+        eye_patch=("#24180E", 1.0),
+        patch_soft=0.28,  # crisp enough to carry at 96 px (v3's 0.55 blurred away in the thumbnail)
+        smooth=1.0,
         default_pose="sentinel",
     ),
     # Leopard tortoise elder: a high-domed carapace of geometric scutes (dark heart and growth rings in each

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import replace
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -210,3 +211,13 @@ def test_low_critic_appeal_blocks_ready():
     assert score(b, SPECIES["zebra"], img, {**crit, "appeal": 9}).ready
     low = score(b, SPECIES["zebra"], img, {**crit, "appeal": 6})
     assert not low.ready and not low.hard_failures
+
+
+def test_a_detached_tail_in_the_signature_pose_is_a_floating_part():
+    """Kiki v2-v3's sentinel tail hung below the rump, detached; the floating check only looked at the side
+    view. design_sheet now runs it on the signature-pose silhouette too (v4 fixed the rump weights)."""
+    from animatica.design.image_checks import floating_parts, load_mask
+
+    root = Path(__file__).resolve().parents[1] / "design" / "kiki"
+    assert floating_parts(load_mask(root / "v3" / "silhouette.png")) == 1
+    assert floating_parts(load_mask(root / "v4" / "silhouette.png")) == 0

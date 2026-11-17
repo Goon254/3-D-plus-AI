@@ -263,3 +263,31 @@ def test_happy_pushes_the_lower_lids_up_and_the_sentinel_keeps_the_head_level():
     assert rest + SENTINEL_PITCH - neck == pytest.approx(SENTINEL_NECK_UP)
     assert SENTINEL_PITCH - neck - head == pytest.approx(SENTINEL_HEAD_UP)
     assert sp.snout_tip is not None and sp.jaw > 0 and sp.belly_tuck > 0
+
+
+def test_kiki_v4_rump_rides_the_hips_paws_only_darken_and_body_is_smoother():
+    """Laptop GPU 11-17: in the sentinel the rump stayed with the planted thighs and the tail root hung ~3 cm
+    below it (detached in the silhouette since v2). The rump end is now weighted rigidly to the hips, like the
+    tail. Kiki v4 also darkens only the paws (v3 had dark socks) and packs her metaballs closer (lumpy barrel)."""
+    from animatica.creatures.build import rump_rigid
+    from animatica.creatures.organic import Graph, metaball_elements
+
+    sp = SPECIES["meerkat"]
+    ops, _meta = build_creature("k", sp)
+    bind = next(o for o in ops if o["op"] == "bind_mesh_to_armature" and o.get("auto"))
+    rump = [r for r in bind["rigid"] if r["bone"] == "hips"]
+    assert len(rump) == 1
+    # the region reaches the tail root (the rump surface behind the hips)
+    assert rump[0]["center"][1] + rump[0]["radii"][1] * (1 - rump[0]["falloff"]) > sp.tail.base[1] - 0.01
+    assert rump_rigid(SPECIES["zebra"]) == []  # only species that rise onto their hind legs
+    paw = sp.mats["paw"]
+    assert paw["base_color"] == sp.coat["base_color"] and paw["marks"][0]["at"][2] == pytest.approx(
+        -sp.body_z
+    )
+    assert sp.patch_soft < 0.4  # crisp eye patches that carry at 96 px
+    g = Graph()
+    a, b = g.node((0.0, 0.0, 0.0), 0.02), g.node((0.0, 0.2, 0.0), 0.02)
+    g.link(a, b)
+    rough, res0 = metaball_elements(g)
+    smooth, res1 = metaball_elements(g, 1.0)
+    assert len(smooth) > len(rough) and res1 < res0

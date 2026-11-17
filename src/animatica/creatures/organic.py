@@ -184,9 +184,10 @@ def tail_points(sp: Species) -> list[tuple[V3, float]]:
 SURFACE = 0.575  # a metaball's surface sits at 0.575 x its radius (threshold 0.6, stiffness 2; measured)
 
 
-def metaball_elements(g: Graph) -> tuple[list[dict], float]:
+def metaball_elements(g: Graph, smooth: float = 0.0) -> tuple[list[dict], float]:
     """Graph -> metaball elements: ellipsoids at spine nodes (the barrel keeps its width/height), and
     tapering runs of overlapping balls along every edge, so tubes taper smoothly and melt into the masses.
+    ``smooth`` (0..1) packs the balls closer and refines the surface (fewer bumps between them).
     Returns (elements, resolution)."""
     els: list[dict] = []
     rmin = 1e9
@@ -206,11 +207,11 @@ def metaball_elements(g: Graph) -> tuple[list[dict], float]:
         pa, pb = g.verts[a], g.verts[b]
         ra, rb = sum(g.radii[a]) / 2, sum(g.radii[b]) / 2
         length = math.dist(pa, pb)
-        n = max(1, int(length / (0.4 * min(ra, rb))))
+        n = max(1, int(length / ((0.4 - 0.22 * smooth) * min(ra, rb))))
         for j in range(n + 1):
             u = j / n
             r = ra + (rb - ra) * u
             co = [round(pa[c] + (pb[c] - pa[c]) * u, 4) for c in range(3)]
             # overlapping balls add up: shrink them so the run's surface sits at the target radius
             els.append({"type": "ball", "co": co, "radius": round(r / SURFACE * 0.8, 4)})
-    return els, max(0.0035, round(rmin * 0.28, 4))
+    return els, max(0.0035 * (1 - 0.4 * smooth), round(rmin * 0.28 * (1 - 0.4 * smooth), 4))

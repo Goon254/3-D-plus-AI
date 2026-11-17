@@ -25,6 +25,9 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
   * maybe the tail carried in a raised curve while walking.
 
   Then re-sheet and record a critique on the same sheet (`design_sheet.py ... --rescore`). — [review 11-17 12:36](reviews/2026-11-17T1236Z.md)
+  *Laptop GPU 11-17 (DECISIONS #55, `design/kiki/v4/`): crisp dark mask ✔, a slimmer and smoother barrel with a deeper tuck ✔,
+  shorter and more bent legs with the dark shade on the paws only ✔. The thumbnail now reads as a meerkat (recorded critique,
+  9.76, appeal 7). The sentinel tail no longer floats below the rump; that was a bug since v2. Needs reviewer verification.*
 - [ ] **Zuri's silhouette reads as a horse**: a thicker upright brush mane and larger, rounder ears. Stripes form
   bullseye rings on the chest, face front and rump (projected along one axis): they must wrap the body, with
   chevrons on the rump. The black muzzle ball reads as a clown nose: blend it into the face.

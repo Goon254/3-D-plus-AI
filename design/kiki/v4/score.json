@@ -1,0 +1,341 @@
+{
+ "morph": {
+  "head": 1.0,
+  "eye": 1.0,
+  "ear": 1.0,
+  "snout": 1.0,
+  "leg": 1.0,
+  "neck": 1.0,
+  "lift_dark": 0.0
+ },
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.2838,
+  "top_dip": 0.027,
+  "throat": 0.2838,
+  "lift": 0.6081,
+  "dark_blob": 0.0402,
+  "expression_happy": 0.0317,
+  "expression_surprised": 0.0366
+ },
+ "design": {
+  "species": "meerkat",
+  "proportions": {
+   "head_body": 0.4848,
+   "eye_head": 0.4394,
+   "eye_spacing": 0.6857,
+   "neck_head": 0.5152,
+   "elongation": 2.2,
+   "belly_gap": 0.8111,
+   "leg_thickness": 0.1453,
+   "ear_head": 0.063,
+   "neck_length": 0.5031,
+   "snout": 0.5208
+  },
+  "features": [
+   "ears",
+   "eye_patch",
+   "muzzle",
+   "nose",
+   "pattern:bands",
+   "sentinel",
+   "tail_tuft"
+  ],
+  "materials": {
+   "luminance": {
+    "coat": 0.2879,
+    "back": 0.2634,
+    "paw": 0.2879,
+    "ear": 0.0249,
+    "muzzle": 0.3228,
+    "nose": 0.0089,
+    "tailtip": 0.0085
+   },
+   "pattern_contrast": {
+    "back": 1.21
+   },
+   "dark_regions": [
+    {
+     "material": "tailtip",
+     "bones": [
+      "tail_3"
+     ]
+    }
+   ]
+  }
+ },
+ "critique": {
+  "reviewer": "laptop GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "03daacb466b45f58893d714d895922a82933dda4741cfbd0e40cc776b61decaf",
+  "silhouette_species": "meerkat standing sentinel",
+  "thumbnail_species": "meerkat",
+  "issues": [
+   "the sentinel tail now grows out of the rump (v3's tail root hung ~3 cm below the body, detached: the rump was weighted to the planted thighs)",
+   "96 px on all fours: crisp dark eye mask, slim tucked barrel, dark-tipped tail; reads as a meerkat, though the round mask leans a little toward a raccoon",
+   "dark shade only on the paws now (no socks); the back bands are fewer and faint",
+   "still: the rump is round from the back and the legs are a touch long for a meerkat",
+   "happy and surprised are still subtle on the face close-up (3.2 % / 3.7 %)"
+  ],
+  "appeal": 7
+ },
+ "character": "kiki",
+ "score": 9.76,
+ "ready": false,
+ "hard_failures": [],
+ "pending": [],
+ "checks": [
+  {
+   "id": "range:head_body",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "head_body 0.485 in [0.4, 0.55]",
+   "value": 0.4848,
+   "fix": null
+  },
+  {
+   "id": "range:eye_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_head 0.439 in [0.38, 0.6]",
+   "value": 0.4394,
+   "fix": null
+  },
+  {
+   "id": "range:eye_spacing",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_spacing 0.686 in [0.55, 0.85]",
+   "value": 0.6857,
+   "fix": null
+  },
+  {
+   "id": "range:neck_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "neck_head 0.515 in [0.0, 0.9]",
+   "value": 0.5152,
+   "fix": null
+  },
+  {
+   "id": "range:elongation",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "elongation 2.200 in [2.0, 2.7]",
+   "value": 2.2,
+   "fix": null
+  },
+  {
+   "id": "range:belly_gap",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "belly_gap 0.811 in [0.8, 1.4]",
+   "value": 0.8111,
+   "fix": null
+  },
+  {
+   "id": "range:leg_thickness",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "leg_thickness 0.145 in [0.11, 0.2]",
+   "value": 0.1453,
+   "fix": null
+  },
+  {
+   "id": "range:ear_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "ear_head 0.063 in [0.02, 0.1]",
+   "value": 0.063,
+   "fix": null
+  },
+  {
+   "id": "feature:eye_patch",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_patch present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:tail_tuft",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "tail_tuft present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:sentinel",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "sentinel present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:muzzle",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "muzzle present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:pattern:bands",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "pattern:bands present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "materials:flat_black",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "no near-black body regions",
+   "value": [],
+   "fix": null
+  },
+  {
+   "id": "silhouette:neck_notch",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.5,
+   "earned": 1.5,
+   "message": "side neck notch 0.284 (min 0.15): head separate from the body",
+   "value": 0.2838,
+   "fix": null
+  },
+  {
+   "id": "silhouette:floating",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "0 floating part(s)",
+   "value": 0,
+   "fix": null
+  },
+  {
+   "id": "materials:dark_blob",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "largest near-black blob 4% of the figure (max 12%)",
+   "value": 0.0402,
+   "fix": null
+  },
+  {
+   "id": "face:happy",
+   "group": "face",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "happy changes 3.2% of the face close-up (min 3%)",
+   "value": 0.0317,
+   "fix": null
+  },
+  {
+   "id": "face:surprised",
+   "group": "face",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "surprised changes 3.7% of the face close-up (min 3%)",
+   "value": 0.0366,
+   "fix": null
+  },
+  {
+   "id": "read:silhouette",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "silhouette read as 'meerkat standing sentinel': named meerkat",
+   "value": "meerkat standing sentinel",
+   "fix": null
+  },
+  {
+   "id": "read:thumbnail",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "thumbnail read as 'meerkat': named meerkat",
+   "value": "meerkat",
+   "fix": null
+  },
+  {
+   "id": "critic:appeal",
+   "group": "appeal",
+   "passed": false,
+   "hard": false,
+   "weight": 2.0,
+   "earned": 1.4,
+   "message": "art-director appeal 7/10 (min 8)",
+   "value": 7.0,
+   "fix": null
+  }
+ ],
+ "edit": {},
+ "manual": [
+  "art-director appeal 7/10 (min 8)",
+  "critic: the sentinel tail now grows out of the rump (v3's tail root hung ~3 cm below the body, detached: the rump was weighted to the planted thighs)",
+  "critic: 96 px on all fours: crisp dark eye mask, slim tucked barrel, dark-tipped tail; reads as a meerkat, though the round mask leans a little toward a raccoon",
+  "critic: dark shade only on the paws now (no socks); the back bands are fewer and faint",
+  "critic: still: the rump is round from the back and the legs are a touch long for a meerkat",
+  "critic: happy and surprised are still subtle on the face close-up (3.2 % / 3.7 %)"
+ ],
+ "sheet": "sheet.jpg (from sheet.png, sha256 in critique.json)"
+}

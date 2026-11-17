@@ -36,7 +36,12 @@ from animatica.creatures.perform import walk_keys  # noqa: E402
 from animatica.creatures.species import SPECIES, Species  # noqa: E402
 from animatica.design.brief import Brief, all_briefs, load_brief  # noqa: E402
 from animatica.design.critic import critique_for  # noqa: E402
-from animatica.design.image_checks import expression_change, sheet_metrics  # noqa: E402
+from animatica.design.image_checks import (  # noqa: E402
+    expression_change,
+    floating_parts,
+    load_mask,
+    sheet_metrics,
+)
 from animatica.design.measure import describe  # noqa: E402
 from animatica.design.rubric import score  # noqa: E402
 from animatica.design.variants import Morph, apply_morph, morph_from_dict  # noqa: E402
@@ -300,6 +305,8 @@ def sheet_for(
     sil = silhouette(views.get("pose", views["side"]), out)
     thumb = thumbnail(views["three_quarter"], out)
     img = sheet_metrics(side_sil, views["side"])
+    if "pose" in views:  # a detached part in the signature pose counts too (Kiki's sentinel tail, v2-v3)
+        img["floating_parts"] = max(img["floating_parts"], floating_parts(load_mask(sil)))
     for expr in ("happy", "surprised"):
         img[f"expression_{expr}"] = expression_change(views["face_neutral"], views[f"face_{expr}"])
     pre = score(brief, sp, img, None).as_dict()
