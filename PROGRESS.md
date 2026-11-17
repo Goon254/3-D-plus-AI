@@ -4,6 +4,11 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Cloud review 11-17 21:36 UTC ([review](docs/reviews/2026-11-17T2136Z.md), DECISIONS #63): still waiting for your
+notes on the packets, so fixes only. The rig stress reports were refreshed for all five: the new `part_float` check
+passes through every take (Zuri's ears stay on her head in motion), and `foot_slide` now records how many planted
+feet it measured and fails on zero. Scores unchanged.
+
 Cloud review 11-17 18:36 UTC ([review](docs/reviews/2026-11-17T1836Z.md), DECISIONS #62): **the five design packets
 are ready for you in [`design/packets/`](design/packets/README.md)**. Reviewer scores: Tembo 8, Neema 7, Kiki 7, Zuri 6,
 Bibi 7, tooling 8. Watching the clips showed Zuri's ears hovering 3.6 cm above her head, which no check measured.

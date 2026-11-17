@@ -11,7 +11,7 @@ that raised it.
 
 ## P0-DESIGN — DESIGN_STAGE.md (owner's top priority; film production paused)
 
-**Status 11-17 18:36: the five packets are in [`design/packets/`](../design/packets/README.md) and with the owner. Build no new
+**Status 11-17 21:36: no owner reply yet; stress reports refreshed (#63). Status 11-17 18:36: the five packets are in [`design/packets/`](../design/packets/README.md) and with the owner. Build no new
 features until he replies; fixes only.** Review: Tembo 8, Neema 7, Kiki 7, Zuri 6, Bibi 7, tooling 8. Zuri's ears floated
 3.6 cm above her head (packet clip and 3/4 view); fixed in code with a new hard `part_float` check (DECISIONS #62), but the
 packet still shows the old ears. — [review 11-17 18:36](reviews/2026-11-17T1836Z.md)
@@ -22,6 +22,12 @@ packet still shows the old ears. — [review 11-17 18:36](reviews/2026-11-17T183
   on zero, so "perfect" can't hide "never measured"; (4) next packet round: frame the expressions and the line as a
   head-and-shoulders close-up (Tembo's are medium-wide, Neema's frame is mostly neck) on a set with no horizon stripe.
   — [review 11-17 18:36](reviews/2026-11-17T1836Z.md)
+  *Cloud 11-17 21:36: (2) done: `--all --no-render` re-ran on CPU; every report has `part_float` and all five pass through
+  the whole take ✔. (3) done (DECISIONS #63): `foot_slide` counts planted foot-frame pairs (710–1443 per character) and
+  fails on zero ✔. Left for the laptop: (1) and (4).* — [review 11-17 21:36](reviews/2026-11-17T2136Z.md)
+- [ ] **`foot_slide` on the skin** (tooling, after the owner's reply): the probe reads the IK-pinned lower-leg bone tail,
+  so 0.0 mm mostly proves the IK reached its target. Measure the lowest foot vertices of the deformed mesh instead, so
+  sliding through skin weights would show. — [review 11-17 21:36](reviews/2026-11-17T2136Z.md)
 
 Status 11-17 15:36: Kiki v4 9.76 / appeal 7 (reads as a meerkat; review score 7); Zuri v2 7.4 (stripes fixed; board mane, puck hooves, pony silhouette; review score 6). 12:36: Kiki v3 7.4 (sentinel reads; thumbnail reads as a mongoose); happy reads on four of five. 09:36: Kiki v2 is built (sentinel reads, on all fours not yet). 06:36: the design-sheet renderer, rubric, recorded/live critic and best-of-N loop exist
 (`animatica.design`, `scripts/design_sheet.py`, `scripts/design_loop.py`, DECISIONS #52). Baseline sheets and scores:
