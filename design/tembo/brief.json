@@ -1,0 +1,72 @@
+{
+  "character": "tembo",
+  "species": "elephant",
+  "version": 1,
+  "role": "hero",
+  "age": "calf, about a year old",
+  "personality": "eager, kind, a little clumsy; wants to prove he's big",
+  "shape_language": "round everywhere: domed head, barrel body, soft pillar legs (round = friendly)",
+  "ranges": {
+    "head_body": [
+      0.7,
+      0.95
+    ],
+    "eye_head": [
+      0.22,
+      0.4
+    ],
+    "eye_spacing": [
+      0.4,
+      0.7
+    ],
+    "neck_head": [
+      0.0,
+      0.75
+    ],
+    "elongation": [
+      1.0,
+      1.5
+    ],
+    "belly_gap": [
+      0.45,
+      0.9
+    ],
+    "leg_thickness": [
+      0.14,
+      0.24
+    ],
+    "ear_head": [
+      0.5,
+      1.1
+    ]
+  },
+  "features": [
+    "trunk",
+    "big_ears",
+    "tail_tuft",
+    "separate_head"
+  ],
+  "palette": {
+    "coat": "#918D88",
+    "notes": "warm mid-grey skin; pale toenails; never blue-grey"
+  },
+  "pattern_contrast_min": {},
+  "dark_ok": [],
+  "silhouette": {
+    "side_neck_notch_min": 0.15,
+    "max_floating_parts": 0
+  },
+  "read_as": {
+    "names": [
+      "elephant"
+    ],
+    "confusions": [
+      "hippo",
+      "rhino",
+      "pig",
+      "mammoth",
+      "tapir"
+    ]
+  },
+  "references": []
+}

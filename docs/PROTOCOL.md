@@ -70,7 +70,7 @@ Source of truth: `src/animatica/core/protocol.py` (Pydantic models + semantic va
 | `import_asset` | glTF/GLB/OBJ/FBX/USD under a root empty with `id` | `id, path, format?` |
 | `add_sound_strip` | audio on the VSE (artists hear the soundtrack in Blender) | `id, path, frame_start, channel, volume` |
 | `set_world` | sky gradient (zenith/glow/horizon/ground) + strength; optional `viewport_tint` grades Workbench/viewport colours only (night previews) | |
-| `set_render` | engine (workbench/eevee/cycles), resolution, samples, fps, look, exposure | |
+| `set_render` | engine (workbench/eevee/cycles), resolution, samples, fps, look, exposure, device, transparent (RGBA, world as alpha) | |
 | `set_property` | escape hatch for a simple data path | `target, path, value` |
 | `render_preview` | one still | `camera ("auto" frames everything), frame, resolution, engine` |
 | `render_final` | PNG sequence of the frame range | `output_dir, frame_start?, frame_end?` |

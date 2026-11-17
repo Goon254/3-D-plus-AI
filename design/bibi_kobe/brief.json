@@ -1,0 +1,65 @@
+{
+  "character": "bibi_kobe",
+  "species": "tortoise",
+  "version": 1,
+  "role": "wise elder",
+  "age": "very old",
+  "personality": "slow, warm, wise; remembers the old path",
+  "shape_language": "a high dome on sturdy elephant-like legs; heavy-lidded kind eyes",
+  "ranges": {
+    "head_body": [
+      0.18,
+      0.3
+    ],
+    "eye_head": [
+      0.38,
+      0.6
+    ],
+    "eye_spacing": [
+      0.6,
+      0.9
+    ],
+    "neck_head": [
+      0.0,
+      1.1
+    ],
+    "belly_gap": [
+      0.2,
+      0.7
+    ],
+    "leg_thickness": [
+      0.1,
+      0.18
+    ]
+  },
+  "features": [
+    "shell",
+    "pattern:scutes",
+    "pattern:scales"
+  ],
+  "palette": {
+    "coat": "#B9A27A",
+    "pattern": "leopard-tortoise scutes: dark heart and growth rings",
+    "notes": "plastron blends into the shell underside; never a pale disc"
+  },
+  "pattern_contrast_min": {
+    "shell": 4.0
+  },
+  "dark_ok": [],
+  "silhouette": {
+    "side_neck_notch_min": null,
+    "max_floating_parts": 0
+  },
+  "read_as": {
+    "names": [
+      "tortoise"
+    ],
+    "confusions": [
+      "turtle",
+      "snail",
+      "armadillo",
+      "beetle"
+    ]
+  },
+  "references": []
+}

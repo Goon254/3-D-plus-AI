@@ -1,0 +1,85 @@
+{
+  "character": "kiki",
+  "species": "meerkat",
+  "version": 1,
+  "role": "lookout",
+  "age": "young adult",
+  "personality": "nervous, fast-talking, sees danger everywhere; brave once when it counts",
+  "shape_language": "slim upright S-curve, pointed snout, alert big eyes; never a tube on short legs",
+  "ranges": {
+    "head_body": [
+      0.4,
+      0.55
+    ],
+    "eye_head": [
+      0.38,
+      0.6
+    ],
+    "eye_spacing": [
+      0.55,
+      0.85
+    ],
+    "neck_head": [
+      0.0,
+      0.9
+    ],
+    "elongation": [
+      2.0,
+      2.7
+    ],
+    "belly_gap": [
+      0.8,
+      1.4
+    ],
+    "leg_thickness": [
+      0.11,
+      0.2
+    ],
+    "ear_head": [
+      0.02,
+      0.1
+    ]
+  },
+  "features": [
+    "eye_patch",
+    "tail_tuft",
+    "sentinel",
+    "muzzle",
+    "pattern:bands"
+  ],
+  "palette": {
+    "coat": "#B68A56",
+    "accents": [
+      "#3E2C1D eye patches",
+      "#1E150F tail tip"
+    ],
+    "notes": "sandy brown, pale muzzle, dark eye patches, ears and tail tip; paws only slightly darker",
+    "pattern": "#9E774A"
+  },
+  "pattern_contrast_min": {},
+  "dark_ok": [
+    "tailtip",
+    "nose"
+  ],
+  "silhouette": {
+    "side_neck_notch_min": 0.15,
+    "max_floating_parts": 0
+  },
+  "read_as": {
+    "names": [
+      "meerkat",
+      "suricate"
+    ],
+    "confusions": [
+      "rat",
+      "weasel",
+      "ferret",
+      "hamster",
+      "mouse",
+      "squirrel",
+      "otter",
+      "mongoose"
+    ]
+  },
+  "references": []
+}

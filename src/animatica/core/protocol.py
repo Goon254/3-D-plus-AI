@@ -550,6 +550,8 @@ class SetRender(_Op):
     exposure: float | None = Field(None, ge=-10, le=10)
     # Cycles compute device. auto = OptiX > CUDA > CPU; an unavailable GPU falls back to CPU with a warning.
     device: RenderDevice | None = None
+    # RGBA frames with a transparent world (design-sheet silhouettes are cut from the alpha)
+    transparent: bool | None = None
 
 
 class RenderPreview(_Op):

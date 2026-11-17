@@ -519,3 +519,23 @@ def test_eye_socket_snap_carry_and_seating(fresh):
     q = run(fresh, {"op": "query", "ids": ["eye", "iris"]}).data["objects"]
     # the iris travelled with the eye: still 0.03 in front of it
     assert abs((q["eye"]["location"][1] - q["iris"]["location"][1]) - 0.03) < 1e-4
+
+
+def test_transparent_render_gives_an_exact_silhouette(fresh, tmp_path):
+    """Design sheets cut the silhouette from the side view's alpha (``set_render.transparent``)."""
+    import numpy as np
+    from PIL import Image
+
+    r = run(
+        fresh,
+        {"op": "create_primitive", "id": "ball", "shape": "uv_sphere", "size": [1.0, 1.0, 1.0], "smooth": True},
+        {"op": "add_camera", "id": "cam", "location": [0, -4, 0], "look_at": [0, 0, 0], "lens": 50},
+        {"op": "set_camera_active", "id": "cam"},
+        {"op": "set_render", "engine": "cycles", "samples": 2, "resolution": [64, 64], "transparent": True},
+        {"op": "render_final", "output_dir": str(tmp_path / "f"), "frame_start": 1, "frame_end": 1},
+    )
+    assert r.ok, r.errors
+    im = Image.open(next((tmp_path / "f").glob("*.png")))
+    assert im.mode == "RGBA"
+    a = np.asarray(im.getchannel("A"))
+    assert a[0, 0] == 0 and a[32, 32] == 255  # world is transparent, the ball is opaque

@@ -91,6 +91,9 @@ class RenderOps:
                 res["warnings"].append(f"look {op['look']!r} unavailable")
         if op.get("exposure") is not None:
             s.view_settings.exposure = op["exposure"]
+        if op.get("transparent") is not None:  # RGBA frames with the world as alpha (design-sheet silhouettes)
+            s.render.film_transparent = bool(op["transparent"])
+            s.render.image_settings.color_mode = "RGBA" if op["transparent"] else "RGB"
 
     # ------------------------------------------------------------------ render / io
     def _auto_camera(self):

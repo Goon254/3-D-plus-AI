@@ -1,0 +1,79 @@
+{
+  "character": "neema",
+  "species": "giraffe",
+  "version": 1,
+  "role": "gentle friend",
+  "age": "young",
+  "personality": "soft, shy about her height; bumps into trees",
+  "shape_language": "long gentle verticals, rounded joints, big soft eyes and lashes",
+  "ranges": {
+    "head_body": [
+      0.38,
+      0.55
+    ],
+    "eye_head": [
+      0.4,
+      0.6
+    ],
+    "eye_spacing": [
+      0.7,
+      0.95
+    ],
+    "neck_head": [
+      0.0,
+      0.9
+    ],
+    "elongation": [
+      1.4,
+      2.0
+    ],
+    "belly_gap": [
+      1.6,
+      2.6
+    ],
+    "leg_thickness": [
+      0.09,
+      0.16
+    ],
+    "ear_head": [
+      0.03,
+      0.12
+    ],
+    "neck_length": [
+      0.7,
+      1.2
+    ]
+  },
+  "features": [
+    "ossicone",
+    "pattern:patches",
+    "muzzle",
+    "tail_tuft"
+  ],
+  "palette": {
+    "coat": "#F2DFB2",
+    "pattern": "#9A5428",
+    "notes": "cream lines between warm brown patches"
+  },
+  "pattern_contrast_min": {
+    "coat": 3.0
+  },
+  "dark_ok": [],
+  "silhouette": {
+    "side_neck_notch_min": 0.05,
+    "max_floating_parts": 0
+  },
+  "read_as": {
+    "names": [
+      "giraffe"
+    ],
+    "confusions": [
+      "camel",
+      "llama",
+      "okapi",
+      "deer",
+      "horse"
+    ]
+  },
+  "references": []
+}
