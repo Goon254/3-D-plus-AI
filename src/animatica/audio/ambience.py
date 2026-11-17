@@ -238,6 +238,41 @@ def splash(rng: np.random.Generator) -> np.ndarray:
     return burst.astype(np.float32)
 
 
+def drip(rng: np.random.Generator) -> np.ndarray:
+    """One water drop into a puddle: a short upward 'plip' (a resonant bubble whose pitch rises)."""
+    d = 0.35
+    t = np.arange(int(d * SR)) / SR
+    f0 = rng.uniform(900, 1300)
+    ph = 2 * np.pi * np.cumsum(f0 * (1 + 2.2 * np.clip(t / 0.06, 0, 1))) / SR
+    plip = np.sin(ph) * np.exp(-t * 32) * 0.5
+    tick = _lp_fast(rng.standard_normal(len(t)), 6000) * np.exp(-t * 400) * 0.25
+    return (plip + tick).astype(np.float32)
+
+
+def slurp(rng: np.random.Generator) -> np.ndarray:
+    """A trunk sucking up water: gurgling, rising noise with a wobble, then a comic stop."""
+    d = 1.1
+    t = np.arange(int(d * SR)) / SR
+    noise = _bp_fast(rng.standard_normal(len(t)), 300, 1800)
+    gurgle = 0.6 + 0.4 * np.sin(2 * np.pi * (7 + 5 * t) * t)
+    env = np.clip(t / 0.15, 0, 1) * np.clip((0.95 - t) / 0.08, 0, 1)
+    sweep = np.sin(2 * np.pi * np.cumsum(180 + 260 * t) / SR) * 0.25
+    return ((noise * 0.6 * gurgle + sweep) * env * 0.6).astype(np.float32)
+
+
+SFX = {"splash": splash, "drip": drip, "slurp": slurp}
+
+
+def sfx(kind: str, seed: int = 0, pan: float = 0.0) -> np.ndarray:
+    """A stereo one-shot SFX by name (``SFX`` keys + ``log_roll``)."""
+    rng = np.random.default_rng(seed)
+    fn = {**SFX, "log_roll": log_roll}[kind]
+    mono = fn(rng)
+    out = np.zeros((len(mono), 2), np.float32)
+    _place(out, 0.0, mono, pan=pan)
+    return out
+
+
 def log_roll(rng: np.random.Generator) -> np.ndarray:
     """A heavy log grinding over: a creaking, wobbling low saw and the thump of it landing."""
     d = 1.6

@@ -2,23 +2,32 @@
 
 ## 0. Savannah film — owner's top priority (CHALLENGE-SAVANNAH.md)
 
-Status 11-16 21:48 UTC ([review](docs/reviews/2026-11-16T2148Z.md)): **pre-production.** Done so far:
+Status 11-17 01:30 UTC ([review](docs/reviews/2026-11-17T0130Z.md)): **production has started: SC 2 is the first
+produced scene.** Done so far:
 
 * Species research notes (elephant, giraffe, zebra, meerkat, leopard tortoise): `src/animatica/knowledge/species/`.
 * Story: premise and beats, draft 1, story-editor critique, production screenplay (10 scenes, ≈5:20): `films/savannah/`.
-* Creatures: species body plans on bone rigs with IK legs and a foot-locked gait planner; walk tests for all five,
-  0.0 mm measured stance slide; v2 metaball-sculpted organic bodies with skin/fur shading:
-  [`examples/showcase/savannah-walk-tests/`](examples/showcase/savannah-walk-tests/).
-* Score: a Composer with per-scene cues and six character leitmotifs, rendered with FluidSynth + GeneralUser GS:
-  [`examples/showcase/savannah-score/score.m4a`](examples/showcase/savannah-score/score.m4a) (5:22, not yet cut to picture).
-  Reproduce: `python scripts/savannah_score.py`.
+* Creatures: species body plans on bone rigs with IK legs and a foot-locked gait planner (0.0 mm measured stance slide),
+  metaball-sculpted bodies, faces (Rhubarb-synced mouths, brows, 9 expressions):
+  [`savannah-walk-tests/`](examples/showcase/savannah-walk-tests/), [`savannah-face-tests/`](examples/showcase/savannah-face-tests/).
+* Set: swaying grass, acacias, termite mounds, watering hole, mountains, dawn/midday/sunset/night skies:
+  [`savannah-set-tests/`](examples/showcase/savannah-set-tests/).
+* Sound: a Composer with per-scene cues and six leitmotifs on real SoundFont samples
+  ([`savannah-score/`](examples/showcase/savannah-score/)); six distinct cast voices, procedural ambience, species
+  footsteps and SFX ([`savannah-sound/`](examples/showcase/savannah-sound/), -14.3 LUFS, dialogue +12.6 dB).
+* **Scene production** (new): `films/savannah/07_scenes.json` (SC 1, SC 2) → `python scripts/savannah_scene.py sc02
+  --quality preview|draft|final` → a mixed scene MP4 with lines timed from the real voices, cuts on the lines, cameras
+  framed on the measured heads, and the scene's own music cue re-timed to it. First result:
+  [`savannah-scenes/sc02_preview.mp4`](examples/showcase/savannah-scenes/) (Cycles CPU preview, 480×270, 12 fps).
 
-Scorecard (strict): story 8 (script), character design 6 (v2 organic bodies), motion 6, visuals 3, voices 1, music 7, mix 1. Next: faces +
-meerkat/tortoise design pass, the savannah set, voice casting, ambience, and the scene production pipeline (see
-[docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md) P1-SAVANNAH).
+Scorecard (strict, 11-17): story 8 (script), character design 6, motion 6, visuals 6, voices 6, music 7, mix 7. Next:
+the specs for SC 3–10, the acting gestures the gags need (trunk spray, head duck, ear droop, eyelines), the film edit,
+then the full GPU render on the laptop (see [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md) P1-SAVANNAH).
 
 ### Needs you
 
+* **Laptop session: render SC 2 at final quality** on the RTX 5060 (`python scripts/savannah_scene.py sc02 --quality
+  final`, OptiX, ~530 frames at 1280×720) and commit a ≤ 25 MB cut to `examples/showcase/savannah-scenes/`.
 * **Listen to the score** (`examples/showcase/savannah-score/score.m4a`); the cloud reviewer has no speakers.
 * **Install FluidSynth on the laptop** and put it on PATH (or place `fluidsynth.exe` in
   `%USERPROFILE%\.cache\animatica\fluidsynth\bin\`), then rerun `scripts/setup_assets.sh` from Git Bash to fetch the
@@ -45,7 +54,7 @@ meerkat/tortoise design pass, the savannah set, voice casting, ambience, and the
   editable `scene.blend` and an `edit.mlt` timeline for Shotcut/Kdenlive.
 
 Hand edits survive `animatica continue` / `revise`. An **MCP server** exposes the batched tools. A
-**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **134 tests**
+**Godot games track** turns a prompt into a platformer that a bot playtests headlessly. **160 tests**
 (`pytest -q`, 1 skipped without Godot) pass locally. GitHub CI runs ruff, unit, bpy adapter and offline pipeline tests; status
 for the final SHA is at the bottom of this report. An hourly reviewer session scored the project, and
 its queue is in [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md).
@@ -65,7 +74,7 @@ animatica film "A lonely robot sits in a junkyard at dusk until a flower blooms.
 animatica revise output/hello-little-one "make the robot blue and slow down shot 2" --quality preview
 animatica game "a 2D platformer where a robot collects flowers" && godot --path output/game-*/godot
 animatica-mcp                        # MCP server (stdio) for Claude Desktop / Claude Code
-pytest -q                            # 134 tests (Blender/Godot/MCP tests skip if those are missing)
+pytest -q                            # 160 tests (Blender/Godot/MCP tests skip if those are missing)
 ```
 
 Each film writes `output/<project>/final.mp4` (video + audio + captions), `scene.blend`, `edit.mlt`,

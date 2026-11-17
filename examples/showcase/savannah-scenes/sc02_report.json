@@ -1,0 +1,231 @@
+{
+ "scene": "sc02",
+ "title": "Morning - the puddle",
+ "quality": "preview",
+ "seconds": 22.0,
+ "frames": 529,
+ "lines": [
+  {
+   "who": "tembo",
+   "start": 6.4,
+   "end": 8.427,
+   "text": "Morning, Zuri! Morning, Kiki! Water!"
+  },
+  {
+   "who": "kiki",
+   "start": 11.827,
+   "end": 13.726,
+   "text": "Thank you, Tembo. Very refreshing."
+  },
+  {
+   "who": "zuri",
+   "start": 14.226,
+   "end": 15.655,
+   "text": "Your trunk's a hose with hiccups!"
+  },
+  {
+   "who": "zuri",
+   "start": 16.105,
+   "end": 18.878,
+   "text": "And stand up straight, Neema, you lovely lamp-post!"
+  }
+ ],
+ "shots": [
+  {
+   "shot": 0,
+   "type": "ws",
+   "subjects": [
+    "zuri",
+    "kiki",
+    "tembo",
+    "neema"
+   ],
+   "start": 0.0,
+   "end": 6.05,
+   "note": "Tembo hurries in, Neema ambles behind, Kiki scurries to the mound",
+   "location": [
+    2.205,
+    -11.992,
+    2.917
+   ],
+   "aim": [
+    2.205,
+    2.745,
+    1.641
+   ],
+   "lens": 30.0,
+   "frame_h": 9.947,
+   "distance": 14.736
+  },
+  {
+   "shot": 1,
+   "type": "ms",
+   "subjects": [
+    "tembo"
+   ],
+   "start": 6.05,
+   "end": 8.827,
+   "note": "",
+   "location": [
+    0.467,
+    -2.735,
+    0.612
+   ],
+   "aim": [
+    1.254,
+    0.879,
+    0.72
+   ],
+   "lens": 40.0,
+   "frame_h": 1.872,
+   "distance": 3.698
+  },
+  {
+   "shot": 2,
+   "type": "mcu",
+   "subjects": [
+    "tembo"
+   ],
+   "start": 8.827,
+   "end": 10.327,
+   "note": "the trunk dips, sucks, wobbles",
+   "location": [
+    -0.755,
+    -3.987,
+    1.047
+   ],
+   "aim": [
+    1.025,
+    0.545,
+    1.102
+   ],
+   "lens": 50.0,
+   "frame_h": 1.972,
+   "distance": 4.869
+  },
+  {
+   "shot": 3,
+   "type": "ms",
+   "subjects": [
+    "kiki"
+   ],
+   "start": 10.327,
+   "end": 13.876,
+   "note": "the spray hits Kiki",
+   "location": [
+    -3.418,
+    2.618,
+    0.25
+   ],
+   "aim": [
+    -3.345,
+    3.678,
+    0.207
+   ],
+   "lens": 40.0,
+   "frame_h": 0.538,
+   "distance": 1.062
+  },
+  {
+   "shot": 4,
+   "type": "ms",
+   "subjects": [
+    "zuri"
+   ],
+   "start": 13.876,
+   "end": 15.755,
+   "note": "",
+   "location": [
+    -0.33,
+    -2.181,
+    0.716
+   ],
+   "aim": [
+    -1.312,
+    2.03,
+    0.842
+   ],
+   "lens": 40.0,
+   "frame_h": 2.189,
+   "distance": 4.324
+  },
+  {
+   "shot": 5,
+   "type": "ws",
+   "subjects": [
+    "zuri",
+    "neema"
+   ],
+   "start": 15.755,
+   "end": 18.978,
+   "note": "",
+   "location": [
+    1.345,
+    -4.706,
+    2.089
+   ],
+   "aim": [
+    1.345,
+    3.15,
+    1.637
+   ],
+   "lens": 30.0,
+   "frame_h": 5.303,
+   "distance": 7.856
+  },
+  {
+   "shot": 6,
+   "type": "cu",
+   "subjects": [
+    "tembo"
+   ],
+   "start": 18.978,
+   "end": 22.0,
+   "note": "Tembo's ears droop",
+   "location": [
+    -0.435,
+    -3.206,
+    1.078
+   ],
+   "aim": [
+    1.038,
+    0.545,
+    1.111
+   ],
+   "lens": 60.0,
+   "frame_h": 1.36,
+   "distance": 4.03
+  }
+ ],
+ "cue": {
+  "id": "sc02",
+  "bpm": 120.0,
+  "bars": 11,
+  "moods": [
+   "comedy",
+   "droop"
+  ],
+  "programs": [
+   12,
+   32,
+   45,
+   49,
+   58,
+   72,
+   108
+  ],
+  "engine": "soundfont"
+ },
+ "footsteps": 112,
+ "sound": {
+  "seconds": 22.0,
+  "lines": 4,
+  "dialogue_clarity_db": 13.4,
+  "music_rms_db": -20.3,
+  "peak": 0.98
+ },
+ "warnings": [],
+ "render_seconds": 1142.5,
+ "wall_seconds": 1191.7,
+ "mp4": "output/savannah/sc02/sc02.mp4"
+}

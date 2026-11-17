@@ -62,7 +62,7 @@ command -v fluidsynth >/dev/null || echo "note: fluidsynth not on PATH; the Comp
 mkdir -p "$CACHE/soundfonts"
 if [ ! -f "$CACHE/soundfonts/FluidR3Mono_GM.sf3" ]; then
   echo "downloading FluidR3Mono_GM.sf3"
-  curl -fsSL --retry 3 -o "$CACHE/soundfonts/FluidR3Mono_GM.sf3" https://github.com/musescore/MuseScore/raw/3.6.2/share/sound/FluidR3Mono_GM.sf3
-  curl -fsSL --retry 3 -o "$CACHE/soundfonts/FluidR3Mono_License.md" https://raw.githubusercontent.com/musescore/MuseScore/3.6.2/share/sound/FluidR3Mono_License.md
+  curl -fsSL --retry 3 -o "$CACHE/soundfonts/FluidR3Mono_GM.sf3" https://raw.githubusercontent.com/musescore/MuseScore/v3.6.2/share/sound/FluidR3Mono_GM.sf3
+  curl -fsSL --retry 3 -o "$CACHE/soundfonts/FluidR3Mono_License.md" https://raw.githubusercontent.com/musescore/MuseScore/v3.6.2/share/sound/FluidR3Mono_License.md
 fi
 echo "assets ready in $CACHE"
