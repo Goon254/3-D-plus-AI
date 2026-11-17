@@ -6,7 +6,7 @@ import pytest
 
 from animatica.core.protocol import validate_batch
 from animatica.creatures.build import build_creature
-from animatica.creatures.gait import GAITS, LEGS, Waypoint, foot_slide, plan_locomotion
+from animatica.creatures.gait import GAITS, LEGS, Waypoint, foot_slide, plan_locomotion, planted_drift
 from animatica.creatures.perform import walk_keys
 from animatica.creatures.species import SPECIES
 
@@ -27,6 +27,31 @@ def walk(species: str, gait: str = "walk", seconds: float = 8.0):
 
 def touchdowns(plan, leg):
     return [i for i in range(1, len(plan)) if plan[i].stance[leg] and not plan[i - 1].stance[leg]]
+
+
+def test_planted_drift_counts_stance_pairs_so_never_measured_is_not_perfect():
+    still = {leg: (0.0, 0.0, 0.0) for leg in LEGS}
+    # no foot planted for two frames in a row: nothing measured
+    flicker = [{leg: k % 2 == 0 for leg in LEGS} for k in range(6)]
+    none = planted_drift(flicker, [still] * 6)
+    assert none["pairs"] == 0 and none["leg"] == ""
+    # all planted and perfectly still: measured, zero drift, and a leg is still named
+    planted = [dict.fromkeys(LEGS, True) for _ in range(4)]
+    zero = planted_drift(planted, [still] * 4)
+    assert zero["pairs"] == 3 * len(LEGS) and zero["drift"] == 0.0 and zero["leg"] == LEGS[0]
+    # one foot drags 5 mm into frame 3 (1-based): found, named and counted
+    moved = [dict(still) for _ in range(4)]
+    moved[2] = {**still, LEGS[1]: (0.003, 0.004, 0.0)}
+    moved[3] = moved[2]
+    d = planted_drift(planted, moved)
+    assert d["leg"] == LEGS[1] and d["frame"] == 3 and abs(d["drift"] - 0.005) < 1e-9
+
+
+def test_planted_drift_agrees_with_the_plan_on_a_real_walk():
+    _, _, _, plan = walk("zebra")
+    d = planted_drift([p.stance for p in plan], [p.feet for p in plan])
+    assert d["pairs"] > len(plan)  # most frames have planted feet
+    assert d["drift"] == foot_slide(plan) == 0.0
 
 
 @pytest.mark.parametrize("species", sorted(SPECIES))

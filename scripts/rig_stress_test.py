@@ -14,7 +14,8 @@ Measured on the deformed rig in Blender, every third frame (eyes, lids, brows, m
 * ``brow_float`` / ``lid_float`` / ``mouth_float``: no face part leaves the skin;
 * ``part_float``: ears, mane, ossicones, muzzle and nose touch what they grow from (``creatures.qa.part_seating``);
 * ``texture_swim``: the coat pattern is pinned to the rest pose;
-* ``foot_slide``: a planted foot drifts less than :data:`SLIDE_MAX` of the leg;
+* ``foot_slide``: a planted foot drifts less than :data:`SLIDE_MAX` of the leg, and at least one planted foot-frame
+  pair was measured (zero pairs fails: it would otherwise read as perfect);
 * ``ground``: no foot sinks into the ground;
 * ``sentinel_tail`` (meerkat): the tail tip reaches the ground in the sentinel (the tripod).
 
@@ -44,7 +45,7 @@ from animatica.audio import lipsync, tts  # noqa: E402
 from animatica.core.engine import BlenderSession  # noqa: E402
 from animatica.creatures.build import build_creature  # noqa: E402
 from animatica.creatures.face import BROW_COLOR, face_keys, face_ops, refresh_rest  # noqa: E402
-from animatica.creatures.gait import GAITS, LEGS, Waypoint  # noqa: E402
+from animatica.creatures.gait import GAITS, LEGS, Waypoint, planted_drift  # noqa: E402
 from animatica.creatures.gesture import Gesture, Rig, acting_layers  # noqa: E402
 from animatica.creatures.perform import plan_for, walk_keys  # noqa: E402
 from animatica.creatures.qa import part_seating, rig_checks, rig_probe  # noqa: E402
@@ -323,22 +324,27 @@ def run(character: str, out: Path, render: bool, res: tuple[int, int], samples: 
             False,
         )
     )
-    slide, worst_leg, sink, worst_frame = 0.0, "", 0.0, 0
+    sink = 0.0
     for leg in LEGS:
         ref = f"{meta.rig}:leg_{leg}_lo"
         for i in range(1, n):
-            a, b = fr[str(i)]["bone_tails"][ref], fr[str(i + 1)]["bone_tails"][ref]
-            if plan[i - 1].stance[leg] and plan[i].stance[leg]:
-                d = math.dist(a[:2], b[:2])
-                if d > slide:
-                    slide, worst_leg, worst_frame = d, leg, i + 1
             if plan[i].stance[leg]:
-                sink = max(sink, meta.foot_z - b[2])
+                sink = max(sink, meta.foot_z - fr[str(i + 1)]["bone_tails"][ref][2])
+    feet = [{leg: fr[str(k + 1)]["bone_tails"][f"{meta.rig}:leg_{leg}_lo"] for leg in LEGS} for k in range(n)]
+    drift = planted_drift([p.stance for p in plan], feet)
+    slide, pairs = float(drift["drift"]), int(drift["pairs"])
+    summary["foot_slide"] = {k: round(v, 5) if isinstance(v, float) else v for k, v in drift.items()}
+    # zero stance pairs is "never measured", not "perfect": fail it (review 11-17 18:36)
     checks.append(
         _check(
             "foot_slide",
-            slide <= SLIDE_MAX * meta.leg,
-            f"worst planted-foot drift {slide * 1000:.1f} mm per frame ({worst_leg} at frame {worst_frame}; limit {SLIDE_MAX * meta.leg * 1000:.0f} mm)",
+            pairs > 0 and slide <= SLIDE_MAX * meta.leg,
+            (
+                f"worst planted-foot drift {slide * 1000:.1f} mm per frame ({drift['leg']} at frame {drift['frame']};"
+                f" limit {SLIDE_MAX * meta.leg * 1000:.0f} mm) over {pairs} planted foot-frame pairs"
+                if pairs
+                else "no foot stayed planted for two frames: foot slide was not measured"
+            ),
             round(slide, 4),
         )
     )

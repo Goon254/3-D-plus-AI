@@ -389,3 +389,26 @@ def foot_slide(frames: list[LocoFrame]) -> float:
                 d = math.hypot(b.feet[f][0] - a.feet[f][0], b.feet[f][1] - a.feet[f][1])
                 worst = max(worst, d)
     return worst
+
+
+def planted_drift(
+    stance: list[dict[str, bool]], feet: list[dict[str, tuple[float, ...]]]
+) -> dict[str, float | int | str]:
+    """Measured planted-foot drift: the largest horizontal move of a foot between consecutive frames in which it
+    is in stance in both, plus how many such stance pairs were measured.
+
+    ``stance[k][leg]`` comes from the plan and ``feet[k][leg]`` from the deformed rig. ``pairs`` is what tells
+    "no drift" from "never measured": a take in which no foot ever stays planted for two frames has ``pairs == 0``
+    and must not pass as perfect. Ties keep the first pair, so a leg is always named when anything was measured.
+    """
+    worst: dict[str, float | int | str] = {"drift": 0.0, "leg": "", "frame": 0, "pairs": 0}
+    for k in range(1, min(len(stance), len(feet))):
+        for leg in LEGS:
+            if not (stance[k - 1].get(leg) and stance[k].get(leg)):
+                continue
+            a, b = feet[k - 1][leg], feet[k][leg]
+            d = math.hypot(b[0] - a[0], b[1] - a[1])
+            worst["pairs"] = int(worst["pairs"]) + 1
+            if not worst["leg"] or d > float(worst["drift"]):
+                worst.update(drift=d, leg=leg, frame=k + 1)
+    return worst

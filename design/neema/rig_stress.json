@@ -47,6 +47,13 @@
    "giraffe_lid_R_lo": -0.632,
    "giraffe_brow_L": 0.083,
    "giraffe_brow_R": 0.083,
+   "giraffe_ear_L": -0.325,
+   "giraffe_ear_R": -0.336,
+   "giraffe_muzzle": -0.467,
+   "giraffe_ossicone_L": -0.261,
+   "giraffe_ossicone_R": -0.261,
+   "giraffe_ossitip_L": -0.232,
+   "giraffe_ossitip_R": -0.232,
    "giraffe_mouth": -0.006
   },
   "swim_p95_mm": {
@@ -56,6 +63,12 @@
    -0.024,
    -0.005
   ],
+  "foot_slide": {
+   "drift": 0.0,
+   "leg": "LH",
+   "frame": 2,
+   "pairs": 1119
+  },
   "worst_gap": {
    "giraffe_lid_L_up": {
     "gap": -0.042,
@@ -86,6 +99,41 @@
     "gap": 0.083,
     "frame": 220,
     "expression": "scared"
+   },
+   "giraffe_ear_L": {
+    "gap": -0.325,
+    "frame": 157,
+    "expression": "happy"
+   },
+   "giraffe_ear_R": {
+    "gap": -0.336,
+    "frame": 190,
+    "expression": "worried"
+   },
+   "giraffe_muzzle": {
+    "gap": -0.467,
+    "frame": 1,
+    "expression": "neutral"
+   },
+   "giraffe_ossicone_L": {
+    "gap": -0.261,
+    "frame": 157,
+    "expression": "happy"
+   },
+   "giraffe_ossicone_R": {
+    "gap": -0.261,
+    "frame": 139,
+    "expression": "neutral"
+   },
+   "giraffe_ossitip_L": {
+    "gap": -0.232,
+    "frame": 1,
+    "expression": "neutral"
+   },
+   "giraffe_ossitip_R": {
+    "gap": -0.232,
+    "frame": 1,
+    "expression": "neutral"
    }
   }
  },
@@ -112,6 +160,13 @@
    "value": null
   },
   {
+   "id": "part_float",
+   "passed": true,
+   "hard": true,
+   "message": "part float: ok",
+   "value": null
+  },
+  {
    "id": "texture_swim",
    "passed": true,
    "hard": true,
@@ -129,7 +184,7 @@
    "id": "foot_slide",
    "passed": true,
    "hard": true,
-   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 61 mm)",
+   "message": "worst planted-foot drift 0.0 mm per frame (LH at frame 2; limit 61 mm) over 1119 planted foot-frame pairs",
    "value": 0.0
   },
   {

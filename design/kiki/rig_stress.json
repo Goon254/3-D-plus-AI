@@ -47,6 +47,10 @@
    "meerkat_lid_R_lo": -0.682,
    "meerkat_brow_L": 0.066,
    "meerkat_brow_R": 0.066,
+   "meerkat_ear_L": -0.114,
+   "meerkat_ear_R": -0.112,
+   "meerkat_muzzle": -0.361,
+   "meerkat_nose": -0.038,
    "meerkat_mouth": 0.129
   },
   "swim_p95_mm": {
@@ -56,6 +60,12 @@
    0.062,
    0.091
   ],
+  "foot_slide": {
+   "drift": 0.00061,
+   "leg": "RF",
+   "frame": 152,
+   "pairs": 710
+  },
   "worst_gap": {
    "meerkat_lid_L_up": {
     "gap": -0.151,
@@ -86,6 +96,26 @@
     "gap": 0.066,
     "frame": 214,
     "expression": "determined"
+   },
+   "meerkat_ear_L": {
+    "gap": -0.114,
+    "frame": 61,
+    "expression": "neutral"
+   },
+   "meerkat_ear_R": {
+    "gap": -0.112,
+    "frame": 181,
+    "expression": "sad"
+   },
+   "meerkat_muzzle": {
+    "gap": -0.361,
+    "frame": 1,
+    "expression": "neutral"
+   },
+   "meerkat_nose": {
+    "gap": -0.038,
+    "frame": 1,
+    "expression": "neutral"
    }
   }
  },
@@ -112,6 +142,13 @@
    "value": null
   },
   {
+   "id": "part_float",
+   "passed": true,
+   "hard": true,
+   "message": "part float: ok",
+   "value": null
+  },
+  {
    "id": "texture_swim",
    "passed": true,
    "hard": true,
@@ -129,7 +166,7 @@
    "id": "foot_slide",
    "passed": true,
    "hard": true,
-   "message": "worst planted-foot drift 0.6 mm per frame (RF at frame 152; limit 4 mm)",
+   "message": "worst planted-foot drift 0.6 mm per frame (RF at frame 152; limit 4 mm) over 710 planted foot-frame pairs",
    "value": 0.0006
   },
   {

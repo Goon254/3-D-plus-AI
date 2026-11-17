@@ -47,6 +47,8 @@
    "elephant_lid_R_lo": -0.659,
    "elephant_brow_L": 0.01,
    "elephant_brow_R": 0.01,
+   "elephant_ear_L": 0.019,
+   "elephant_ear_R": 0.028,
    "elephant_mouth": -0.048
   },
   "swim_p95_mm": {
@@ -57,6 +59,12 @@
    -0.188,
    -0.04
   ],
+  "foot_slide": {
+   "drift": 0.0,
+   "leg": "LH",
+   "frame": 2,
+   "pairs": 1277
+  },
   "worst_gap": {
    "elephant_lid_L_up": {
     "gap": -0.488,
@@ -87,6 +95,16 @@
     "gap": 0.01,
     "frame": 316,
     "expression": "determined"
+   },
+   "elephant_ear_L": {
+    "gap": 0.019,
+    "frame": 238,
+    "expression": "worried"
+   },
+   "elephant_ear_R": {
+    "gap": 0.028,
+    "frame": 220,
+    "expression": "sad"
    }
   }
  },
@@ -113,6 +131,13 @@
    "value": null
   },
   {
+   "id": "part_float",
+   "passed": true,
+   "hard": true,
+   "message": "part float: ok",
+   "value": null
+  },
+  {
    "id": "texture_swim",
    "passed": true,
    "hard": true,
@@ -130,7 +155,7 @@
    "id": "foot_slide",
    "passed": true,
    "hard": true,
-   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 22 mm)",
+   "message": "worst planted-foot drift 0.0 mm per frame (LH at frame 2; limit 22 mm) over 1277 planted foot-frame pairs",
    "value": 0.0
   },
   {
