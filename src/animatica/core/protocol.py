@@ -105,6 +105,7 @@ class MaterialSpec(BaseModel):
     # stripes/bands on (axis + chevron * |x|): they wrap the body as chevrons instead of ringing every part
     # that faces along the axis (zebra chest, rump and forehead bullseyes)
     pattern_chevron: float = Field(0.0, ge=0, le=20)
+    vertex_color: bool = False  # base colour from the mesh's "Col" attribute (create_mesh colors)
     pattern_tilt: float = Field(0.0, ge=-20, le=20)  # + tilt * z on the stripe coordinate (slanted stripes)
     # markings only above this object-space height (fading in over pattern_fade): a meerkat's back bands
     pattern_above: float | None = None
@@ -194,6 +195,7 @@ class CreateMesh(_Placed):
     vertices: list[Vec3] = Field(min_length=1, max_length=200_000)
     faces: list[list[int]] = Field(default_factory=list)
     smooth: bool = False
+    colors: list[Vec3] | None = None  # per-vertex linear RGB 0..1 (attribute "Col"), read by vertex_color
 
     def creates(self) -> list[str]:
         return [self.id]

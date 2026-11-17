@@ -15,6 +15,7 @@ from typing import Any
 from .eyes import EMBED_DEPTH, IRIS_AT, eye_frame, lid_mesh, look_rotation
 from .gait import FootSpot
 from .organic import body_graph, head_elements, metaball_elements, tail_points
+from .shell import carapace
 from .species import EYE_WHITE, GLINT, IRIS, Chain, Species
 
 V3 = tuple[float, float, float]
@@ -740,17 +741,22 @@ def build_creature(
             },
         ]
         if sp.shell is not None:
+            # a domed carapace with a flared rim, raised scutes and painted leopard marks (creatures.shell); the
+            # baseline UV sphere read as a ball with panel lines
             ssize, sat = sp.shell
+            sv, sf, sc = carapace(
+                ssize[0] / 2 * 1.06, ssize[1] / 2 * 1.04, ssize[2] * 0.72, -ssize[2] * 0.26, -ssize[2] * 0.42
+            )
             meshes.append(
                 (
                     {
-                        "op": "create_primitive",
+                        "op": "create_mesh",
                         "id": f"{cid}_shell",
-                        "shape": "uv_sphere",
-                        "size": list(ssize),
+                        "vertices": sv,
+                        "faces": sf,
+                        "colors": sc,
                         "location": list(sat),
                         "smooth": True,
-                        "segments": 64,
                     },
                     "shell",
                     "chest",

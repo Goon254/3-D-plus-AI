@@ -37,6 +37,9 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
 - [ ] **Bibi Kobe's shell** is a near-perfect ball with panel lines: a domed carapace with raised, slightly
   pyramidal scutes and a flared rim. Spots read as holes, so use leopard-tortoise radiating marks. The pale plastron
   disc still shows.
+  *Laptop GPU 11-17 (DECISIONS #57, `design/bibi_kobe/v2/`): the carapace is a mesh with a high dome, raised scutes and a flared rim ✔;
+  painted radiating marks with no holes ✔; a dark underside with no plastron disc ✔. Reads as a leopard tortoise at 96 px. Needs reviewer
+  verification.*
 - [ ] **Tembo's ears** are flat discs that look like fins when seen edge-on from 3/4: give them thickness, a cupped
   shape and a rolled top edge. His neutral upper lids sit low (he looks sleepy).
 - [ ] **Expressions don't read** at sheet size: happy changes only 1.8–3.5 % of the face close-up (the soft check

@@ -74,3 +74,8 @@ still a touch long.
 
 Recorded critique: **7.4**, not ready. The thumbnail reads as a zebra and the bullseyes are gone (`pattern_chevron`,
 `pattern_tilt`), but the silhouette alone still reads as a pony.
+
+## bibi_kobe/v2/ — a domed carapace with raised scutes (laptop GPU 2026-11-17, DECISIONS #57)
+
+Recorded critique: **9.81**, not ready (appeal 7). The silhouette reads as a tortoise and the thumbnail as a leopard
+tortoise. The shell is its own mesh (`creatures/shell.py`) with per-vertex leopard marks; no ball, no holes, no pale plastron.

@@ -415,23 +415,14 @@ SPECIES: dict[str, Species] = {
             grain_scale=120.0,
         ),
         mats={
-            "shell": _m(
-                "#E3C46A",
-                0.5,
-                pattern="scutes",
-                pattern_color="#2E2014",
-                pattern_scale=6.5,
-                pattern_width=0.35,
-                grain=0.12,
-                grain_scale=60.0,
-            ),
-            "plastron": _m("#D9C48A", 0.7),
+            # colour is painted per vertex by creatures.shell (areola, radiating rays, dark seams) so the marks
+            # sit on the raised scutes; a fine grain and a satin sheen on top
+            "shell": _m("#E3C46A", 0.45, vertex_color=True, grain=0.15, grain_scale=60.0),
             "nail": _m("#4A3E30", 0.6),
         },
         part_mats={},
         nails=3,
         shell=((0.46, 0.58, 0.46), (0.0, 0.0, 0.07)),
-        extras=(Extra("plastron", "uv_sphere", (0.4, 0.5, 0.07), (0.0, 0.0, -0.125), "chest", "plastron"),),
     ),
 }
 

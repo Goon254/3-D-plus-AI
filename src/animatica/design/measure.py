@@ -20,7 +20,19 @@ from __future__ import annotations
 import math
 from typing import Any
 
+from animatica.creatures import shell as shell_mod
 from animatica.creatures.species import Species
+
+
+def _hex(linear: tuple[float, float, float]) -> str:
+    """Linear RGB (vertex colours) -> sRGB hex."""
+
+    def enc(c: float) -> int:
+        c = max(0.0, min(1.0, c))
+        v = 12.92 * c if c <= 0.0031308 else 1.055 * c ** (1 / 2.4) - 0.055
+        return round(v * 255)
+
+    return "#" + "".join(f"{enc(c):02X}" for c in linear)
 
 
 def luminance(hex_color: str) -> float:
@@ -69,6 +81,8 @@ def _patterns(sp: Species) -> set[str]:
     for m in [sp.coat, *sp.mats.values()]:
         if m.get("pattern"):
             out.add(str(m["pattern"]))
+    if sp.shell is not None and sp.mats.get("shell", {}).get("vertex_color"):
+        out.add("scutes")  # the carapace mesh paints its scute marks per vertex (creatures.shell)
     return out
 
 
@@ -115,6 +129,8 @@ def materials(sp: Species) -> dict[str, Any]:
     for k, m in {"coat": sp.coat, **sp.mats}.items():
         if m.get("pattern_color"):
             contrast[k] = round(contrast_ratio(str(m["base_color"]), str(m["pattern_color"])), 2)
+        elif m.get("vertex_color") and k == "shell":  # painted marks: the ochre ground against the dark rays
+            contrast[k] = round(contrast_ratio(_hex(shell_mod.GROUND), _hex(shell_mod.RAY)), 2)
     dark = []
     for bones, key in sp.regions:
         m = sp.mats.get(key, {})

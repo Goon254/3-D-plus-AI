@@ -309,3 +309,32 @@ def test_zuri_stripes_wrap_as_chevrons_and_the_mane_stands_on_the_crest():
     mane = next(e for e in sp.extras if e.id == "mane")
     assert mane.size[1] >= 0.25 and mane.loc[1] < 0.1  # tall, and on the neck's crest, not behind it
     assert sp.muzzle[0][0] < sp.head_size[0] * 0.75  # narrower than the face
+
+
+def test_bibi_carapace_is_a_dome_with_raised_scutes_not_a_ball():
+    """Baseline review 11-17 06:36: the shell was a near-perfect ball with panel lines, spots that read as holes and
+    a pale plastron disc. The carapace is now its own mesh (creatures.shell)."""
+    from animatica.creatures.shell import PLASTRON, carapace, mark_colour, scute_centres, signed_volume
+
+    v, f, c = carapace(0.25, 0.3, 0.33, -0.12, -0.19, rings=40, seg=96)
+    assert len(c) == len(v) and signed_volume(v, f) > 0  # closed, normals out
+    zs = [p[2] for p in v]
+    width = max(p[0] for p in v) - min(p[0] for p in v)
+    assert (max(zs) - min(zs)) / width < 0.85  # a dome on a flat plastron, not a ball (1.0)
+    assert min(zs) == pytest.approx(-0.19)
+    cs = scute_centres()
+    assert len(cs) == 5 + 8 + 24
+    # a plate's centre stands higher than its seam; the centre is pale (no dark "hole")
+    centre, r_c = mark_colour(*cs[2], cs)
+    mid = ((cs[2][0] + cs[3][0]) / 2, (cs[2][1] + cs[3][1]) / 2)
+    seam, r_s = mark_colour(*mid, cs)
+    assert r_c > r_s and sum(centre) > 3 * sum(seam)
+    assert sum(PLASTRON) < 0.5  # the underside is dark, never a pale disc
+    sp = SPECIES["tortoise"]
+    ops, _m = build_creature("b", sp)
+    shell = next(o for o in ops if o.get("id") == "b_shell")
+    assert shell["op"] == "create_mesh" and shell["colors"]
+    assert not any(e.id == "plastron" for e in sp.extras)
+    from animatica.design.measure import features, materials
+
+    assert "pattern:scutes" in features(sp) and materials(sp)["pattern_contrast"]["shell"] >= 4.0

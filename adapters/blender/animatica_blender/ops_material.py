@@ -43,6 +43,10 @@ class MaterialOps:
         nodes, links = mat.node_tree.nodes, mat.node_tree.links
         co = self._coords(nodes, rest)  # object-space texture coordinates (rest pose on deforming meshes)
         color_out = None
+        if spec.get("vertex_color"):  # painted per vertex by the builder (a tortoise's scute marks)
+            vc = nodes.new("ShaderNodeAttribute")
+            vc.attribute_type, vc.attribute_name = "GEOMETRY", "Col"
+            color_out = vc.outputs["Color"]
         if spec.get("noise"):
             noise = nodes.new("ShaderNodeTexNoise")
             noise.inputs["Scale"].default_value = spec.get("noise_scale", 2.0)

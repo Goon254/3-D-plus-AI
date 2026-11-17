@@ -90,6 +90,11 @@ class SceneOps:
         mesh = bpy.data.meshes.new(op["id"] + "_mesh")
         mesh.from_pydata([tuple(v) for v in op["vertices"]], [], [list(f) for f in op.get("faces", [])])
         mesh.update()
+        if op.get("colors"):  # per-vertex colour (linear RGB) a material reads with vertex_color
+            if len(op["colors"]) != len(op["vertices"]):
+                raise OpError("create_mesh: one colour per vertex")
+            ca = mesh.color_attributes.new("Col", "FLOAT_COLOR", "POINT")
+            ca.data.foreach_set("color", [c for rgb in op["colors"] for c in (*rgb, 1.0)])
         if op.get("smooth"):
             for p in mesh.polygons:
                 p.use_smooth = True
