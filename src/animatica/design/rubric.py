@@ -9,6 +9,8 @@ Checks, each with a weight:
   brief's intended accents (hard: the "flat black block" class).
 * **silhouette** (from a rendered sheet, :mod:`.image_checks`) — the side view shows a neck notch between head
   and shoulders (hard: the melted-head class); no floating parts (hard); no large dark blob (hard).
+* **face** — each expression (happy, surprised) visibly changes ≥ 3 % of the face close-up (soft: a weak
+  expression lowers the score but needs a face-rig edit, not a morph).
 * **species read** (from the vision critic, :mod:`.critic`) — the silhouette and the 96 px thumbnail are each
   named as the species unprompted (hard).
 
@@ -27,6 +29,8 @@ from animatica.design.measure import features, materials, proportions
 from animatica.design.variants import Morph
 
 READY_SCORE = 9.0
+APPEAL_MIN = 8.0  # the critic's appeal rating a design needs before the owner sees it
+EXPRESSION_MIN = 0.03  # share of the face close-up an expression must visibly change (calibrated 11-17)
 HARD_PENALTY = 1.5
 
 # metric -> morph field that changes it, and the exponent of the response (area metrics move as k^2)
@@ -192,6 +196,24 @@ def _image_checks(brief: Brief, img: dict[str, Any]) -> list[Check]:
                 None if ok else {"lift_dark": 0.7},
             )
         )
+    for expr in ("happy", "surprised"):
+        k = f"expression_{expr}"
+        if k in img:
+            v = float(img[k])
+            ok = v >= EXPRESSION_MIN
+            out.append(
+                Check(
+                    f"face:{expr}",
+                    "face",
+                    ok,
+                    False,
+                    1.0,
+                    1.0 if ok else round(v / EXPRESSION_MIN, 3),
+                    f"{expr} changes {v:.1%} of the face close-up (min {EXPRESSION_MIN:.0%})"
+                    + ("" if ok else ": the expression doesn't read"),
+                    v,
+                )
+            )
     return out
 
 
@@ -212,6 +234,21 @@ def _read_checks(brief: Brief, critique: dict[str, Any]) -> list[Check]:
                 2.0 * ok,
                 f"{view} read as {said!r}: {why}",
                 said,
+            )
+        )
+    if critique.get("appeal") is not None:
+        a = float(critique["appeal"])
+        ok = a >= APPEAL_MIN
+        out.append(
+            Check(
+                "critic:appeal",
+                "appeal",
+                ok,
+                False,
+                2.0,
+                round(2.0 * min(a, 10.0) / 10.0, 3),
+                f"art-director appeal {a:g}/10 (min {APPEAL_MIN:g})",
+                a,
             )
         )
     return out
@@ -245,14 +282,17 @@ def score(
         if c.fix:
             for k, v in c.fix.items():
                 edit[k] = max(edit.get(k, 0.0), v) if k == "lift_dark" else edit.get(k, 1.0) * v
-        elif c.group in ("proportions", "features") or c.id == "silhouette:floating":
+        elif c.group in ("proportions", "features", "face", "appeal") or c.id == "silhouette:floating":
             manual.append(c.message)
     for note in (critique or {}).get("issues", []):
         manual.append(f"critic: {note}")
     return Result(
         character=brief.character,
         score=round(s, 2),
-        ready=s >= READY_SCORE and not hard and not pending,
+        ready=s >= READY_SCORE
+        and not hard
+        and not pending
+        and all(c.passed for c in checks if c.group == "appeal"),
         hard_failures=hard,
         pending=pending,
         checks=checks,

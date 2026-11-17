@@ -1,0 +1,15 @@
+{
+  "reviewer": "cloud reviewer 2026-11-17 06:36 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "fd5aed42a35cc978a89d1044861cef6d10e0f320e3e2ef873c18f2bc5ddd9ca0",
+  "silhouette_species": "prairie dog or otter standing up",
+  "thumbnail_species": "weasel",
+  "issues": [
+    "quadruped views read weasel/ferret: long tube body, tail as long and straight as the body",
+    "sentinel pose leans forward with one paw dangling; a meerkat stands straight, paws tucked at the chest, tail on the ground as a tripod",
+    "ears invisible: need small dark crescent ears",
+    "eye patches not visible at sheet size",
+    "near-black lower legs read as boots"
+  ],
+  "appeal": 3
+}

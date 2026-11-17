@@ -164,3 +164,30 @@ def test_a_design_is_ready_only_with_every_check_passing():
     assert not score(b, SPECIES["zebra"], {**img, "floating_parts": 1}, crit).ready
     no_mane = replace(SPECIES["zebra"], extras=())
     assert "feature:mane" in score(b, no_mane, img, crit).hard_failures
+
+
+def test_expression_change_and_the_face_check(tmp_path):
+    from animatica.design.image_checks import expression_change
+
+    a = np.zeros((64, 64, 4), np.uint8)
+    a[8:56, 8:56] = (150, 150, 150, 255)
+    b = a.copy()
+    b[20:24, 20:44] = (40, 30, 30, 255)  # a brow moves: 96 of 2304 figure pixels
+    Image.fromarray(a).save(tmp_path / "n.png")
+    Image.fromarray(b).save(tmp_path / "h.png")
+    v = expression_change(tmp_path / "n.png", tmp_path / "h.png")
+    assert v == pytest.approx(96 / 2304, abs=1e-3)
+    assert expression_change(tmp_path / "n.png", tmp_path / "n.png") == 0.0
+    r = score(load_brief("zuri"), SPECIES["zebra"], {"expression_happy": 0.01, "expression_surprised": 0.05})
+    face = {c.id: c for c in r.checks if c.group == "face"}
+    assert not face["face:happy"].passed and face["face:surprised"].passed
+    assert "face:happy" not in r.hard_failures and any("happy" in m for m in r.manual)
+
+
+def test_low_critic_appeal_blocks_ready():
+    b = load_brief("zuri")
+    img = {"neck_notch": 0.4, "floating_parts": 0, "dark_blob": 0.02}
+    crit = {"silhouette_species": "zebra", "thumbnail_species": "zebra"}
+    assert score(b, SPECIES["zebra"], img, {**crit, "appeal": 9}).ready
+    low = score(b, SPECIES["zebra"], img, {**crit, "appeal": 6})
+    assert not low.ready and not low.hard_failures

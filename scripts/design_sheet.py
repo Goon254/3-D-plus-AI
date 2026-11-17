@@ -30,10 +30,12 @@ from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 from animatica.core.engine import BlenderSession  # noqa: E402
 from animatica.creatures.build import build_creature  # noqa: E402
 from animatica.creatures.face import BROW_COLOR, face_keys, face_ops, refresh_rest  # noqa: E402
+from animatica.creatures.gait import GAITS, Waypoint  # noqa: E402
+from animatica.creatures.perform import walk_keys  # noqa: E402
 from animatica.creatures.species import SPECIES, Species  # noqa: E402
 from animatica.design.brief import Brief, all_briefs, load_brief  # noqa: E402
 from animatica.design.critic import critique_for  # noqa: E402
-from animatica.design.image_checks import sheet_metrics  # noqa: E402
+from animatica.design.image_checks import expression_change, sheet_metrics  # noqa: E402
 from animatica.design.measure import describe  # noqa: E402
 from animatica.design.rubric import score  # noqa: E402
 from animatica.design.variants import Morph, apply_morph, morph_from_dict  # noqa: E402
@@ -168,11 +170,21 @@ def render_views(
         for tag, direction in VIEWS.items():
             _cam(eng, tag, aim, direction, r)
             paths[tag] = _render(eng, tag, FACE_FRAMES["neutral"], out)
-        head = (0.0, sp.head_at[1], meta.head_height)
-        hr = max(sp.head_size) * 0.95 + (0.12 * max(sp.head_size) if sp.ear[0] == "disc" else 0.0)
-        _cam(eng, "face", head, (0.55, -1.0, 0.12), hr)
+        head = (0.0, sp.head_at[1], meta.head_height + sp.head_size[2] * 0.12)
+        hr = max(sp.head_size) * 0.8 + (0.12 * max(sp.head_size) if sp.ear[0] == "disc" else 0.0)
+        _cam(eng, "face", head, (0.5, -1.0, 0.1), hr)
         for expr, f in FACE_FRAMES.items():
             paths[f"face_{expr}"] = _render(eng, f"face_{expr}", f, out)
+        if sp.default_pose != "stand":  # the signature pose (the meerkat's sentinel), side on
+            pts = [Waypoint(0.0, 0.0, 0.0), Waypoint(n / 24, 0.0, 0.0)]
+            keys, _plan = walk_keys(meta, GAITS[sp.name]["walk"], pts, 24, 1, seed=1, yaw0=0.0)
+            _run(eng, "pose", keys)
+            q = _run(
+                eng, "c", [{"op": "inspect", "subjects": [meta.root], "frames": [FACE_FRAMES["neutral"]]}]
+            )
+            c = q["inspect"]["frames"][str(FACE_FRAMES["neutral"])]["subjects"][meta.root]["center"]
+            _cam(eng, "pose", (0.0, c[1], c[2]), VIEWS["side"], r * 1.3)
+            paths["pose"] = _render(eng, "pose", FACE_FRAMES["neutral"], out)
     return paths
 
 
@@ -182,11 +194,11 @@ def _on_backdrop(p: Path) -> Image.Image:
     return Image.alpha_composite(bg, im).convert("RGB")
 
 
-def silhouette(side: Path, out: Path) -> Path:
+def silhouette(side: Path, out: Path, name: str = "silhouette.png") -> Path:
     a = Image.open(side).convert("RGBA").getchannel("A")
     sil = Image.new("RGB", a.size, (255, 255, 255))
     sil.paste((0, 0, 0), mask=a.point(lambda v: 255 if v > 127 else 0))
-    p = out / "silhouette.png"
+    p = out / name
     sil.save(p)
     return p
 
@@ -210,7 +222,8 @@ def compose(
 ) -> Path:
     tile = Image.open(views["front"]).size[0]
     pad, head = 12, 46
-    w = pad + 4 * (tile + pad)
+    top = ["front", "side", "three_quarter", "back"] + (["pose"] if "pose" in views else [])
+    w = pad + len(top) * (tile + pad)
     face_t = tile // 2
     h = head + tile + pad + tile + pad + 140
     sheet = Image.new("RGB", (w, h), (246, 244, 239))
@@ -218,7 +231,7 @@ def compose(
     font = ImageFont.load_default(size=22)
     small = ImageFont.load_default(size=15)
     dr.text((pad, 12), f"{character} — {label}", fill=(30, 30, 30), font=font)
-    for i, tag in enumerate(("front", "side", "three_quarter", "back")):
+    for i, tag in enumerate(top):
         x = pad + i * (tile + pad)
         sheet.paste(_on_backdrop(views[tag]), (x, head))
         dr.text((x + 6, head + 4), tag.replace("_", " "), fill=(60, 60, 60), font=small)
@@ -273,9 +286,13 @@ def sheet_for(
 ) -> dict[str, Any]:
     sp = apply_morph(SPECIES[brief.species], morph, brief.dark_ok)
     views = render_views(sp.name, sp, out, res, samples, device)  # face ids are keyed by species
-    sil = silhouette(views["side"], out)
+    side_sil = silhouette(views["side"], out, "side_silhouette.png")
+    # the species-read silhouette is the signature pose when the species has one (the meerkat's sentinel)
+    sil = silhouette(views.get("pose", views["side"]), out)
     thumb = thumbnail(views["three_quarter"], out)
-    img = sheet_metrics(sil, views["side"])
+    img = sheet_metrics(side_sil, views["side"])
+    for expr in ("happy", "surprised"):
+        img[f"expression_{expr}"] = expression_change(views["face_neutral"], views[f"face_{expr}"])
     pre = score(brief, sp, img, None).as_dict()
     sheet = compose(brief.character, views, sil, thumb, pre, out, label or f"morph {morph.as_dict()}")
     crit = critique_for(brief, out)

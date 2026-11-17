@@ -528,7 +528,13 @@ def test_transparent_render_gives_an_exact_silhouette(fresh, tmp_path):
 
     r = run(
         fresh,
-        {"op": "create_primitive", "id": "ball", "shape": "uv_sphere", "size": [1.0, 1.0, 1.0], "smooth": True},
+        {
+            "op": "create_primitive",
+            "id": "ball",
+            "shape": "uv_sphere",
+            "size": [1.0, 1.0, 1.0],
+            "smooth": True,
+        },
         {"op": "add_camera", "id": "cam", "location": [0, -4, 0], "look_at": [0, 0, 0], "lens": 50},
         {"op": "set_camera_active", "id": "cam"},
         {"op": "set_render", "engine": "cycles", "samples": 2, "resolution": [64, 64], "transparent": True},

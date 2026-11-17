@@ -1,0 +1,257 @@
+{
+ "character": "tembo",
+ "score": 9.62,
+ "ready": false,
+ "hard_failures": [],
+ "pending": [],
+ "checks": [
+  {
+   "id": "range:head_body",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "head_body 0.791 in [0.7, 0.95]",
+   "value": 0.7907,
+   "fix": null
+  },
+  {
+   "id": "range:eye_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_head 0.259 in [0.22, 0.4]",
+   "value": 0.2588,
+   "fix": null
+  },
+  {
+   "id": "range:eye_spacing",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_spacing 0.515 in [0.4, 0.7]",
+   "value": 0.5152,
+   "fix": null
+  },
+  {
+   "id": "range:neck_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "neck_head 0.576 in [0.0, 0.75]",
+   "value": 0.5758,
+   "fix": null
+  },
+  {
+   "id": "range:elongation",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "elongation 1.229 in [1.0, 1.5]",
+   "value": 1.2286,
+   "fix": null
+  },
+  {
+   "id": "range:belly_gap",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "belly_gap 0.600 in [0.45, 0.9]",
+   "value": 0.6,
+   "fix": null
+  },
+  {
+   "id": "range:leg_thickness",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "leg_thickness 0.172 in [0.14, 0.24]",
+   "value": 0.1719,
+   "fix": null
+  },
+  {
+   "id": "range:ear_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "ear_head 0.749 in [0.5, 1.1]",
+   "value": 0.7489,
+   "fix": null
+  },
+  {
+   "id": "feature:trunk",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "trunk present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:big_ears",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "big_ears present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:tail_tuft",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "tail_tuft present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:separate_head",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "separate_head present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "materials:flat_black",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "no near-black body regions",
+   "value": [],
+   "fix": null
+  },
+  {
+   "id": "silhouette:neck_notch",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.5,
+   "earned": 1.5,
+   "message": "side neck notch 0.293 (min 0.15): head separate from the body",
+   "value": 0.2927,
+   "fix": null
+  },
+  {
+   "id": "silhouette:floating",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "0 floating part(s)",
+   "value": 0,
+   "fix": null
+  },
+  {
+   "id": "materials:dark_blob",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "largest near-black blob 0% of the figure (max 12%)",
+   "value": 0.0024,
+   "fix": null
+  },
+  {
+   "id": "face:happy",
+   "group": "face",
+   "passed": false,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 0.677,
+   "message": "happy changes 2.0% of the face close-up (min 3%): the expression doesn't read",
+   "value": 0.0203,
+   "fix": null
+  },
+  {
+   "id": "face:surprised",
+   "group": "face",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "surprised changes 3.1% of the face close-up (min 3%)",
+   "value": 0.0311,
+   "fix": null
+  },
+  {
+   "id": "read:silhouette",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "silhouette read as 'elephant': named elephant",
+   "value": "elephant",
+   "fix": null
+  },
+  {
+   "id": "read:thumbnail",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "thumbnail read as 'elephant': named elephant",
+   "value": "elephant",
+   "fix": null
+  },
+  {
+   "id": "critic:appeal",
+   "group": "appeal",
+   "passed": false,
+   "hard": false,
+   "weight": 2.0,
+   "earned": 1.4,
+   "message": "art-director appeal 7/10 (min 8)",
+   "value": 7.0,
+   "fix": null
+  }
+ ],
+ "edit": {},
+ "manual": [
+  "happy changes 2.0% of the face close-up (min 3%): the expression doesn't read",
+  "art-director appeal 7/10 (min 8)",
+  "critic: ears are thin flat discs: edge-on from 3/4 they read as fins behind the head; give them thickness and a cupped shape",
+  "critic: neutral upper lids sit low: he looks sleepy/sad at rest",
+  "critic: happy/surprised barely change the face"
+ ],
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.2927,
+  "top_dip": 0.0244,
+  "throat": 0.2927,
+  "dark_blob": 0.0024,
+  "expression_happy": 0.0203,
+  "expression_surprised": 0.0311
+ }
+}

@@ -1,6 +1,18 @@
 # PROGRESS — morning report (overnight build, 2026-11-15)
 
-## 0. Savannah film — owner's top priority (CHALLENGE-SAVANNAH.md)
+## 0. Design stage — owner's top priority since 2026-11-16 23:58 (DESIGN_STAGE.md)
+
+Film production is **paused** until the owner approves the five design packets, then the animatic.
+
+Cloud session 11-17 06:36 UTC ([review](docs/reviews/2026-11-17T0636Z.md), DECISIONS #52): **steps 2 (sheet renderer,
+rubric, critic, best-of-N loop) are built**: briefs for all five in [`design/`](design/README.md), `animatica.design`
+(measure, brief, variants, rubric, image checks, critic), `scripts/design_sheet.py`, `scripts/design_loop.py`, 16 tests.
+The current designs were sheeted and reviewed ([`design/baseline/`](design/README.md#baseline--the-current-designs-before-the-design-loop-cloud-review-2026-11-17-0636-utc)):
+Tembo 9.6, Neema 9.8, Bibi Kobe 9.3 (appeal 6–7 blocks them), Zuri 7.3 (silhouette reads as a horse), Kiki 2.6
+(reads as a weasel / prairie dog). Next: base-mesh fixes for what morphs can't change (REVIEW_QUEUE P0-DESIGN), the
+rig stress test (step 3), then the loop per character and the packets.
+
+## 0b. Savannah film (CHALLENGE-SAVANNAH.md) — production paused for the design stage
 
 Laptop session 11-17 (owner's list): **Chatterbox (MIT) is the voice engine** on the RTX 5060 (CUDA torch 2.7.1),
 steered by the approved Kokoro blends, with a Whisper check per take, Kokoro fallback and a line cache (#45);
@@ -36,6 +48,9 @@ Scorecard (strict, 11-17 03:36): story 8 (script), character design 7, motion 7,
 Next: the specs for SC 3–10, the film edit, SC 2 polish, then the full GPU render on the laptop (see [docs/REVIEW_QUEUE.md](docs/REVIEW_QUEUE.md) P1-SAVANNAH).
 
 ### Needs you
+
+* **Design stage**: nothing to approve yet. When packets appear in `design/packets/`, review them there. An
+  `ANTHROPIC_API_KEY` would let the vision critic run live instead of relying on a reviewer's recorded critique.
 
 * **Laptop session: render SC 2 at final quality** (now with the gag, eyelines and the new eyes) on the RTX 5060 (`python scripts/savannah_scene.py sc02 --quality
   final`, OptiX, ~530 frames at 1280×720) and commit a ≤ 25 MB cut to `examples/showcase/savannah-scenes/`.

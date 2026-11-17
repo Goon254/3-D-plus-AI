@@ -1,0 +1,12 @@
+{
+  "reviewer": "cloud reviewer 2026-11-17 06:36 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "174bccd525da9611770426b3b7f0fde4b527ed8091547c162ec49b57b212bcb1",
+  "silhouette_species": "giraffe",
+  "thumbnail_species": "giraffe",
+  "issues": [
+    "legs very thin for a kids' film young giraffe; knobbly knees would add appeal",
+    "head small at thumbnail: eyes barely read"
+  ],
+  "appeal": 7
+}

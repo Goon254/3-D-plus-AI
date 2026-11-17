@@ -1,0 +1,48 @@
+# design/ — the design stage (DESIGN_STAGE.md)
+
+Per character, `<character>/brief.json` is the measurable design brief (§2): appeal ranges for the proportion
+ratios in `animatica.design.measure`, required silhouette/marking features, palette and pattern-contrast
+minimums, intended dark accents, silhouette thresholds, and the names a viewer must say unprompted (plus known
+confusions). `animatica.design.brief` validates it; `tests/test_design.py` checks all five.
+
+| character | species | brief |
+|---|---|---|
+| Tembo | elephant calf | [tembo/brief.json](tembo/brief.json) |
+| Zuri | zebra | [zuri/brief.json](zuri/brief.json) |
+| Kiki | meerkat | [kiki/brief.json](kiki/brief.json) |
+| Neema | giraffe | [neema/brief.json](neema/brief.json) |
+| Bibi Kobe | leopard tortoise | [bibi_kobe/brief.json](bibi_kobe/brief.json) |
+
+## Tools
+
+```bash
+python scripts/design_sheet.py --all                 # sheet + score for each current design -> output/design/
+python scripts/design_sheet.py kiki --morph '{"head": 1.1, "lift_dark": 0.7}'
+python scripts/design_loop.py kiki                    # best-of-6, up to 5 rounds -> output/design-loop/kiki/
+```
+
+A sheet has front, side (facing left), 3/4 and back views, the signature pose when the species has one (Kiki's
+sentinel), a black silhouette, a 96 px thumbnail and three expressions, plus the rubric panel. Cycles at 16 spp:
+about a minute per character on 2 CPU cores, seconds on the laptop GPU.
+
+**Species read.** With `ANTHROPIC_API_KEY` set, a vision model names the animal from the silhouette alone and the
+thumbnail alone. Without a key, a person or reviewer agent records `critique.json` next to the sheet
+(`animatica.design.critic.record`). The record carries the SHA-256 of the sheet it judged, so it never applies
+to a re-render. Until one of these has run, nothing is `ready`.
+
+## baseline/ — the current designs, before the design loop (cloud review 2026-11-17 06:36 UTC)
+
+384–512 px Cycles sheets of the designs on `main` at `248d21c`, each with the reviewer's recorded critique and
+the rubric score. The sheet images were drawn before the critique was recorded, so their panels still say
+"pending: species read". The real scores are in `*_score.json`:
+
+| character | score | blocking |
+|---|---|---|
+| Tembo | 9.6 | appeal 7: fin-like disc ears edge-on, sleepy neutral lids, weak expressions |
+| Zuri | 7.3 | silhouette alone reads as a horse; bullseye stripe rings on chest, face and rump; clown-nose muzzle |
+| Kiki | 2.6 | reads weasel (thumbnail) and prairie dog/otter (sentinel silhouette); black "boot" legs; ears invisible |
+| Neema | 9.8 | appeal 7: very thin legs, small head and eyes at thumbnail size |
+| Bibi Kobe | 9.3 | appeal 6: ball-like shell with panel lines, hole-like spots, pale plastron disc |
+
+Next: the base-mesh fixes the morphs can't make (listed in docs/REVIEW_QUEUE.md), then `design_loop.py`
+for each character, then design packets in `design/packets/` for the owner.

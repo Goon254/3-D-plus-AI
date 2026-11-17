@@ -1,0 +1,226 @@
+{
+ "character": "bibi_kobe",
+ "score": 9.29,
+ "ready": false,
+ "hard_failures": [],
+ "pending": [],
+ "checks": [
+  {
+   "id": "range:head_body",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "head_body 0.215 in [0.18, 0.3]",
+   "value": 0.2155,
+   "fix": null
+  },
+  {
+   "id": "range:eye_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_head 0.487 in [0.38, 0.6]",
+   "value": 0.4872,
+   "fix": null
+  },
+  {
+   "id": "range:eye_spacing",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_spacing 0.756 in [0.6, 0.9]",
+   "value": 0.7556,
+   "fix": null
+  },
+  {
+   "id": "range:neck_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "neck_head 1.026 in [0.0, 1.1]",
+   "value": 1.0256,
+   "fix": null
+  },
+  {
+   "id": "range:belly_gap",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "belly_gap 0.400 in [0.2, 0.7]",
+   "value": 0.4,
+   "fix": null
+  },
+  {
+   "id": "range:leg_thickness",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "leg_thickness 0.128 in [0.1, 0.18]",
+   "value": 0.1278,
+   "fix": null
+  },
+  {
+   "id": "feature:shell",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "shell present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:pattern:scutes",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "pattern:scutes present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:pattern:scales",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "pattern:scales present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "contrast:shell",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "shell pattern contrast 9.28 (min 4.0)",
+   "value": 9.28,
+   "fix": null
+  },
+  {
+   "id": "materials:flat_black",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "no near-black body regions",
+   "value": [],
+   "fix": null
+  },
+  {
+   "id": "silhouette:floating",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "0 floating part(s)",
+   "value": 0,
+   "fix": null
+  },
+  {
+   "id": "materials:dark_blob",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "largest near-black blob 4% of the figure (max 12%)",
+   "value": 0.0429,
+   "fix": null
+  },
+  {
+   "id": "face:happy",
+   "group": "face",
+   "passed": false,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 0.603,
+   "message": "happy changes 1.8% of the face close-up (min 3%): the expression doesn't read",
+   "value": 0.0181,
+   "fix": null
+  },
+  {
+   "id": "face:surprised",
+   "group": "face",
+   "passed": false,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 0.7,
+   "message": "surprised changes 2.1% of the face close-up (min 3%): the expression doesn't read",
+   "value": 0.021,
+   "fix": null
+  },
+  {
+   "id": "read:silhouette",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "silhouette read as 'tortoise': named tortoise",
+   "value": "tortoise",
+   "fix": null
+  },
+  {
+   "id": "read:thumbnail",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "thumbnail read as 'tortoise': named tortoise",
+   "value": "tortoise",
+   "fix": null
+  },
+  {
+   "id": "critic:appeal",
+   "group": "appeal",
+   "passed": false,
+   "hard": false,
+   "weight": 2.0,
+   "earned": 1.2,
+   "message": "art-director appeal 6/10 (min 8)",
+   "value": 6.0,
+   "fix": null
+  }
+ ],
+ "edit": {},
+ "manual": [
+  "happy changes 1.8% of the face close-up (min 3%): the expression doesn't read",
+  "surprised changes 2.1% of the face close-up (min 3%): the expression doesn't read",
+  "art-director appeal 6/10 (min 8)",
+  "critic: shell is a near-perfect sphere with panel lines: reads like a ball, not a domed carapace with raised scutes",
+  "critic: dark spots look like holes/dirt rather than leopard-tortoise markings",
+  "critic: pale plastron disc still visible under the shell",
+  "critic: expressions barely change the face"
+ ],
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.0,
+  "top_dip": 0.0,
+  "throat": 0.0,
+  "dark_blob": 0.0429,
+  "expression_happy": 0.0181,
+  "expression_surprised": 0.021
+ }
+}

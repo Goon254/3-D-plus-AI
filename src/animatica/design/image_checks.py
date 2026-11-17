@@ -141,3 +141,20 @@ def sheet_metrics(silhouette: str | Path, side_rgb: str | Path | None = None) ->
     if side_rgb is not None:
         out["dark_blob"] = dark_blob(side_rgb, mask)
     return out
+
+
+def expression_change(neutral: str | Path, other: str | Path, delta: float = 0.08) -> float:
+    """Share of the figure's pixels in a face close-up that visibly change between two expressions.
+
+    Both renders come from the same camera and frame size; a pixel counts when any channel moves by more than
+    ``delta``. Brows that barely lift and a smile one pixel wide score ~0.01: the expression doesn't read.
+    """
+    a = np.asarray(Image.open(neutral).convert("RGBA"), dtype=np.float32) / 255.0
+    b = np.asarray(Image.open(other).convert("RGBA"), dtype=np.float32) / 255.0
+    if a.shape != b.shape:
+        return 0.0
+    fig = (a[..., 3] > 0.5) | (b[..., 3] > 0.5)
+    if not fig.any():
+        return 0.0
+    diff = np.abs(a - b).max(axis=-1)
+    return round(float((diff[fig] > delta).mean()), 4)

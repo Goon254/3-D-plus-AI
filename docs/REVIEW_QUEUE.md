@@ -9,6 +9,36 @@ that raised it.
 - [x] Pipeline test red on CI run #7 (`tests/test_pipeline.py:26`, film 13.67 s < 15 s). *Verified fixed
   at `268b6bf` (58/58 pass locally).* — [review 07:46](reviews/2026-11-15T0746Z.md)
 
+## P0-DESIGN — DESIGN_STAGE.md (owner's top priority; film production paused)
+
+Status 11-17 06:36: the design-sheet renderer, rubric, recorded/live critic and best-of-N loop exist
+(`animatica.design`, `scripts/design_sheet.py`, `scripts/design_loop.py`, DECISIONS #52). Baseline sheets and scores:
+`design/baseline/`. Morphs only change head, eye, ear, snout, leg and neck sizes; everything below needs base-mesh
+or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
+
+- [ ] **Kiki reads as a weasel / prairie dog** (score 2.6). Quadruped: a shorter, deeper chest, a tail shorter than the
+  body that tapers from a thicker base, small *visible* dark crescent ears, eye patches that read at sheet size,
+  lower legs a darker shade of the coat rather than near-black (`lift_dark` does this). Sentinel: stand straight
+  (not leaning forward), both paws tucked at the chest, the tail on the ground as the third leg of a tripod. Then
+  `python scripts/design_loop.py kiki`.
+- [ ] **Zuri's silhouette reads as a horse**: a thicker upright brush mane and larger, rounder ears. Stripes form
+  bullseye rings on the chest, face front and rump (projected along one axis): they must wrap the body, with
+  chevrons on the rump. The black muzzle ball reads as a clown nose: blend it into the face.
+- [ ] **Bibi Kobe's shell** is a near-perfect ball with panel lines: a domed carapace with raised, slightly
+  pyramidal scutes and a flared rim. Spots read as holes, so use leopard-tortoise radiating marks. The pale plastron
+  disc still shows.
+- [ ] **Tembo's ears** are flat discs that look like fins when seen edge-on from 3/4: give them thickness, a cupped
+  shape and a rolled top edge. His neutral upper lids sit low (he looks sleepy).
+- [ ] **Expressions don't read** at sheet size: happy changes only 1.8–3.5 % of the face close-up (the soft check
+  wants 3 %). Make the smile wider, lift the cheeks and lower lids, widen surprised eyes more.
+- [ ] **Neema**: thin legs and a small head, so her eyes barely read at 96 px. Try `head` 1.1, `leg` 1.15 in the loop.
+- [ ] **Rig stress test** (DESIGN_STAGE §5): walk, turn, sit/stand, head turns, blinks, all expressions, a lip-sync
+  line, with the existing `rig_probe` checks. Feed the results into the rubric before any packet.
+- [ ] **Reference images** (brief `references`, §2): 3–6 Wikimedia Commons / PD images per character, with the
+  license checked. The brief validator already rejects a reference without a license.
+- [ ] Rubric gaps the baseline exposed: there is no automatic check yet for stripe bullseyes, edge-on ears or a
+  ball-shaped shell. Consider symmetry/ring detection on the front and back views (`docs/LESSONS.md`, §8).
+
 ## P1-SAVANNAH — owner's top priority (CHALLENGE-SAVANNAH.md), highest impact first
 
 - [x] **Faces for the cast**: eyelids (blink), brows, and a mouth with viseme shapes (Rhubarb A–H/X) on each species head; front-set eyes with catch-lights rather than side "googly" spheres. Without a face there is no dialogue scene. Test: each species has the face controls and a viseme changes the mouth's silhouette. — [review 11-16 21:48](reviews/2026-11-16T2148Z.md)

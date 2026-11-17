@@ -1,0 +1,14 @@
+{
+  "reviewer": "cloud reviewer 2026-11-17 06:36 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "fe370507f670eef912df9c5e31e78aa653d994dec273b561638a455c9d0025bf",
+  "silhouette_species": "tortoise",
+  "thumbnail_species": "tortoise",
+  "issues": [
+    "shell is a near-perfect sphere with panel lines: reads like a ball, not a domed carapace with raised scutes",
+    "dark spots look like holes/dirt rather than leopard-tortoise markings",
+    "pale plastron disc still visible under the shell",
+    "expressions barely change the face"
+  ],
+  "appeal": 6
+}

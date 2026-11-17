@@ -1,0 +1,13 @@
+{
+  "reviewer": "cloud reviewer 2026-11-17 06:36 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "fc79a7c6936c149ddcaea663a0146c4b2b7e7b3659d7cba63f0f2256070342d2",
+  "silhouette_species": "elephant",
+  "thumbnail_species": "elephant",
+  "issues": [
+    "ears are thin flat discs: edge-on from 3/4 they read as fins behind the head; give them thickness and a cupped shape",
+    "neutral upper lids sit low: he looks sleepy/sad at rest",
+    "happy/surprised barely change the face"
+  ],
+  "appeal": 7
+}

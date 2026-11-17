@@ -1,0 +1,13 @@
+{
+  "reviewer": "cloud reviewer 2026-11-17 06:36 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "81b375a452321f43e4a824b61bd5778a7598967695be891d87b049a9832ff03f",
+  "silhouette_species": "horse, maybe zebra (upright mane)",
+  "thumbnail_species": "zebra",
+  "issues": [
+    "silhouette alone reads horse: make the mane a thicker upright brush and the ears larger and rounder",
+    "stripes form bullseye rings on the chest, face front and rump (pattern projected along one axis): stripes must wrap the body, chevrons on the rump",
+    "black muzzle ball reads as a clown nose"
+  ],
+  "appeal": 6
+}

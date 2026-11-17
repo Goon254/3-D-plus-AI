@@ -1,0 +1,270 @@
+{
+ "character": "zuri",
+ "score": 7.26,
+ "ready": false,
+ "hard_failures": [
+  "read:silhouette"
+ ],
+ "pending": [],
+ "checks": [
+  {
+   "id": "range:head_body",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "head_body 0.480 in [0.42, 0.6]",
+   "value": 0.48,
+   "fix": null
+  },
+  {
+   "id": "range:eye_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_head 0.464 in [0.38, 0.6]",
+   "value": 0.464,
+   "fix": null
+  },
+  {
+   "id": "range:eye_spacing",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_spacing 0.905 in [0.7, 0.95]",
+   "value": 0.9048,
+   "fix": null
+  },
+  {
+   "id": "range:neck_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "neck_head 0.952 in [0.0, 1.0]",
+   "value": 0.9524,
+   "fix": null
+  },
+  {
+   "id": "range:elongation",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "elongation 1.923 in [1.6, 2.2]",
+   "value": 1.9231,
+   "fix": null
+  },
+  {
+   "id": "range:belly_gap",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "belly_gap 1.192 in [0.9, 1.6]",
+   "value": 1.1923,
+   "fix": null
+  },
+  {
+   "id": "range:leg_thickness",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "leg_thickness 0.102 in [0.08, 0.14]",
+   "value": 0.1023,
+   "fix": null
+  },
+  {
+   "id": "range:ear_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "ear_head 0.050 in [0.03, 0.12]",
+   "value": 0.0496,
+   "fix": null
+  },
+  {
+   "id": "feature:pattern:stripes",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "pattern:stripes present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:mane",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "mane present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:muzzle",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "muzzle present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:tail_tuft",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "tail_tuft present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "contrast:coat",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "coat pattern contrast 15.53 (min 8.0)",
+   "value": 15.53,
+   "fix": null
+  },
+  {
+   "id": "materials:flat_black",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "no near-black body regions",
+   "value": [],
+   "fix": null
+  },
+  {
+   "id": "silhouette:neck_notch",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.5,
+   "earned": 1.5,
+   "message": "side neck notch 0.383 (min 0.15): head separate from the body",
+   "value": 0.3833,
+   "fix": null
+  },
+  {
+   "id": "silhouette:floating",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "0 floating part(s)",
+   "value": 0,
+   "fix": null
+  },
+  {
+   "id": "materials:dark_blob",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "largest near-black blob 4% of the figure (max 12%)",
+   "value": 0.0429,
+   "fix": null
+  },
+  {
+   "id": "face:happy",
+   "group": "face",
+   "passed": false,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 0.647,
+   "message": "happy changes 1.9% of the face close-up (min 3%): the expression doesn't read",
+   "value": 0.0194,
+   "fix": null
+  },
+  {
+   "id": "face:surprised",
+   "group": "face",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "surprised changes 4.0% of the face close-up (min 3%)",
+   "value": 0.0398,
+   "fix": null
+  },
+  {
+   "id": "read:silhouette",
+   "group": "species read",
+   "passed": false,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 0.0,
+   "message": "silhouette read as 'horse, maybe zebra (upright mane)': ambiguous: zebra but also horse",
+   "value": "horse, maybe zebra (upright mane)",
+   "fix": null
+  },
+  {
+   "id": "read:thumbnail",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "thumbnail read as 'zebra': named zebra",
+   "value": "zebra",
+   "fix": null
+  },
+  {
+   "id": "critic:appeal",
+   "group": "appeal",
+   "passed": false,
+   "hard": false,
+   "weight": 2.0,
+   "earned": 1.2,
+   "message": "art-director appeal 6/10 (min 8)",
+   "value": 6.0,
+   "fix": null
+  }
+ ],
+ "edit": {},
+ "manual": [
+  "happy changes 1.9% of the face close-up (min 3%): the expression doesn't read",
+  "art-director appeal 6/10 (min 8)",
+  "critic: silhouette alone reads horse: make the mane a thicker upright brush and the ears larger and rounder",
+  "critic: stripes form bullseye rings on the chest, face front and rump (pattern projected along one axis): stripes must wrap the body, chevrons on the rump",
+  "critic: black muzzle ball reads as a clown nose"
+ ],
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.3833,
+  "top_dip": 0.0,
+  "throat": 0.3833,
+  "dark_blob": 0.0429,
+  "expression_happy": 0.0194,
+  "expression_surprised": 0.0398
+ }
+}
