@@ -375,8 +375,13 @@ def test_expressions_change_the_mouth_and_brows_stay_on_the_head():
     keys = face_keys(face, track, None, 24, 1, 24)
     rnd = next(o for o in keys if o["property"] == "shape_key:round")
     assert rnd["keys"][-1][1] == pytest.approx(EXPRESSIONS["surprised"].oh)
-    with_line = face_keys(face, track, [Cue(0.0, 0.3, "B"), Cue(0.3, 0.6, "X")], 24, 1, 24)
-    assert not any(o["property"] == "shape_key:round" and o["keys"][-1][1] > 0.5 for o in with_line)
+    # a line from 0.5 s to 1.1 s: the "O" holds outside it and lip sync alone keys the mouth inside it
+    cues = [Cue(0.0, 0.3, "B"), Cue(0.3, 0.6, "X")]
+    with_line = face_keys(face, track, cues, 24, 1, 48, line_start=0.5)
+    expr_round = [o for o in with_line if o["property"] == "shape_key:round"]
+    expr_frames = {k[0] for o in expr_round[:1] for k in o["keys"]}
+    assert expr_frames and not any(12 + 1 <= f <= 26 + 1 for f in expr_frames)
+    assert max(k[1] for k in expr_round[0]["keys"]) > 0.5  # the "O" still shows after the line
     brow = next(o for o in keys if o["target"] == "k_brow_L" and o["property"] == "location")
     rise = math.dist(brow["keys"][-1][1], brow["keys"][0][1])
     assert rise <= sp.eye[3] * sp.brow_max * 1.4 + 1e-6
@@ -393,3 +398,18 @@ def test_neema_has_sturdier_legs_a_bigger_head_and_brows_that_rest_higher():
     keys = face_keys(face, [(0.0, "neutral")], None, 24, 1, 2)
     brow = next(o for o in keys if o["target"] == "n_brow_L" and o["property"] == "location")
     assert brow["keys"][0][1][2] > face["brows"]["L"]["rest"][2]  # neutral brows sit above their rest
+
+
+def test_glide_waypoints_are_walked_through_without_stopping():
+    from animatica.creatures.gait import Waypoint, path_xy
+
+    stop = [Waypoint(0, 0, 0), Waypoint(1, 1, 0), Waypoint(2, 1, 1)]
+    glide = [Waypoint(0, 0, 0), Waypoint(1, 1, 0, glide=True), Waypoint(2, 1, 1)]
+    dt = 0.01
+    # the plain path stops dead at the corner; the glide path is still moving there (and ends at the same place)
+    v_stop = math.dist(path_xy(stop, 1 - dt), path_xy(stop, 1 + dt)) / (2 * dt)
+    v_glide = math.dist(path_xy(glide, 1 - dt), path_xy(glide, 1 + dt)) / (2 * dt)
+    assert v_stop < 0.05 and v_glide > 0.8
+    assert path_xy(glide, 2.0) == (1, 1) and path_xy(glide, 0.0) == (0, 0)
+    # it stays on the polyline: halfway in time (eased) is the corner
+    assert math.dist(path_xy(glide, 1.0), (1, 0)) < 1e-9

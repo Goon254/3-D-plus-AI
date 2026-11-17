@@ -1,0 +1,144 @@
+{
+ "character": "neema",
+ "species": "giraffe",
+ "frames": 322,
+ "seconds": 13.42,
+ "timeline": {
+  "walk": 0.8,
+  "turn": 3.6,
+  "stop": 5.63,
+  "expressions": 6.03,
+  "line": 9.93,
+  "line_end": 11.78
+ },
+ "expressions": [
+  "neutral",
+  "happy",
+  "sad",
+  "surprised",
+  "worried",
+  "determined",
+  "curious",
+  "scared",
+  "proud",
+  "curious",
+  "surprised",
+  "happy"
+ ],
+ "line": "There! I see her stripes!",
+ "lipsync": "rhubarb",
+ "turn_degrees": 90,
+ "sit_stand": "bow and rise (no sit pose)",
+ "summary": {
+  "eye_embed": {
+   "giraffe_eye_L": [
+    0.648,
+    0.648
+   ],
+   "giraffe_eye_R": [
+    0.648,
+    0.648
+   ]
+  },
+  "skin_gap": {
+   "giraffe_lid_L_up": -0.042,
+   "giraffe_lid_L_lo": -0.632,
+   "giraffe_lid_R_up": -0.042,
+   "giraffe_lid_R_lo": -0.632,
+   "giraffe_brow_L": 0.083,
+   "giraffe_brow_R": 0.083,
+   "giraffe_mouth": -0.006
+  },
+  "swim_p95_mm": {
+   "giraffe_body": 0.0
+  },
+  "mouth_gap_range": [
+   -0.024,
+   -0.005
+  ],
+  "worst_gap": {
+   "giraffe_lid_L_up": {
+    "gap": -0.042,
+    "frame": 184,
+    "expression": "surprised"
+   },
+   "giraffe_lid_L_lo": {
+    "gap": -0.632,
+    "frame": 103,
+    "expression": "neutral"
+   },
+   "giraffe_lid_R_up": {
+    "gap": -0.042,
+    "frame": 184,
+    "expression": "surprised"
+   },
+   "giraffe_lid_R_lo": {
+    "gap": -0.632,
+    "frame": 103,
+    "expression": "neutral"
+   },
+   "giraffe_brow_L": {
+    "gap": 0.083,
+    "frame": 220,
+    "expression": "scared"
+   },
+   "giraffe_brow_R": {
+    "gap": 0.083,
+    "frame": 220,
+    "expression": "scared"
+   }
+  }
+ },
+ "checks": [
+  {
+   "id": "eye_socket",
+   "passed": true,
+   "hard": true,
+   "message": "eye socket: ok",
+   "value": null
+  },
+  {
+   "id": "brow_float",
+   "passed": true,
+   "hard": false,
+   "message": "brow float: ok",
+   "value": null
+  },
+  {
+   "id": "lid_float",
+   "passed": true,
+   "hard": false,
+   "message": "lid float: ok",
+   "value": null
+  },
+  {
+   "id": "texture_swim",
+   "passed": true,
+   "hard": true,
+   "message": "texture swim: ok",
+   "value": null
+  },
+  {
+   "id": "mouth_float",
+   "passed": true,
+   "hard": false,
+   "message": "mouth off the skin by -0% of its size",
+   "value": -0.004587412587412587
+  },
+  {
+   "id": "foot_slide",
+   "passed": true,
+   "hard": true,
+   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 61 mm)",
+   "value": 0.0
+  },
+  {
+   "id": "ground",
+   "passed": true,
+   "hard": true,
+   "message": "feet sink up to 0.0 mm below their rest height (limit 46 mm)",
+   "value": 0.0
+  }
+ ],
+ "passed": true
+}

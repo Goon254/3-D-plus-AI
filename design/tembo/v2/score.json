@@ -62,8 +62,9 @@
   ],
   "appeal": 8
  },
+ "rig_stress": "design/tembo/rig_stress.json",
  "character": "tembo",
- "score": 9.84,
+ "score": 9.87,
  "ready": true,
  "hard_failures": [],
  "pending": [],
@@ -209,6 +210,83 @@
    "earned": 1.0,
    "message": "no near-black body regions",
    "value": [],
+   "fix": null
+  },
+  {
+   "id": "motion:eye_socket",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye socket: ok",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "motion:brow_float",
+   "group": "motion",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "brow float: ok",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "motion:lid_float",
+   "group": "motion",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "lid float: ok",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "motion:texture_swim",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "texture swim: ok",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "motion:mouth_float",
+   "group": "motion",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "mouth off the skin by -4% of its size",
+   "value": -0.0401270033262776,
+   "fix": null
+  },
+  {
+   "id": "motion:foot_slide",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 22 mm)",
+   "value": 0.0,
+   "fix": null
+  },
+  {
+   "id": "motion:ground",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "feet sink up to 0.0 mm below their rest height (limit 17 mm)",
+   "value": 0.0,
    "fix": null
   },
   {

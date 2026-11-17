@@ -72,6 +72,10 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
   Needs reviewer verification.*
 - [ ] **Rig stress test** (DESIGN_STAGE §5): walk, turn, sit/stand, head turns, blinks, all expressions, a lip-sync
   line, with the existing `rig_probe` checks. Feed the results into the rubric before any packet.
+  *Laptop GPU 11-17 (DECISIONS #61): `scripts/rig_stress_test.py`; walk ✔, turn ✔ (Bibi only 18°, no turn in place),
+  sit/stand ✔ Kiki only (the others bow), head turns ✔, blinks ✔, all expressions ✔, lip-sync line ✔; foot slide,
+  ground, eye seating, brow/lid/mouth contact, coat swim, sentinel tail. All five pass; checks feed the rubric
+  (`motion:*`). Needs reviewer verification: watch the takes for intersections the checks don't measure.*
 - [ ] **Reference images** (brief `references`, §2): 3–6 Wikimedia Commons / PD images per character, with the
   license checked. The brief validator already rejects a reference without a license.
 - [ ] **Blind species read for recorded critiques** (until a live vision key exists): have a sub-agent with no

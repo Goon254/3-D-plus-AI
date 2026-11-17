@@ -221,3 +221,18 @@ def test_a_detached_tail_in_the_signature_pose_is_a_floating_part():
     root = Path(__file__).resolve().parents[1] / "design" / "kiki"
     assert floating_parts(load_mask(root / "v3" / "silhouette.png")) == 1
     assert floating_parts(load_mask(root / "v4" / "silhouette.png")) == 0
+
+
+def test_rig_stress_checks_join_the_rubric_and_a_hard_motion_failure_blocks_ready():
+    from animatica.design.rubric import score
+
+    brief = load_brief("tembo")
+    sp = SPECIES[brief.species]
+    ok = {"checks": [{"id": "foot_slide", "passed": True, "hard": True, "message": "ok"}]}
+    bad = {"checks": [{"id": "foot_slide", "passed": False, "hard": True, "message": "65 mm"}]}
+    base = score(brief, sp)
+    good = score(brief, sp, stress=ok)
+    worse = score(brief, sp, stress=bad)
+    assert any(c.id == "motion:foot_slide" and c.group == "motion" for c in good.checks)
+    assert "motion:foot_slide" not in base.hard_failures and "motion:foot_slide" in worse.hard_failures
+    assert worse.score < good.score and not worse.ready

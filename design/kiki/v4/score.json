@@ -79,8 +79,9 @@
   ],
   "appeal": 7
  },
+ "rig_stress": "design/kiki/rig_stress.json",
  "character": "kiki",
- "score": 9.76,
+ "score": 9.82,
  "ready": false,
  "hard_failures": [],
  "pending": [],
@@ -237,6 +238,94 @@
    "earned": 1.0,
    "message": "no near-black body regions",
    "value": [],
+   "fix": null
+  },
+  {
+   "id": "motion:eye_socket",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye socket: ok",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "motion:brow_float",
+   "group": "motion",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "brow float: ok",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "motion:lid_float",
+   "group": "motion",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "lid float: ok",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "motion:texture_swim",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "texture swim: ok",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "motion:mouth_float",
+   "group": "motion",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "mouth off the skin by 9% of its size",
+   "value": 0.0906801007556675,
+   "fix": null
+  },
+  {
+   "id": "motion:foot_slide",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "worst planted-foot drift 0.6 mm per frame (RF at frame 152; limit 4 mm)",
+   "value": 0.0006,
+   "fix": null
+  },
+  {
+   "id": "motion:ground",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "feet sink up to 0.0 mm below their rest height (limit 3 mm)",
+   "value": 0.0,
+   "fix": null
+  },
+  {
+   "id": "motion:sentinel_tail",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "in the sentinel the tail tip comes down to -12 mm (the tripod wants the ground)",
+   "value": -0.0121,
    "fix": null
   },
   {

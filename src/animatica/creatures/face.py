@@ -321,18 +321,32 @@ def face_keys(
         {"op": "insert_keyframes", "target": face["mouth"], "property": "shape_key:smile", "keys": smile},
         {"op": "insert_keyframes", "target": face["mouth"], "property": "shape_key:frown", "keys": frown},
     ]
-    if not cues:  # the emotion's own mouth shape (a laugh, an "O"); during a line the visemes own these keys
-        for key, attr in (("open", "jaw"), ("round", "oh")):
-            vals = [round(getattr(expression_at(track, t), attr), 3) for t in ts]
-            if any(vals):
-                ops.append(
-                    {
-                        "op": "insert_keyframes",
-                        "target": face["mouth"],
-                        "property": f"shape_key:{key}",
-                        "keys": [[frame0 + i, v, "LINEAR"] for i, v in enumerate(vals)],
-                    }
-                )
+    # the emotion's own mouth shape (a laugh, an "O"); inside a spoken line the visemes own these keys, so the
+    # expression's mouth eases out just before the first cue and back in after the last
+    span = None
+    if cues:
+        span = (line_start + cues[0].start, line_start + cues[-1].end)
+    for key, attr in (("open", "jaw"), ("round", "oh")):
+        vals = [getattr(expression_at(track, t), attr) for t in ts]
+        if not any(vals):
+            continue
+        kf = []
+        for i, (t, v) in enumerate(zip(ts, vals)):
+            if span is not None:
+                if span[0] - 0.12 <= t <= span[1] + 0.12:
+                    continue  # lip sync's frames (and its own ease in and out)
+                gap = span[0] - t if t < span[0] else t - span[1]
+                v *= _smooth((gap - 0.12) / 0.25)
+            kf.append([frame0 + i, round(v, 3), "LINEAR"])
+        if kf:
+            ops.append(
+                {
+                    "op": "insert_keyframes",
+                    "target": face["mouth"],
+                    "property": f"shape_key:{key}",
+                    "keys": kf,
+                }
+            )
     if cues:
         for key, kf in cues_to_keyframes(cues, fps, frame0 + int(round(line_start * fps))).items():
             if kf:

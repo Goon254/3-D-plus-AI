@@ -254,13 +254,35 @@ def _read_checks(brief: Brief, critique: dict[str, Any]) -> list[Check]:
     return out
 
 
+def _motion_checks(stress: dict[str, Any]) -> list[Check]:
+    """The rig stress test (DESIGN_STAGE §5, ``scripts/rig_stress_test.py``): one check per measured class."""
+    return [
+        Check(
+            f"motion:{c['id']}",
+            "motion",
+            bool(c["passed"]),
+            bool(c.get("hard", True)),
+            1.0,
+            1.0 if c["passed"] else 0.0,
+            str(c["message"]),
+            c.get("value"),
+        )
+        for c in stress.get("checks", [])
+    ]
+
+
 def score(
     brief: Brief,
     sp: Species,
     image_metrics: dict[str, Any] | None = None,
     critique: dict[str, Any] | None = None,
+    stress: dict[str, Any] | None = None,
 ) -> Result:
+    """Rubric result. ``stress`` is a rig stress-test report; without one, motion is simply not scored here (the
+    design packet always passes it, so nothing reaches the owner unmeasured)."""
     checks = _range_checks(brief, sp) + _design_checks(brief, sp)
+    if stress:
+        checks += _motion_checks(stress)
     pending = []
     if image_metrics:
         checks += _image_checks(brief, image_metrics)

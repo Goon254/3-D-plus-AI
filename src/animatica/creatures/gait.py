@@ -92,6 +92,7 @@ class Waypoint:
     t: float
     x: float
     y: float
+    glide: bool = False  # pass through without stopping (its time is ignored; the run eases as a whole)
 
 
 @dataclass
@@ -115,13 +116,26 @@ def _smooth(u: float) -> float:
 
 
 def path_xy(points: list[Waypoint], t: float) -> tuple[float, float]:
-    """Position on the path at time t: eased between consecutive waypoints (starts and stops gently)."""
+    """Position on the path at time t: eased between consecutive waypoints (starts and stops gently).
+
+    ``glide`` waypoints are passed through without stopping: a run of them between two stops is one eased
+    move along the polyline, by arc length (so a turn drawn as an arc of glide points is walked, not stopped
+    at every point)."""
     if t <= points[0].t:
         return points[0].x, points[0].y
-    for a, b in zip(points, points[1:]):
+    stops = [p for i, p in enumerate(points) if not p.glide or i in (0, len(points) - 1)]
+    for a, b in zip(stops, stops[1:]):
         if t <= b.t:
+            ia, ib = points.index(a), points.index(b)
+            run = points[ia : ib + 1]
             u = _smooth((t - a.t) / max(b.t - a.t, 1e-6))
-            return a.x + (b.x - a.x) * u, a.y + (b.y - a.y) * u
+            segs = [math.hypot(q.x - p.x, q.y - p.y) for p, q in zip(run, run[1:])]
+            goal = u * sum(segs)
+            for (p, q), d in zip(zip(run, run[1:]), segs):
+                if goal <= d or q is b:
+                    w = min(1.0, goal / d) if d > 1e-9 else 1.0
+                    return p.x + (q.x - p.x) * w, p.y + (q.y - p.y) * w
+                goal -= d
     return points[-1].x, points[-1].y
 
 

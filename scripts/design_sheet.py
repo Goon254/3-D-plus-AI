@@ -312,7 +312,11 @@ def sheet_for(
     pre = score(brief, sp, img, None).as_dict()
     sheet = compose(brief.character, views, sil, thumb, pre, out, label or f"morph {morph.as_dict()}")
     crit = critique_for(brief, out)
-    result = score(brief, sp, img, crit).as_dict()
+    # the rig stress test's checks (scripts/rig_stress_test.py, copied to design/<char>/rig_stress.json) join the
+    # final score; the sheet itself is composed without them, so a recorded critique's hash still matches
+    stress_path = ROOT / "design" / brief.character / "rig_stress.json"
+    stress = json.loads(stress_path.read_text(encoding="utf-8")) if stress_path.exists() else None
+    result = score(brief, sp, img, crit, stress).as_dict()
     if crit:  # redraw the panel with the species read included
         compose(brief.character, views, sil, thumb, result, out, label or f"morph {morph.as_dict()}")
     doc = {
@@ -320,6 +324,7 @@ def sheet_for(
         "image_metrics": img,
         "design": describe(sp),
         "critique": crit,
+        "rig_stress": str(stress_path) if stress else None,
         **result,
         "sheet": str(sheet),
     }

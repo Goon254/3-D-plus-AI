@@ -1,0 +1,143 @@
+{
+ "character": "bibi_kobe",
+ "species": "tortoise",
+ "frames": 383,
+ "seconds": 15.96,
+ "timeline": {
+  "walk": 0.8,
+  "turn": 3.6,
+  "stop": 7.6,
+  "expressions": 8.0,
+  "line": 11.9,
+  "line_end": 14.31
+ },
+ "expressions": [
+  "neutral",
+  "happy",
+  "sad",
+  "surprised",
+  "worried",
+  "determined",
+  "curious",
+  "scared",
+  "proud",
+  "neutral",
+  "happy"
+ ],
+ "line": "When you walk slowly, you learn to look up.",
+ "lipsync": "rhubarb",
+ "turn_degrees": 18,
+ "sit_stand": "bow and rise (no sit pose)",
+ "summary": {
+  "eye_embed": {
+   "tortoise_eye_L": [
+    0.648,
+    0.648
+   ],
+   "tortoise_eye_R": [
+    0.648,
+    0.648
+   ]
+  },
+  "skin_gap": {
+   "tortoise_lid_L_up": -0.187,
+   "tortoise_lid_L_lo": -0.652,
+   "tortoise_lid_R_up": -0.187,
+   "tortoise_lid_R_lo": -0.653,
+   "tortoise_brow_L": 0.055,
+   "tortoise_brow_R": 0.055,
+   "tortoise_mouth": -0.007
+  },
+  "swim_p95_mm": {
+   "tortoise_body": 0.0
+  },
+  "mouth_gap_range": [
+   -0.052,
+   -0.005
+  ],
+  "worst_gap": {
+   "tortoise_lid_L_up": {
+    "gap": -0.187,
+    "frame": 229,
+    "expression": "surprised"
+   },
+   "tortoise_lid_L_lo": {
+    "gap": -0.652,
+    "frame": 91,
+    "expression": "neutral"
+   },
+   "tortoise_lid_R_up": {
+    "gap": -0.187,
+    "frame": 229,
+    "expression": "surprised"
+   },
+   "tortoise_lid_R_lo": {
+    "gap": -0.653,
+    "frame": 91,
+    "expression": "neutral"
+   },
+   "tortoise_brow_L": {
+    "gap": 0.055,
+    "frame": 250,
+    "expression": "determined"
+   },
+   "tortoise_brow_R": {
+    "gap": 0.055,
+    "frame": 250,
+    "expression": "determined"
+   }
+  }
+ },
+ "checks": [
+  {
+   "id": "eye_socket",
+   "passed": true,
+   "hard": true,
+   "message": "eye socket: ok",
+   "value": null
+  },
+  {
+   "id": "brow_float",
+   "passed": true,
+   "hard": false,
+   "message": "brow float: ok",
+   "value": null
+  },
+  {
+   "id": "lid_float",
+   "passed": true,
+   "hard": false,
+   "message": "lid float: ok",
+   "value": null
+  },
+  {
+   "id": "texture_swim",
+   "passed": true,
+   "hard": true,
+   "message": "texture swim: ok",
+   "value": null
+  },
+  {
+   "id": "mouth_float",
+   "passed": true,
+   "hard": false,
+   "message": "mouth off the skin by -1% of its size",
+   "value": -0.005429978532643011
+  },
+  {
+   "id": "foot_slide",
+   "passed": true,
+   "hard": true,
+   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 6 mm)",
+   "value": 0.0
+  },
+  {
+   "id": "ground",
+   "passed": true,
+   "hard": true,
+   "message": "feet sink up to 0.0 mm below their rest height (limit 4 mm)",
+   "value": 0.0
+  }
+ ],
+ "passed": true
+}

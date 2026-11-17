@@ -1,0 +1,151 @@
+{
+ "character": "kiki",
+ "species": "meerkat",
+ "frames": 334,
+ "seconds": 13.92,
+ "timeline": {
+  "walk": 0.8,
+  "turn": 3.6,
+  "stop": 6.17,
+  "expressions": 6.57,
+  "line": 10.47,
+  "line_end": 12.29
+ },
+ "expressions": [
+  "neutral",
+  "happy",
+  "sad",
+  "surprised",
+  "worried",
+  "determined",
+  "curious",
+  "scared",
+  "proud",
+  "scared",
+  "surprised",
+  "happy"
+ ],
+ "line": "Danger! Oh. It's a rock.",
+ "lipsync": "rhubarb",
+ "turn_degrees": 90,
+ "sit_stand": "sentinel drop and rise",
+ "summary": {
+  "eye_embed": {
+   "meerkat_eye_L": [
+    0.649,
+    0.649
+   ],
+   "meerkat_eye_R": [
+    0.65,
+    0.65
+   ]
+  },
+  "skin_gap": {
+   "meerkat_lid_L_up": -0.151,
+   "meerkat_lid_L_lo": -0.681,
+   "meerkat_lid_R_up": -0.15,
+   "meerkat_lid_R_lo": -0.682,
+   "meerkat_brow_L": 0.066,
+   "meerkat_brow_R": 0.066,
+   "meerkat_mouth": 0.129
+  },
+  "swim_p95_mm": {
+   "meerkat_body": 0.0
+  },
+  "mouth_gap_range": [
+   0.062,
+   0.091
+  ],
+  "worst_gap": {
+   "meerkat_lid_L_up": {
+    "gap": -0.151,
+    "frame": 196,
+    "expression": "surprised"
+   },
+   "meerkat_lid_L_lo": {
+    "gap": -0.681,
+    "frame": 319,
+    "expression": "happy"
+   },
+   "meerkat_lid_R_up": {
+    "gap": -0.15,
+    "frame": 196,
+    "expression": "surprised"
+   },
+   "meerkat_lid_R_lo": {
+    "gap": -0.682,
+    "frame": 319,
+    "expression": "happy"
+   },
+   "meerkat_brow_L": {
+    "gap": 0.066,
+    "frame": 214,
+    "expression": "determined"
+   },
+   "meerkat_brow_R": {
+    "gap": 0.066,
+    "frame": 214,
+    "expression": "determined"
+   }
+  }
+ },
+ "checks": [
+  {
+   "id": "eye_socket",
+   "passed": true,
+   "hard": true,
+   "message": "eye socket: ok",
+   "value": null
+  },
+  {
+   "id": "brow_float",
+   "passed": true,
+   "hard": false,
+   "message": "brow float: ok",
+   "value": null
+  },
+  {
+   "id": "lid_float",
+   "passed": true,
+   "hard": false,
+   "message": "lid float: ok",
+   "value": null
+  },
+  {
+   "id": "texture_swim",
+   "passed": true,
+   "hard": true,
+   "message": "texture swim: ok",
+   "value": null
+  },
+  {
+   "id": "mouth_float",
+   "passed": true,
+   "hard": false,
+   "message": "mouth off the skin by 9% of its size",
+   "value": 0.0906801007556675
+  },
+  {
+   "id": "foot_slide",
+   "passed": true,
+   "hard": true,
+   "message": "worst planted-foot drift 0.6 mm per frame (RF at frame 152; limit 4 mm)",
+   "value": 0.0006
+  },
+  {
+   "id": "ground",
+   "passed": true,
+   "hard": true,
+   "message": "feet sink up to 0.0 mm below their rest height (limit 3 mm)",
+   "value": 0.0
+  },
+  {
+   "id": "sentinel_tail",
+   "passed": true,
+   "hard": true,
+   "message": "in the sentinel the tail tip comes down to -12 mm (the tripod wants the ground)",
+   "value": -0.0121
+  }
+ ],
+ "passed": true
+}

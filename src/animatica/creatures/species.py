@@ -179,6 +179,7 @@ SPECIES: dict[str, Species] = {
         head_pitch=22.0,
         eye=(0.12, -0.06, 0.068, 0.08),
         brow_bias=0.3,  # her low resting brows read as a scowl
+        brow_max=0.7,  # rig stress test: a surprised lift of 1.0 floated her brows 16 % off the skin
         ear=("leaf", (0.05, 0.035, 0.15), (0.1, 0.1, 0.06), (0.0, 70.0, -20.0)),
         tail=Chain((0.0, 0.5, 0.0), (0.0, 0.62, -0.7), 3, 0.028, 0.014),
         tuft=0.05,
