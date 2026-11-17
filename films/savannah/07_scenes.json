@@ -38,38 +38,46 @@
         "water": [0.2, 3.3, 1.35],
         "acacias": [[-8.0, 12.0, 1.0], [10.0, 18.0, 0.85], [-18.0, 28.0, 0.9]],
         "mounds": [[-4.6, 5.3, 0.8]],
-        "action": [[0.5, 2.6, 6.5]]
+        "action": [[0.5, 2.6, 6.5]],
+        "reeds_at": 150
       },
       "ambience": {"tod": "dawn", "water": true},
       "cast": {
         "zuri": {"species": "zebra", "at": [-1.7, 2.2], "yaw": 70},
         "kiki": {"species": "meerkat", "at": [-4.8, 3.4], "gait": "scurry", "path": [[0.6, -4.8, 3.4], [3.2, -3.3, 3.9], [4.0, -3.35, 3.65]]},
-        "tembo": {"species": "elephant", "at": [5.6, 1.0], "gait": "fast_walk", "path": [[0.3, 5.6, 1.0], [5.3, 1.75, 1.55], [6.1, 1.5, 1.2]]},
+        "tembo": {"species": "elephant", "at": [5.6, 1.0], "gait": "fast_walk", "path": [[0.3, 5.6, 1.0], [5.2, 2.3, 5.5], [6.8, 0.85, 4.75]]},
         "neema": {"species": "giraffe", "at": [8.6, 3.8], "path": [[0.8, 8.6, 3.8], [5.8, 4.3, 4.1]]}
       },
       "lines": [
         {"who": "tembo", "text": "Morning, Zuri! Morning, Kiki! Water!", "at": 6.4, "expr": [[0, "happy"]]},
-        {"who": "kiki", "text": "Thank you, Tembo. Very refreshing.", "gap": 3.4, "expr": [[0, "proud"]]},
-        {"who": "zuri", "text": "Your trunk's a hose with hiccups!", "gap": 0.5, "expr": [[0, "happy"]]},
-        {"who": "zuri", "text": "And stand up straight, Neema, you lovely lamp-post!", "gap": 0.45, "expr": [[0, "proud"], [1.2, "happy"]]}
+        {"who": "kiki", "text": "Thank you, Tembo. Very refreshing.", "gap": 3.4, "to": "tembo", "expr": [[0, "proud"]]},
+        {"who": "zuri", "text": "Your trunk's a hose with hiccups!", "gap": 0.5, "to": "tembo", "expr": [[0, "happy"]]},
+        {"who": "zuri", "text": "And stand up straight, Neema, you lovely lamp-post!", "gap": 0.45, "to": "neema", "expr": [[0, "proud"], [1.2, "happy"]]}
       ],
       "reactions": [
         {"who": "kiki", "line": 0, "dt": 0.2, "expr": "curious"},
         {"who": "tembo", "line": 0, "dt": 0.5, "expr": "determined"},
         {"who": "tembo", "line": 0, "dt": 1.6, "expr": "worried"},
-        {"who": "kiki", "line": 0, "dt": 2.0, "expr": "surprised"},
-        {"who": "tembo", "line": 0, "dt": 2.3, "expr": "surprised"},
+        {"who": "kiki", "line": 0, "dt": 2.45, "expr": "surprised"},
+        {"who": "tembo", "line": 0, "dt": 2.2, "expr": "surprised"},
         {"who": "zuri", "line": 1, "dt": 0.1, "expr": "happy"},
         {"who": "neema", "line": 3, "dt": -1.5, "expr": "surprised"},
         {"who": "neema", "line": 3, "dt": 0.1, "expr": "sad"},
         {"who": "tembo", "line": 3, "dt": 0.2, "expr": "sad"}
       ],
-      "sfx": [{"line": 0, "dt": 1.0, "kind": "slurp"}, {"line": 0, "dt": 2.0, "kind": "splash"}],
+      "sfx": [{"line": 0, "dt": 1.0, "kind": "slurp"}, {"line": 0, "dt": 2.45, "kind": "splash"}],
+      "gestures": [
+        {"who": "neema", "kind": "head_duck", "t": 0.4, "dur": 40, "amount": 0.5, "note": "ambles in ducking her head to look shorter"},
+        {"who": "tembo", "kind": "trunk_drink", "line": 0, "dt": 0.25, "dur": 1.6, "note": "dips, sucks, wobbles"},
+        {"who": "tembo", "kind": "trunk_spray", "line": 0, "dt": 1.6, "dur": 1.1, "target": "kiki", "note": "the hiccup: it all comes out at Kiki"},
+        {"who": "neema", "kind": "head_duck", "line": 3, "dt": 0.1, "dur": 6, "amount": 0.35, "note": "ducks lower, embarrassed"},
+        {"who": "tembo", "kind": "ears_droop", "line": 3, "dt": 0.2, "dur": 6}
+      ],
       "shots": [
         {"type": "ws", "subjects": ["zuri", "kiki", "tembo", "neema"], "t": 0, "note": "Tembo hurries in, Neema ambles behind, Kiki scurries to the mound"},
         {"type": "ms", "subjects": ["tembo"], "line": 0},
-        {"type": "mcu", "subjects": ["tembo"], "line": 0, "after": 0.4, "note": "the trunk dips, sucks, wobbles"},
-        {"type": "ms", "subjects": ["kiki"], "line": 0, "after": 1.9, "note": "the spray hits Kiki"},
+        {"type": "ms", "subjects": ["tembo"], "line": 0, "after": 0.4, "side": 45, "note": "the trunk dips, sucks, wobbles: in profile, so the trunk reads against the sky and the water"},
+        {"type": "ms", "subjects": ["kiki"], "line": 0, "after": 2.25, "note": "the spray hits Kiki"},
         {"type": "ms", "subjects": ["zuri"], "line": 2, "side": -10},
         {"type": "ws", "subjects": ["zuri", "neema"], "line": 3},
         {"type": "cu", "subjects": ["tembo"], "line": 3, "after": 0.1, "note": "Tembo's ears droop"}

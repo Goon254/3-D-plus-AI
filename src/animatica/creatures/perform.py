@@ -14,6 +14,7 @@ from typing import Any
 
 from .build import CreatureMeta
 from .gait import GaitSpec, LocoFrame, Waypoint, plan_locomotion
+from .gesture import Mat, euler_to_mat, mat_mul, mat_to_euler
 from .species import SPECIES
 
 
@@ -83,6 +84,18 @@ def apply_sentinel(meta: CreatureMeta, plan: list[LocoFrame], fps: int) -> None:
         p.root, p.pitch, p.sentinel = root, pitch, b
 
 
+def plan_for(
+    meta: CreatureMeta, gait: GaitSpec, points: list[Waypoint], fps: int = 24, yaw0: float | None = None
+) -> list[LocoFrame]:
+    """The locomotion plan (root path, feet, phases) incl. the meerkat's sentinel pose."""
+    plan = plan_locomotion(
+        points, gait, meta.feet, meta.leg, meta.body_z, meta.foot_z, fps, joints=meta.joints, yaw0=yaw0
+    )
+    if SPECIES[meta.species].default_pose == "sentinel":
+        apply_sentinel(meta, plan, fps)
+    return plan
+
+
 def walk_keys(
     meta: CreatureMeta,
     gait: GaitSpec,
@@ -91,12 +104,15 @@ def walk_keys(
     frame0: int = 1,
     seed: int = 0,
     yaw0: float | None = None,
+    plan: list[LocoFrame] | None = None,
+    overlay: dict[str, list[Mat]] | None = None,
 ) -> tuple[list[dict[str, Any]], list[LocoFrame]]:
-    plan = plan_locomotion(
-        points, gait, meta.feet, meta.leg, meta.body_z, meta.foot_z, fps, joints=meta.joints, yaw0=yaw0
-    )
-    if SPECIES[meta.species].default_pose == "sentinel":
-        apply_sentinel(meta, plan, fps)
+    """Keys for a creature walking ``points``. Pass a precomputed ``plan`` (from :func:`plan_for`) to
+    reuse it, and an ``overlay`` (bone -> per-frame bone-local rotation, from
+    :func:`animatica.creatures.gesture.acting_layers`) to layer acting over the locomotion."""
+    if plan is None:
+        plan = plan_for(meta, gait, points, fps, yaw0)
+    overlay = overlay or {}
     rng = random.Random(seed)
     frames = [frame0 + i for i in range(len(plan))]
     ts = [i / fps for i in range(len(plan))]
@@ -139,12 +155,20 @@ def walk_keys(
         )
 
     def bone(name: str, fn) -> None:
+        lay = overlay.get(name)
+
+        def val(i: int, p: LocoFrame, t: float) -> list[float]:
+            e = fn(p, t)
+            if lay is not None and lay[i] is not None:
+                e = mat_to_euler(mat_mul(lay[i], euler_to_mat(e)))
+            return [r(v, 2) for v in e]
+
         ops.append(
             {
                 "op": "insert_keyframes",
                 "target": meta.rig,
                 "property": f"bone:{name}.rotation",
-                "keys": [_k(f, [r(v, 2) for v in fn(p, t)]) for f, p, t in zip(frames, plan, ts)],
+                "keys": [_k(f, val(i, p, t)) for i, (f, p, t) in enumerate(zip(frames, plan, ts))],
             }
         )
 

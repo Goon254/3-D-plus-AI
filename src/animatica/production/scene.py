@@ -27,6 +27,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from animatica.creatures.gesture import KINDS
+
 MIN_SHOT = 1.2  # seconds: anything shorter reads as a glitch, not a cut
 LINE_LEAD = 0.35  # cut to the speaker this long before the first word
 SENSOR_W = 36.0  # mm (Blender's default, sensor fit AUTO = width for 16:9)
@@ -37,7 +39,7 @@ ASPECT = 16 / 9
 SHOT_SIZES: dict[str, tuple[float, float, float]] = {
     "cu": (2.0, 60.0, 0.97),  # head and a little shoulder
     "mcu": (2.9, 50.0, 0.95),  # head and chest
-    "ms": (1.3, 40.0, 0.85),  # the whole animal, snug
+    "ms": (1.45, 40.0, 0.85),  # the whole animal, with headroom for the near side's perspective
     "ws": (1.0, 30.0, 0.7),  # fit every subject with room around them
     "ews": (1.0, 24.0, 0.5),  # the place: subjects small
 }
@@ -50,6 +52,7 @@ class Line:
     expr: list[tuple[float, str]] = field(default_factory=list)  # (seconds into the line, expression)
     at: float | None = None
     gap: float = 0.45
+    to: str = ""  # the addressee: the speaker turns partly toward them (eyeline)
     start: float = 0.0  # filled by schedule()
     end: float = 0.0
 
@@ -93,6 +96,15 @@ class Beat:
         return round(self.t if self.t is not None else lines[self.line].end + self.dt, 3)  # type: ignore[index]
 
 
+@dataclass
+class GestureBeat(Beat):
+    """An acting gesture (``animatica.creatures.gesture.KINDS``) by ``who``: ``value`` is the kind."""
+
+    dur: float = 1.5
+    target: str = ""
+    amount: float = 1.0
+
+
 def _beat(d: Any, kind: str) -> Beat:
     if isinstance(d, dict):
         return Beat(
@@ -120,6 +132,8 @@ class SceneSpec:
     shots: list[Shot]
     reactions: list[Beat] = field(default_factory=list)  # who changes expression when
     sfx: list[Beat] = field(default_factory=list)
+    gestures: list[GestureBeat] = field(default_factory=list)
+    eyelines: bool = True  # listeners turn their heads toward whoever is speaking
     ambience: dict[str, Any] = field(default_factory=dict)
     tail: float = 1.6
     lead: float = 1.0
@@ -146,6 +160,7 @@ def scene_from_dict(d: dict[str, Any]) -> SceneSpec:
             expr=[(float(t), e) for t, e in ln.get("expr", [])],
             at=ln.get("at"),
             gap=float(ln.get("gap", 0.45)),
+            to=ln.get("to", ""),
         )
         for ln in d.get("lines", [])
     ]
@@ -175,6 +190,20 @@ def scene_from_dict(d: dict[str, Any]) -> SceneSpec:
         shots=shots,
         reactions=[_beat(r, "reaction") for r in d.get("reactions", [])],
         sfx=[_beat(x, "sfx") for x in d.get("sfx", [])],
+        gestures=[
+            GestureBeat(
+                value=g["kind"],
+                who=g["who"],
+                t=g.get("t"),
+                line=g.get("line"),
+                dt=float(g.get("dt", 0.0)),
+                dur=float(g.get("dur", 1.5)),
+                target=g.get("target", ""),
+                amount=float(g.get("amount", 1.0)),
+            )
+            for g in d.get("gestures", [])
+        ],
+        eyelines=bool(d.get("eyelines", True)),
         ambience=d.get("ambience", {}),
         tail=float(d.get("tail", 1.6)),
         lead=float(d.get("lead", 1.0)),
@@ -218,6 +247,22 @@ def validate(spec: SceneSpec) -> None:
     for b in spec.reactions:
         if b.who not in spec.cast:
             raise ValueError(f"{spec.id}: reaction by {b.who!r}, who is not in the cast")
+    for g in spec.gestures:
+        if (g.t is None) == (g.line is None):
+            raise ValueError(f"{spec.id}: gesture {g.value!r} needs exactly one of 't' or 'line'")
+        if g.line is not None and not 0 <= g.line < len(spec.lines):
+            raise ValueError(f"{spec.id}: gesture {g.value!r} refers to a missing line {g.line}")
+        if g.who not in spec.cast:
+            raise ValueError(f"{spec.id}: gesture by {g.who!r}, who is not in the cast")
+        if g.value not in KINDS:
+            raise ValueError(f"{spec.id}: unknown gesture {g.value!r} (known: {', '.join(KINDS)})")
+        if g.value in ("look_at", "trunk_spray") and g.target not in spec.cast:
+            raise ValueError(f"{spec.id}: {g.value} by {g.who} needs a target in the cast")
+        if g.value.startswith("trunk") and spec.cast[g.who].species != "elephant":
+            raise ValueError(f"{spec.id}: {g.who} has no trunk for {g.value}")
+    for i, ln in enumerate(spec.lines):
+        if ln.to and ln.to not in spec.cast:
+            raise ValueError(f"{spec.id} line {i}: addressee {ln.to!r} is not in the cast")
     for a in spec.cast.values():
         ts = [p[0] for p in a.path]
         if ts != sorted(ts):
@@ -241,7 +286,11 @@ def schedule(spec: SceneSpec, durations: list[float]) -> float:
         prev_end = ln.end
     last = prev_end if prev_end is not None else 0.0
     latest_action = max([p[0] for a in spec.cast.values() for p in a.path] + [0.0])
-    latest_beat = max([b.time(spec.lines) for b in spec.reactions + spec.sfx] + [0.0])
+    latest_beat = max(
+        [b.time(spec.lines) for b in spec.reactions + spec.sfx]
+        + [g.time(spec.lines) + min(g.dur, 2.5) - 0.5 for g in spec.gestures]  # long holds don't stretch it
+        + [0.0]
+    )
     return round(max(spec.seconds, last + spec.tail, latest_action + 0.5, latest_beat + 1.0), 3)
 
 
@@ -331,18 +380,79 @@ def set_subject(look: tuple[float, float, float], frame_h: float) -> Subject:
     return Subject(head=look, root=(look[0], look[1], look[2]), yaw=0.0, head_size=0.3, height=h, length=0.0)
 
 
+@dataclass
+class Occluder:
+    """Another animal on the set: a vertical cylinder (centre, radius, height) that can block a shot."""
+
+    x: float
+    y: float
+    radius: float
+    height: float
+
+
+def blocked(cam: V3, aim: V3, occ: Occluder, frame_h: float = 0.0, margin: float = 0.1) -> bool:
+    """True if ``occ`` stands between the camera and the subject inside the middle of the frame.
+
+    The test widens with distance like the frustum does: at a fraction ``u`` of the way to the subject the
+    frame is ``u * frame_h`` tall, and anything within the central 70 % of that width (plus the occluder's
+    radius) that rises above the frame's bottom edge there would fill the foreground."""
+    dx, dy = aim[0] - cam[0], aim[1] - cam[1]
+    L2 = dx * dx + dy * dy
+    if L2 < 1e-9:
+        return False
+    u = ((occ.x - cam[0]) * dx + (occ.y - cam[1]) * dy) / L2
+    if not 0.0 < u < 0.97:  # behind the camera, or behind the subject
+        return False
+    px, py = cam[0] + u * dx, cam[1] + u * dy
+    z = cam[2] + u * (aim[2] - cam[2])
+    half_w = 0.7 * u * frame_h * ASPECT / 2
+    bottom = z - u * frame_h / 2
+    return math.hypot(occ.x - px, occ.y - py) < occ.radius + margin + half_w and bottom < occ.height
+
+
+SWINGS = (0.0, 15.0, -15.0, 30.0, -30.0, 45.0, -45.0, 60.0, -60.0)
+
+
 def frame_shot(
     kind: str,
     subjects: list[Subject],
     side: float = 0.0,
     home: V3 = (0.0, -1.0, 0.0),
     aim_z: float | None = None,
+    occluders: list[Occluder] | None = None,
 ) -> dict:
     """Camera location, aim point and lens for a shot of ``subjects``.
 
     ``home`` is the scene's camera side (unit XY vector from the action toward the cameras); every camera
-    stays within 70 degrees of it so screen direction holds across cuts.
+    stays within 70 degrees of it so screen direction holds across cuts. If another animal
+    (``occluders``) stands in the line of sight, the camera swings around the subject in 15-degree steps
+    (nearest first, still within the camera side) until the view is clear; ``"swing"`` reports by how much.
     """
+    best = None
+    for sw in SWINGS if occluders else (0.0,):
+        cam = _frame(kind, subjects, side + sw, home, aim_z, sw)
+        if cam is None:
+            continue
+        hits = sum(
+            blocked(tuple(cam["location"]), tuple(cam["aim"]), o, cam["frame_h"]) for o in occluders or []
+        )
+        if hits == 0:
+            return {**cam, "swing": sw}
+        if best is None or hits < best[0]:
+            best = (hits, {**cam, "swing": sw, "blocked": hits})
+    if best is None:
+        return {**_frame(kind, subjects, side, home, aim_z, 0.0), "swing": 0.0}  # type: ignore[dict-item]
+    return best[1]
+
+
+def _frame(
+    kind: str,
+    subjects: list[Subject],
+    side: float,
+    home: V3,
+    aim_z: float | None,
+    swing: float,
+) -> dict | None:
     frac, lens, hfrac = SHOT_SIZES[kind]
     half = vfov(lens) / 2
     hx, hy = home[0], home[1]
@@ -376,7 +486,10 @@ def frame_shot(
     n = math.hypot(dx, dy) or 1.0
     dx, dy = dx / n, dy / n
     ang = math.degrees(math.atan2(hx * dy - hy * dx, hx * dx + hy * dy))  # home -> d, CCW +
-    ang = max(-70.0, min(70.0, ang)) + side
+    ang = max(-70.0, min(70.0, ang))
+    if swing and abs(ang + swing) > 75.0:
+        return None  # a swing may not take the camera off the camera side
+    ang += side
     a = math.radians(ang)
     dx, dy = hx * math.cos(a) - hy * math.sin(a), hx * math.sin(a) + hy * math.cos(a)
     dist = (h / 2) / math.tan(half)

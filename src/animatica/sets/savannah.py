@@ -99,6 +99,7 @@ class Layout:
     )
     mounds: list[tuple[float, float, float]] = field(default_factory=lambda: [(5.5, 7.0, 1.0)])
     paths: list[tuple[float, float, float]] = field(default_factory=list)  # grass cleared (x, y, r)
+    reeds_at: float = 90.0  # degrees: which side of the water the reeds grow on (90 = the back, +Y)
     grass_density: float = 14.0
     grass_extent: float = 34.0
     seed: int = 7
@@ -309,6 +310,17 @@ def mound_ops(mid: str, at: tuple[float, float], scale: float, seed: int) -> lis
                 name=f"{mid}_earth",
             ),
         },
+    ]
+
+
+def _reed_corner(wx: float, wy: float, wr: float, at: float, u: float, v: float) -> list[float]:
+    """A corner of the reed bed: (u, v) in water radii across/away from the rim on the ``at`` side."""
+    a = math.radians(at - 90.0)
+    x, y = u * wr, v * wr
+    return [
+        round(wx + x * math.cos(a) - y * math.sin(a), 4),
+        round(wy + x * math.sin(a) + y * math.cos(a), 4),
+        0,
     ]
 
 
@@ -531,10 +543,8 @@ def savannah_set(layout: Layout, tod: str = "sunset") -> list[dict[str, Any]]:
                 "op": "create_mesh",
                 "id": "reed_bed",
                 "vertices": [
-                    [wx - wr * 1.2, wy + wr * 0.55, 0],
-                    [wx + wr * 1.2, wy + wr * 0.55, 0],
-                    [wx + wr * 1.1, wy + wr * 1.15, 0],
-                    [wx - wr * 1.1, wy + wr * 1.15, 0],
+                    _reed_corner(wx, wy, wr, layout.reeds_at, u, v)
+                    for u, v in ((-1.2, 0.55), (1.2, 0.55), (1.1, 1.15), (-1.1, 1.15))
                 ],
                 "faces": [[0, 1, 2, 3]],
                 "location": [0, 0, -0.02],

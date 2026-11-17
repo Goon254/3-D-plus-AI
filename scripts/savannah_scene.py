@@ -33,10 +33,12 @@ from animatica.core.engine import BlenderSession  # noqa: E402
 from animatica.creatures.build import build_creature  # noqa: E402
 from animatica.creatures.face import BROW_COLOR, face_keys, face_ops, refresh_rest  # noqa: E402
 from animatica.creatures.gait import GAITS, Waypoint  # noqa: E402
-from animatica.creatures.perform import walk_keys  # noqa: E402
+from animatica.creatures.gesture import Gesture, Rig, acting_layers, gaze_track, spray_droplets  # noqa: E402
+from animatica.creatures.perform import plan_for, walk_keys  # noqa: E402
 from animatica.creatures.species import SPECIES  # noqa: E402
 from animatica.production import sound  # noqa: E402
 from animatica.production.scene import (  # noqa: E402
+    Occluder,
     Subject,
     cut_list,
     expression_tracks,
@@ -93,6 +95,11 @@ def main() -> int:
     ap.add_argument(
         "--stills", action="store_true", help="render one still per shot (framing check), no film"
     )
+    ap.add_argument(
+        "--at",
+        default="",
+        help="comma-separated seconds: render a still at each, through the shot on screen then (no film)",
+    )
     a = ap.parse_args()
     t0 = time.time()
     spec = load_scenes(FILM / "07_scenes.json")[a.scene]
@@ -144,6 +151,7 @@ def main() -> int:
         acacias=[tuple(x) for x in lay.get("acacias", [])],
         mounds=[tuple(x) for x in lay.get("mounds", [])],
         action=[tuple(x) for x in lay.get("action", [(0.0, 0.0, 4.0)])],
+        reeds_at=float(lay.get("reeds_at", 90.0)),
     )
     ops = savannah_set(layout, spec.tod)
     metas, faces, plans = {}, {}, {}
@@ -165,14 +173,27 @@ def main() -> int:
             q = run(eng, "q", [{"op": "query", "ids": brows, "fields": ["transform"]}])
             for f in faces.values():
                 refresh_rest(f, q["objects"])
-        # ---- performance: gaits/idles, lip sync, expressions
+        # ---- performance: gaits/idles, eyelines and gestures, lip sync, expressions
+        gaits, wps = {}, {}
+        for cid, actor in spec.cast.items():
+            pts, yaw0 = waypoints(actor, seconds)
+            gaits[cid] = GAITS[actor.species].get(actor.gait) or GAITS[actor.species]["walk"]
+            wps[cid] = (pts, yaw0)
+            plans[cid] = plan_for(metas[cid], gaits[cid], pts, fps, yaw0)
+        gestures = [
+            Gesture(g.who, g.value, g.time(spec.lines), g.dur, g.target, g.amount) for g in spec.gestures
+        ]
         anim: list[dict] = []
         for k, (cid, actor) in enumerate(spec.cast.items()):
             meta = metas[cid]
-            pts, yaw0 = waypoints(actor, seconds)
-            gait = GAITS[actor.species].get(actor.gait) or GAITS[actor.species]["walk"]
-            keys, plan = walk_keys(meta, gait, pts, fps, 1, seed=11 + k, yaw0=yaw0)
-            plans[cid] = plan
+            pts, yaw0 = wps[cid]
+            gaze = gaze_track(cid, plans, spec.lines, gestures, fps) if spec.eyelines else None
+            rig = Rig(actor.species, meta.bone_dirs, meta.neck_bones, meta.trunk_bones, meta.ear_bones)
+            mine = [g for g in gestures if g.who == cid]
+            overlay = acting_layers(rig, plans[cid], gaze, mine, fps, targets=plans)
+            keys, _ = walk_keys(
+                meta, gaits[cid], pts, fps, 1, seed=11 + k, yaw0=yaw0, plan=plans[cid], overlay=overlay
+            )
             cues = []
             for ln, (wav, _) in zip(spec.lines, takes):
                 if ln.who == cid:
@@ -183,6 +204,31 @@ def main() -> int:
             anim += keys + face_keys(faces[cid], tracks[cid], cues or None, fps, 1, n)
         if anim:
             run(eng, "perform", anim)
+        # water spray: drops leave the trunk tip during the firing part of the gesture and land on the target
+        fx: list[dict] = []
+        for j, g in enumerate(gg for gg in gestures if gg.kind == "trunk_spray"):
+            m, tm = metas[g.who], metas[g.target]
+            f0 = 1 + int((g.start + 0.32 * g.dur) * fps)
+            f1 = 1 + int((g.start + 0.58 * g.dur) * fps)
+            fr = list(range(f0, f1 + 1))
+            tip = f"{m.rig}:{m.trunk_bones[-1]}"
+            d = run(
+                eng,
+                f"spray{j}",
+                [
+                    {
+                        "op": "inspect",
+                        "subjects": [m.root, tm.root],
+                        "frames": fr,
+                        "bone_tails": [tip, f"{tm.rig}:head"],
+                    }
+                ],
+            )["inspect"]["frames"]
+            tips = {f: tuple(d[str(f)]["bone_tails"][tip]) for f in fr}
+            head = tuple(d[str(f1)]["bone_tails"][f"{tm.rig}:head"])
+            fx += spray_droplets(f"{g.who}{j}", tips, head, fps, n, seed=5 + j)
+        if fx:
+            run(eng, "fx", fx)
 
         # ---- cameras, framed on where the heads really are
         cam_ops: list[dict] = []
@@ -223,7 +269,26 @@ def main() -> int:
                         )
             else:
                 subs = [set_subject(sh.look, sh.frame_h)]  # type: ignore[arg-type]
-            cam = frame_shot(sh.type, subs, side=sh.side, aim_z=sh.look[2] if sh.look else None)
+            mid = (f0 + f1) // 2
+            occ = []
+            for c in spec.cast:
+                if c in sh.subjects:
+                    continue
+                p = plans[c][min(len(plans[c]) - 1, mid - 1)]
+                sp_ = SPECIES[spec.cast[c].species]
+                top = metas[c].head_height + max(sp_.head_size) * 0.5
+                # the body, and the head out in front of it (a zebra's head is a metre from its middle)
+                ya = math.radians(p.yaw)
+                hx, hy = sp_.head_at[0], sp_.head_at[1]
+                head_xy = (
+                    p.root[0] + hx * math.cos(ya) - hy * math.sin(ya),
+                    p.root[1] + hx * math.sin(ya) + hy * math.cos(ya),
+                )
+                occ.append(Occluder(p.root[0], p.root[1], max(0.2, 0.25 * metas[c].length), top))
+                occ.append(Occluder(*head_xy, max(sp_.head_size) * 0.6, top))
+            cam = frame_shot(
+                sh.type, subs, side=sh.side, aim_z=sh.look[2] if sh.look else None, occluders=occ
+            )
             cid = f"cam_{i:02d}_{sh.type}"
             cam_ops += [
                 {"op": "create_empty", "id": f"{cid}_aim", "location": cam["aim"]},
@@ -265,11 +330,16 @@ def main() -> int:
             ],
         )
         render_s = None
-        if a.stills:
+        if a.stills or a.at:
             a.no_render = True
             still_ops = []
-            for r_ in shot_report:
-                mid = 1 + int((r_["start"] + r_["end"]) / 2 * fps)
+            picks = (
+                [(r_, 1 + int((r_["start"] + r_["end"]) / 2 * fps)) for r_ in shot_report] if a.stills else []
+            )
+            for tt in [float(x) for x in a.at.split(",") if x.strip()]:
+                r_ = [x for x in shot_report if x["start"] <= tt][-1]
+                picks.append((r_, 1 + int(tt * fps)))
+            for r_, mid in picks:
                 cam_id = f"cam_{r_['shot']:02d}_{r_['type']}"
                 still_ops.append(
                     {
@@ -279,7 +349,7 @@ def main() -> int:
                         "engine": "cycles",
                         "samples": samples,
                         "resolution": list(res),
-                        "path": str(out / "stills" / f"shot_{r_['shot']:02d}_{r_['type']}.png"),
+                        "path": str(out / "stills" / f"shot_{r_['shot']:02d}_{r_['type']}_f{mid:04d}.png"),
                         "device": device,
                     }
                 )

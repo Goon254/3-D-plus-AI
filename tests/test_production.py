@@ -12,7 +12,9 @@ from animatica.audio import ambience
 from animatica.production import sound
 from animatica.production.scene import (
     MIN_SHOT,
+    Occluder,
     Subject,
+    blocked,
     cut_list,
     expression_tracks,
     frame_shot,
@@ -59,6 +61,11 @@ def test_film_scene_specs_load_and_validate():
         {"shots": [{"type": "ms", "subjects": ["zz"], "t": 0}]},
         {"shots": [{"type": "ws", "subjects": [], "t": 0}]},  # a set shot needs look + frame_h
         {"reactions": [{"who": "zz", "t": 1, "expr": "happy"}]},
+        {"gestures": [{"who": "a", "kind": "moonwalk", "t": 1}]},  # unknown gesture
+        {"gestures": [{"who": "a", "kind": "trunk_drink", "t": 1}]},  # a zebra has no trunk
+        {"gestures": [{"who": "a", "kind": "look_at", "t": 1}]},  # look at whom?
+        {"gestures": [{"who": "a", "kind": "nod", "line": 7}]},
+        {"lines": [{"who": "a", "text": "hi", "to": "zz"}]},
     ],
 )
 def test_bad_specs_are_rejected(bad):
@@ -173,3 +180,48 @@ def test_sfx_are_stereo_short_and_audible(kind):
     x = ambience.sfx(kind, seed=3)
     assert x.ndim == 2 and x.shape[1] == 2 and 0.1 * sound.SR < len(x) < 2.5 * sound.SR
     assert 0.02 < float(np.abs(x).max()) < 1.0
+
+
+def test_gestures_and_addressees_load_and_long_holds_do_not_stretch_the_scene():
+    sp = _spec(
+        lines=[{"who": "a", "text": "one", "to": "b"}],
+        shots=[{"type": "ws", "subjects": ["a", "b"], "t": 0}],
+        gestures=[
+            {"who": "b", "kind": "head_duck", "t": 0.5, "dur": 60},
+            {"who": "b", "kind": "nod", "line": 0, "dt": 0.2, "dur": 1.0},
+        ],
+    )
+    assert sp.lines[0].to == "b" and sp.eyelines
+    assert [g.value for g in sp.gestures] == ["head_duck", "nod"]
+    seconds = schedule(sp, [1.0])
+    assert seconds < 10  # the 60 s hold is a pose, not a beat that needs screen time
+    assert sp.gestures[1].time(sp.lines) == pytest.approx(sp.lines[0].end + 0.2)
+
+
+def test_sc02_stages_the_puddle_gag():
+    sc02 = load_scenes(SCENES)["sc02"]
+    kinds = {(g.who, g.value) for g in sc02.gestures}
+    assert {("tembo", "trunk_drink"), ("tembo", "trunk_spray"), ("tembo", "ears_droop")} <= kinds
+    assert ("neema", "head_duck") in kinds
+    spray = next(g for g in sc02.gestures if g.value == "trunk_spray")
+    assert spray.target == "kiki"
+
+
+@pytest.mark.parametrize("kind", ["cu", "mcu", "ms"])
+def test_cameras_swing_around_an_animal_standing_in_the_way(kind):
+    s = _subj(yaw=-40.0)
+    free = frame_shot(kind, [s])
+    loc, aim = free["location"], free["aim"]
+    # put a zebra-sized body halfway along the sight line
+    r = 0.15 * free["distance"]  # a head or a body, in proportion to how close the camera is
+    zebra = Occluder((loc[0] + aim[0]) / 2, (loc[1] + aim[1]) / 2, r, 1.5)
+    assert blocked(tuple(loc), tuple(aim), zebra, free["frame_h"])
+    cam = frame_shot(kind, [s], occluders=[zebra])
+    assert cam["swing"] != 0.0 and "blocked" not in cam
+    assert not blocked(tuple(cam["location"]), tuple(cam["aim"]), zebra, cam["frame_h"])
+    d = (cam["location"][0] - cam["aim"][0], cam["location"][1] - cam["aim"][1])
+    assert abs(math.degrees(math.atan2(d[0], -d[1]))) <= 75.1  # still on the camera side
+    # something behind the subject, or off to the side, doesn't count
+    behind = Occluder(aim[0] - (loc[0] - aim[0]), aim[1] - (loc[1] - aim[1]), r, 1.5)
+    assert not blocked(tuple(loc), tuple(aim), behind, free["frame_h"])
+    assert frame_shot(kind, [s], occluders=[behind])["swing"] == 0.0
