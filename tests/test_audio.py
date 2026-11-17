@@ -168,6 +168,7 @@ def test_widen_pauses_stretches_boundary_gaps_and_breathes():
     from animatica.audio import delivery as dl
 
     sr = 24000
+
     def tone(s):
         return (0.5 * np.sin(2 * np.pi * 180 * np.arange(int(s * sr)) / sr)).astype(np.float32)
 
