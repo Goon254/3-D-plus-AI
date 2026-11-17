@@ -11,6 +11,18 @@ that raised it.
 
 ## P0-DESIGN — DESIGN_STAGE.md (owner's top priority; film production paused)
 
+**Status 11-17 18:36: the five packets are in [`design/packets/`](../design/packets/README.md) and with the owner. Build no new
+features until he replies; fixes only.** Review: Tembo 8, Neema 7, Kiki 7, Zuri 6, Bibi 7, tooling 8. Zuri's ears floated
+3.6 cm above her head (packet clip and 3/4 view); fixed in code with a new hard `part_float` check (DECISIONS #62), but the
+packet still shows the old ears. — [review 11-17 18:36](reviews/2026-11-17T1836Z.md)
+
+- [ ] **Fixes while the packets wait** (18:36): (1) laptop: re-render Zuri's sheet and clip with the fixed ears (or with
+  v3 after the owner's notes); (2) re-run `rig_stress_test.py --all` so every report has `part_float`; (3) `foot_slide`
+  reports `0.0 mm ( at frame 0)` with no leg named for four of five: record the number of stance pairs checked and fail
+  on zero, so "perfect" can't hide "never measured"; (4) next packet round: frame the expressions and the line as a
+  head-and-shoulders close-up (Tembo's are medium-wide, Neema's frame is mostly neck) on a set with no horizon stripe.
+  — [review 11-17 18:36](reviews/2026-11-17T1836Z.md)
+
 Status 11-17 15:36: Kiki v4 9.76 / appeal 7 (reads as a meerkat; review score 7); Zuri v2 7.4 (stripes fixed; board mane, puck hooves, pony silhouette; review score 6). 12:36: Kiki v3 7.4 (sentinel reads; thumbnail reads as a mongoose); happy reads on four of five. 09:36: Kiki v2 is built (sentinel reads, on all fours not yet). 06:36: the design-sheet renderer, rubric, recorded/live critic and best-of-N loop exist
 (`animatica.design`, `scripts/design_sheet.py`, `scripts/design_loop.py`, DECISIONS #52). Baseline sheets and scores:
 `design/baseline/`. Morphs only change head, eye, ear, snout, leg and neck sizes; everything below needs base-mesh
@@ -60,6 +72,9 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
   shape and a rolled top edge. His neutral upper lids sit low (he looks sleepy).
   *Laptop GPU 11-17 (DECISIONS #58, `design/tembo/v2/`): cupped, thick ear meshes with a rolled top edge ✔; eyes rest open (`lid_bias`) ✔.
   Rubric 9.84, ready. Needs reviewer verification.*
+  *Verified 11-17 18:36 (cloud): the ears read as cupped ears from 3/4 ✔; the eyes rest open ✔. Open (face notes, not
+  blockers): the inner brow ends tilt up, so neutral reads worried and surprised looks like neutral; the eye bulges past
+  the head line in the side view. Tembo 8. — [review 11-17 18:36](reviews/2026-11-17T1836Z.md)*
 - [ ] **Expressions don't read** at sheet size: happy changes only 1.8–3.5 % of the face close-up (the soft check
   wants 3 %). Make the smile wider, lift the cheeks and lower lids, widen surprised eyes more.
   *11-17 12:36 (DECISIONS #54): lower-lid `cheek` key ("smiling eyes"), higher brows, a wider smile. Happy is now 3.2–5.1 %
@@ -70,12 +85,18 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
 - [ ] **Neema**: thin legs and a small head, so her eyes barely read at 96 px. Try `head` 1.1, `leg` 1.15 in the loop.
   *Laptop GPU 11-17 (DECISIONS #59, `design/neema/v2/`): sturdier legs ✔, a bigger head and eyes ✔, brows resting higher. Rubric 9.85, ready.
   Needs reviewer verification.*
+  *Verified 11-17 18:36 (cloud): the head and eyes read at 96 px ✔. Open: thick low brows read grumpy (neutral and
+  happy; the sheet predates the brow cap), a pale bulb muzzle with a pouting dark lower lip, pole legs with no knee
+  or fetlock, black puck hooves (as Zuri's), tiny ears. Neema 7. — [review 11-17 18:36](reviews/2026-11-17T1836Z.md)*
 - [ ] **Rig stress test** (DESIGN_STAGE §5): walk, turn, sit/stand, head turns, blinks, all expressions, a lip-sync
   line, with the existing `rig_probe` checks. Feed the results into the rubric before any packet.
   *Laptop GPU 11-17 (DECISIONS #61): `scripts/rig_stress_test.py`; walk ✔, turn ✔ (Bibi only 18°, no turn in place),
   sit/stand ✔ Kiki only (the others bow), head turns ✔, blinks ✔, all expressions ✔, lip-sync line ✔; foot slide,
   ground, eye seating, brow/lid/mouth contact, coat swim, sentinel tail. All five pass; checks feed the rubric
   (`motion:*`). Needs reviewer verification: watch the takes for intersections the checks don't measure.*
+  *Verified 11-17 18:36 (cloud): the takes play as described; watching them found Zuri's floating ears, which no
+  check measured. Added `part_float` (DECISIONS #62). Open: `foot_slide` may be vacuous for four of five (see the
+  "Fixes while the packets wait" item). — [review 11-17 18:36](reviews/2026-11-17T1836Z.md)*
 - [ ] **Reference images** (brief `references`, §2): 3–6 Wikimedia Commons / PD images per character, with the
   license checked. The brief validator already rejects a reference without a license.
 - [ ] **Blind species read for recorded critiques** (until a live vision key exists): have a sub-agent with no

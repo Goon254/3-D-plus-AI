@@ -4,6 +4,12 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Cloud review 11-17 18:36 UTC ([review](docs/reviews/2026-11-17T1836Z.md), DECISIONS #62): **the five design packets
+are ready for you in [`design/packets/`](design/packets/README.md)**. Reviewer scores: Tembo 8, Neema 7, Kiki 7, Zuri 6,
+Bibi 7, tooling 8. Watching the clips showed Zuri's ears hovering 3.6 cm above her head, which no check measured.
+That is now fixed in code, with a new hard check (`part_float`) for every ear, mane, ossicone, muzzle and nose, but her
+packet still shows the old ears. No new features until you reply.
+
 Laptop GPU session + cloud review 11-17 15:36 UTC ([review](docs/reviews/2026-11-17T1536Z.md), DECISIONS #55, #56):
 **Kiki v4** reads as a meerkat both on all fours and in the sentinel (crisp mask, slim barrel, bent legs, paws-only
 shade, tail attached in the sentinel): rubric 9.76, appeal 7 ([`design/kiki/v4/`](design/kiki/v4/)). **Zuri v2**: stripes
@@ -67,7 +73,8 @@ Next: the specs for SC 3–10, the film edit, SC 2 polish, then the full GPU ren
 
 ### Needs you
 
-* **Design stage**: nothing to approve yet. When packets appear in `design/packets/`, review them there. An
+* **Design stage: review the five packets in [`design/packets/`](design/packets/README.md)**: approve or give notes
+  on each one (Tembo and Neema are ready on the rubric; Zuri needs notes on her body plan, not approval). An
   `ANTHROPIC_API_KEY` would let the vision critic run live instead of relying on a reviewer's recorded critique.
 
 * **Laptop session: render SC 2 at final quality** (now with the gag, eyelines and the new eyes) on the RTX 5060 (`python scripts/savannah_scene.py sc02 --quality
