@@ -1,0 +1,13 @@
+{
+  "reviewer": "laptop GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "b4b0c88c89a9e5dce72665e5ce75f5b22343529fb78f4499b93b2b11900243da",
+  "silhouette_species": "elephant calf",
+  "thumbnail_species": "baby elephant",
+  "issues": [
+    "the ears are cupped, thick meshes with a rolled top edge: from 3/4 the near ear shows its hollow and its body, not a fin",
+    "the eyes rest open (lid bias), bright and curious rather than sleepy; darker brows",
+    "happy opens into a laugh with the corners either side of the trunk; surprised widens the eyes and lifts the brows (3.1 %), but the round mouth hides behind the trunk in 3/4"
+  ],
+  "appeal": 8
+}

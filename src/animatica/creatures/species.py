@@ -87,6 +87,13 @@ class Species:
     smooth: float = 0.0
     # the eye patch's edge: the share of its radius over which it fades (lower = crisper)
     patch_soft: float = 0.55
+    # disc ears as a cupped, thick mesh (creatures.ear): the rim bends this share of the ear's height out of plane
+    ear_cup: float = 0.0
+    # added to every expression's upper-lid value: negative opens the neutral eye wider (a sleepy look otherwise)
+    lid_bias: float = 0.0
+    # the most a brow may lift (eye radii): a big-eyed head has its brows near the top of the skull, and lifting
+    # them further floats them off the head (Kiki's surprised brows hung in the air above it)
+    brow_max: float = 1.0
 
 
 def _m(color: str, rough: float = 0.75, **kw: Any) -> dict[str, Any]:
@@ -122,7 +129,9 @@ SPECIES: dict[str, Species] = {
         head_pitch=6.0,
         eye=(0.17, -0.22, 0.1, 0.088),
         # angled forward so the big ears frame the face instead of showing their edge
-        ear=("disc", (0.05, 0.46, 0.62), (0.31, 0.1, -0.28), (0.0, -8.0, 38.0)),
+        ear=("disc", (0.06, 0.48, 0.62), (0.31, 0.1, -0.28), (0.0, -8.0, 38.0)),
+        ear_cup=0.16,  # cupped, thick, a rolled top edge: never a fin edge-on
+        lid_bias=-0.4,  # bright, open eyes at rest (the baseline neutral looked sleepy)
         tail=Chain((0.0, 0.48, 0.14), (0.0, 0.58, -0.3), 3, 0.03, 0.014),
         tuft=0.035,
         trunk=Chain((0.0, -0.98, 0.2), (0.0, -1.06, -0.3), 5, 0.095, 0.045),
@@ -377,6 +386,7 @@ SPECIES: dict[str, Species] = {
         belly_tuck=0.85,
         # the meerkat's dark "spectacles", painted softly round the eyes (the eyes stay visible in them)
         eye_patch=("#24180E", 1.0),
+        brow_max=0.3,
         patch_soft=0.28,  # crisp enough to carry at 96 px (v3's 0.55 blurred away in the thumbnail)
         smooth=1.0,
         default_pose="sentinel",

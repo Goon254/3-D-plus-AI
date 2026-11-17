@@ -12,6 +12,7 @@ import math
 from dataclasses import dataclass, field, replace
 from typing import Any
 
+from .ear import cupped_ear
 from .eyes import EMBED_DEPTH, IRIS_AT, eye_frame, lid_mesh, look_rotation
 from .gait import FootSpot
 from .organic import body_graph, head_elements, metaball_elements, tail_points
@@ -432,17 +433,22 @@ def build_creature(
             )
             ear_bones.append(name)
             center = _add(base, (sx * esize[0] * 0.3, esize[1] * 0.25, esize[2] * 0.35))
+            if shape == "disc" and sp.ear_cup > 0:  # a cupped ear with thickness (creatures.ear)
+                ev, ef = cupped_ear(esize[0], esize[1], esize[2], sp.ear_cup)
+                if sx < 0:  # mirror for the right ear (the hollow faces outward on both sides)
+                    ev = [[-p[0], p[1], p[2]] for p in ev]
+                    ef = [list(reversed(fc)) for fc in ef]
+                ear_op: dict[str, Any] = {"op": "create_mesh", "vertices": ev, "faces": ef}
+            else:
+                ear_op = {"op": "create_primitive", "shape": "uv_sphere", "size": list(esize), "segments": 24}
             meshes.append(
                 (
                     {
-                        "op": "create_primitive",
+                        **ear_op,
                         "id": f"{cid}_ear_{side}",
-                        "shape": "uv_sphere",
-                        "size": list(esize),
                         "location": _r(center),
                         "rotation": [erot[0], erot[1] * sx, erot[2] * sx],
                         "smooth": True,
-                        "segments": 24,
                     },
                     "ear" if "ear" in sp.mats else "coat",  # the meerkat's ears are dark
                     name,

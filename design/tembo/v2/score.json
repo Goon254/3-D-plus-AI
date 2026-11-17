@@ -1,0 +1,310 @@
+{
+ "morph": {
+  "head": 1.0,
+  "eye": 1.0,
+  "ear": 1.0,
+  "snout": 1.0,
+  "leg": 1.0,
+  "neck": 1.0,
+  "lift_dark": 0.0
+ },
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.2927,
+  "top_dip": 0.0,
+  "throat": 0.2927,
+  "lift": 0.1138,
+  "dark_blob": 0.0024,
+  "expression_happy": 0.0355,
+  "expression_surprised": 0.031
+ },
+ "design": {
+  "species": "elephant",
+  "proportions": {
+   "head_body": 0.7907,
+   "eye_head": 0.2588,
+   "eye_spacing": 0.5152,
+   "neck_head": 0.5758,
+   "elongation": 1.2286,
+   "belly_gap": 0.6,
+   "leg_thickness": 0.1719,
+   "ear_head": 0.7815,
+   "neck_length": 0.2621,
+   "snout": 0.0
+  },
+  "features": [
+   "big_ears",
+   "ears",
+   "separate_head",
+   "tail_tuft",
+   "trunk"
+  ],
+  "materials": {
+   "luminance": {
+    "coat": 0.2685,
+    "nail": 0.6115,
+    "tuft": 0.0357
+   },
+   "pattern_contrast": {},
+   "dark_regions": []
+  }
+ },
+ "critique": {
+  "reviewer": "laptop GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "b4b0c88c89a9e5dce72665e5ce75f5b22343529fb78f4499b93b2b11900243da",
+  "silhouette_species": "elephant calf",
+  "thumbnail_species": "baby elephant",
+  "issues": [
+   "the ears are cupped, thick meshes with a rolled top edge: from 3/4 the near ear shows its hollow and its body, not a fin",
+   "the eyes rest open (lid bias), bright and curious rather than sleepy; darker brows",
+   "happy opens into a laugh with the corners either side of the trunk; surprised widens the eyes and lifts the brows (3.1 %), but the round mouth hides behind the trunk in 3/4"
+  ],
+  "appeal": 8
+ },
+ "character": "tembo",
+ "score": 9.84,
+ "ready": true,
+ "hard_failures": [],
+ "pending": [],
+ "checks": [
+  {
+   "id": "range:head_body",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "head_body 0.791 in [0.7, 0.95]",
+   "value": 0.7907,
+   "fix": null
+  },
+  {
+   "id": "range:eye_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_head 0.259 in [0.22, 0.4]",
+   "value": 0.2588,
+   "fix": null
+  },
+  {
+   "id": "range:eye_spacing",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_spacing 0.515 in [0.4, 0.7]",
+   "value": 0.5152,
+   "fix": null
+  },
+  {
+   "id": "range:neck_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "neck_head 0.576 in [0.0, 0.75]",
+   "value": 0.5758,
+   "fix": null
+  },
+  {
+   "id": "range:elongation",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "elongation 1.229 in [1.0, 1.5]",
+   "value": 1.2286,
+   "fix": null
+  },
+  {
+   "id": "range:belly_gap",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "belly_gap 0.600 in [0.45, 0.9]",
+   "value": 0.6,
+   "fix": null
+  },
+  {
+   "id": "range:leg_thickness",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "leg_thickness 0.172 in [0.14, 0.24]",
+   "value": 0.1719,
+   "fix": null
+  },
+  {
+   "id": "range:ear_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "ear_head 0.781 in [0.5, 1.1]",
+   "value": 0.7815,
+   "fix": null
+  },
+  {
+   "id": "feature:trunk",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "trunk present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:big_ears",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "big_ears present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:tail_tuft",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "tail_tuft present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:separate_head",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "separate_head present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "materials:flat_black",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "no near-black body regions",
+   "value": [],
+   "fix": null
+  },
+  {
+   "id": "silhouette:neck_notch",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.5,
+   "earned": 1.5,
+   "message": "side neck notch 0.293 (min 0.15): head separate from the body",
+   "value": 0.2927,
+   "fix": null
+  },
+  {
+   "id": "silhouette:floating",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "0 floating part(s)",
+   "value": 0,
+   "fix": null
+  },
+  {
+   "id": "materials:dark_blob",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "largest near-black blob 0% of the figure (max 12%)",
+   "value": 0.0024,
+   "fix": null
+  },
+  {
+   "id": "face:happy",
+   "group": "face",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "happy changes 3.5% of the face close-up (min 3%)",
+   "value": 0.0355,
+   "fix": null
+  },
+  {
+   "id": "face:surprised",
+   "group": "face",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "surprised changes 3.1% of the face close-up (min 3%)",
+   "value": 0.031,
+   "fix": null
+  },
+  {
+   "id": "read:silhouette",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "silhouette read as 'elephant calf': named elephant",
+   "value": "elephant calf",
+   "fix": null
+  },
+  {
+   "id": "read:thumbnail",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "thumbnail read as 'baby elephant': named elephant",
+   "value": "baby elephant",
+   "fix": null
+  },
+  {
+   "id": "critic:appeal",
+   "group": "appeal",
+   "passed": true,
+   "hard": false,
+   "weight": 2.0,
+   "earned": 1.6,
+   "message": "art-director appeal 8/10 (min 8)",
+   "value": 8.0,
+   "fix": null
+  }
+ ],
+ "edit": {},
+ "manual": [
+  "critic: the ears are cupped, thick meshes with a rolled top edge: from 3/4 the near ear shows its hollow and its body, not a fin",
+  "critic: the eyes rest open (lid bias), bright and curious rather than sleepy; darker brows",
+  "critic: happy opens into a laugh with the corners either side of the trunk; surprised widens the eyes and lifts the brows (3.1 %), but the round mouth hides behind the trunk in 3/4"
+ ],
+ "sheet": "sheet.jpg (from sheet.png, sha256 in critique.json)"
+}

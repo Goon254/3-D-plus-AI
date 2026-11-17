@@ -338,3 +338,45 @@ def test_bibi_carapace_is_a_dome_with_raised_scutes_not_a_ball():
     from animatica.design.measure import features, materials
 
     assert "pattern:scutes" in features(sp) and materials(sp)["pattern_contrast"]["shell"] >= 4.0
+
+
+def test_tembo_ears_are_cupped_and_thick_and_his_eyes_rest_open():
+    """Baseline review 11-17 06:36: Tembo's disc ears were flattened spheres that read as fins edge-on from 3/4,
+    and his neutral upper lids sat low (sleepy)."""
+    from animatica.creatures.ear import cupped_ear
+    from animatica.creatures.face import BROW_COLOR, face_keys, face_ops
+    from animatica.creatures.shell import signed_volume
+
+    v, f = cupped_ear(0.06, 0.48, 0.62, 0.16)
+    assert signed_volume(v, f) > 0
+    xs = [p[0] for p in v]
+    assert max(xs) - min(xs) > 0.06 + 0.16 * 0.62 * 0.8  # thickness plus the cup: depth seen edge-on
+    sp = SPECIES["elephant"]
+    ops, _m = build_creature("t", sp)
+    ears = [o for o in ops if o.get("id") in ("t_ear_L", "t_ear_R")]
+    assert [o["op"] for o in ears] == ["create_mesh", "create_mesh"]
+    assert ears[0]["vertices"][5][0] == pytest.approx(-ears[1]["vertices"][5][0])  # mirrored
+    _ops, face = face_ops("t", sp, "t_root", "t_rig", BROW_COLOR["elephant"])
+    keys = face_keys(face, [(0.0, "neutral")], None, 24, 1, 4)
+    wide = next(o for o in keys if o["property"] == "shape_key:wide" and o["target"] == "t_lid_L_up")
+    assert wide["keys"][0][1] == pytest.approx(-sp.lid_bias)  # neutral eyes rest wider open
+
+
+def test_expressions_change_the_mouth_and_brows_stay_on_the_head():
+    """GPU session 11-17: happy opens into a laugh and surprised makes an "O" (only when nobody speaks: lip sync owns
+    the mouth keys during a line); Kiki's brows are capped so a surprised lift never floats them off her skull."""
+    from animatica.audio.lipsync import Cue
+    from animatica.creatures.face import BROW_COLOR, EXPRESSIONS, face_keys, face_ops
+
+    assert EXPRESSIONS["surprised"].oh > 0.5 and EXPRESSIONS["happy"].jaw > 0
+    sp = SPECIES["meerkat"]
+    _ops, face = face_ops("k", sp, "k_root", "k_rig", BROW_COLOR["meerkat"])
+    track = [(0.0, "surprised")]
+    keys = face_keys(face, track, None, 24, 1, 24)
+    rnd = next(o for o in keys if o["property"] == "shape_key:round")
+    assert rnd["keys"][-1][1] == pytest.approx(EXPRESSIONS["surprised"].oh)
+    with_line = face_keys(face, track, [Cue(0.0, 0.3, "B"), Cue(0.3, 0.6, "X")], 24, 1, 24)
+    assert not any(o["property"] == "shape_key:round" and o["keys"][-1][1] > 0.5 for o in with_line)
+    brow = next(o for o in keys if o["target"] == "k_brow_L" and o["property"] == "location")
+    rise = math.dist(brow["keys"][-1][1], brow["keys"][0][1])
+    assert rise <= sp.eye[3] * sp.brow_max * 1.4 + 1e-6

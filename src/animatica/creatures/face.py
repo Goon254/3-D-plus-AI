@@ -33,10 +33,13 @@ class Expression:
     asym: float = 0.0  # extra lift of the left brow (curious: one brow up)
     lid: float = 0.0  # upper lids: + heavier (droop), - wider open
     cheek: float = 0.0  # 0..1: the cheeks push the lower lids up ("smiling eyes")
+    # the mouth shape the emotion holds when nobody is talking (lip sync owns these keys during a line)
+    jaw: float = 0.0  # 0..1 the mouth opens (a laugh)
+    oh: float = 0.0  # 0..1 a round "O" (surprise)
 
 
 BROW_COLOR = {  # a shade darker than the coat around the eyes
-    "elephant": "#5F5A55",
+    "elephant": "#47423E",  # dark enough to read on the grey skin (the brows carry his surprise)
     "giraffe": "#7A4422",
     "zebra": "#161414",
     "meerkat": "#24180F",
@@ -46,13 +49,14 @@ BROW_COLOR = {  # a shade darker than the coat around the eyes
 EXPRESSIONS: dict[str, Expression] = {
     "neutral": Expression(0.0, 0.0, 0.1),
     # happy reads from the eyes as much as the mouth: brows up, cheeks pushing the lower lids up, a wide smile
-    "happy": Expression(0.28, -5.0, 1.0, cheek=0.85),
+    "happy": Expression(0.4, -5.0, 1.0, cheek=0.85, jaw=0.35),
     "sad": Expression(0.05, 20.0, -0.6, lid=0.55),
-    "surprised": Expression(0.5, 4.0, 0.0, lid=-0.85),
+    # surprise has to read at sheet size: brows high, the eyes wide with white above the iris, a round "O"
+    "surprised": Expression(0.85, 4.0, 0.0, lid=-1.0, oh=0.85),
     "worried": Expression(0.22, 15.0, -0.3, lid=-0.2),
     "determined": Expression(-0.16, -16.0, 0.15, lid=0.4),
     "curious": Expression(0.12, 6.0, 0.25, asym=0.3, lid=-0.25),
-    "scared": Expression(0.42, 18.0, -0.45, lid=-0.9),
+    "scared": Expression(0.42, 18.0, -0.45, lid=-0.9, oh=0.4),
     "proud": Expression(0.08, -8.0, 0.6, lid=0.3, cheek=0.4),
 }
 
@@ -211,6 +215,8 @@ def face_ops(
         "head_pitch": sp.head_pitch,
         "lids": lids,
         "lower_lids": lower,
+        "lid_bias": sp.lid_bias,
+        "brow_max": sp.brow_max,
     }
     return ops, meta
 
@@ -243,8 +249,8 @@ def expression_at(track: list[tuple[float, str]], t: float, blend: float = 0.3) 
             *(
                 a + (b - a) * u
                 for a, b in zip(
-                    (cur.brow_up, cur.brow_tilt, cur.smile, cur.asym, cur.lid, cur.cheek),
-                    (nxt.brow_up, nxt.brow_tilt, nxt.smile, nxt.asym, nxt.lid, nxt.cheek),
+                    (cur.brow_up, cur.brow_tilt, cur.smile, cur.asym, cur.lid, cur.cheek, cur.jaw, cur.oh),
+                    (nxt.brow_up, nxt.brow_tilt, nxt.smile, nxt.asym, nxt.lid, nxt.cheek, nxt.jaw, nxt.oh),
                 )
             )
         )
@@ -269,7 +275,7 @@ def face_keys(
         loc_keys, rot_keys = [], []
         for i, t in enumerate(ts):
             e = expression_at(track, t)
-            lift = er * (e.brow_up + (e.asym if side == "L" else 0.0))
+            lift = er * min(face.get("brow_max", 1.0), e.brow_up + (e.asym if side == "L" else 0.0))
             up = _rx((0.0, 0.0, lift), pitch)
             # follow the brow ridge as it curves back: a raised brow also sinks a little, so it slides on
             # the skin (the shrinkwrap keeps it on the surface) instead of lifting off into the air
@@ -290,7 +296,8 @@ def face_keys(
         [frame0 + i, round(max(0.0, -expression_at(track, t).smile), 3), "LINEAR"] for i, t in enumerate(ts)
     ]
     for lid in face.get("lids", []):
-        es = [expression_at(track, t).lid for t in ts]
+        bias = face.get("lid_bias", 0.0)  # the species' resting openness (Tembo: wider)
+        es = [max(-1.0, min(1.0, expression_at(track, t).lid + bias)) for t in ts]
         ops += [
             {
                 "op": "insert_keyframes",
@@ -312,6 +319,18 @@ def face_keys(
         {"op": "insert_keyframes", "target": face["mouth"], "property": "shape_key:smile", "keys": smile},
         {"op": "insert_keyframes", "target": face["mouth"], "property": "shape_key:frown", "keys": frown},
     ]
+    if not cues:  # the emotion's own mouth shape (a laugh, an "O"); during a line the visemes own these keys
+        for key, attr in (("open", "jaw"), ("round", "oh")):
+            vals = [round(getattr(expression_at(track, t), attr), 3) for t in ts]
+            if any(vals):
+                ops.append(
+                    {
+                        "op": "insert_keyframes",
+                        "target": face["mouth"],
+                        "property": f"shape_key:{key}",
+                        "keys": [[frame0 + i, v, "LINEAR"] for i, v in enumerate(vals)],
+                    }
+                )
     if cues:
         for key, kf in cues_to_keyframes(cues, fps, frame0 + int(round(line_start * fps))).items():
             if kf:
