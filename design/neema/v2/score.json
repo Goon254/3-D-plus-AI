@@ -1,0 +1,339 @@
+{
+ "morph": {
+  "head": 1.0,
+  "eye": 1.0,
+  "ear": 1.0,
+  "snout": 1.0,
+  "leg": 1.0,
+  "neck": 1.0,
+  "lift_dark": 0.0
+ },
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.475,
+  "top_dip": 0.0,
+  "throat": 0.0208,
+  "lift": 1.5833,
+  "dark_blob": 0.0055,
+  "expression_happy": 0.1029,
+  "expression_surprised": 0.1423
+ },
+ "design": {
+  "species": "giraffe",
+  "proportions": {
+   "head_body": 0.5238,
+   "eye_head": 0.5424,
+   "eye_spacing": 0.8889,
+   "neck_head": 0.5926,
+   "elongation": 1.6935,
+   "belly_gap": 2.0,
+   "leg_thickness": 0.144,
+   "ear_head": 0.0324,
+   "neck_length": 0.8516,
+   "snout": 0.3818
+  },
+  "features": [
+   "ears",
+   "muzzle",
+   "ossicone",
+   "ossitip",
+   "pattern:patches",
+   "tail_tuft"
+  ],
+  "materials": {
+   "luminance": {
+    "coat": 0.7487,
+    "hoof": 0.0299,
+    "tuft": 0.0195,
+    "muzzle": 0.7058,
+    "ossicone": 0.2362,
+    "shins": 0.813
+   },
+   "pattern_contrast": {
+    "coat": 4.35,
+    "shins": 3.87
+   },
+   "dark_regions": []
+  }
+ },
+ "critique": {
+  "reviewer": "laptop GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "00a545021437f3163f14f105787f69919f73a34cd488c8da7dde55619eb737d4",
+  "silhouette_species": "giraffe",
+  "thumbnail_species": "young giraffe",
+  "issues": [
+   "legs are sturdier (no longer stilts) while staying long",
+   "the head and eyes are bigger: the face and its eyes now show at 96 px, though the head is still small against a 3 m animal",
+   "neutral brows rest a little higher (less of a scowl); happy and surprised read strongly (10 % / 12 %)"
+  ],
+  "appeal": 8
+ },
+ "character": "neema",
+ "score": 9.85,
+ "ready": true,
+ "hard_failures": [],
+ "pending": [],
+ "checks": [
+  {
+   "id": "range:head_body",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "head_body 0.524 in [0.38, 0.55]",
+   "value": 0.5238,
+   "fix": null
+  },
+  {
+   "id": "range:eye_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_head 0.542 in [0.4, 0.6]",
+   "value": 0.5424,
+   "fix": null
+  },
+  {
+   "id": "range:eye_spacing",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_spacing 0.889 in [0.7, 0.95]",
+   "value": 0.8889,
+   "fix": null
+  },
+  {
+   "id": "range:neck_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "neck_head 0.593 in [0.0, 0.9]",
+   "value": 0.5926,
+   "fix": null
+  },
+  {
+   "id": "range:elongation",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "elongation 1.694 in [1.4, 2.0]",
+   "value": 1.6935,
+   "fix": null
+  },
+  {
+   "id": "range:belly_gap",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "belly_gap 2.000 in [1.6, 2.6]",
+   "value": 2.0,
+   "fix": null
+  },
+  {
+   "id": "range:leg_thickness",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "leg_thickness 0.144 in [0.09, 0.16]",
+   "value": 0.144,
+   "fix": null
+  },
+  {
+   "id": "range:ear_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "ear_head 0.032 in [0.03, 0.12]",
+   "value": 0.0324,
+   "fix": null
+  },
+  {
+   "id": "range:neck_length",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "neck_length 0.852 in [0.7, 1.2]",
+   "value": 0.8516,
+   "fix": null
+  },
+  {
+   "id": "feature:ossicone",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "ossicone present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:pattern:patches",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "pattern:patches present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:muzzle",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "muzzle present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:tail_tuft",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "tail_tuft present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "contrast:coat",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "coat pattern contrast 4.35 (min 3.0)",
+   "value": 4.35,
+   "fix": null
+  },
+  {
+   "id": "materials:flat_black",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "no near-black body regions",
+   "value": [],
+   "fix": null
+  },
+  {
+   "id": "silhouette:neck_notch",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.5,
+   "earned": 1.5,
+   "message": "side neck notch 0.475 (min 0.05): head separate from the body",
+   "value": 0.475,
+   "fix": null
+  },
+  {
+   "id": "silhouette:floating",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "0 floating part(s)",
+   "value": 0,
+   "fix": null
+  },
+  {
+   "id": "materials:dark_blob",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "largest near-black blob 1% of the figure (max 12%)",
+   "value": 0.0055,
+   "fix": null
+  },
+  {
+   "id": "face:happy",
+   "group": "face",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "happy changes 10.3% of the face close-up (min 3%)",
+   "value": 0.1029,
+   "fix": null
+  },
+  {
+   "id": "face:surprised",
+   "group": "face",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "surprised changes 14.2% of the face close-up (min 3%)",
+   "value": 0.1423,
+   "fix": null
+  },
+  {
+   "id": "read:silhouette",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "silhouette read as 'giraffe': named giraffe",
+   "value": "giraffe",
+   "fix": null
+  },
+  {
+   "id": "read:thumbnail",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "thumbnail read as 'young giraffe': named giraffe",
+   "value": "young giraffe",
+   "fix": null
+  },
+  {
+   "id": "critic:appeal",
+   "group": "appeal",
+   "passed": true,
+   "hard": false,
+   "weight": 2.0,
+   "earned": 1.6,
+   "message": "art-director appeal 8/10 (min 8)",
+   "value": 8.0,
+   "fix": null
+  }
+ ],
+ "edit": {},
+ "manual": [
+  "critic: legs are sturdier (no longer stilts) while staying long",
+  "critic: the head and eyes are bigger: the face and its eyes now show at 96 px, though the head is still small against a 3 m animal",
+  "critic: neutral brows rest a little higher (less of a scowl); happy and surprised read strongly (10 % / 12 %)"
+ ],
+ "sheet": "sheet.jpg (from sheet.png, sha256 in critique.json)"
+}

@@ -94,6 +94,9 @@ class Species:
     # the most a brow may lift (eye radii): a big-eyed head has its brows near the top of the skull, and lifting
     # them further floats them off the head (Kiki's surprised brows hung in the air above it)
     brow_max: float = 1.0
+    brow_bias: float = (
+        0.0  # added to every expression's brow lift (eye radii): + rests the brows higher (less grumpy)
+    )
 
 
 def _m(color: str, rough: float = 0.75, **kw: Any) -> dict[str, Any]:
@@ -165,14 +168,17 @@ SPECIES: dict[str, Species] = {
         hip=(0.14, 0.38, -0.08),
         fore_foot=(0.15, -0.38),
         hind_foot=(0.14, 0.38),
-        leg_r=(0.09, 0.06, 0.1, 0.06),
-        foot=("hoof", 0.065, 0.07),
+        # sturdier legs (the baseline's read as stilts); still long, slim cannons
+        leg_r=(0.105, 0.072, 0.118, 0.072),
+        foot=("hoof", 0.075, 0.075),
         knee_bend=0.1,
         neck=Chain((0.0, -0.42, 0.18), (0.0, -0.78, 1.45), 4, 0.14, 0.08),
         head_at=(0.0, -0.95, 1.52),
-        head_size=(0.2, 0.46, 0.22),
+        # a bigger head and eyes so her face reads at 96 px (a young giraffe is head-heavy)
+        head_size=(0.27, 0.55, 0.295),
         head_pitch=22.0,
-        eye=(0.09, -0.05, 0.05, 0.055),
+        eye=(0.12, -0.06, 0.068, 0.08),
+        brow_bias=0.3,  # her low resting brows read as a scowl
         ear=("leaf", (0.05, 0.035, 0.15), (0.1, 0.1, 0.06), (0.0, 70.0, -20.0)),
         tail=Chain((0.0, 0.5, 0.0), (0.0, 0.62, -0.7), 3, 0.028, 0.014),
         tuft=0.05,
@@ -202,14 +208,14 @@ SPECIES: dict[str, Species] = {
             ),
         },
         part_mats={"foot": "hoof", "tuft": "tuft"},
-        muzzle=((0.17, 0.17, 0.15), (0.0, -0.21, -0.04)),
+        muzzle=((0.21, 0.21, 0.18), (0.0, -0.25, -0.05)),
         regions=((("leg_LF_lo", "leg_RF_lo", "leg_LH_lo", "leg_RH_lo"), "shins"),),
         extras=(
             Extra(
                 "ossicone_L",
                 "cylinder",
                 (0.045, 0.045, 0.14),
-                (0.05, 0.1, 0.14),
+                (0.06, 0.11, 0.185),
                 "head",
                 "ossicone",
                 (-15, 0, 0),
@@ -218,13 +224,13 @@ SPECIES: dict[str, Species] = {
                 "ossicone_R",
                 "cylinder",
                 (0.045, 0.045, 0.14),
-                (-0.05, 0.1, 0.14),
+                (-0.06, 0.11, 0.185),
                 "head",
                 "ossicone",
                 (-15, 0, 0),
             ),
-            Extra("ossitip_L", "uv_sphere", (0.06, 0.06, 0.055), (0.05, 0.09, 0.215), "head", "tuft"),
-            Extra("ossitip_R", "uv_sphere", (0.06, 0.06, 0.055), (-0.05, 0.09, 0.215), "head", "tuft"),
+            Extra("ossitip_L", "uv_sphere", (0.06, 0.06, 0.055), (0.06, 0.1, 0.26), "head", "tuft"),
+            Extra("ossitip_R", "uv_sphere", (0.06, 0.06, 0.055), (-0.06, 0.1, 0.26), "head", "tuft"),
         ),
     ),
     # Young plains zebra: 1.15 m at the shoulder; big head, sturdy neck, erect striped mane, tasselled tail;

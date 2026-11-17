@@ -84,3 +84,7 @@ tortoise. The shell is its own mesh (`creatures/shell.py`) with per-vertex leopa
 
 Recorded critique: **9.84, ready** on the rubric (appeal 8). The ears are thick, cupped meshes (`creatures/ear.py`), and
 the eyes rest open. The same commit gives the whole cast stronger expressions: a laugh, an "O", wider lids.
+
+## neema/v2/ — sturdier legs, bigger head and eyes (laptop GPU 2026-11-17, DECISIONS #59)
+
+Recorded critique: **9.85, ready** on the rubric (appeal 8).

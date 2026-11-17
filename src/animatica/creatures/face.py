@@ -217,6 +217,7 @@ def face_ops(
         "lower_lids": lower,
         "lid_bias": sp.lid_bias,
         "brow_max": sp.brow_max,
+        "brow_bias": sp.brow_bias,
     }
     return ops, meta
 
@@ -275,7 +276,8 @@ def face_keys(
         loc_keys, rot_keys = [], []
         for i, t in enumerate(ts):
             e = expression_at(track, t)
-            lift = er * min(face.get("brow_max", 1.0), e.brow_up + (e.asym if side == "L" else 0.0))
+            up_by = e.brow_up + face.get("brow_bias", 0.0) + (e.asym if side == "L" else 0.0)
+            lift = er * min(face.get("brow_max", 1.0), up_by)
             up = _rx((0.0, 0.0, lift), pitch)
             # follow the brow ridge as it curves back: a raised brow also sinks a little, so it slides on
             # the skin (the shrinkwrap keeps it on the surface) instead of lifting off into the air

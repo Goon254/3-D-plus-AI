@@ -380,3 +380,16 @@ def test_expressions_change_the_mouth_and_brows_stay_on_the_head():
     brow = next(o for o in keys if o["target"] == "k_brow_L" and o["property"] == "location")
     rise = math.dist(brow["keys"][-1][1], brow["keys"][0][1])
     assert rise <= sp.eye[3] * sp.brow_max * 1.4 + 1e-6
+
+
+def test_neema_has_sturdier_legs_a_bigger_head_and_brows_that_rest_higher():
+    """Baseline review 11-17 06:36: very thin legs, a small head and eyes at 96 px; her low brows read as a scowl."""
+    from animatica.creatures.face import BROW_COLOR, face_keys, face_ops
+
+    sp = SPECIES["giraffe"]
+    assert sp.leg_r[1] >= 0.07 and sp.leg_r[3] >= 0.07
+    assert sp.head_size[0] >= 0.25 and sp.eye[3] / sp.head_size[0] >= 0.28
+    _ops, face = face_ops("n", sp, "n_root", "n_rig", BROW_COLOR["giraffe"])
+    keys = face_keys(face, [(0.0, "neutral")], None, 24, 1, 2)
+    brow = next(o for o in keys if o["target"] == "n_brow_L" and o["property"] == "location")
+    assert brow["keys"][0][1][2] > face["brows"]["L"]["rest"][2]  # neutral brows sit above their rest

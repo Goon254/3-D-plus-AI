@@ -68,6 +68,8 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
   *Laptop GPU 11-17 (DECISIONS #58): a laugh (jaw) for happy and an "O" for surprised, wider lids, higher brows, capped on big-eyed heads. Happy is
   3.1–6.6 % and surprised 3.1–8.9 % on all five ✔. Needs reviewer verification.*
 - [ ] **Neema**: thin legs and a small head, so her eyes barely read at 96 px. Try `head` 1.1, `leg` 1.15 in the loop.
+  *Laptop GPU 11-17 (DECISIONS #59, `design/neema/v2/`): sturdier legs ✔, a bigger head and eyes ✔, brows resting higher. Rubric 9.85, ready.
+  Needs reviewer verification.*
 - [ ] **Rig stress test** (DESIGN_STAGE §5): walk, turn, sit/stand, head turns, blinks, all expressions, a lip-sync
   line, with the existing `rig_probe` checks. Feed the results into the rubric before any packet.
 - [ ] **Reference images** (brief `references`, §2): 3–6 Wikimedia Commons / PD images per character, with the

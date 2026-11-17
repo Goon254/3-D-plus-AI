@@ -1,0 +1,13 @@
+{
+  "reviewer": "laptop GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "00a545021437f3163f14f105787f69919f73a34cd488c8da7dde55619eb737d4",
+  "silhouette_species": "giraffe",
+  "thumbnail_species": "young giraffe",
+  "issues": [
+    "legs are sturdier (no longer stilts) while staying long",
+    "the head and eyes are bigger: the face and its eyes now show at 96 px, though the head is still small against a 3 m animal",
+    "neutral brows rest a little higher (less of a scowl); happy and surprised read strongly (10 % / 12 %)"
+  ],
+  "appeal": 8
+}
