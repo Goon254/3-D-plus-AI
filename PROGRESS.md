@@ -4,6 +4,13 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Laptop GPU session + cloud review 11-17 15:36 UTC ([review](docs/reviews/2026-11-17T1536Z.md), DECISIONS #55, #56):
+**Kiki v4** reads as a meerkat both on all fours and in the sentinel (crisp mask, slim barrel, bent legs, paws-only
+shade, tail attached in the sentinel): rubric 9.76, appeal 7 ([`design/kiki/v4/`](design/kiki/v4/)). **Zuri v2**: stripes
+wrap as chevrons with no bullseyes, plus bigger ears and a softer muzzle, but the mane is a flat board, the hooves are
+pucks and the silhouette reads as a pony: 7.4 ([`design/zuri/v2/`](design/zuri/v2/)). Reviewer scores: Kiki 7, Zuri 6,
+the others unchanged. Next: Zuri v3 (mane, hooves, filly proportions), then Bibi's shell and Tembo's ears.
+
 Cloud session 11-17 12:36 UTC ([review](docs/reviews/2026-11-17T1236Z.md), DECISIONS #54): **Kiki v3**: the head
 is carried forward with a nape and a throat line, the snout is one cone out of the face, and the sentinel stands with
 the head level. **Happy now reads** for four of the five (smiling eyes, wider smile). `design_sheet.py --rescore`

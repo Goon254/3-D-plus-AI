@@ -11,7 +11,7 @@ that raised it.
 
 ## P0-DESIGN — DESIGN_STAGE.md (owner's top priority; film production paused)
 
-Status 11-17 12:36: Kiki v3 7.4 (sentinel reads; thumbnail reads as a mongoose); happy reads on four of five. 09:36: Kiki v2 is built (sentinel reads, on all fours not yet). 06:36: the design-sheet renderer, rubric, recorded/live critic and best-of-N loop exist
+Status 11-17 15:36: Kiki v4 9.76 / appeal 7 (reads as a meerkat; review score 7); Zuri v2 7.4 (stripes fixed; board mane, puck hooves, pony silhouette; review score 6). 12:36: Kiki v3 7.4 (sentinel reads; thumbnail reads as a mongoose); happy reads on four of five. 09:36: Kiki v2 is built (sentinel reads, on all fours not yet). 06:36: the design-sheet renderer, rubric, recorded/live critic and best-of-N loop exist
 (`animatica.design`, `scripts/design_sheet.py`, `scripts/design_loop.py`, DECISIONS #52). Baseline sheets and scores:
 `design/baseline/`. Morphs only change head, eye, ear, snout, leg and neck sizes; everything below needs base-mesh
 or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
@@ -28,12 +28,23 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
   *Laptop GPU 11-17 (DECISIONS #55, `design/kiki/v4/`): crisp dark mask ✔, a slimmer and smoother barrel with a deeper tuck ✔,
   shorter and more bent legs with the dark shade on the paws only ✔. The thumbnail now reads as a meerkat (recorded critique,
   9.76, appeal 7). The sentinel tail no longer floats below the rump; that was a bug since v2. Needs reviewer verification.*
+  *Verified 11-17 15:36 (cloud): mask, barrel, bent legs and paws-only shade ✔; the sentinel tail is attached ✔; a blind
+  sub-agent (images only) reads the thumbnail as a meerkat (70 %). Kiki 7, held below 9 by: a startled front view (the mask
+  doesn't show from the front and the eyes show much white sideways), a round ball rump from behind, and a plain body with
+  a stretched-dog stance on all fours (forelegs far behind the head). Small: the paw-shade mark hard-codes `z = -0.118`
+  (repeats `body_z`). — [review 11-17 15:36](reviews/2026-11-17T1536Z.md)*
 - [ ] **Zuri's silhouette reads as a horse**: a thicker upright brush mane and larger, rounder ears. Stripes form
   bullseye rings on the chest, face front and rump (projected along one axis): they must wrap the body, with
   chevrons on the rump. The black muzzle ball reads as a clown nose: blend it into the face.
   *Laptop GPU 11-17 (DECISIONS #56, `design/zuri/v2/`): stripes wrap as chevrons, with no bullseye on the chest, forehead or rump ✔. The
   mane stands on the crest from the withers past the poll ✔, the ears are bigger ✔, and the muzzle is a smaller charcoal knob. The thumbnail
   reads as a zebra; the silhouette alone still reads as a pony (legs long and thin). Needs reviewer verification.*
+  *Verified 11-17 15:36 (cloud): the stripes wrap with no bullseyes ✔, the ears ✔, the muzzle is no longer a clown
+  ball ✔. New and open: **the mane is a flat striped board** (a fin behind the neck with a step at the poll; it should
+  follow the crest at 10–15 % of neck depth); **the hooves are hockey pucks** (flat black cylinders under a striped
+  tube: taper them and add a dark coronet into the pastern); a filly's proportions (bigger head, shorter legs, rounder
+  barrel) to lose the pony silhouette; lighter upper lids; the mouth below the muzzle (happy 2.4 %). Zuri 6. —
+  [review 11-17 15:36](reviews/2026-11-17T1536Z.md)*
 - [ ] **Bibi Kobe's shell** is a near-perfect ball with panel lines: a domed carapace with raised, slightly
   pyramidal scutes and a flared rim. Spots read as holes, so use leopard-tortoise radiating marks. The pale plastron
   disc still shows.
@@ -52,7 +63,13 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
   line, with the existing `rig_probe` checks. Feed the results into the rubric before any packet.
 - [ ] **Reference images** (brief `references`, §2): 3–6 Wikimedia Commons / PD images per character, with the
   license checked. The brief validator already rejects a reference without a license.
-- [ ] Rubric gaps the baseline exposed: there is no automatic check yet for stripe bullseyes, edge-on ears or a
+- [ ] **Blind species read for recorded critiques** (until a live vision key exists): have a sub-agent with no
+  context name the animal from `silhouette.png` and `thumb96.png` alone and record its answer next to the reviewer's. On
+  11-17 15:36 it read Kiki v3 as a meerkat where the reviewer had written "mongoose", so reviewers who know the
+  brief are stricter. Keep the stricter read for scoring, and record both. — [review 11-17 15:36](reviews/2026-11-17T1536Z.md)
+- [ ] `materials:flat_black` ignores `marks` colours (a near-black paw mark would pass), and Kiki's paw mark repeats
+  `body_z` as a literal: derive it, or test that the two stay tied. — [review 11-17 15:36](reviews/2026-11-17T1536Z.md)
+- [ ] Rubric gaps the baseline exposed: Add: a fin-like mane (flat plate standing off the neck) and puck hooves (flat cylinders wider than the leg). there is no automatic check yet for stripe bullseyes, edge-on ears or a
   ball-shaped shell. Consider symmetry/ring detection on the front and back views (`docs/LESSONS.md`, §8).
 
 ## P1-SAVANNAH — owner's top priority (CHALLENGE-SAVANNAH.md), highest impact first
