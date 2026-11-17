@@ -3,9 +3,13 @@
 * Mouth: a flat ellipse on the front of the muzzle (or under the elephant's trunk, or on the tortoise's
   beak), facing along the head's pitch. Shape keys: ``open``/``wide``/``round`` (Rhubarb visemes via
   :func:`animatica.audio.lipsync.cues_to_keyframes`), plus ``smile``/``frown`` (the corners curl up or down).
-* Brows: two soft capsules above the eyes, rigid on the head bone. They rise, fall and tilt (inner end up =
-  sad/worried, inner end down = determined).
-* Expressions: a track of ``(seconds, emotion)``. Each emotion sets brow height and tilt plus smile/frown;
+* Brows: two soft capsules above the eyes, rigid on the head bone and seated in the skin: the centre sits a
+  little under the surface and a shrinkwrap (keep outside, evaluated every frame on the deformed skin) lays
+  the underside on it, so they never float. They rise, fall and tilt (inner end up = sad/worried, inner end
+  down = determined), sliding along the brow ridge rather than lifting off it.
+* Lids (built with the eyes, :mod:`animatica.creatures.eyes`): the expression sets how heavy (``droop``) or
+  wide open (``wide``) the upper lids are; blinks are layered on top by the idle.
+* Expressions: a track of ``(seconds, emotion)``. Each emotion sets brow height and tilt, lids, smile/frown;
   :func:`face_keys` eases between them over 0.3 s.
 """
 
@@ -27,6 +31,7 @@ class Expression:
     brow_tilt: float  # degrees; + = inner end up (sad, worried), - = inner end down (determined)
     smile: float  # 0..1 (frown when negative)
     asym: float = 0.0  # extra lift of the left brow (curious: one brow up)
+    lid: float = 0.0  # upper lids: + heavier (droop), - wider open
 
 
 BROW_COLOR = {  # a shade darker than the coat around the eyes
@@ -39,14 +44,14 @@ BROW_COLOR = {  # a shade darker than the coat around the eyes
 
 EXPRESSIONS: dict[str, Expression] = {
     "neutral": Expression(0.0, 0.0, 0.1),
-    "happy": Expression(0.18, -4.0, 0.85),
-    "sad": Expression(0.05, 20.0, -0.6),
-    "surprised": Expression(0.5, 4.0, 0.0),
-    "worried": Expression(0.22, 15.0, -0.3),
-    "determined": Expression(-0.16, -16.0, 0.15),
-    "curious": Expression(0.12, 6.0, 0.25, asym=0.3),
-    "scared": Expression(0.42, 18.0, -0.45),
-    "proud": Expression(0.08, -8.0, 0.6),
+    "happy": Expression(0.18, -4.0, 0.85, lid=0.12),
+    "sad": Expression(0.05, 20.0, -0.6, lid=0.55),
+    "surprised": Expression(0.5, 4.0, 0.0, lid=-0.85),
+    "worried": Expression(0.22, 15.0, -0.3, lid=-0.2),
+    "determined": Expression(-0.16, -16.0, 0.15, lid=0.4),
+    "curious": Expression(0.12, 6.0, 0.25, asym=0.3, lid=-0.25),
+    "scared": Expression(0.42, 18.0, -0.45, lid=-0.9),
+    "proud": Expression(0.08, -8.0, 0.6, lid=0.3),
 }
 
 
@@ -150,9 +155,13 @@ def face_ops(
     ]
     ex, ey, ez, er = sp.eye
     brows: dict[str, dict[str, Any]] = {}
+    head = f"{cid}_head" if sp.separate_head else f"{cid}_body"
     for side, sx in (("L", 1), ("R", -1)):
         rest = _add(sp.head_at, _rx((ex * sx * 0.95, ey - er * 0.15, ez + er * 1.3), sp.head_pitch))
         bid = f"{cid}_brow_{side}"
+        out_dir = _rx((0.25 * sx, -1.0, 0.55), sp.head_pitch)
+        n = math.sqrt(sum(c * c for c in out_dir))
+        out_dir = (out_dir[0] / n, out_dir[1] / n, out_dir[2] / n)
         ops += [
             {
                 "op": "create_primitive",
@@ -169,13 +178,21 @@ def face_ops(
             {
                 "op": "snap_to_surface",
                 "target": bid,
-                "surface": f"{cid}_head" if sp.separate_head else f"{cid}_body",
-                "direction": [round(c, 4) for c in _rx((0.25 * sx, -1.0, 0.55), sp.head_pitch)],
-                "offset": er * 0.12,
+                "surface": head,
+                "direction": [round(c, 4) for c in out_dir],
+                "offset": round(-er * 0.06, 5),  # centre just under the skin
+            },
+            {
+                # whatever pokes inside the (deformed) skin is laid onto it: the brow sits on the skin
+                "op": "add_modifier",
+                "target": bid,
+                "type": "shrinkwrap",
+                "surface": head,
+                "params": {"wrap_method": "NEAREST_SURFACEPOINT", "wrap_mode": "OUTSIDE", "offset": 0.0012},
             },
             {"op": "bind_mesh_to_armature", "mesh": bid, "armature": rig, "bone": "head"},
         ]
-        brows[side] = {"id": bid, "rest": rest, "sign": sx}
+        brows[side] = {"id": bid, "rest": rest, "sign": sx, "out": out_dir}
     ops.append(
         {
             "op": "set_material",
@@ -183,7 +200,9 @@ def face_ops(
             "material": {"base_color": brow_color, "roughness": 0.8, "name": f"{cid}_brow"},
         }
     )
-    return ops, {"mouth": mouth, "brows": brows, "eye_r": er, "head_pitch": sp.head_pitch}
+    lids = [f"{cid}_lid_{side}_up" for side in ("L", "R")]
+    meta = {"mouth": mouth, "brows": brows, "eye_r": er, "head_pitch": sp.head_pitch, "lids": lids}
+    return ops, meta
 
 
 def refresh_rest(face: dict[str, Any], objects: dict[str, dict[str, Any]]) -> None:
@@ -214,8 +233,8 @@ def expression_at(track: list[tuple[float, str]], t: float, blend: float = 0.3) 
             *(
                 a + (b - a) * u
                 for a, b in zip(
-                    (cur.brow_up, cur.brow_tilt, cur.smile, cur.asym),
-                    (nxt.brow_up, nxt.brow_tilt, nxt.smile, nxt.asym),
+                    (cur.brow_up, cur.brow_tilt, cur.smile, cur.asym, cur.lid),
+                    (nxt.brow_up, nxt.brow_tilt, nxt.smile, nxt.asym, nxt.lid),
                 )
             )
         )
@@ -241,9 +260,12 @@ def face_keys(
         for i, t in enumerate(ts):
             e = expression_at(track, t)
             lift = er * (e.brow_up + (e.asym if side == "L" else 0.0))
-            # a little brow "bounce" when talking: life, not a mask
             up = _rx((0.0, 0.0, lift), pitch)
-            loc_keys.append([frame0 + i, [round(rest[k] + up[k], 5) for k in range(3)], "LINEAR"])
+            # follow the brow ridge as it curves back: a raised brow also sinks a little, so it slides on
+            # the skin (the shrinkwrap keeps it on the surface) instead of lifting off into the air
+            sink = b.get("out", (0.0, 0.0, 0.0))
+            mv = [up[k] - sink[k] * 0.35 * abs(lift) for k in range(3)]
+            loc_keys.append([frame0 + i, [round(rest[k] + mv[k], 5) for k in range(3)], "LINEAR"])
             # rotating about the head's forward axis: + lowers the +X (outer) end of the left brow, i.e. the
             # inner end goes up; mirrored on the right
             rot_keys.append([frame0 + i, [round(pitch, 2), round(e.brow_tilt * sx, 2), 0.0], "LINEAR"])
@@ -257,6 +279,22 @@ def face_keys(
     frown = [
         [frame0 + i, round(max(0.0, -expression_at(track, t).smile), 3), "LINEAR"] for i, t in enumerate(ts)
     ]
+    for lid in face.get("lids", []):
+        es = [expression_at(track, t).lid for t in ts]
+        ops += [
+            {
+                "op": "insert_keyframes",
+                "target": lid,
+                "property": "shape_key:droop",
+                "keys": [[frame0 + i, round(max(0.0, v), 3), "LINEAR"] for i, v in enumerate(es)],
+            },
+            {
+                "op": "insert_keyframes",
+                "target": lid,
+                "property": "shape_key:wide",
+                "keys": [[frame0 + i, round(max(0.0, -v), 3), "LINEAR"] for i, v in enumerate(es)],
+            },
+        ]
     ops += [
         {"op": "insert_keyframes", "target": face["mouth"], "property": "shape_key:smile", "keys": smile},
         {"op": "insert_keyframes", "target": face["mouth"], "property": "shape_key:frown", "keys": frown},

@@ -223,13 +223,24 @@ class AddModifier(_Op):
     op: Literal["add_modifier"]
     target: str
     type: Literal[
-        "bevel", "subsurf", "array", "solidify", "displace", "mirror", "smooth", "wireframe", "decimate"
+        "bevel",
+        "subsurf",
+        "array",
+        "solidify",
+        "displace",
+        "mirror",
+        "smooth",
+        "wireframe",
+        "decimate",
+        "shrinkwrap",
     ]
     name: str | None = None
     params: dict[str, Any] = Field(default_factory=dict)
+    # shrinkwrap: the surface to wrap onto (evaluated every frame, so it follows the deformed skin)
+    surface: str | None = None
 
     def references(self) -> list[str]:
-        return [self.target]
+        return [self.target] + ([self.surface] if self.surface else [])
 
 
 class SetMaterial(_Op):
@@ -311,11 +322,12 @@ class SnapToSurface(_Op):
     target: str
     surface: str
     direction: Vec3 = (0.0, -1.0, 0.0)
-    offset: float = Field(0.002, ge=-1, le=1)
+    offset: float = Field(0.002, ge=-1, le=1)  # negative: sink into the surface (an eyeball in its socket)
     reach: float = Field(1.0, gt=0, le=100)
+    carry: list[str] = Field(default_factory=list)  # move these by the same translation (iris, glint, lids)
 
     def references(self) -> list[str]:
-        return [self.target, self.surface]
+        return [self.target, self.surface, *self.carry]
 
 
 class Scatter(_Op):
@@ -427,6 +439,19 @@ class CreateArmature(_Placed):
         return [self.id]
 
 
+class RigidRegion(BaseModel):
+    """Inside this ellipsoid (armature space) the skin follows ``bone`` alone, blending back to the automatic
+    weights over the outer ``falloff`` share: a skull does not bend with the neck, so the eyes, lids and brows
+    riding the head bone stay seated in the skin."""
+
+    model_config = ConfigDict(extra="forbid")
+    bone: str
+    center: Vec3
+    radii: Vec3
+    pitch: float = 0.0  # degrees about X (the head's pitch)
+    falloff: float = Field(0.35, ge=0.0, le=1.0)
+
+
 class BindMeshToArmature(_Op):
     op: Literal["bind_mesh_to_armature"]
     mesh: str
@@ -439,6 +464,7 @@ class BindMeshToArmature(_Op):
     # distance weights if heat weighting fails
     auto: bool = False
     exclude: list[str] = Field(default_factory=list)  # bone-name prefixes that must not deform this mesh
+    rigid: list[RigidRegion] = Field(default_factory=list)  # auto bind: regions that follow one bone rigidly
 
     def references(self) -> list[str]:
         return [self.mesh, self.armature]
@@ -541,8 +567,19 @@ class Query(_Op):
     limit: int = Field(200, ge=1, le=10_000)
 
 
+class SeatPair(BaseModel):
+    """``target`` should sit in ``surface``: an ``eye`` reports how deep its centre is under the deformed skin
+    (embed share of its diameter); ``skin`` (brows, lids) reports the gap between its closest point and the skin."""
+
+    model_config = ConfigDict(extra="forbid")
+    target: str
+    surface: str
+    kind: Literal["eye", "skin"] = "eye"
+
+
 class Inspect(_Op):
-    """Cheap geometric checks used by the Critic (frustum, floor contact, motion, mouth activity)."""
+    """Cheap geometric checks used by the Critic (frustum, floor contact, motion, mouth activity, eyes seated
+    in their sockets, textures pinned to the skin)."""
 
     op: Literal["inspect"]
     subjects: list[str] = Field(min_length=1)
@@ -554,9 +591,15 @@ class Inspect(_Op):
     bone_tails: list[str] = Field(default_factory=list)
     # report per frame how far (degrees of yaw) this object's forward axis (-Y) is turned away from the lens
     facing_target: str | None = None
+    # report per frame how each target sits in its surface (deformed): eye embed, brow/lid gap
+    seating: list[SeatPair] = Field(default_factory=list)
+    # report per frame how far the texture coordinates of these deforming meshes drift from the first frame
+    # (rest_position when the material reads it, else Object coordinates = the deformed position)
+    swim: list[str] = Field(default_factory=list)
 
     def references(self) -> list[str]:
         refs = list(self.subjects) + ([self.camera] if self.camera else [])
+        refs += [x for sp in self.seating for x in (sp.target, sp.surface)] + list(self.swim)
         return refs + ([self.facing_target] if self.facing_target else [])
 
 

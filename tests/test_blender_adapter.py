@@ -411,3 +411,111 @@ def test_ik_pole_angle_does_not_twist_the_leg(fresh, pole_y, angle):
     assert res.data["inspect"]["frames"]["1"]["subjects"]["mark"]["center"] == pytest.approx(
         [0.3, 0, 0.75], abs=0.01
     )
+
+
+def _bent_tail(fresh, coat_before_bind: bool):
+    """A striped tube skinned to a 2-bone chain that bends 50 deg between frames 1 and 10."""
+    stripes = {
+        "base_color": "#EEEEEE",
+        "pattern": "stripes",
+        "pattern_color": "#111111",
+        "pattern_scale": 8.0,
+    }
+    ops = [
+        {"op": "create_empty", "id": "body", "location": [0, 0, 1]},
+        {
+            "op": "create_armature",
+            "id": "rig",
+            "parent": "body",
+            "bones": [
+                {"name": "a", "head": [0, 0, 0], "tail": [0, 0.5, 0]},
+                {"name": "b", "head": [0, 0.5, 0], "tail": [0, 1.0, 0], "parent": "a"},
+            ],
+        },
+        {
+            "op": "create_primitive",
+            "id": "tube",
+            "shape": "uv_sphere",
+            "radius": 0.1,
+            "scale": [1, 5, 1],
+            "location": [0, 0.5, 0],
+            "parent": "body",
+        },
+    ]
+    mat = {"op": "set_material", "targets": ["tube"], "material": {**stripes, "name": "coat"}}
+    bind = {"op": "bind_mesh_to_armature", "mesh": "tube", "armature": "rig", "bones": ["a", "b"]}
+    ops += [mat, bind] if coat_before_bind else [bind, mat]
+    ops += [
+        {"op": "set_frame_range", "start": 1, "end": 10},
+        {
+            "op": "insert_keyframes",
+            "target": "rig",
+            "property": "bone:b.rotation",
+            "keys": [[1, [0, 0, 0], "LINEAR"], [10, [50, 0, 0], "LINEAR"]],
+        },
+    ]
+    run(fresh, *ops)
+    r = run(fresh, {"op": "inspect", "subjects": ["tube"], "frames": [1, 10], "swim": ["tube"]})
+    return r.data["inspect"]["frames"]["10"]["swim"]["tube"]
+
+
+@pytest.mark.blender
+def test_texture_swim_check_and_rest_position_pin(fresh):
+    from animatica.creatures.qa import SWIM_P95
+
+    swims = _bent_tail(fresh, coat_before_bind=True)  # set before the rig: Object coordinates, swims
+    assert not swims["rest"] and swims["p95"] > SWIM_P95
+    fresh.new_scene()
+    pinned = _bent_tail(fresh, coat_before_bind=False)  # on a deforming mesh: rest_position
+    assert pinned["rest"] and pinned["p95"] < 1e-5
+
+
+@pytest.mark.blender
+def test_eye_socket_snap_carry_and_seating(fresh):
+    from animatica.creatures.qa import rig_checks
+
+    run(
+        fresh,
+        {"op": "create_primitive", "id": "head", "shape": "uv_sphere", "radius": 0.2, "segments": 48},
+        # an eye stuck on the outside of the head (the old look), and its iris
+        {
+            "op": "create_primitive",
+            "id": "eye",
+            "shape": "uv_sphere",
+            "radius": 0.04,
+            "location": [0, -0.23, 0],
+        },
+        {
+            "op": "create_primitive",
+            "id": "iris",
+            "shape": "uv_sphere",
+            "radius": 0.02,
+            "location": [0, -0.26, 0],
+        },
+    )
+    probe = {
+        "op": "inspect",
+        "subjects": ["head"],
+        "frames": [1],
+        "seating": [{"target": "eye", "surface": "head"}],
+    }
+    before = run(fresh, probe).data["inspect"]
+    issues, _ = rig_checks(before)
+    assert [i.check for i in issues] == ["eye_socket"]
+    run(
+        fresh,
+        {
+            "op": "snap_to_surface",
+            "target": "eye",
+            "surface": "head",
+            "direction": [0, -1, 0],
+            "offset": -0.012,
+            "carry": ["iris"],
+        },
+    )
+    after = run(fresh, probe).data["inspect"]
+    issues, summary = rig_checks(after)
+    assert not issues and 0.6 < summary["eye_embed"]["eye"][0] < 0.7
+    q = run(fresh, {"op": "query", "ids": ["eye", "iris"]}).data["objects"]
+    # the iris travelled with the eye: still 0.03 in front of it
+    assert abs((q["eye"]["location"][1] - q["iris"]["location"][1]) - 0.03) < 1e-4

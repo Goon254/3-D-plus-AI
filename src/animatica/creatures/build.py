@@ -12,6 +12,7 @@ import math
 from dataclasses import dataclass, field, replace
 from typing import Any
 
+from .eyes import EMBED_DEPTH, IRIS_AT, eye_frame, lid_mesh, look_rotation
 from .gait import FootSpot
 from .organic import body_graph, head_elements, metaball_elements, tail_points
 from .species import EYE_WHITE, GLINT, IRIS, Chain, Species
@@ -104,12 +105,28 @@ class CreatureMeta:
     trunk_bones: list[str] = field(default_factory=list)
     ear_bones: list[str] = field(default_factory=list)
     eyes: list[str] = field(default_factory=list)
+    lids: list[str] = field(default_factory=list)  # <cid>_lid_<L|R>_<up|lo>: shape keys blink/droop/wide
+    head_surface: str = ""  # the mesh the eyes are socketed in (and the brows sit on)
     head_height: float = 0.0  # world height of the head centre at rest (camera framing)
     reach_slack: float = 0.0  # how far the shortest-reaching leg can swing horizontally from rest height
     joints: dict[str, tuple[float, float, float, float]] = field(
         default_factory=dict
     )  # leg -> x, y, z, chain
     length: float = 0.0  # nose-to-tail length (camera framing)
+
+
+LID_COLOR = {  # the skin around the eye: a touch darker than the coat (the zebra's and meerkat's are dark)
+    "elephant": "#6E6862",
+    "giraffe": "#7E5432",
+    "zebra": "#4A4440",
+    "meerkat": "#4A3624",
+    "tortoise": "#6F604A",
+}
+
+
+def lid_material(sp: Species) -> dict[str, Any]:
+    color = LID_COLOR.get(sp.name) or sp.coat.get("base_color", "#777777")
+    return {"base_color": color, "roughness": 0.7, "sheen": 0.15}
 
 
 def build_creature(
@@ -293,17 +310,20 @@ def build_creature(
 
     ear_bones: list[str] = []
     eyes: list[str] = []
+    all_lids: list[str] = []
+    sockets: list[dict[str, Any]] = []  # eyes sink into the real skin once it exists (after the meshes)
+    head_surface = f"{cid}_head" if (sp.separate_head or not organic) else f"{cid}_body"
     for side, sx in (("L", 1), ("R", -1)):
-        ex, ey, ez, er = sp.eye
-        eye_c = head_pt((ex * sx, ey, ez))
-        look = (0.42 * sx, -1.0, -0.05)  # forward and a little outward
-        n = _scale(look, 1 / _len(look))
-        iris_c = _add(eye_c, _scale(n, er * 0.55))
-        glint_c = _add(iris_c, (-0.3 * er, -0.32 * er, 0.32 * er))
+        fr = eye_frame(sp, sx)
+        er = fr.radius
+        eye_c = fr.centre
+        iris_c = _add(eye_c, _scale(fr.look, er * IRIS_AT))
+        glint_c = _add(_add(eye_c, _scale(fr.look, er * 0.93)), _scale(fr.up, 0.3 * er))
+        rot = look_rotation(fr.look)
         for pid, c, size, mkey in (
-            (f"{cid}_eye_{side}", eye_c, (er * 2, er * 1.8, er * 2.1), "eye_white"),
-            (f"{cid}_iris_{side}", iris_c, (er * 1.3, er * 1.0, er * 1.45), "iris"),
-            (f"{cid}_glint_{side}", glint_c, (er * 0.36, er * 0.3, er * 0.36), "glint"),
+            (f"{cid}_eye_{side}", eye_c, (er * 2, er * 2, er * 2), "eye_white"),
+            (f"{cid}_iris_{side}", iris_c, (er * 1.2, er * 0.48, er * 1.25), "iris"),
+            (f"{cid}_glint_{side}", glint_c, (er * 0.3, er * 0.16, er * 0.3), "glint"),
         ):
             meshes.append(
                 (
@@ -313,6 +333,7 @@ def build_creature(
                         "shape": "uv_sphere",
                         "size": _r(size, 5),
                         "location": _r(c, 5),
+                        "rotation": rot,
                         "smooth": True,
                         "segments": 24,
                     },
@@ -320,6 +341,38 @@ def build_creature(
                     "head",
                 )
             )
+        lids = []
+        for part, upper in (("up", True), ("lo", False)):
+            lv, lf, lk = lid_mesh(er, fr, upper)
+            lid = f"{cid}_lid_{side}_{part}"
+            meshes.append(
+                (
+                    {
+                        "op": "create_mesh",
+                        "id": lid,
+                        "vertices": lv,
+                        "faces": lf,
+                        "location": _r(eye_c, 5),
+                        "smooth": True,
+                        "shape_keys": lk,
+                    },
+                    "lid",
+                    "head",
+                )
+            )
+            lids.append(lid)
+        all_lids += lids
+        sockets.append(
+            {
+                "op": "snap_to_surface",
+                "target": f"{cid}_eye_{side}",
+                "surface": head_surface,
+                "direction": _r(fr.socket, 5),
+                "offset": round(-EMBED_DEPTH * er, 5),
+                "reach": round(max(6 * er, 0.05), 4),
+                "carry": [f"{cid}_iris_{side}", f"{cid}_glint_{side}", *lids],
+            }
+        )
         eyes.append(f"{cid}_eye_{side}")
         shape, esize, eoff, erot = sp.ear
         if shape != "none":
@@ -616,6 +669,19 @@ def build_creature(
                 "exclude": ["ear_"]
                 + (["tail_"] if body_style == "metaball" else [])
                 + (["head", "trunk_"] if sp.separate_head else []),
+                # the skull is rigid: the head's skin follows the head bone alone (blending into the neck
+                # over the outer shell), so the eyes, lids and brows on that bone stay in their sockets
+                "rigid": []
+                if sp.separate_head
+                else [
+                    {
+                        "bone": "head",
+                        "center": _r(sp.head_at),
+                        "radii": _r(_scale(sp.head_size, 0.62)),
+                        "pitch": sp.head_pitch,
+                        "falloff": 0.4,
+                    }
+                ],
             },
             {
                 "op": "set_material_by_bone",
@@ -649,7 +715,10 @@ def build_creature(
     for op, mkey, bone in meshes:
         op["parent"] = root
         op.setdefault("tags", ["creature", cid])
+        keys = op.pop("shape_keys", None)
         ops.append(op)
+        if keys:
+            ops.append({"op": "add_shape_keys", "target": op["id"], "keys": keys})
         bind: dict[str, Any] = {"op": "bind_mesh_to_armature", "mesh": op["id"], "armature": rig}
         if isinstance(bone, list):
             bind["bones"] = bone
@@ -661,11 +730,14 @@ def build_creature(
         key = sp.part_mats.get(mkey, mkey)
         if key in ("eye_white", "iris", "glint"):
             spec = {"eye_white": EYE_WHITE, "iris": IRIS, "glint": GLINT}[key]
+        elif key == "lid":
+            spec = lid_material(sp)
         elif key in sp.mats:
             spec = sp.mats[key]
         else:
             spec = sp.coat
         ops.append({"op": "set_material", "targets": ids, "material": {**spec, "name": f"{cid}_{key}"}})
+    ops += sockets
 
     # leg IK: world-space foot targets (keyed by the locomotion planner) and knee poles that ride the body
     ik_targets: dict[str, str] = {}
@@ -716,6 +788,8 @@ def build_creature(
         trunk_bones=trunk_bones,
         ear_bones=ear_bones,
         eyes=eyes,
+        lids=all_lids,
+        head_surface=head_surface,
         head_height=sp.body_z + sp.head_at[2],
         reach_slack=slack,
         joints=joints,

@@ -215,7 +215,7 @@ def walk_keys(
                 return [-25 * flick, 0.0, s * 6 * math.sin(2 * math.pi * t / 4.1 + s)]
 
             bone(name, ear)
-    # blinks: quick squash of the eye ball, iris and glint every 2.5-5 s
+    # blinks every 2.5-5 s: the lids close (a quick squash of the eye on rigs without lids)
     blinks: list[float] = []
     t = rng.uniform(0.6, 1.6)
     while t < ts[-1]:
@@ -230,15 +230,26 @@ def walk_keys(
                 v = min(v, abs(2 * u - 1) ** 1.5 * 0.92 + 0.08)
         return v
 
-    for eye in meta.eyes:
-        side = eye.rsplit("_", 1)[1]
-        for part in (eye, f"{meta.cid}_iris_{side}", f"{meta.cid}_glint_{side}"):
+    if meta.lids:  # the lids close over the eyeball (it stays round in its socket)
+        for lid_id in meta.lids:
             ops.append(
                 {
                     "op": "insert_keyframes",
-                    "target": part,
-                    "property": "scale",
-                    "keys": [_k(f, [1.0, 1.0, r(lid(t), 3)]) for f, t in zip(frames, ts)],
+                    "target": lid_id,
+                    "property": "shape_key:blink",
+                    "keys": [_k(f, r((1.0 - lid(t)) / 0.92, 3)) for f, t in zip(frames, ts)],
                 }
             )
+    else:  # older rigs without lids: squash the eye
+        for eye in meta.eyes:
+            side = eye.rsplit("_", 1)[1]
+            for part in (eye, f"{meta.cid}_iris_{side}", f"{meta.cid}_glint_{side}"):
+                ops.append(
+                    {
+                        "op": "insert_keyframes",
+                        "target": part,
+                        "property": "scale",
+                        "keys": [_k(f, [1.0, 1.0, r(lid(t), 3)]) for f, t in zip(frames, ts)],
+                    }
+                )
     return ops, plan

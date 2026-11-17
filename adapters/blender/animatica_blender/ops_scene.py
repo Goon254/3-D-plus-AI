@@ -239,6 +239,8 @@ class SceneOps:
             raise OpError(f"{op['armature']!r} is not an armature")
         if op.get("auto"):
             self._auto_bind(mesh, arm, res, op.get("exclude", []))
+            for reg in op.get("rigid", []):
+                self._rigid_region(mesh, arm, reg)
         elif op.get("bones"):
             self._smooth_bind(mesh, arm, op["bones"])
         elif op.get("bone"):
@@ -287,6 +289,36 @@ class SceneOps:
             self._smooth_bind(mesh, arm, [b.name for b in arm.data.bones if b.use_deform])
             return
         mesh.matrix_parent_inverse = arm.matrix_world.inverted() @ mw @ mesh.matrix_basis.inverted()
+
+    def _rigid_region(self, mesh, arm, reg: dict) -> None:
+        """Weights inside an ellipsoid (armature space) go to one bone, blending out over the falloff shell."""
+        bone = reg["bone"]
+        if bone not in arm.data.bones:
+            raise OpError(f"no bone {bone!r}")
+        bpy.context.view_layer.update()
+        to_arm = arm.matrix_world.inverted() @ mesh.matrix_world
+        c = mathutils.Vector(reg["center"])
+        rx, ry, rz = (max(1e-4, r) for r in reg["radii"])
+        unpitch = mathutils.Matrix.Rotation(-math.radians(reg.get("pitch", 0.0)), 3, "X")
+        fall = reg.get("falloff", 0.35)
+        target = mesh.vertex_groups.get(bone) or mesh.vertex_groups.new(name=bone)
+        names = {g.index: g for g in mesh.vertex_groups}
+        for v in mesh.data.vertices:
+            q = unpitch @ (to_arm @ v.co - c)
+            e = math.sqrt((q.x / rx) ** 2 + (q.y / ry) ** 2 + (q.z / rz) ** 2)
+            if e >= 1.0:
+                continue
+            u = 1.0 if fall <= 0 or e <= 1.0 - fall else (1.0 - e) / fall
+            s = u * u * (3 - 2 * u)
+            old = {g.group: g.weight for g in v.groups}
+            tot = sum(old.values()) or 1.0
+            new = {gi: (1 - s) * w / tot for gi, w in old.items()}
+            new[target.index] = new.get(target.index, 0.0) + s
+            for gi, w in new.items():
+                if w < 1e-4:
+                    names[gi].remove([v.index])
+                else:
+                    names[gi].add([v.index], w, "REPLACE")
 
     def _rigid_bind(self, mesh, arm, bone: str) -> None:
         if bone not in arm.data.bones:
@@ -394,6 +426,7 @@ class SceneOps:
         "mirror": "MIRROR",
         "smooth": "SMOOTH",
         "wireframe": "WIREFRAME",
+        "shrinkwrap": "SHRINKWRAP",
         "decimate": "DECIMATE",
     }
 
@@ -412,6 +445,10 @@ class SceneOps:
             params.setdefault("limit_method", "ANGLE")
         if op["type"] == "subsurf":
             params.setdefault("render_levels", params.get("levels", 1))
+        if op["type"] == "shrinkwrap":
+            if not op.get("surface"):
+                raise OpError("shrinkwrap needs a surface")
+            m.target = self.obj(op["surface"])
         for k, v in params.items():
             if not hasattr(m, k):
                 res["warnings"].append(f"modifier {op['type']} has no param {k!r}")
@@ -576,10 +613,12 @@ class SceneOps:
             res["warnings"].append(f"snap_to_surface: no hit on {op['surface']!r} for {op['target']!r}")
             return
         world = surf.matrix_world @ loc + d * op.get("offset", 0.002)
-        mw = o.matrix_world.copy()
-        mw.translation = world
-        o.matrix_world = mw
-        res["modified"].append(op["target"])
+        delta = world - here
+        for ob in [o] + [self.obj(c) for c in op.get("carry", [])]:
+            mw = ob.matrix_world.copy()
+            mw.translation = mw.translation + delta
+            ob.matrix_world = mw
+            res["modified"].append(ob.get("animatica_id", ob.name))
 
     def op_add_bone_constraint(self, op: dict, res: dict) -> None:
         arm = self.obj(op["armature"])

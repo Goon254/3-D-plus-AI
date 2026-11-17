@@ -162,3 +162,49 @@ def test_savannah_set_ops_validate_for_every_time_of_day():
         assert grass["clear"] and grass["short"]  # water kept clear, action area short
         world = next(o for o in ops if o["op"] == "set_world")
         assert (world["stars"] > 0) == (tod == "night")
+
+
+@pytest.mark.parametrize("name", ["elephant", "giraffe", "zebra", "meerkat", "tortoise"])
+def test_eye_frame_and_lids(name):
+    import math
+
+    from animatica.creatures import eyes
+    from animatica.creatures.species import SPECIES
+
+    sp = SPECIES[name]
+    for sx in (1, -1):
+        fr = eyes.eye_frame(sp, sx)
+        dot = sum(a * b for a, b in zip(fr.look, fr.socket))
+        assert math.degrees(math.acos(min(1.0, dot))) <= eyes.MAX_LOOK_DEG + 1e-6  # iris on the visible cap
+        assert abs(sum(a * b for a, b in zip(fr.up, fr.look))) < 1e-6 and fr.up[2] > 0  # lids open upward
+        assert fr.socket[0] * sx > 0  # each socket faces out of its own side of the head
+        for upper in (True, False):
+            v, f, keys = eyes.lid_mesh(fr.radius, fr, upper)
+            assert all(len(k) == len(v) for k in keys.values())
+            assert max(i for face in f for i in face) == len(v) - 1
+            r = [math.sqrt(sum(c * c for c in p)) / fr.radius for p in v]
+            assert min(r) >= eyes.LID_INNER - 1e-3  # never cuts into the eyeball
+        assert eyes.IRIS_AT + 0.24 < eyes.LID_INNER  # a closed lid covers the iris
+
+
+def test_rig_checks_thresholds():
+    from animatica.creatures.qa import rig_checks
+
+    def rep(embed, gap, swim):
+        return {
+            "frames": {
+                "1": {
+                    "seating": {"e": {"embed": 0.65}, "b": {"gap": 0.0, "size": 0.1}},
+                    "swim": {"m": {"p95": 0.0}},
+                },
+                "7": {
+                    "seating": {"e": {"embed": embed}, "b": {"gap": gap, "size": 0.1}},
+                    "swim": {"m": {"p95": swim}},
+                },
+            }
+        }
+
+    assert rig_checks(rep(0.66, 0.001, 0.0))[0] == []
+    checks = sorted(i.check for i in rig_checks(rep(0.3, 0.05, 0.02))[0])
+    assert checks == ["eye_socket", "lid_float", "texture_swim"]
+    assert [i.message for i in rig_checks(rep(0.78, 0.0, 0.0))[0]][0].endswith("of its diameter")

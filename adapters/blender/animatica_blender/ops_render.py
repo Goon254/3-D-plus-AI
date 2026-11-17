@@ -252,6 +252,89 @@ class RenderOps:
             "markers": sorted([[m.frame, m.camera.name if m.camera else None] for m in s.timeline_markers]),
         }
 
+    @staticmethod
+    def _surface_tree(surf, dg):
+        from mathutils.bvhtree import BVHTree
+
+        return BVHTree.FromObject(surf.evaluated_get(dg), dg)
+
+    def _seating(self, pairs: list[dict]) -> dict:
+        """Per pair, on the deformed (evaluated) meshes: ``eye``: the centre's depth under the skin and the
+        share of the diameter that is buried (``embed``; 0.5 = half in); ``skin``: the signed gap from the
+        target's closest vertex to the skin (``gap`` <= 0: touching or sunk in) and its size."""
+        dg = bpy.context.evaluated_depsgraph_get()
+        trees: dict = {}
+        out = {}
+        for pr in pairs:
+            o, surf = self.obj(pr["target"]), self.obj(pr["surface"])
+            if surf.name not in trees:
+                trees[surf.name] = self._surface_tree(surf, dg)
+            tree = trees[surf.name]
+            to_s = surf.evaluated_get(dg).matrix_world.inverted()
+            oe = o.evaluated_get(dg)
+            if pr.get("kind", "eye") == "eye":
+                c = to_s @ oe.matrix_world.translation
+                loc, nrm, _i, dist = tree.find_nearest(c)
+                if loc is None:
+                    continue
+                depth = dist if (c - loc).dot(nrm) < 0 else -dist  # + = centre under the skin
+                r = sum(oe.dimensions) / 6
+                out[pr["target"]] = {
+                    "depth": round(depth, 5),
+                    "radius": round(r, 5),
+                    "embed": round(max(0.0, min(1.0, (r + depth) / (2 * r))), 3),
+                }
+            else:
+                me = oe.to_mesh()
+                mw = to_s @ oe.matrix_world
+                best = None
+                step = max(1, len(me.vertices) // 300)
+                for v in me.vertices[::step]:
+                    p = mw @ v.co
+                    loc, nrm, _i, _d = tree.find_nearest(p)
+                    if loc is None:
+                        continue
+                    sd = (p - loc).dot(nrm)
+                    best = sd if best is None else min(best, sd)
+                size = max(oe.dimensions)
+                oe.to_mesh_clear()
+                if best is not None:
+                    out[pr["target"]] = {"gap": round(best, 5), "size": round(size, 5)}
+        return out
+
+    def _swim(self, ids: list[str], ref: dict) -> dict:
+        """How far each mesh's texture coordinates moved since the first inspected frame (metres in object
+        space; p95 and max over a fixed vertex sample). A material that reads ``rest_position`` is pinned to
+        the rest pose; Object coordinates follow the deformed surface and slide through the pattern."""
+        dg = bpy.context.evaluated_depsgraph_get()
+        out = {}
+        for oid in ids:
+            o = self.obj(oid)
+            oe = o.evaluated_get(dg)
+            me = oe.to_mesh()
+            mats = [m for m in o.data.materials if m is not None]
+            rest = bool(mats) and all(
+                m.node_tree is not None and "animatica_rest_coords" in m.node_tree.nodes for m in mats
+            )
+            att = me.attributes.get("rest_position") if rest else None
+            n = len(me.vertices)
+            idx = range(0, n, max(1, n // 400))
+            if att is not None:
+                co = [att.data[i].vector.copy() for i in idx]
+            else:
+                co = [me.vertices[i].co.copy() for i in idx]
+            oe.to_mesh_clear()
+            if oid not in ref:
+                ref[oid] = co
+            d = sorted((a - b).length for a, b in zip(co, ref[oid]))
+            if d:
+                out[oid] = {
+                    "p95": round(d[int(0.95 * (len(d) - 1))], 5),
+                    "max": round(d[-1], 5),
+                    "rest": att is not None,
+                }
+        return out
+
     def op_inspect(self, op: dict, res: dict) -> None:
         from bpy_extras.object_utils import world_to_camera_view
 
@@ -261,6 +344,7 @@ class RenderOps:
         bpy.context.view_layer.update()
         prev_centers: dict[str, mathutils.Vector] = {}
         motion = {sid: 0.0 for sid in op["subjects"]}
+        swim_ref: dict = {}  # texture coordinates at the first inspected frame, per mesh
         frame0 = s.frame_current
         for f in op["frames"]:
             s.frame_set(f)
@@ -308,6 +392,10 @@ class RenderOps:
                 fr["bone_tails"] = tails
             if op.get("facing_target") and cam is not None:
                 fr["facing_deg"] = round(facing_degrees(self.obj(op["facing_target"]), cam), 1)
+            if op.get("seating"):
+                fr["seating"] = self._seating(op["seating"])
+            if op.get("swim"):
+                fr["swim"] = self._swim(op["swim"], swim_ref)
             if op.get("shape_key_target"):
                 t = self.obj(op["shape_key_target"])
                 if t.data and t.data.shape_keys:
