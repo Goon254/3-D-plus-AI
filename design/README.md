@@ -79,3 +79,8 @@ Recorded critique: **7.4**, not ready. The thumbnail reads as a zebra and the bu
 
 Recorded critique: **9.58**, not ready (appeal 7). The silhouette reads as a tortoise and the thumbnail as a leopard
 tortoise. The shell is its own mesh (`creatures/shell.py`) with per-vertex leopard marks; no ball, no holes, no pale plastron.
+
+## tembo/v2/ — cupped ears, eyes open at rest (laptop GPU 2026-11-17, DECISIONS #58)
+
+Recorded critique: **9.84, ready** on the rubric (appeal 8). The ears are thick, cupped meshes (`creatures/ear.py`), and
+the eyes rest open. The same commit gives the whole cast stronger expressions: a laugh, an "O", wider lids.

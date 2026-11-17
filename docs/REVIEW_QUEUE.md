@@ -58,11 +58,15 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
   — [review 11-17 15:36](reviews/2026-11-17T1536Z.md)*
 - [ ] **Tembo's ears** are flat discs that look like fins when seen edge-on from 3/4: give them thickness, a cupped
   shape and a rolled top edge. His neutral upper lids sit low (he looks sleepy).
+  *Laptop GPU 11-17 (DECISIONS #58, `design/tembo/v2/`): cupped, thick ear meshes with a rolled top edge ✔; eyes rest open (`lid_bias`) ✔.
+  Rubric 9.84, ready. Needs reviewer verification.*
 - [ ] **Expressions don't read** at sheet size: happy changes only 1.8–3.5 % of the face close-up (the soft check
   wants 3 %). Make the smile wider, lift the cheeks and lower lids, widen surprised eyes more.
   *11-17 12:36 (DECISIONS #54): lower-lid `cheek` key ("smiling eyes"), higher brows, a wider smile. Happy is now 3.2–5.1 %
   on Kiki, Tembo, Neema and Bibi ✔. Open: Zuri 2.6 % (the mouth hides under the muzzle ball, so it goes with her muzzle
   fix); surprised is 3.6–4 %, so it could open wider.* — [review 11-17 12:36](reviews/2026-11-17T1236Z.md)
+  *Laptop GPU 11-17 (DECISIONS #58): a laugh (jaw) for happy and an "O" for surprised, wider lids, higher brows, capped on big-eyed heads. Happy is
+  3.1–6.6 % and surprised 3.1–8.9 % on all five ✔. Needs reviewer verification.*
 - [ ] **Neema**: thin legs and a small head, so her eyes barely read at 96 px. Try `head` 1.1, `leg` 1.15 in the loop.
 - [ ] **Rig stress test** (DESIGN_STAGE §5): walk, turn, sit/stand, head turns, blinks, all expressions, a lip-sync
   line, with the existing `rig_probe` checks. Feed the results into the rubric before any packet.
