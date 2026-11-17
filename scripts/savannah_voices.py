@@ -64,9 +64,12 @@ def main() -> int:
     reel: list[np.ndarray] = []
     sr = tts.SAMPLE_RATE
     for name, c in cast.items():
-        spec = tts.VoiceSpec(engine="kokoro", voice=c["voice"], pitch=c["pitch"], rate=c["rate"])
         audio = []
-        for i, line in enumerate(c["samples"]):
+        for i, sample in enumerate(c["samples"]):
+            line, mood = (sample, None) if isinstance(sample, str) else sample
+            spec = tts.VoiceSpec(
+                engine="kokoro", voice=c["voice"], pitch=c["pitch"], rate=c["rate"], mood=mood
+            )
             info = tts.synthesize(line, out / f"{name}_{i}.wav", spec)
             x, sr = tts.read_wav(info["path"])
             audio.append(x)
@@ -75,6 +78,7 @@ def main() -> int:
         x = np.concatenate(audio)
         stats[name] = {
             "voice": c["voice"],
+            "shift_semitones": round(12 * np.log2(c["pitch"]), 2),
             "f0_hz": round(f0_median(x, sr), 1),
             "centroid_hz": round(centroid(x, sr)),
         }

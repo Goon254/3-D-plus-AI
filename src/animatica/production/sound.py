@@ -22,12 +22,22 @@ DUCK_SMOOTH = 0.3
 
 
 def to_stereo(x: np.ndarray, sr: int) -> np.ndarray:
-    """Mono/stereo at ``sr`` -> stereo float32 at SR (linear resample: speech only, fine for 24 kHz TTS)."""
+    """Mono/stereo at ``sr`` -> stereo float32 at SR (windowed-sinc resample: linear interpolation imaged
+    the 24 kHz TTS into a metallic fizz above 12 kHz)."""
+    from ..audio.voice_fx import resample
+
     if x.ndim == 2:
         x = x.mean(axis=1)
-    n = int(round(len(x) * SR / sr))
-    y = np.interp(np.linspace(0, len(x) - 1, n), np.arange(len(x)), x).astype(np.float32)
+    y = resample(x, sr, SR)
     return np.stack([y, y], axis=1)
+
+
+def dialogue(x: np.ndarray, sr: int, seed: int = 0, distance: float = 2.5) -> np.ndarray:
+    """A dry TTS line placed in the savannah (EQ, light compression, outdoor reflections, room tone) as
+    stereo at SR. It starts ``voice_fx.PRE`` seconds before the first word: place it that much early."""
+    from ..audio.voice_fx import place_outdoor
+
+    return to_stereo(place_outdoor(x, sr, seed=seed, distance=distance), sr)
 
 
 def place(track: np.ndarray, t: float, sig: np.ndarray, gain: float = 1.0) -> tuple[int, int]:

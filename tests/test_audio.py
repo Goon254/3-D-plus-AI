@@ -138,3 +138,80 @@ def test_ambience_beds_and_footsteps():
         np.abs(steps[int(0.5 * am.SR) : int(0.8 * am.SR)]).max() > 0.1
         and np.abs(steps[: int(0.4 * am.SR)]).max() == 0
     )
+
+
+def test_delivery_plan_pauses_breaths_and_emphasis():
+    from animatica.audio import delivery as dl
+
+    ph = dl.plan(
+        "When I was young... there was a spring past the two baobabs that bow to each other. Its water sings.",
+        "wise",
+    )
+    assert [p.end for p in ph] == ["...", ".", "."]
+    assert ph[0].pause > ph[1].pause > 0 and ph[-1].pause == 0  # ellipsis > full stop; none after the line
+    assert ph[1].breath and not ph[0].breath  # breathe after a long sentence only
+    assert ph[0].text.endswith(",")  # an ellipsis is spoken suspended, not with a falling full stop
+    # markup is never spoken, whatever punctuation follows it; CAPS words are emphasised and lower-cased
+    spoken, emph = dl.spoken("Your trunk's a hose with *hiccups*! She's gone. EVERYBODY PANIC!")
+    assert "*" not in spoken and "PANIC" not in spoken
+    words = spoken.split()
+    assert [words[i] for i in emph] == ["hiccups!", "everybody", "panic!"]
+    assert dl.mood_of("dripping, dignified") == dl.MOODS["dignified"]
+    r = [dl.line_rate(t, 1.0) for t in ("Water!", "Thank you, Tembo.", "A singing spring?")]
+    assert len(set(r)) == 3 and all(0.96 <= x <= 1.04 for x in r)  # small per-line variation
+    assert dl.stress_word("soʊ") == "ˈsoʊː" and dl.stress_word("sˈɪŋɪŋ") == "sˈɪːŋɪŋ"
+    assert dl.emphasise_phonemes("ɐ sˈɪŋɪŋ spɹˈɪŋ?", [1], 3) == "ɐ sˈɪːŋɪŋ spɹˈɪŋ?"
+    assert dl.emphasise_phonemes("ɐ sˈɪŋɪŋ", [1], 3) is None  # tokens don't line up -> speak from text
+
+
+def test_widen_pauses_stretches_boundary_gaps_and_breathes():
+    from animatica.audio import delivery as dl
+
+    sr = 24000
+    def tone(s):
+        return (0.5 * np.sin(2 * np.pi * 180 * np.arange(int(s * sr)) / sr)).astype(np.float32)
+
+    # two phrases (long, then short, like the text) with the model's own 0.1 s gap between them
+    a = np.concatenate([tone(2.6), np.zeros(int(0.1 * sr), np.float32), tone(0.7)])
+    ph = dl.plan("Then the five friends set off together across the grass. And it was far.")
+    out = tts._widen_pauses(a, sr, ph)
+    gaps = tts._silences(out, sr)
+    assert len(out) > len(a) and ph[0].breath
+    # the breath sits inside the widened pause, so the pause reads as two quiet runs around it
+    assert sum(g1 - g0 for g0, g1 in gaps) / sr >= ph[0].pause - 0.3
+
+
+def test_voice_fx_resampler_pitch_and_placement():
+    from animatica.audio import voice_fx as fx
+
+    sr = 24000
+    x = np.sin(2 * np.pi * 1000 * np.arange(sr) / sr).astype(np.float32)
+    y = fx.resample(x, sr, 48000)
+    ref = np.sin(2 * np.pi * 1000 * np.arange(len(y)) / 48000)
+    assert np.abs(y[300:-300] - ref[300:-300]).max() < 1e-3
+    spec = np.abs(np.fft.rfft(y))
+    f = np.fft.rfftfreq(len(y), 1 / 48000)
+    assert 20 * np.log10(spec[f > 12000].max() / spec.max()) < -80  # no images above the old Nyquist
+    p = fx.pitch_shift(x, sr, 2 ** (2 / 12))
+    sp = np.abs(np.fft.rfft(p))
+    assert len(p) == len(x) and abs(np.fft.rfftfreq(len(p), 1 / sr)[sp.argmax()] - 1122.5) < 3
+    # compression narrows the gap between a loud and a quiet syllable
+    burst = np.concatenate([x[:6000] * 0.9, x[:6000] * 0.1])
+    c = fx.compress(burst, sr)
+    assert c[:6000].std() / c[6000:].std() < burst[:6000].std() / burst[6000:].std()
+    placed = fx.place_outdoor(x[:12000] * 0.8, sr, seed=1)
+    assert len(placed) > 12000 + int(fx.PRE * sr)
+    assert np.abs(placed[: int(fx.PRE * sr)]).max() < 0.01  # only faint room tone before the first word
+    assert np.abs(placed).max() <= 0.81
+
+
+def test_savannah_cast_uses_blends_with_small_pitch_shifts():
+    import json
+    from pathlib import Path
+
+    d = json.loads((Path(__file__).parents[1] / "films/savannah/06_voices.json").read_text(encoding="utf-8"))
+    stock = {"af", "am", "bf", "bm"}
+    for name, c in d["cast"].items():
+        assert abs(12 * np.log2(c["pitch"])) <= 2.0 + 1e-6, name
+        for part in c["voice"].split("+"):
+            assert part.split(":")[0][:2] in stock, name

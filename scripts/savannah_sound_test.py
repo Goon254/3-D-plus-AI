@@ -32,19 +32,26 @@ SCRIPT = [  # (start seconds, speaker, line) from 04_screenplay.md
         2.0,
         "narrator",
         "Far away, where the grass grows golden and the sky goes on forever, the rains were late.",
+        None,
     ),
-    (10.5, "narrator", "And the old watering hole was getting smaller... and smaller... and smaller."),
-    (19.0, "tembo", "Morning, Zuri! Morning, Kiki! Water!"),
-    (23.5, "kiki", "Thank you, Tembo. Very refreshing."),
-    (27.0, "zuri", "Your trunk's a hose with hiccups!"),
-    (31.0, "bibi_kobe", "When I was young, there was a spring past the two baobabs that bow to each other."),
+    (10.5, "narrator", "And the old watering hole was getting smaller... and smaller... and smaller.", "sad"),
+    (19.0, "tembo", "Morning, Zuri! Morning, Kiki! Water!", "happy"),
+    (23.5, "kiki", "Thank you, Tembo. Very refreshing.", "dignified"),
+    (27.0, "zuri", "Your trunk's a hose with *hiccups*!", "laughing"),
+    (
+        31.0,
+        "bibi_kobe",
+        "When I was young... there was a spring past the two baobabs that bow to each other.",
+        "wise",
+    ),
 ]
 
 
-def to_stereo48(x: np.ndarray, sr: int) -> np.ndarray:
-    n = int(round(len(x) * SR / sr))
-    y = np.interp(np.linspace(0, len(x) - 1, n), np.arange(len(x)), x).astype(np.float32)
-    return np.stack([y, y], axis=1)
+def to_stereo48(x: np.ndarray, sr: int, seed: int = 0) -> np.ndarray:
+    """A line placed outdoors (EQ, light compression, reflections, room tone), stereo at 48 kHz."""
+    from animatica.production.sound import dialogue
+
+    return dialogue(x, sr, seed=seed)
 
 
 def main() -> int:
@@ -62,16 +69,16 @@ def main() -> int:
     # voices
     voices = np.zeros((n, 2), np.float32)
     duck = np.zeros(n, np.float32)
-    for i, (t, who, line) in enumerate(SCRIPT):
+    for i, (t, who, line, mood) in enumerate(SCRIPT):
         c = cast[who]
         info = tts.synthesize(
             line,
             out / f"line_{i}.wav",
-            tts.VoiceSpec(engine="kokoro", voice=c["voice"], pitch=c["pitch"], rate=c["rate"]),
+            tts.VoiceSpec(engine="kokoro", voice=c["voice"], pitch=c["pitch"], rate=c["rate"], mood=mood),
         )
         x, sr = tts.read_wav(info["path"])
-        v = to_stereo48(x, sr) * 0.9
-        s = int(t * SR)
+        v = to_stereo48(x, sr, seed=i) * 0.9
+        s = int((t - 0.08) * SR)  # the placed line carries 80 ms of room tone before the first word
         e = min(n, s + len(v))
         voices[s:e] += v[: e - s]
         duck[max(0, s - int(0.25 * SR)) : min(n, e + int(0.4 * SR))] = 1.0

@@ -28,7 +28,7 @@ from pathlib import Path
 
 import numpy as np
 
-SAMPLE_RATE = 22050
+SAMPLE_RATE = 24000  # Kokoro's native rate: no resampling of the main engine
 CACHE = Path(os.environ.get("ANIMATICA_CACHE", Path.home() / ".cache" / "animatica"))
 REPO_ROOT = Path(__file__).resolve().parents[3]
 WORKER = Path(
@@ -40,13 +40,15 @@ PIPER_VOICES = ("en-us-kathleen-low", "en-us-libritts-high")  # CC0 / CC BY 4.0 
 @dataclass
 class VoiceSpec:
     engine: str = "auto"
-    voice: str = "am_puck"  # Kokoro voice id
+    voice: str = "am_puck"  # Kokoro voice id, or a blend of stock voices "af_bella:0.6+af_jessica:0.4"
     piper_model: str = "en-us-kathleen-low"
     speaker: int | None = None
     pitch: float = 1.0  # >1 = higher (applied post-TTS)
     rate: float = 1.0  # speaking-rate multiplier
     robot: float = 0.0  # 0..1 subtle ring-mod "robot" colouring
     consent: str | None = None  # reserved for future consented voice cloning; unused
+    natural: bool = True  # Kokoro: phrase pauses, breaths and *emphasis* (animatica.audio.delivery)
+    mood: str | None = None  # delivery mood: a face expression name or a parenthetical word ("quietly")
 
 
 def voices_dir() -> Path:
@@ -150,11 +152,11 @@ def write_wav(path: str | Path, audio: np.ndarray, sr: int = SAMPLE_RATE) -> Pat
 
 
 def resample(a: np.ndarray, sr_from: int, sr_to: int) -> np.ndarray:
-    if sr_from == sr_to:
-        return a
-    n = int(round(len(a) * sr_to / sr_from))
-    x = np.linspace(0, len(a) - 1, n)
-    return np.interp(x, np.arange(len(a)), a).astype(np.float32)
+    """Windowed-sinc resampling (see :func:`animatica.audio.voice_fx.resample`); linear interpolation
+    aliased and imaged, which added a metallic fizz to voices."""
+    from .voice_fx import resample as _rs
+
+    return _rs(a, sr_from, sr_to)
 
 
 def _kokoro(text: str, out: Path, voice: VoiceSpec) -> None:
@@ -168,6 +170,130 @@ def _kokoro(text: str, out: Path, voice: VoiceSpec) -> None:
             "model_dir": str(kokoro_dir()),
         }
     )
+
+
+def _kokoro_natural(text: str, out: Path, voice: VoiceSpec) -> None:
+    """Kokoro with natural delivery.
+
+    The whole line is spoken in one call (phrases spoken on their own lose the sentence context and Kokoro
+    over-releases their last consonant: "panic." came back as "panicked"). Emphasised words are stressed in
+    the phoneme string and lifted in level (timed by rendering the line up to and through each word). Then
+    the model's own short gaps at the phrase boundaries are widened to the punctuation pauses of
+    :mod:`animatica.audio.delivery`, with a soft breath in the longer ones; the rate is varied by mood; the
+    small pitch shift comes last. Two worker calls: phonemize, then every take in one batch.
+    """
+    from . import delivery as dl
+    from . import voice_fx as fx
+
+    phrases = dl.plan(text, voice.mood)
+    spoken, emphasis = dl.spoken(text)
+    n_words = len(spoken.split())
+    rate = dl.line_rate(dl.plain(text), voice.rate, voice.mood)
+    base = {"engine": "kokoro", "model_dir": str(kokoro_dir()), "voice": voice.voice, "speed": rate}
+    tmp = out.with_suffix("")
+    emph = None
+    if emphasis:
+        ph = _worker({**base, "batch": [{"phonemize": spoken}]})["results"][0]["phonemes"]
+        emph = dl.emphasise_phonemes(ph, emphasis, n_words)
+    main = {"out": f"{tmp}.line.wav", **({"phonemes": emph} if emph else {"text": spoken})}
+    takes = [main]
+    if emph:
+        for kk in sorted({x for k in emphasis for x in (k, k + 1) if 0 < x < n_words}):
+            takes.append({"phonemes": dl.prefix_phonemes(emph, kk), "out": f"{tmp}.w{kk}.wav"})
+    res = {t["path"]: t for t in _worker({**base, "batch": takes})["results"]}
+    a, sr = read_wav(main["out"])
+    for f in out.parent.glob(f"{tmp.name}.*.wav"):
+        f.unlink(missing_ok=True)
+    if emph:
+        g = np.ones(len(a), np.float32)
+        lift = 10 ** (dl.EMPHASIS_DB / 20)
+        for k in sorted(set(emphasis)):
+            t0 = res.get(f"{tmp}.w{k}.wav", {}).get("duration", 0.0) if k > 0 else 0.0
+            t1 = res.get(f"{tmp}.w{k + 1}.wav", {}).get("duration") if k + 1 < n_words else None
+            s0 = max(0, int((t0 - 0.03) * sr))
+            s1 = len(a) if t1 is None else min(len(a), int((t1 + 0.03) * sr))
+            if s1 - s0 > 6:
+                ramp = min(int(0.03 * sr), (s1 - s0) // 3)
+                w = np.full(s1 - s0, lift, np.float32)
+                w[:ramp] = np.linspace(1, lift, ramp)
+                w[len(w) - ramp :] = np.linspace(lift, 1, ramp)
+                g[s0:s1] = np.maximum(g[s0:s1], w)
+        a = a * g
+    a = _widen_pauses(a, sr, phrases, seed=zlib.crc32(text.encode("utf-8")) % 10_000)
+    if voice.pitch != 1.0:
+        a = fx.pitch_shift(a, sr, voice.pitch)
+    write_wav(out, a / (np.abs(a).max() + 1e-6) * 0.85, sr)
+
+
+def _silences(a: np.ndarray, sr: int, min_s: float = 0.04, floor_db: float = -38.0) -> list[tuple[int, int]]:
+    """Runs of near-silence (10 ms frames below ``floor_db`` re the peak), excluding the line's ends."""
+    hop = int(0.01 * sr)
+    n = len(a) // hop
+    if n < 3:
+        return []
+    r = np.sqrt(np.mean(a[: n * hop].reshape(n, hop) ** 2, axis=1))
+    quiet = r < (np.abs(a).max() + 1e-9) * 10 ** (floor_db / 20)
+    runs, k = [], 0
+    while k < n:
+        if quiet[k]:
+            e = k
+            while e < n and quiet[e]:
+                e += 1
+            if k > 0 and e < n and (e - k) * hop >= min_s * sr:
+                runs.append((k * hop, e * hop))
+            k = e
+        else:
+            k += 1
+    return runs
+
+
+def _widen_pauses(a: np.ndarray, sr: int, phrases: list, seed: int = 0) -> np.ndarray:
+    """Stretch the gap at each phrase boundary to the phrase's planned pause and breathe in the long ones.
+
+    Boundaries are matched to the silences Kokoro left, in order, near where the text says they fall
+    (character share of the line); a boundary with no silence nearby is left as the model spoke it."""
+    from . import voice_fx as fx
+
+    bounds = phrases[:-1]
+    if not bounds:
+        return a
+    gaps = _silences(a, sr)
+    total = sum(len(p.text) for p in phrases)
+    dur = len(a)
+    used: set[int] = set()
+    inserts: list[tuple[int, int, bool]] = []  # (sample position, extra samples, breath)
+    acc = 0
+    for p in bounds:
+        acc += len(p.text)
+        expect = dur * acc / max(1, total)
+        cand = [(abs((g0 + g1) / 2 - expect), gi) for gi, (g0, g1) in enumerate(gaps) if gi not in used]
+        cand = [c for c in cand if c[0] < 0.22 * dur]
+        if not cand:
+            continue
+        gi = min(cand)[1]
+        if inserts and gi <= max(u for u in used):
+            continue  # keep boundaries in order
+        used.add(gi)
+        g0, g1 = gaps[gi]
+        extra = int(p.pause * sr) - (g1 - g0)
+        if extra > 0 or p.breath:
+            inserts.append(((g0 + g1) // 2, max(0, extra), p.breath))
+    out, last = [], 0
+    peak = float(np.abs(a).max()) + 1e-9
+    for pos, extra, br in inserts:
+        out.append(a[last:pos])
+        gap = np.zeros(extra, np.float32)
+        if br:
+            # the breath ends ~60 ms before the next phrase; it may reach back into the model's own gap
+            b = fx.breath(sr, 0.24, seed=seed + pos) * (peak / 0.85)
+            if len(gap) < len(b) + int(0.06 * sr):
+                gap = np.zeros(len(b) + int(0.06 * sr), np.float32)
+            e = len(gap) - int(0.06 * sr)
+            gap[e - len(b) : e] += b
+        out.append(gap)
+        last = pos
+    out.append(a[last:])
+    return np.concatenate(out).astype(np.float32)
 
 
 def _piper(text: str, out: Path, voice: VoiceSpec) -> None:
@@ -236,10 +362,10 @@ def _synth(text: str, out: Path, voice: VoiceSpec) -> None:
     write_wav(out, audio, sr)
 
 
-def _post(path: Path, voice: VoiceSpec) -> float:
+def _post(path: Path, voice: VoiceSpec, pitched: bool = False) -> float:
     a, sr = read_wav(path)
-    if voice.pitch != 1.0:
-        # pitch shift by resampling + time-stretch back (simple overlap-add)
+    if voice.pitch != 1.0 and not pitched:
+        # pitch shift: sinc-resample, then WSOLA back to length (voice_fx.pitch_shift)
         shifted = resample(a, int(sr * voice.pitch), sr)
         a = _time_stretch(shifted, len(a))
     if voice.robot > 0:
@@ -303,8 +429,15 @@ def synthesize(text: str, out: str | Path, voice: VoiceSpec | None = None) -> di
     last_err = None
     for eng in engines:
         try:
-            {"kokoro": _kokoro, "piper": _piper, "espeak": _espeak, "synth": _synth}[eng](text, out, voice)
-            duration = _post(out, voice)
+            natural = eng == "kokoro" and voice.natural
+            if natural:
+                _kokoro_natural(text, out, voice)
+            else:
+                spoken = text.replace("*", "")
+                {"kokoro": _kokoro, "piper": _piper, "espeak": _espeak, "synth": _synth}[eng](
+                    spoken, out, voice
+                )
+            duration = _post(out, voice, pitched=natural)
             return {"path": str(out), "engine": eng, "duration": round(duration, 3)}
         except Exception as e:  # noqa: BLE001
             last_err = e

@@ -28,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from animatica.audio import ambience, composer, lipsync, tts  # noqa: E402
+from animatica.audio.voice_fx import PRE  # noqa: E402
 from animatica.core.engine import BlenderSession  # noqa: E402
 from animatica.creatures.build import build_creature  # noqa: E402
 from animatica.creatures.face import BROW_COLOR, face_keys, face_ops, refresh_rest  # noqa: E402
@@ -108,7 +109,15 @@ def main() -> int:
         c = cast_voices[ln.who]
         wav = out / "voices" / f"{i:02d}_{ln.who}.wav"
         info = tts.synthesize(
-            ln.text, wav, tts.VoiceSpec(engine="kokoro", voice=c["voice"], pitch=c["pitch"], rate=c["rate"])
+            ln.text,
+            wav,
+            tts.VoiceSpec(
+                engine="kokoro",
+                voice=c["voice"],
+                pitch=c["pitch"],
+                rate=c["rate"],
+                mood=ln.expr[0][1] if ln.expr else None,
+            ),
         )
         takes.append((Path(info["path"]), float(info["duration"])))
     seconds = schedule(spec, [d for _, d in takes])
@@ -155,7 +164,7 @@ def main() -> int:
             cues = []
             for ln, (wav, _) in zip(spec.lines, takes):
                 if ln.who == cid:
-                    cs, _engine = lipsync.lipsync(wav, ln.text)
+                    cs, _engine = lipsync.lipsync(wav, ln.text.replace("*", ""))
                     cues += [
                         dataclasses.replace(c, start=c.start + ln.start, end=c.end + ln.start) for c in cs
                     ]
@@ -273,7 +282,7 @@ def main() -> int:
     voices = []
     for ln, (wav, _) in zip(spec.lines, takes):
         x, sr = tts.read_wav(wav)
-        voices.append((ln.start, sound.to_stereo(x, sr)))
+        voices.append((ln.start - PRE, sound.dialogue(x, sr, seed=len(voices))))
     cue = next(c for c in composer.load_cue_sheet(FILM / "05_cue_sheet.json") if c.id == spec.cue)
     cue = dataclasses.replace(cue, seconds=seconds)  # re-timed to picture: the arrangement fits the bars
     rep = composer.render_cue(composer.arrange(cue), out / "music")

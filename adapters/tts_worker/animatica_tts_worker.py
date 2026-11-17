@@ -7,6 +7,8 @@ through a JSON contract on stdin/stdout:
 
     request : {"text": str, "engine": "kokoro"|"piper", "voice": str, "speed": float, "out": "path.wav",
                "model_dir": str}
+              kokoro also takes "phonemes" (IPA) instead of text, a blend voice "a:0.6+b:0.4", and
+              "batch": [take, ...] (one model load; a take {"phonemize": text} returns its phonemes)
     response: {"ok": true, "path": str, "sample_rate": int, "duration": float, "engine": str}
               {"ok": false, "error": str}
 
@@ -34,25 +36,53 @@ def _write_wav(path: str, samples, sr: int) -> None:
         w.writeframes((a * 32767).astype("<i2").tobytes())
 
 
-def kokoro(req: dict) -> dict:
+_KOKORO = {}
+
+
+def _kokoro_model(d: str):
     from kokoro_onnx import Kokoro
 
-    d = req["model_dir"]
-    k = Kokoro(os.path.join(d, "kokoro-v1.0.onnx"), os.path.join(d, "voices-v1.0.bin"))
-    samples, sr = k.create(
-        req["text"],
-        voice=req.get("voice") or "af_heart",
-        speed=float(req.get("speed", 1.0)),
-        lang=req.get("lang", "en-us"),
-    )
-    _write_wav(req["out"], samples, sr)
-    return {
-        "ok": True,
-        "path": req["out"],
-        "sample_rate": sr,
-        "duration": len(samples) / sr,
-        "engine": "kokoro",
-    }
+    if d not in _KOKORO:
+        _KOKORO[d] = Kokoro(os.path.join(d, "kokoro-v1.0.onnx"), os.path.join(d, "voices-v1.0.bin"))
+    return _KOKORO[d]
+
+
+def kokoro_style(k, voice: str):
+    """A stock voice id, or a blend of stock voices' style vectors: ``"af_bella:0.6+af_jessica:0.4"``
+    (weights are normalised). Blending mixes two existing voices; it does not clone anyone."""
+    if "+" not in voice and ":" not in voice:
+        return voice
+    parts = [p.split(":") for p in voice.split("+")]
+    ws = [float(p[1]) if len(p) > 1 else 1.0 for p in parts]
+    tot = sum(ws) or 1.0
+    st = sum((w / tot) * k.get_voice_style(p[0]) for p, w in zip(parts, ws))
+    return st.astype("float32")
+
+
+def kokoro(req: dict) -> dict:
+    """One take, or ``batch``: a list of takes rendered with one model load. A take speaks ``text`` or, with
+    ``phonemes``, a phoneme string (Kokoro's IPA vocabulary: stress marks, length marks)."""
+    k = _kokoro_model(req["model_dir"])
+    takes = req.get("batch") or [req]
+    outs = []
+    for t in takes:
+        style = kokoro_style(k, t.get("voice") or req.get("voice") or "af_heart")
+        if t.get("phonemize"):
+            outs.append({"phonemes": k.tokenizer.phonemize(t["phonemize"], t.get("lang", "en-us"))})
+            continue
+        ph = t.get("phonemes")
+        samples, sr = k.create(
+            ph if ph else t["text"],
+            voice=style,
+            speed=float(t.get("speed", req.get("speed", 1.0))),
+            lang=t.get("lang", "en-us"),
+            is_phonemes=bool(ph),
+        )
+        _write_wav(t["out"], samples, sr)
+        outs.append({"path": t["out"], "sample_rate": sr, "duration": len(samples) / sr})
+    if req.get("batch"):
+        return {"ok": True, "engine": "kokoro", "results": outs}
+    return {"ok": True, "engine": "kokoro", **outs[0]}
 
 
 def piper(req: dict) -> dict:
