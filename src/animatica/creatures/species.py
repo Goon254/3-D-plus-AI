@@ -276,16 +276,16 @@ SPECIES: dict[str, Species] = {
     # tapering tail (not bushy), dark paws. Stands up into the sentinel pose whenever it stops.
     "meerkat": Species(
         name="meerkat",
-        # slim and long (head+body 0.32 m, the torso ~2.8x as long as it is wide): a mongoose, not a hamster
+        # slim and long (head+body 0.32 m, the torso ~2.6x as long as it is wide): a mongoose, not a hamster
         body_z=0.128,
-        torso=(0.084, 0.235, 0.09),
+        torso=(0.09, 0.235, 0.095),
         torso_at=(0.0, 0.0, 0.0),
         torso_rot=0.0,
         shoulder=(0.026, -0.088, -0.016),
         hip=(0.03, 0.086, -0.012),
         fore_foot=(0.027, -0.09),
         hind_foot=(0.031, 0.088),
-        leg_r=(0.0145, 0.009, 0.018, 0.0105),
+        leg_r=(0.017, 0.0115, 0.021, 0.013),
         foot=("paw", 0.012, 0.01),
         knee_bend=0.2,
         neck=Chain((0.0, -0.118, 0.014), (0.0, -0.158, 0.046), 2, 0.031, 0.028),

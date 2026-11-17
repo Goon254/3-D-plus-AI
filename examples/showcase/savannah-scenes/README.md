@@ -16,3 +16,9 @@ The first scenes made by the scene production pipeline (`films/savannah/07_scene
 
 Not yet in the picture: the trunk dip/spray gag (only its sound plays), Neema ducking her head, eyelines toward the
 speaker. Final quality (1280×720, 24 fps, OptiX) is for the laptop: `--quality final`.
+
+**SC 2 draft, 2026-11-17** ([`sc02_draft.mp4`](sc02_draft.mp4), [contact sheet](sc02_draft_contact_sheet.jpg), 1 fps):
+960×540, 16 samples, OptiX on the RTX 5060. The dialogue is regenerated with **Chatterbox** steered by the approved
+Kokoro blends (all four lines pass the Whisper check; DECISIONS #45). In picture: Tembo's trunk dips to the puddle,
+drinks, curls and sprays Kiki; Neema walks in ducking and goes lower after "lamp-post"; listeners turn to whoever
+speaks; Tembo ends on a sad close-up with drooping ears. Eyes in sockets with lids, and coats pinned to the skin.

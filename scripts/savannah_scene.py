@@ -16,6 +16,7 @@ import argparse
 import dataclasses
 import json
 import math
+import os
 import shutil
 import subprocess
 import sys
@@ -73,6 +74,22 @@ def waypoints(actor, seconds: float) -> tuple[list[Waypoint], float]:
     moving = [p for p in actor.path]
     yaw0 = heading_yaw(moving[0][1:], moving[1][1:]) if len(moving) > 1 else actor.yaw
     return pts, yaw0
+
+
+def sequence_frames(frames: Path) -> Path:
+    """Number the rendered frames 00001.png, 00002.png ... (hard links, so no copies) in ``frames/seq``: frame
+    steps leave gaps in Blender's numbering, and Windows ffmpeg builds have no glob input."""
+    seq = frames / "seq"
+    if seq.exists():
+        shutil.rmtree(seq)
+    seq.mkdir()
+    for i, f in enumerate(sorted(frames.glob("frame_*.png")), 1):
+        dst = seq / f"{i:05d}.png"
+        try:
+            os.link(f, dst)
+        except OSError:
+            shutil.copyfile(f, dst)
+    return seq
 
 
 def run(eng: BlenderSession, bid: str, ops: list[dict]) -> dict:
@@ -410,6 +427,7 @@ def main() -> int:
     }
     if not a.no_render:
         mp4 = out / f"{spec.id}.mp4"
+        seq = sequence_frames(out / "frames")
         subprocess.run(
             [
                 "ffmpeg",
@@ -418,10 +436,8 @@ def main() -> int:
                 "-y",
                 "-framerate",
                 str(fps / step),
-                "-pattern_type",
-                "glob",
                 "-i",
-                str(out / "frames" / "frame_*.png"),
+                str(seq / "%05d.png"),
                 "-i",
                 str(out / "mix.wav"),
                 "-map",
