@@ -79,6 +79,34 @@ class MaterialOps:
             color_out, pat_height = self._pattern(nodes, links, spec, rgb, color_out, co)
             if pat_height is not None:  # scute seams / scale crevices are carved, not just painted
                 normal_out = self._bump(nodes, links, pat_height, 0.6, 0.004, normal_out)
+        for mk in spec.get("marks") or []:
+            # a soft ellipsoid painted on the skin: |(co - at) / radii| < 1, fading over the outer `soft`
+            sub = nodes.new("ShaderNodeVectorMath")
+            sub.operation = "SUBTRACT"
+            links.new(co, sub.inputs[0])
+            sub.inputs[1].default_value = mk["at"]
+            div = nodes.new("ShaderNodeVectorMath")
+            div.operation = "DIVIDE"
+            links.new(sub.outputs["Vector"], div.inputs[0])
+            div.inputs[1].default_value = [max(1e-5, r) for r in mk["radii"]]
+            ln = nodes.new("ShaderNodeVectorMath")
+            ln.operation = "LENGTH"
+            links.new(div.outputs["Vector"], ln.inputs[0])
+            mr = nodes.new("ShaderNodeMapRange")
+            mr.interpolation_type = "SMOOTHSTEP"
+            mr.inputs["From Min"].default_value = 1.0
+            mr.inputs["From Max"].default_value = 1.0 - mk.get("soft", 0.5)
+            mr.inputs["To Max"].default_value = mk.get("strength", 1.0)
+            links.new(ln.outputs["Value"], mr.inputs["Value"])
+            mx = nodes.new("ShaderNodeMix")
+            mx.data_type = "RGBA"
+            links.new(mr.outputs["Result"], mx.inputs["Factor"])
+            if color_out is not None:
+                links.new(color_out, mx.inputs["A"])
+            else:
+                mx.inputs["A"].default_value = (*rgb, 1)
+            mx.inputs["B"].default_value = (*hex_to_rgb(mk["color"]), 1)
+            color_out = mx.outputs["Result"]
         if spec.get("wrinkles"):
             # creased skin: distorted wave bands (horizontal folds) plus a finer crackle
             wave = nodes.new("ShaderNodeTexWave")
@@ -257,6 +285,7 @@ class MaterialOps:
         """
         kind = spec["pattern"]
         height = None
+        pat = None  # the marking layer, when it is not simply the ramp
         mark = (*hex_to_rgb(spec.get("pattern_color") or "#111111"), 1)
         ground = (*rgb, 1)
         width = spec.get("pattern_width", 0.5)
@@ -276,6 +305,20 @@ class MaterialOps:
             # Fac is a 0..1 sine: the bottom `w` share of it is the marking
             lo.position, hi.position = max(0.0, w - 0.04), min(1.0, w + 0.04)
             lo.color, hi.color = mark, ground
+            if spec.get("pattern_above") is not None:  # markings on the back only, fading in with height
+                sep = nodes.new("ShaderNodeSeparateXYZ")
+                links.new(co, sep.inputs[0])
+                band = nodes.new("ShaderNodeMapRange")
+                f = spec.get("pattern_fade", 0.02)
+                band.inputs["From Min"].default_value = spec["pattern_above"] - f
+                band.inputs["From Max"].default_value = spec["pattern_above"] + f
+                links.new(sep.outputs["Z"], band.inputs["Value"])
+                gate = nodes.new("ShaderNodeMix")
+                gate.data_type = "RGBA"
+                links.new(band.outputs["Result"], gate.inputs["Factor"])
+                gate.inputs["A"].default_value = ground
+                links.new(ramp.outputs["Color"], gate.inputs["B"])
+                pat = gate.outputs["Result"]
         else:
             vor = nodes.new("ShaderNodeTexVoronoi")
             vor.inputs["Scale"].default_value = spec.get("pattern_scale", 1.0)
@@ -346,8 +389,9 @@ class MaterialOps:
                 links.new(m1.outputs["Result"], m2.inputs["A"])
                 links.new(ramp.outputs["Color"], m2.inputs["B"])
                 return m2.outputs["Result"], vor.outputs["Distance"]
+        pat = pat if pat is not None else ramp.outputs["Color"]
         if base_out is None:
-            return ramp.outputs["Color"], height
+            return pat, height
         # keep any grime variation: multiply the marking layer over the noisy base
         mul = nodes.new("ShaderNodeMix")
         mul.data_type, mul.blend_type = "RGBA", "MULTIPLY"
@@ -356,7 +400,7 @@ class MaterialOps:
         div = nodes.new("ShaderNodeMix")  # ramp / ground: 1 on ground, marking/ground on marks
         div.data_type, div.blend_type = "RGBA", "DIVIDE"
         div.inputs["Factor"].default_value = 1.0
-        links.new(ramp.outputs["Color"], div.inputs["A"])
+        links.new(pat, div.inputs["A"])
         div.inputs["B"].default_value = (max(rgb[0], 1e-3), max(rgb[1], 1e-3), max(rgb[2], 1e-3), 1)
         links.new(div.outputs["Result"], mul.inputs["B"])
         return mul.outputs["Result"], height

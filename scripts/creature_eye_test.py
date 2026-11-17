@@ -83,7 +83,8 @@ def one(species: str, out: Path, fps: int, render: bool) -> dict:
         issues, summary = rig_checks(rep, species)
         stills = []
         if render:
-            for tag, f in (("stand", int(stand * fps * 0.6)), ("walk", int((stand + walk * 0.6) * fps))):
+            fw = int((stand + walk * 0.6) * fps)
+            for tag, f in (("stand", int(stand * fps * 0.6)), ("walk", fw), ("body", fw)):
                 m = run(
                     eng,
                     f"m{tag}",
@@ -96,9 +97,14 @@ def one(species: str, out: Path, fps: int, render: bool) -> dict:
                         }
                     ],
                 )
-                head = m["inspect"]["frames"][str(f)]["bone_tails"][f"{meta.rig}:head"]
+                fr_ = m["inspect"]["frames"][str(f)]
+                head = fr_["bone_tails"][f"{meta.rig}:head"]
                 size = max(sp.head_size) * 2.4
                 cam = [head[0] + size * 0.9, head[1] - size * 1.5, head[2] + size * 0.15]
+                if tag == "body":  # side-on, mid-stride: proportions and the coat on the move
+                    head = fr_["subjects"][meta.root]["center"]
+                    dist = max(meta.length, meta.head_height) * 2.3
+                    cam = [head[0] + dist * 0.87, head[1] + dist * 0.5, head[2] + dist * 0.12]
                 run(
                     eng,
                     f"cam{tag}",
@@ -146,7 +152,7 @@ def main() -> int:
         for i, r in enumerate(results):
             for s in r["stills"]:
                 inputs += ["-i", s]
-            rows.append(f"[{2 * i}][{2 * i + 1}]hstack=2[r{i}]")
+            rows.append(f"[{3 * i}][{3 * i + 1}][{3 * i + 2}]hstack=3[r{i}]")
         stack = (
             "".join(f"[r{i}]" for i in range(len(results))) + f"vstack={len(results)}"
             if len(results) > 1

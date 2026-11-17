@@ -55,6 +55,17 @@ class _Placed(_Op):
         return [self.parent] if self.parent else []
 
 
+class Mark(BaseModel):
+    """A soft painted ellipsoid in object space (rest pose on skinned meshes): an eye patch, a muzzle blush."""
+
+    model_config = ConfigDict(extra="forbid")
+    at: Vec3
+    radii: Vec3
+    color: str
+    soft: float = Field(0.5, gt=0, le=1)  # share of the radius over which it fades out
+    strength: float = Field(1.0, ge=0, le=1)
+
+
 class MaterialSpec(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: str | None = None
@@ -88,6 +99,10 @@ class MaterialSpec(BaseModel):
     pattern_width: float = Field(0.5, gt=0, lt=1)  # share of the pattern that is marking
     pattern_axis: Literal["x", "y", "z"] = "z"  # stripes/bands run across this axis
     pattern_distort: float = Field(2.0, ge=0, le=50)
+    # markings only above this object-space height (fading in over pattern_fade): a meerkat's back bands
+    pattern_above: float | None = None
+    pattern_fade: float = Field(0.02, gt=0, le=10)
+    marks: list[Mark] = Field(default_factory=list)
     # skin and fur shading per species
     subsurface: float = Field(0.0, ge=0, le=1)  # skin: light scatters under the surface (elephant, tortoise)
     subsurface_radius: float = Field(0.02, gt=0, le=1)  # metres

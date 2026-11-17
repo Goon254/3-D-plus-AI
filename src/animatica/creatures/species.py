@@ -72,6 +72,8 @@ class Species:
     nails: int = 0  # toenails/claws on each skin-grown foot
     shell: tuple[V3, V3] | None = None  # (size, centre) of a tortoise carapace
     default_pose: str = "stand"  # "sentinel": the meerkat stands up when it stops
+    # a soft dark patch painted on the skin around and behind each eye: (colour, strength)
+    eye_patch: tuple[str, float] | None = None
     separate_head: bool = False  # sculpt the head as its own mesh on the head bone (no melting into the body)
 
 
@@ -274,77 +276,62 @@ SPECIES: dict[str, Species] = {
     # tapering tail (not bushy), dark paws. Stands up into the sentinel pose whenever it stops.
     "meerkat": Species(
         name="meerkat",
-        body_z=0.105,
-        torso=(0.122, 0.27, 0.13),
+        # slim and long (head+body 0.32 m, the torso ~2.8x as long as it is wide): a mongoose, not a hamster
+        body_z=0.128,
+        torso=(0.084, 0.235, 0.09),
         torso_at=(0.0, 0.0, 0.0),
         torso_rot=0.0,
-        shoulder=(0.033, -0.085, -0.02),
-        hip=(0.038, 0.085, -0.015),
-        fore_foot=(0.034, -0.09),
-        hind_foot=(0.04, 0.085),
-        leg_r=(0.017, 0.011, 0.022, 0.012),
-        foot=("paw", 0.013, 0.011),
+        shoulder=(0.026, -0.088, -0.016),
+        hip=(0.03, 0.086, -0.012),
+        fore_foot=(0.027, -0.09),
+        hind_foot=(0.031, 0.088),
+        leg_r=(0.0145, 0.009, 0.018, 0.0105),
+        foot=("paw", 0.012, 0.01),
         knee_bend=0.2,
-        neck=Chain((0.0, -0.12, 0.015), (0.0, -0.16, 0.05), 2, 0.034, 0.03),
-        head_at=(0.0, -0.2, 0.058),
-        head_size=(0.066, 0.1, 0.066),
-        head_pitch=6.0,
-        eye=(0.022, -0.026, 0.014, 0.013),
-        ear=("disc", (0.01, 0.018, 0.018), (0.034, 0.02, 0.016), (0.0, 0.0, 0.0)),
-        tail=Chain((0.0, 0.13, 0.0), (0.0, 0.31, 0.05), 4, 0.013, 0.005),
-        tuft=0.009,  # the dark tail tip
+        neck=Chain((0.0, -0.118, 0.014), (0.0, -0.158, 0.046), 2, 0.031, 0.028),
+        # a narrow, pointed head: the face tapers into a long snout
+        head_at=(0.0, -0.193, 0.054),
+        head_size=(0.06, 0.088, 0.058),
+        head_pitch=8.0,
+        eye=(0.021, -0.02, 0.012, 0.0125),
+        ear=("disc", (0.009, 0.015, 0.015), (0.027, 0.018, 0.012), (0.0, 0.0, 0.0)),
+        tail=Chain((0.0, 0.13, 0.004), (0.0, 0.34, 0.04), 4, 0.0115, 0.004),
+        tuft=0.008,  # the dark tail tip
         coat=_m(
             "#B68A56", 0.85, noise=0.18, noise_scale=40.0, fur=0.6, fur_scale=500.0, sheen_tint="#F2D2A0"
         ),
         mats={
+            # faint, irregular bands across the top of the back and rump only (not hoops round the body)
             "back": _m(
                 "#B08452",
                 0.85,
                 pattern="bands",
-                pattern_color="#9C7246",
-                pattern_scale=6.0,
-                pattern_width=0.1,
+                pattern_color="#9E774A",
+                pattern_scale=9.0,
+                pattern_width=0.12,
                 pattern_axis="y",
-                pattern_distort=2.0,
+                pattern_distort=3.0,
+                pattern_above=0.02,
+                pattern_fade=0.014,
                 fur=0.6,
                 fur_scale=500.0,
             ),
             "paw": _m("#24180F", 0.7),
-            "patch": _m("#1A120C", 0.7),
-            "muzzle": _m("#C49A64", 0.8, fur=0.4, fur_scale=500.0),
+            "muzzle": _m("#BE925C", 0.8, fur=0.4, fur_scale=500.0),
             "nose": _m("#1E1612", 0.4),
             "tailtip": _m("#1E150F", 0.8),
         },
         part_mats={"tuft": "tailtip"},
-        # a pointed face: a long tapering snout, pale, with a dark nose
-        muzzle=((0.036, 0.056, 0.03), (0.0, -0.066, -0.014)),
+        # a pointed face: a long, narrow, tapering snout, pale, with a dark nose
+        muzzle=((0.024, 0.056, 0.021), (0.0, -0.054, -0.013)),
         regions=(
             (("hips", "chest"), "back"),
             (("leg_LF_lo", "leg_RF_lo", "leg_LH_lo", "leg_RH_lo"), "paw"),
             (("tail_3",), "tailtip"),
         ),
-        extras=(
-            # the "sunglasses": dark patches around and behind the eyes
-            Extra(
-                "patch_L",
-                "uv_sphere",
-                (0.036, 0.034, 0.03),
-                (0.021, -0.022, 0.013),
-                "head",
-                "patch",
-                (0, 0, -25),
-            ),
-            Extra(
-                "patch_R",
-                "uv_sphere",
-                (0.036, 0.034, 0.03),
-                (-0.021, -0.022, 0.013),
-                "head",
-                "patch",
-                (0, 0, 25),
-            ),
-            Extra("nose", "uv_sphere", (0.015, 0.011, 0.011), (0.0, -0.093, -0.012), "head", "nose"),
-        ),
+        extras=(Extra("nose", "uv_sphere", (0.011, 0.008, 0.008), (0.0, -0.083, -0.013), "head", "nose"),),
+        # the meerkat's dark "spectacles", painted softly round the eyes (the eyes stay visible in them)
+        eye_patch=("#3E2C1D", 0.85),
         default_pose="sentinel",
     ),
     # Leopard tortoise elder: a high-domed carapace of geometric scutes (dark heart and growth rings in each

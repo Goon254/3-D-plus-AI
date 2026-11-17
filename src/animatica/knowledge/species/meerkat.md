@@ -7,8 +7,12 @@
   digging. **Crescent-shaped ears that close when digging** [Animal Corner; Cleveland Metroparks].
 * Dark eye patches (natural "sunglasses") and a pointed snout. Silvery-brown fur with **irregular dark
   bands across the back and rump, unique to each animal**.
-* Our meerkat: 0.32 m head+body, upright height 0.36 m (to the top of the head), tail 0.22 m. Head ≈ 0.18
-  × body length; eyes big for appeal.
+* Our meerkat: 0.32 m head+body, tail 0.21 m. **Slim**: the torso is ~2.8× as long as it is wide (0.235 ×
+  0.084 m); at 2.2× (the first build) it walked like a striped hamster. Legs long enough to show daylight
+  under the belly, a narrow head tapering into a pointed snout, eyes big for appeal.
+* Markings: faint bands across the **top** of the back and rump only (they fade out down the flanks), and
+  soft dark patches painted round the eyes, which stay visible inside them (solid black discs read as
+  sunglasses).
 
 ## Meerkat skeleton → rig
 Spine (4: it bends a lot, standing up and curling), neck (2), head, jaw, ears, arms L/R (upper, lower,

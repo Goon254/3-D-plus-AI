@@ -129,6 +129,28 @@ def lid_material(sp: Species) -> dict[str, Any]:
     return {"base_color": color, "roughness": 0.7, "sheen": 0.15}
 
 
+def eye_patch_marks(sp: Species) -> dict[str, Any]:
+    """``marks`` for the coat: a soft teardrop round each eye, reaching back and a little down (meerkat)."""
+    if not sp.eye_patch:
+        return {}
+    color, strength = sp.eye_patch
+    marks = []
+    for sx in (1, -1):
+        fr = eye_frame(sp, sx)
+        er = fr.radius
+        back = _rx((0.0, 0.35 * er, -0.15 * er), sp.head_pitch)
+        marks.append(
+            {
+                "at": _r(_add(fr.centre, back), 5),
+                "radii": _r((er * 1.35, er * 1.75, er * 1.25), 5),
+                "color": color,
+                "soft": 0.55,
+                "strength": strength,
+            }
+        )
+    return {"marks": marks}
+
+
 def build_creature(
     cid: str,
     sp: Species,
@@ -590,7 +612,7 @@ def build_creature(
                     {
                         "op": "set_material",
                         "targets": [f"{cid}_head"],
-                        "material": {**sp.coat, "name": f"{cid}_coat_head"},
+                        "material": {**sp.coat, **eye_patch_marks(sp), "name": f"{cid}_coat_head"},
                     },
                 ]
                 if trunk_pts:
@@ -686,7 +708,7 @@ def build_creature(
             {
                 "op": "set_material_by_bone",
                 "target": body,
-                "default": {**sp.coat, "name": f"{cid}_coat"},
+                "default": {**sp.coat, "name": f"{cid}_coat", **eye_patch_marks(sp)},
                 "rules": [
                     {"bones": list(prefixes), "material": {**sp.mats[key], "name": f"{cid}_{key}"}}
                     for prefixes, key in sp.regions
@@ -735,7 +757,7 @@ def build_creature(
         elif key in sp.mats:
             spec = sp.mats[key]
         else:
-            spec = sp.coat
+            spec = {**sp.coat, **eye_patch_marks(sp)}  # same spec as the body: they share a name
         ops.append({"op": "set_material", "targets": ids, "material": {**spec, "name": f"{cid}_{key}"}})
     ops += sockets
 
