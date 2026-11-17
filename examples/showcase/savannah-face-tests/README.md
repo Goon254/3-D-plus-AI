@@ -12,3 +12,12 @@
   `smile`/`frown`. Idle layers keep breathing, blinking, and moving the ears, tail and trunk.
 
 Made by `python scripts/creature_face_test.py <species>` (Cycles on OptiX, ~25 s per clip).
+
+## Eyes in sockets, coats pinned to the skin (2026-11-17)
+
+[`eye_coat_sheet.jpg`](eye_coat_sheet.jpg): each row is one character: standing, then mid-stride (the expression
+track has moved into a heavy-lidded "sad"), then side-on mid-walk. The eyeballs are sunk ~65 % into the sculpted skin
+with lids wrapping them, brows lie on the skin, and the meerkat is the slim v3 with painted eye patches (DECISIONS
+#46–#48). [`eye_coat_report.json`](eye_coat_report.json) holds the Critic's measurements on the deformed meshes over
+the walk: eye embed 64.5–65 % with no drift, brow/lid gaps, and coat-texture drift (0.0 mm on all five; it was 142 mm
+on the elephant's skin before the rest-position fix). `python scripts/creature_eye_test.py`.

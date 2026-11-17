@@ -1,0 +1,153 @@
+[
+ {
+  "species": "elephant",
+  "issues": [],
+  "eye_embed": {
+   "elephant_eye_L": [
+    0.645,
+    0.645
+   ],
+   "elephant_eye_R": [
+    0.645,
+    0.645
+   ]
+  },
+  "skin_gap": {
+   "elephant_lid_L_up": -0.527,
+   "elephant_lid_L_lo": -0.829,
+   "elephant_lid_R_up": -0.527,
+   "elephant_lid_R_lo": -0.829,
+   "elephant_brow_L": 0.009,
+   "elephant_brow_R": 0.009
+  },
+  "swim_p95_mm": {
+   "elephant_body": 0.0,
+   "elephant_trunk": 0.0
+  },
+  "stills": [
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\elephant\\stand\\frame_0017.png",
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\elephant\\walk\\frame_0066.png",
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\elephant\\body\\frame_0066.png"
+  ]
+ },
+ {
+  "species": "giraffe",
+  "issues": [],
+  "eye_embed": {
+   "giraffe_eye_L": [
+    0.649,
+    0.649
+   ],
+   "giraffe_eye_R": [
+    0.648,
+    0.648
+   ]
+  },
+  "skin_gap": {
+   "giraffe_lid_L_up": -0.262,
+   "giraffe_lid_L_lo": -0.682,
+   "giraffe_lid_R_up": -0.262,
+   "giraffe_lid_R_lo": -0.681,
+   "giraffe_brow_L": 0.014,
+   "giraffe_brow_R": 0.014
+  },
+  "swim_p95_mm": {
+   "giraffe_body": 0.0
+  },
+  "stills": [
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\giraffe\\stand\\frame_0017.png",
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\giraffe\\walk\\frame_0066.png",
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\giraffe\\body\\frame_0066.png"
+  ]
+ },
+ {
+  "species": "zebra",
+  "issues": [],
+  "eye_embed": {
+   "zebra_eye_L": [
+    0.646,
+    0.646
+   ],
+   "zebra_eye_R": [
+    0.646,
+    0.646
+   ]
+  },
+  "skin_gap": {
+   "zebra_lid_L_up": -0.224,
+   "zebra_lid_L_lo": -0.781,
+   "zebra_lid_R_up": -0.224,
+   "zebra_lid_R_lo": -0.781,
+   "zebra_brow_L": 0.013,
+   "zebra_brow_R": 0.013
+  },
+  "swim_p95_mm": {
+   "zebra_body": 0.0
+  },
+  "stills": [
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\zebra\\stand\\frame_0017.png",
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\zebra\\walk\\frame_0066.png",
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\zebra\\body\\frame_0066.png"
+  ]
+ },
+ {
+  "species": "meerkat",
+  "issues": [],
+  "eye_embed": {
+   "meerkat_eye_L": [
+    0.649,
+    0.649
+   ],
+   "meerkat_eye_R": [
+    0.65,
+    0.65
+   ]
+  },
+  "skin_gap": {
+   "meerkat_lid_L_up": -0.305,
+   "meerkat_lid_L_lo": -0.778,
+   "meerkat_lid_R_up": -0.304,
+   "meerkat_lid_R_lo": -0.782,
+   "meerkat_brow_L": 0.059,
+   "meerkat_brow_R": 0.06
+  },
+  "swim_p95_mm": {
+   "meerkat_body": 0.0
+  },
+  "stills": [
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\meerkat\\stand\\frame_0017.png",
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\meerkat\\walk\\frame_0066.png",
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\meerkat\\body\\frame_0066.png"
+  ]
+ },
+ {
+  "species": "tortoise",
+  "issues": [],
+  "eye_embed": {
+   "tortoise_eye_L": [
+    0.648,
+    0.648
+   ],
+   "tortoise_eye_R": [
+    0.648,
+    0.648
+   ]
+  },
+  "skin_gap": {
+   "tortoise_lid_L_up": -0.35,
+   "tortoise_lid_L_lo": -0.66,
+   "tortoise_lid_R_up": -0.35,
+   "tortoise_lid_R_lo": -0.661,
+   "tortoise_brow_L": 0.043,
+   "tortoise_brow_R": 0.043
+  },
+  "swim_p95_mm": {
+   "tortoise_body": 0.0
+  },
+  "stills": [
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\tortoise\\stand\\frame_0017.png",
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\tortoise\\walk\\frame_0066.png",
+   "C:\\dev\\3-D-plus-AI\\output\\eye-tests\\tortoise\\body\\frame_0066.png"
+  ]
+ }
+]
