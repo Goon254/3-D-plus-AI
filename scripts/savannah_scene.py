@@ -3,7 +3,7 @@
     python scripts/savannah_scene.py sc02 --quality preview     # cloud CPU check: 480x270, 12 fps
     python scripts/savannah_scene.py sc02 --quality final       # laptop GPU: 1280x720, 24 fps, OptiX
 
-Pipeline: cast voices (06_voices.json, Kokoro) -> line timing -> set + creatures on bone rigs + faces ->
+Pipeline: cast voices (06_voices.json: Chatterbox steered by the Kokoro blends, Kokoro fallback) -> line timing -> set + creatures on bone rigs + faces ->
 foot-locked gaits along the blocking paths, idles, lip sync and expression tracks -> cameras framed on the
 measured head positions, cut on the lines -> Cycles render -> sound (the scene's Composer cue re-timed to
 the scene, ducked under the lines; ambience bed; species footsteps from the gait touchdowns; SFX) ->
@@ -88,6 +88,7 @@ def main() -> int:
     ap.add_argument("--quality", default="preview", choices=sorted(QUALITY))
     ap.add_argument("--out", default=str(ROOT / "output" / "savannah"))
     ap.add_argument("--fps", type=int, default=24)
+    ap.add_argument("--tts", choices=["chatterbox", "kokoro"], help="override the casting's engine")
     ap.add_argument("--no-render", action="store_true", help="build, mix and save the .blend only")
     ap.add_argument(
         "--stills", action="store_true", help="render one still per shot (framing check), no film"
@@ -103,23 +104,34 @@ def main() -> int:
     fps = a.fps
 
     # ---- voices and timing
-    cast_voices = json.loads((FILM / "06_voices.json").read_text(encoding="utf-8"))["cast"]
-    takes = []
+    casting = json.loads((FILM / "06_voices.json").read_text(encoding="utf-8"))
+    cast_voices = casting["cast"]
+    items = []
     for i, ln in enumerate(spec.lines):
         c = cast_voices[ln.who]
-        wav = out / "voices" / f"{i:02d}_{ln.who}.wav"
-        info = tts.synthesize(
-            ln.text,
-            wav,
-            tts.VoiceSpec(
-                engine="kokoro",
-                voice=c["voice"],
-                pitch=c["pitch"],
-                rate=c["rate"],
-                mood=ln.expr[0][1] if ln.expr else None,
-            ),
+        items.append(
+            (
+                ln.text,
+                out / "voices" / f"{i:02d}_{ln.who}.wav",
+                tts.VoiceSpec(
+                    engine=a.tts or casting.get("engine", "kokoro"),
+                    voice=c["voice"],
+                    pitch=c["pitch"],
+                    rate=c["rate"],
+                    mood=ln.expr[0][1] if ln.expr else None,
+                    ref_text=c.get("ref_text"),
+                ),
+            )
         )
-        takes.append((Path(info["path"]), float(info["duration"])))
+    voice_info = tts.synthesize_batch(items)  # one Chatterbox load for the scene; cached lines are reused
+    for ln, info in zip(spec.lines, voice_info, strict=True):
+        print(
+            f"  {ln.who:10s} {info['engine']:10s} {info['duration']:5.2f}s"
+            + (" cached" if info.get("cached") else "")
+            + (f" wer {info['wer']}" if "wer" in info else "")
+            + (f" FALLBACK {info['fallback']}" if "fallback" in info else "")
+        )
+    takes = [(Path(info["path"]), float(info["duration"])) for info in voice_info]
     seconds = schedule(spec, [d for _, d in takes])
     n = int(round(seconds * fps)) + 1
     shots = cut_list(spec, seconds)
@@ -308,7 +320,16 @@ def main() -> int:
         "quality": a.quality,
         "seconds": seconds,
         "frames": n,
-        "lines": [{"who": ln.who, "start": ln.start, "end": ln.end, "text": ln.text} for ln in spec.lines],
+        "lines": [
+            {
+                "who": ln.who,
+                "start": ln.start,
+                "end": ln.end,
+                "text": ln.text,
+                **{k: v[k] for k in ("engine", "heard", "wer", "tries", "fallback") if k in v},
+            }
+            for ln, v in zip(spec.lines, voice_info, strict=True)
+        ],
         "shots": shot_report,
         "cue": {k: rep[k] for k in ("id", "bpm", "bars", "moods", "programs", "engine")},
         "footsteps": nsteps,

@@ -1,5 +1,5 @@
 {
- "_about": "Voice casting for Tembo and the Singing Spring. Stock Kokoro-82M voices only (Apache-2.0 weights and voice packs; no cloning). 'voice' is a stock voice or a blend of two stock voices' style vectors ('a:0.6+b:0.4'), chosen so the post-TTS pitch shift stays within +-2 semitones (the old casting shifted up to 5.6, which sounded robotic). pitch and rate are multipliers in animatica.audio.tts.VoiceSpec; delivery (pauses, breaths, *emphasis*, mood pace) is animatica.audio.delivery. Samples are [line, mood] from 04_screenplay.md, used by scripts/savannah_voices.py.",
+ "_about": "Voice casting for Tembo and the Singing Spring. Stock Kokoro-82M voices only (Apache-2.0 weights and voice packs; no cloning). 'voice' is a stock voice or a blend of two stock voices' style vectors ('a:0.6+b:0.4'), chosen so the post-TTS pitch shift stays within +-2 semitones (the old casting shifted up to 5.6, which sounded robotic). pitch and rate are multipliers in animatica.audio.tts.VoiceSpec; delivery (pauses, breaths, *emphasis*, mood pace) is animatica.audio.delivery. Samples are [line, mood] from 04_screenplay.md, used by scripts/savannah_voices.py. Engine: Chatterbox (MIT) steered by each character's Kokoro take of its 'ref_text' (a neutral line that is not in the screenplay, so Chatterbox copies the voice, not a line's delivery); Kokoro is the fallback (DECISIONS #45).",
  "cast": {
   "narrator": {
    "voice": "bm_fable:0.8+bm_lewis:0.2",
@@ -15,7 +15,8 @@
      "Fast or slow, tall or small... it takes *all* of us.",
      "happy"
     ]
-   ]
+   ],
+   "ref_text": "Every morning the sun climbs over the hills, and the whole plain wakes up slowly, one sleepy animal at a time."
   },
   "tembo": {
    "voice": "am_eric:0.5+af_sky:0.5",
@@ -31,7 +32,8 @@
      "Wait. We're not lost if we're *together*.",
      "determined"
     ]
-   ]
+   ],
+   "ref_text": "I like mornings best, because that's when the mud is cool and everybody's still a bit sleepy, like me."
   },
   "zuri": {
    "voice": "af_bella:0.6+af_jessica:0.4",
@@ -47,7 +49,8 @@
      "That's the slow way. The grass is *faster*. Watch!",
      "proud"
     ]
-   ]
+   ],
+   "ref_text": "I can run to the big rock and back before you've even finished saying hello. I timed it, you know."
   },
   "kiki": {
    "voice": "bf_alice:0.7+af_jessica:0.3",
@@ -63,7 +66,8 @@
      "She's gone. Nobody panic. EVERYBODY PANIC!",
      "scared"
     ]
-   ]
+   ],
+   "ref_text": "I keep watch from the top of the mound every day. Somebody has to, and I'm very good at noticing things."
   },
   "neema": {
    "voice": "af_nicole:0.7+af_sky:0.3",
@@ -79,7 +83,8 @@
      "There! Stripes!",
      "excited"
     ]
-   ]
+   ],
+   "ref_text": "Sometimes I can see things far away, past the trees. But I don't always say so, in case I'm wrong."
   },
   "bibi_kobe": {
    "voice": "bf_emma:0.55+af_alloy:0.45",
@@ -95,7 +100,8 @@
      "When you walk *slowly*, you learn to look up.",
      "wise"
     ]
-   ]
+   ],
+   "ref_text": "I have walked this land for a very long time, little ones. The grass remembers every path we take."
   }
  },
  "previous": {
@@ -130,5 +136,6 @@
    "pitch": 0.76,
    "rate": 0.82
   }
- }
+ },
+ "engine": "chatterbox"
 }

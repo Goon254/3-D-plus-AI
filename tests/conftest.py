@@ -8,6 +8,8 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+os.environ.setdefault("ANIMATICA_LINE_CACHE", str(Path(__import__("tempfile").mkdtemp()) / "lines"))
+
 HAS_BPY = importlib.util.find_spec("bpy") is not None or bool(os.environ.get("ANIMATICA_BLENDER_BIN"))
 
 

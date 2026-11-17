@@ -255,3 +255,27 @@ def place_outdoor(
 
 
 PRE = 0.08
+
+
+def f0_median(a: np.ndarray, sr: int) -> float:
+    """Median F0 over voiced 40 ms frames with YIN (cumulative-mean-normalised difference; first dip below
+    0.15), which avoids the octave jumps a plain autocorrelation peak makes on bright voices."""
+    win, hop = int(0.04 * sr), int(0.01 * sr)
+    lo, hi = int(sr / 600), int(sr / 70)
+    vals = []
+    for s0 in range(0, len(a) - win - hi, hop):
+        x = a[s0 : s0 + win + hi].astype(np.float64)
+        if np.sqrt(np.mean(x[:win] ** 2)) < 0.02:
+            continue
+        d = np.array([np.sum((x[:win] - x[tau : tau + win]) ** 2) for tau in range(hi)])
+        cm = d.copy()
+        cm[1:] = d[1:] * np.arange(1, hi) / np.maximum(np.cumsum(d[1:]), 1e-12)
+        cm[0] = 1.0
+        below = np.where(cm[lo:] < 0.15)[0]
+        if not len(below):
+            continue
+        k = lo + below[0]
+        while k + 1 < hi and cm[k + 1] < cm[k]:  # walk to the bottom of the dip
+            k += 1
+        vals.append(sr / k)
+    return float(np.median(vals)) if vals else 0.0

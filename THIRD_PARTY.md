@@ -19,8 +19,9 @@ used as **external dependencies** — installed separately and called as librari
 | Pillow | https://python-pillow.org | HPND | image utilities | pip |
 | soundfile | https://github.com/bastibe/python-soundfile | BSD-3-Clause | WAV I/O | pip, TTS worker |
 | ONNX Runtime | https://github.com/microsoft/onnxruntime | MIT | runs the Kokoro model | pip (dependency of kokoro-onnx), TTS worker |
-| Chatterbox TTS (trial) | https://github.com/resemble-ai/chatterbox | MIT (code and weights; Perth watermark on output) | voice A/B trial only | pip, separate venv, `scripts/tts_trial_worker.py`; not a dependency |
-| faster-whisper (QA) | https://github.com/SYSTRAN/faster-whisper | MIT (Whisper weights MIT) | intelligibility check of TTS takes | pip, separate venv, `scripts/tts_trial_worker.py`; not a dependency |
+| Chatterbox TTS | https://github.com/resemble-ai/chatterbox | MIT (code and weights; Perth watermark on output) | default TTS engine for the savannah cast (DECISIONS #45) | pip, separate venv, `src/animatica/audio/chatterbox_worker.py` (subprocess); not a dependency |
+| PyTorch 2.7.1 + torchaudio (CUDA 12.8 build) | https://pytorch.org | BSD-3-Clause | runs Chatterbox on the RTX 50-series GPU | pip into the Chatterbox venv only; not a dependency |
+| faster-whisper (QA) | https://github.com/SYSTRAN/faster-whisper | MIT (Whisper weights MIT) | speech-recognition check of every Chatterbox take | pip, separate venv, `chatterbox_worker.py` / `scripts/tts_trial_worker.py`; not a dependency |
 | Godot Engine 4.5.1 | https://godotengine.org | MIT | games track: build, run and playtest generated projects | official release binary, external program (setup script `--godot`) |
 | Xvfb (`xvfb-run`) | https://www.x.org | MIT/X11 | virtual display for Godot screenshots | external program (optional) |
 | MCP Python SDK (`mcp`) | https://github.com/modelcontextprotocol/python-sdk | MIT | `animatica-mcp` server | pip, optional extra `mcp` |

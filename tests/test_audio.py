@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 
 from animatica.audio import lipsync, music, tts
@@ -216,3 +218,67 @@ def test_savannah_cast_uses_blends_with_small_pitch_shifts():
         assert abs(12 * np.log2(c["pitch"])) <= 2.0 + 1e-6, name
         for part in c["voice"].split("+"):
             assert part.split(":")[0][:2] in stock, name
+
+
+def test_line_cache_key_and_reuse(tmp_path, monkeypatch):
+    from animatica.audio import tts
+
+    monkeypatch.setenv("ANIMATICA_LINE_CACHE", str(tmp_path / "lines"))
+    a = tts.VoiceSpec(engine="synth", voice="af_bella")
+    assert tts.cache_key("Hi.", a, "synth") == tts.cache_key(
+        "Hi.", tts.VoiceSpec(engine="synth", voice="af_bella"), "synth"
+    )
+    assert tts.cache_key("Hi.", a, "synth") != tts.cache_key("Hi!", a, "synth")
+    assert tts.cache_key("Hi.", a, "synth") != tts.cache_key(
+        "Hi.", tts.VoiceSpec(voice="af_bella", pitch=1.05), "synth"
+    )
+    info = {
+        "path": str(tts.write_wav(tmp_path / "x.wav", np.zeros(2400, np.float32))),
+        "engine": "kokoro",
+        "duration": 0.1,
+    }
+    tts._to_cache("k1", info)
+    hit = tts._from_cache("k1", tmp_path / "y.wav")
+    assert hit["cached"] and hit["engine"] == "kokoro" and (tmp_path / "y.wav").exists()
+    assert tts._from_cache("nope", tmp_path / "z.wav") is None
+
+
+def test_chatterbox_falls_back_to_kokoro_on_bad_transcript(tmp_path, monkeypatch):
+    from animatica.audio import tts
+
+    monkeypatch.setenv("ANIMATICA_LINE_CACHE", str(tmp_path / "lines"))
+    spoken = []
+
+    def fake_single(text, out, voice, engines):
+        spoken.append(engines)
+        tts.write_wav(out, np.zeros(2400, np.float32))
+        return {"path": str(out), "engine": "kokoro", "duration": 0.1}
+
+    monkeypatch.setattr(tts, "_single", fake_single)
+    monkeypatch.setattr(
+        tts, "synthesize", lambda text, out, spec: fake_single(text, Path(out), spec, ["kokoro"])
+    )
+    monkeypatch.setattr(
+        tts,
+        "_run_chatterbox",
+        lambda takes: [{"heard": "garbled", "wer": 0.8, "tries": 3, "words": []}] * len(takes),
+    )
+    r = tts.synthesize_batch([("Water, at last!", tmp_path / "a.wav", tts.VoiceSpec(engine="chatterbox"))])[0]
+    assert r["engine"] == "kokoro" and "wer 0.8" in r["fallback"]
+    assert spoken[-1] == ["chatterbox", "kokoro"]
+
+
+def test_chatterbox_post_emphasis_and_alignment():
+    from animatica.audio import tts
+
+    t = tts._align_words(
+        ["your", "trunk's", "a", "hose"],
+        [["Your", 0.1, 0.3], ["trunks", 0.3, 0.6], ["a", 0.6, 0.7], ["hose,", 0.7, 1.0]],
+    )
+    assert t[0] == (0.1, 0.3) and t[3] == (0.7, 1.0) and 1 not in t
+    sr = tts.SAMPLE_RATE
+    a = np.concatenate([np.zeros(sr // 2), 0.5 * np.sin(np.arange(sr) * 0.05), np.zeros(sr // 2)]).astype(
+        np.float32
+    )
+    b, cut = tts._trim(a, sr)
+    assert abs(cut / sr - 0.45) < 0.02 and len(b) < len(a)
