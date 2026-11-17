@@ -2,6 +2,15 @@
 
 ## 0. Savannah film — owner's top priority (CHALLENGE-SAVANNAH.md)
 
+Laptop session 11-17 (owner's list): **Chatterbox (MIT) is the voice engine** on the RTX 5060 (CUDA torch 2.7.1),
+steered by the approved Kokoro blends, with a Whisper check per take, Kokoro fallback and a line cache (#45);
+**eyes sit in sockets** with lids and brows on the skin, and a rigid skull (#46); **coat patterns are pinned** to the
+rest pose (#47); **meerkat v3** (#48); the **set pass** (clumped canopies, warm haze, denser foreground grass, #51);
+SC 2 re-voiced and drafted at 960×540 on OptiX ([`sc02_draft.mp4`](examples/showcase/savannah-scenes/sc02_draft.mp4)).
+New Critic checks measure eye seating, brow/lid contact and texture swim on the deformed meshes
+([eye/coat sheet](examples/showcase/savannah-face-tests/eye_coat_sheet.jpg)). SC 1 final render (1280×720, OptiX) is for
+the owner's review (full quality stays out of git: `output/savannah/sc01/sc01.mp4`).
+
 Status 11-17 03:36 UTC ([review](docs/reviews/2026-11-17T0336Z.md)): **SC 2 now plays its gag in the picture**
 (Tembo drinks, the trunk "hiccups" a jet of water onto Kiki, Neema ducks, heads turn to whoever speaks). Done so far:
 
