@@ -1,0 +1,176 @@
+{
+ "character": "zuri",
+ "rounds": [
+  [
+   {
+    "morph": {
+     "head": 1.0,
+     "eye": 1.0,
+     "ear": 1.0,
+     "snout": 1.0,
+     "leg": 1.0,
+     "neck": 1.0,
+     "lift_dark": 0.0
+    },
+    "score": 10.0,
+    "ready": false,
+    "hard_failures": [],
+    "pending": [
+     "species read"
+    ],
+    "edit": {},
+    "manual": [],
+    "sheet": "output/design-loop/zuri/r0_c0/sheet.png"
+   },
+   {
+    "morph": {
+     "head": 1.1,
+     "eye": 1.08,
+     "ear": 1.0,
+     "snout": 1.0,
+     "leg": 1.0,
+     "neck": 1.0,
+     "lift_dark": 0.0
+    },
+    "score": 10.0,
+    "ready": false,
+    "hard_failures": [],
+    "pending": [
+     "species read"
+    ],
+    "edit": {},
+    "manual": [],
+    "sheet": "output/design-loop/zuri/r0_c1/sheet.png"
+   },
+   {
+    "morph": {
+     "head": 1.0,
+     "eye": 1.15,
+     "ear": 1.0,
+     "snout": 0.88,
+     "leg": 1.0,
+     "neck": 0.92,
+     "lift_dark": 0.0
+    },
+    "score": 10.0,
+    "ready": false,
+    "hard_failures": [],
+    "pending": [
+     "species read"
+    ],
+    "edit": {},
+    "manual": [],
+    "sheet": "output/design-loop/zuri/r0_c3/sheet.png"
+   },
+   {
+    "morph": {
+     "head": 1.06,
+     "eye": 1.0,
+     "ear": 0.9,
+     "snout": 1.0,
+     "leg": 1.12,
+     "neck": 1.0,
+     "lift_dark": 0.6
+    },
+    "score": 10.0,
+    "ready": false,
+    "hard_failures": [],
+    "pending": [
+     "species read"
+    ],
+    "edit": {},
+    "manual": [],
+    "sheet": "output/design-loop/zuri/r0_c4/sheet.png"
+   },
+   {
+    "morph": {
+     "head": 1.14,
+     "eye": 1.1,
+     "ear": 1.0,
+     "snout": 0.92,
+     "leg": 1.06,
+     "neck": 0.9,
+     "lift_dark": 0.8
+    },
+    "score": 10.0,
+    "ready": false,
+    "hard_failures": [],
+    "pending": [
+     "species read"
+    ],
+    "edit": {},
+    "manual": [],
+    "sheet": "output/design-loop/zuri/r0_c5/sheet.png"
+   },
+   {
+    "morph": {
+     "head": 0.94,
+     "eye": 1.12,
+     "ear": 1.1,
+     "snout": 1.0,
+     "leg": 1.0,
+     "neck": 1.0,
+     "lift_dark": 0.0
+    },
+    "score": 9.99,
+    "ready": false,
+    "hard_failures": [],
+    "pending": [
+     "species read"
+    ],
+    "edit": {
+     "neck": 0.85
+    },
+    "manual": [],
+    "sheet": "output/design-loop/zuri/r0_c2/sheet.png"
+   }
+  ]
+ ],
+ "winner": {
+  "morph": {
+   "head": 1.0,
+   "eye": 1.0,
+   "ear": 1.0,
+   "snout": 1.0,
+   "leg": 1.0,
+   "neck": 1.0,
+   "lift_dark": 0.0
+  },
+  "score": 10.0,
+  "ready": false,
+  "hard_failures": [],
+  "pending": [
+   "species read"
+  ],
+  "manual": [],
+  "sheet": "output/design-loop/zuri/r0_c0/sheet.png"
+ },
+ "runner_ups": [
+  {
+   "morph": {
+    "head": 1.1,
+    "eye": 1.08,
+    "ear": 1.0,
+    "snout": 1.0,
+    "leg": 1.0,
+    "neck": 1.0,
+    "lift_dark": 0.0
+   },
+   "score": 10.0,
+   "sheet": "output/design-loop/zuri/r0_c1/sheet.png"
+  },
+  {
+   "morph": {
+    "head": 1.0,
+    "eye": 1.15,
+    "ear": 1.0,
+    "snout": 0.88,
+    "leg": 1.0,
+    "neck": 0.92,
+    "lift_dark": 0.0
+   },
+   "score": 10.0,
+   "sheet": "output/design-loop/zuri/r0_c3/sheet.png"
+  }
+ ]
+}

@@ -88,3 +88,9 @@ the eyes rest open. The same commit gives the whole cast stronger expressions: a
 ## neema/v2/ — sturdier legs, bigger head and eyes (laptop GPU 2026-11-17, DECISIONS #59)
 
 Recorded critique: **9.85, ready** on the rubric (appeal 8).
+
+## <character>/loop/ — design_loop.py on the GPU (2026-11-17, DECISIONS #60)
+
+`loop.json` (every candidate's score and morph, the winner, the two runner-ups) and `r0_contact.jpg` for each
+character. All five winners are the base design: without a vision critic every candidate passes the automatic checks,
+and the tie-break keeps the smallest change.
