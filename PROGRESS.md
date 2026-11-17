@@ -4,6 +4,11 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Cloud session 11-17 09:36 UTC ([review](docs/reviews/2026-11-17T0936Z.md), DECISIONS #53): **Kiki v2**: a new
+meerkat base (shorter deeper body, bigger raised head, short tapering tail, dark ears, coat-shade legs, visible eye
+patches) and an upright sentinel with paws tucked and a tripod tail, whose silhouette now reads as a meerkat. On all
+fours she still reads as a puppy or mongoose (no throat line, tube snout). Score 2.6 → 5.2: [`design/kiki/v2/`](design/kiki/v2/).
+
 Cloud session 11-17 06:36 UTC ([review](docs/reviews/2026-11-17T0636Z.md), DECISIONS #52): **steps 2 (sheet renderer,
 rubric, critic, best-of-N loop) are built**: briefs for all five in [`design/`](design/README.md), `animatica.design`
 (measure, brief, variants, rubric, image checks, critic), `scripts/design_sheet.py`, `scripts/design_loop.py`, 16 tests.

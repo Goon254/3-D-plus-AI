@@ -50,13 +50,17 @@ def test_measurements_match_the_designs():
 def test_meerkat_black_legs_are_flagged_and_the_lift_fixes_them():
     """The reviewer's 'very thin black legs' note (11-17 03:36) as an automatic check."""
     brief = load_brief("kiki")
-    r = score(brief, SPECIES["meerkat"])
+    # v2 (11-17 09:36) paints the lower legs a darker shade of the coat: no black boots, the dark ears allowed
+    assert "materials:flat_black" not in score(brief, SPECIES["meerkat"]).hard_failures
+    sp = SPECIES["meerkat"]
+    booted = replace(sp, mats={**sp.mats, "paw": {**sp.mats["paw"], "base_color": "#24180F"}})  # v1's legs
+    r = score(brief, booted)
     assert "materials:flat_black" in r.hard_failures
     assert r.edit.get("lift_dark", 0) > 0
-    fixed = apply_morph(SPECIES["meerkat"], Morph(lift_dark=0.7), brief.dark_ok)
+    fixed = apply_morph(booted, Morph(lift_dark=0.7), brief.dark_ok)
     assert "materials:flat_black" not in score(brief, fixed).hard_failures
-    # the intended dark tail tip is kept
-    assert fixed.mats["tailtip"] == SPECIES["meerkat"].mats["tailtip"]
+    # the intended dark tail tip and ears are kept
+    assert fixed.mats["tailtip"] == sp.mats["tailtip"] and fixed.mats["ear"] == sp.mats["ear"]
 
 
 def test_morph_scales_the_head_and_keeps_the_trunk_on_the_face():
@@ -79,7 +83,10 @@ def test_candidates_are_distinct_and_start_from_the_base():
 
 def test_rubric_turns_range_misses_into_bounded_edits_and_the_loop_converges():
     brief = load_brief("kiki")
-    sp, morph = SPECIES["meerkat"], Morph()
+    v2 = SPECIES["meerkat"]
+    # a small head on a thick neck (head_body and neck_head out of range, as in v1); v2 fixed both in the base
+    sp, morph = replace(v2, head_size=(0.052, 0.072, 0.05), neck=replace(v2.neck, r1=0.024)), Morph()
+    assert not score(brief, v2).edit
     r0 = score(brief, sp)
     assert "head" in r0.edit and 1.0 < r0.edit["head"] <= 1.2
     assert "neck" in r0.edit and 0.85 <= r0.edit["neck"] < 1.0
@@ -108,6 +115,18 @@ def test_neck_notch_separates_a_clear_head_from_a_melted_one():
     melted = _blob(200, 240, [(130, 95, 75, 38), (60, 78, 30, 30), *legs])
     assert neck_notch(clear)["neck_notch"] > 0.3
     assert neck_notch(melted)["neck_notch"] < 0.15
+
+
+def test_a_head_carried_high_on_a_sloping_neck_counts_as_separate():
+    """Kiki v2 on all fours: the head rides well above the back on a neck that widens into the chest, so
+    there is no dip and no throat, but the head is clearly its own mass. A level head still melts."""
+    legs = [(130, 150, 6, 40), (190, 150, 6, 40)]
+    neck = [(85 + 6 * k, 62 + 5 * k, 14 + 1.2 * k, 14 + 1.2 * k) for k in range(8)]
+    high = _blob(200, 260, [(160, 100, 60, 28), (50, 40, 26, 22), *neck, *legs])
+    level = _blob(200, 260, [(160, 100, 60, 28), (60, 90, 26, 22), (100, 95, 30, 26), *legs])
+    got = neck_notch(high)
+    assert got["lift"] >= 0.5 and got["neck_notch"] >= 0.15
+    assert neck_notch(level)["neck_notch"] < 0.15
 
 
 def test_floating_parts_and_dark_blobs(tmp_path):

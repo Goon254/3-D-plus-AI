@@ -1,0 +1,351 @@
+{
+ "morph": {
+  "head": 1.0,
+  "eye": 1.0,
+  "ear": 1.0,
+  "snout": 1.0,
+  "leg": 1.0,
+  "neck": 1.0,
+  "lift_dark": 0.0
+ },
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.1143,
+  "top_dip": 0.0,
+  "throat": 0.1143,
+  "lift": 0.419,
+  "dark_blob": 0.0111,
+  "expression_happy": 0.0198,
+  "expression_surprised": 0.04
+ },
+ "design": {
+  "species": "meerkat",
+  "proportions": {
+   "head_body": 0.4848,
+   "eye_head": 0.4394,
+   "eye_spacing": 0.6857,
+   "neck_head": 0.6061,
+   "elongation": 2.0412,
+   "belly_gap": 0.9021,
+   "leg_thickness": 0.1302,
+   "ear_head": 0.063,
+   "neck_length": 0.4895,
+   "snout": 0.5208
+  },
+  "features": [
+   "ears",
+   "eye_patch",
+   "muzzle",
+   "nose",
+   "pattern:bands",
+   "sentinel",
+   "tail_tuft"
+  ],
+  "materials": {
+   "luminance": {
+    "coat": 0.2879,
+    "back": 0.2634,
+    "paw": 0.112,
+    "ear": 0.0249,
+    "muzzle": 0.3228,
+    "nose": 0.0089,
+    "tailtip": 0.0085
+   },
+   "pattern_contrast": {
+    "back": 1.21
+   },
+   "dark_regions": [
+    {
+     "material": "tailtip",
+     "bones": [
+      "tail_3"
+     ]
+    }
+   ]
+  }
+ },
+ "critique": {
+  "reviewer": "cloud reviewer 2026-11-17 09:36 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "7feb6cbc4ed2f084bc3fb6dad993e29fd720c3e3fe5236c942ab13a7364457a7",
+  "silhouette_species": "meerkat standing sentinel",
+  "thumbnail_species": "puppy or mongoose",
+  "issues": [
+   "sentinel now reads: upright body, paws tucked at the chest, tail on the ground as the third leg of a tripod",
+   "small dark crescent ears read in every view; eye patches read in the 3/4 view and face close-up; lower legs a darker shade of the coat, no boots",
+   "on all fours she still reads as a generic small mammal (puppy/mongoose): the head-up neck slopes straight into the chest with no throat or chin line (neck notch 0.11 < 0.15)",
+   "the pale snout is a separate rounded tube in profile; it should taper out of the face as one cone",
+   "body still slightly tubular from the side; the belly could tuck up behind the ribcage",
+   "happy barely changes the face (2.0 %)"
+  ],
+  "appeal": 6
+ },
+ "character": "kiki",
+ "score": 5.18,
+ "ready": false,
+ "hard_failures": [
+  "silhouette:neck_notch",
+  "read:thumbnail"
+ ],
+ "pending": [],
+ "checks": [
+  {
+   "id": "range:head_body",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "head_body 0.485 in [0.4, 0.55]",
+   "value": 0.4848,
+   "fix": null
+  },
+  {
+   "id": "range:eye_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_head 0.439 in [0.38, 0.6]",
+   "value": 0.4394,
+   "fix": null
+  },
+  {
+   "id": "range:eye_spacing",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_spacing 0.686 in [0.55, 0.85]",
+   "value": 0.6857,
+   "fix": null
+  },
+  {
+   "id": "range:neck_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "neck_head 0.606 in [0.0, 0.9]",
+   "value": 0.6061,
+   "fix": null
+  },
+  {
+   "id": "range:elongation",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "elongation 2.041 in [2.0, 2.7]",
+   "value": 2.0412,
+   "fix": null
+  },
+  {
+   "id": "range:belly_gap",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "belly_gap 0.902 in [0.8, 1.4]",
+   "value": 0.9021,
+   "fix": null
+  },
+  {
+   "id": "range:leg_thickness",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "leg_thickness 0.130 in [0.11, 0.2]",
+   "value": 0.1302,
+   "fix": null
+  },
+  {
+   "id": "range:ear_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "ear_head 0.063 in [0.02, 0.1]",
+   "value": 0.063,
+   "fix": null
+  },
+  {
+   "id": "feature:eye_patch",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_patch present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:tail_tuft",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "tail_tuft present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:sentinel",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "sentinel present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:muzzle",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "muzzle present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:pattern:bands",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "pattern:bands present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "materials:flat_black",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "no near-black body regions",
+   "value": [],
+   "fix": null
+  },
+  {
+   "id": "silhouette:neck_notch",
+   "group": "silhouette",
+   "passed": false,
+   "hard": true,
+   "weight": 1.5,
+   "earned": 0.0,
+   "message": "side neck notch 0.114 (min 0.15): head MELTS INTO the body",
+   "value": 0.1143,
+   "fix": {
+    "neck": 0.9
+   }
+  },
+  {
+   "id": "silhouette:floating",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "0 floating part(s)",
+   "value": 0,
+   "fix": null
+  },
+  {
+   "id": "materials:dark_blob",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "largest near-black blob 1% of the figure (max 12%)",
+   "value": 0.0111,
+   "fix": null
+  },
+  {
+   "id": "face:happy",
+   "group": "face",
+   "passed": false,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 0.66,
+   "message": "happy changes 2.0% of the face close-up (min 3%): the expression doesn't read",
+   "value": 0.0198,
+   "fix": null
+  },
+  {
+   "id": "face:surprised",
+   "group": "face",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "surprised changes 4.0% of the face close-up (min 3%)",
+   "value": 0.04,
+   "fix": null
+  },
+  {
+   "id": "read:silhouette",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "silhouette read as 'meerkat standing sentinel': named meerkat",
+   "value": "meerkat standing sentinel",
+   "fix": null
+  },
+  {
+   "id": "read:thumbnail",
+   "group": "species read",
+   "passed": false,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 0.0,
+   "message": "thumbnail read as 'puppy or mongoose': misread as mongoose (a known confusion)",
+   "value": "puppy or mongoose",
+   "fix": null
+  },
+  {
+   "id": "critic:appeal",
+   "group": "appeal",
+   "passed": false,
+   "hard": false,
+   "weight": 2.0,
+   "earned": 1.2,
+   "message": "art-director appeal 6/10 (min 8)",
+   "value": 6.0,
+   "fix": null
+  }
+ ],
+ "edit": {
+  "neck": 0.9
+ },
+ "manual": [
+  "happy changes 2.0% of the face close-up (min 3%): the expression doesn't read",
+  "art-director appeal 6/10 (min 8)",
+  "critic: sentinel now reads: upright body, paws tucked at the chest, tail on the ground as the third leg of a tripod",
+  "critic: small dark crescent ears read in every view; eye patches read in the 3/4 view and face close-up; lower legs a darker shade of the coat, no boots",
+  "critic: on all fours she still reads as a generic small mammal (puppy/mongoose): the head-up neck slopes straight into the chest with no throat or chin line (neck notch 0.11 < 0.15)",
+  "critic: the pale snout is a separate rounded tube in profile; it should taper out of the face as one cone",
+  "critic: body still slightly tubular from the side; the belly could tuck up behind the ribcage",
+  "critic: happy barely changes the face (2.0 %)"
+ ],
+ "sheet": "/home/claude/3-d-plus-ai/output/design/kiki/v2/sheet.png"
+}

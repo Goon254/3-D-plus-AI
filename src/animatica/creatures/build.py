@@ -140,11 +140,11 @@ def eye_patch_marks(sp: Species) -> dict[str, Any]:
     for sx in (1, -1):
         fr = eye_frame(sp, sx)
         er = fr.radius
-        back = _rx((0.0, 0.35 * er, -0.15 * er), sp.head_pitch)
+        back = _rx((0.0, 0.7 * er, -0.3 * er), sp.head_pitch)
         marks.append(
             {
                 "at": _r(_add(fr.centre, back), 5),
-                "radii": _r((er * 1.35, er * 1.75, er * 1.25), 5),
+                "radii": _r((er * 1.7, er * 2.9, er * 1.9), 5),
                 "color": color,
                 "soft": 0.55,
                 "strength": strength,
@@ -424,7 +424,7 @@ def build_creature(
                         "smooth": True,
                         "segments": 24,
                     },
-                    "coat",
+                    "ear" if "ear" in sp.mats else "coat",  # the meerkat's ears are dark
                     name,
                 )
             )

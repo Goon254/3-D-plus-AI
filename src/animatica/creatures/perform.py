@@ -22,9 +22,9 @@ def _k(frame: int, v: Any) -> list[Any]:
     return [frame, v, "LINEAR"]
 
 
-SENTINEL_PITCH = 72.0  # degrees the meerkat's body rises from horizontal when it stands up
-SENTINEL_NECK = 60.0  # the neck bends forward again so the head looks ahead, not at the sky
-SENTINEL_TAIL = 48.0  # the tail swings back down to the ground: the third leg of the tripod
+SENTINEL_PITCH = 82.0  # degrees the meerkat's body rises from horizontal when it stands up
+SENTINEL_NECK = 70.0  # the neck bends forward again so the head looks ahead, not at the sky
+SENTINEL_TAIL = 72.0  # the tail swings back down to the ground: the third leg of the tripod
 
 
 def _smooth(u: float) -> float:
@@ -71,8 +71,9 @@ def apply_sentinel(meta: CreatureMeta, plan: list[LocoFrame], fps: int) -> None:
         pitch = p.pitch - SENTINEL_PITCH * b
         a = math.radians(pitch)
         for leg, (jx, jy, jz, chain) in fronts.items():
-            # paws tucked in front of the chest, hanging half a leg below the shoulder (body space)
-            lx, ly, lz = jx * 0.9, jy - 0.15 * chain, jz - 0.55 * chain
+            # paws tucked close in front of the chest, a little below the shoulder (body space: +y is down
+            # once the body stands up, -z is forward)
+            lx, ly, lz = jx * 0.75, jy + 0.22 * chain, jz - 0.3 * chain
             y2, z2 = ly * math.cos(a) - lz * math.sin(a), ly * math.sin(a) + lz * math.cos(a)
             tx = root[0] + lx * math.cos(ya) - y2 * math.sin(ya)
             ty = root[1] + lx * math.sin(ya) + y2 * math.cos(ya)
@@ -200,9 +201,9 @@ def walk_keys(
             return [
                 3 * math.sin(2 * math.pi * p.phase - 0.8 * k)
                 + 2.0 * min(1.0, p.speed)
-                + (SENTINEL_TAIL if k == 0 else -8.0) * p.sentinel,
+                + (SENTINEL_TAIL if k == 0 else 4.0) * p.sentinel,
                 0.0,
-                amp * math.sin(2 * math.pi * t / 2.3 - 0.7 * k),
+                amp * math.sin(2 * math.pi * t / 2.3 - 0.7 * k) * (1.0 - 0.8 * p.sentinel),
             ]
 
         bone(name, tail)

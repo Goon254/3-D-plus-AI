@@ -46,3 +46,10 @@ the rubric score. The sheet images were drawn before the critique was recorded, 
 
 Next: the base-mesh fixes the morphs can't make (listed in docs/REVIEW_QUEUE.md), then `design_loop.py`
 for each character, then design packets in `design/packets/` for the owner.
+
+## kiki/v2/ — Kiki's rebuilt base (cloud 2026-11-17 09:36, DECISIONS #53)
+
+A 512 px sheet with a recorded critique and score: 5.2, not ready. The sentinel silhouette reads as a meerkat. On
+all fours the thumbnail reads as a puppy or mongoose, there is no throat line (neck notch 0.114) and the snout is a
+tube. See [review 09:36](../docs/reviews/2026-11-17T0936Z.md).
+

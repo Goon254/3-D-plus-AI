@@ -3,7 +3,8 @@
 * :func:`neck_notch` — in the side silhouette (facing left), how clearly the head separates from the body:
   the larger of the dip in the top contour behind the head (forehead/poll above the neck) and the narrowing
   of the figure's upper outline between the head and the shoulders (throat), both as a fraction of the head's
-  height in the image. ~0 means the head melts into the body.
+  height in the image, or a head carried at least half a head above the back (``lift``, weighted 0.3).
+  ~0 means the head melts into the body.
 * :func:`floating_parts` — silhouette pieces not connected to the main figure (a floating brow, ear or paw).
 * :func:`dark_blob` — the largest connected near-black area inside the figure in a colour view, as a fraction
   of the figure: the "flat black block" class (black legs, sunglasses patches).
@@ -76,6 +77,10 @@ def _bbox(mask: np.ndarray) -> tuple[int, int, int, int]:
     return int(xs.min()), int(xs.max()), int(ys.min()), int(ys.max())
 
 
+LIFT_MIN = 0.5  # head top above the back's highest point, in head heights, before the lift counts
+LIFT_WEIGHT = 0.3
+
+
 def neck_notch(mask: np.ndarray, head_zone: float = 0.32) -> dict[str, float]:
     """Head/body separation in a side silhouette with the animal facing left (see module doc)."""
     x0, x1, y0, y1 = _bbox(mask)
@@ -115,10 +120,15 @@ def neck_notch(mask: np.ndarray, head_zone: float = 0.32) -> dict[str, float]:
     th = np.asarray([thickness(i) for i in range(lo, hi + 1)])
     throat = float((head_t - th.min()) / head_t) if th.size else 0.0
     head_h = head_t
+    # a head carried well above the back line on a sloping neck (a meerkat or a dog on all fours) is separate
+    # even without a dip or a throat; a melted head sits level with the back. Counts only from half a head up.
+    lift = float(height[head_i] - height[body_i]) / head_h
+    raised = LIFT_WEIGHT * lift if lift >= LIFT_MIN else 0.0
     return {
-        "neck_notch": round(max(top_dip / head_h, throat), 4),
+        "neck_notch": round(max(top_dip / head_h, throat, raised), 4),
         "top_dip": round(top_dip / head_h, 4),
         "throat": round(throat, 4),
+        "lift": round(lift, 4),
     }
 
 

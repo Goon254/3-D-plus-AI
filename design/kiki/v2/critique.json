@@ -1,0 +1,16 @@
+{
+  "reviewer": "cloud reviewer 2026-11-17 09:36 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "7feb6cbc4ed2f084bc3fb6dad993e29fd720c3e3fe5236c942ab13a7364457a7",
+  "silhouette_species": "meerkat standing sentinel",
+  "thumbnail_species": "puppy or mongoose",
+  "issues": [
+    "sentinel now reads: upright body, paws tucked at the chest, tail on the ground as the third leg of a tripod",
+    "small dark crescent ears read in every view; eye patches read in the 3/4 view and face close-up; lower legs a darker shade of the coat, no boots",
+    "on all fours she still reads as a generic small mammal (puppy/mongoose): the head-up neck slopes straight into the chest with no throat or chin line (neck notch 0.11 < 0.15)",
+    "the pale snout is a separate rounded tube in profile; it should taper out of the face as one cone",
+    "body still slightly tubular from the side; the belly could tuck up behind the ribcage",
+    "happy barely changes the face (2.0 %)"
+  ],
+  "appeal": 6
+}

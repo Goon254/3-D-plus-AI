@@ -11,16 +11,18 @@ that raised it.
 
 ## P0-DESIGN — DESIGN_STAGE.md (owner's top priority; film production paused)
 
-Status 11-17 06:36: the design-sheet renderer, rubric, recorded/live critic and best-of-N loop exist
+Status 11-17 09:36: Kiki v2 is built (sentinel reads, on all fours not yet). 06:36: the design-sheet renderer, rubric, recorded/live critic and best-of-N loop exist
 (`animatica.design`, `scripts/design_sheet.py`, `scripts/design_loop.py`, DECISIONS #52). Baseline sheets and scores:
 `design/baseline/`. Morphs only change head, eye, ear, snout, leg and neck sizes; everything below needs base-mesh
 or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
 
-- [ ] **Kiki reads as a weasel / prairie dog** (score 2.6). Quadruped: a shorter, deeper chest, a tail shorter than the
-  body that tapers from a thicker base, small *visible* dark crescent ears, eye patches that read at sheet size,
-  lower legs a darker shade of the coat rather than near-black (`lift_dark` does this). Sentinel: stand straight
-  (not leaning forward), both paws tucked at the chest, the tail on the ground as the third leg of a tripod. Then
-  `python scripts/design_loop.py kiki`.
+- [ ] **Kiki on all fours reads as a puppy / mongoose** (v2 5.2, was 2.6). *v2 (cloud, DECISIONS #53, `design/kiki/v2/`):
+  a shorter, deeper body, a bigger raised head, a short tapering tail, dark crescent ears, coat-shade legs and larger eye
+  patches. The sentinel now stands straight with paws tucked and a tripod tail, and **its silhouette reads as a
+  meerkat** ✔.* Still open: no chin or throat line (neck notch 0.114 < 0.15). The neck should enter the back of the
+  skull, with a visible jaw corner. The pale snout is a separate tube in profile: taper it out of the face as one cone
+  (the `organic` nose mass, not the muzzle ellipsoid). The belly should tuck up behind the ribs. Then run
+  `python scripts/design_loop.py kiki`. — [review 11-17 09:36](reviews/2026-11-17T0936Z.md)
 - [ ] **Zuri's silhouette reads as a horse**: a thicker upright brush mane and larger, rounder ears. Stripes form
   bullseye rings on the chest, face front and rump (projected along one axis): they must wrap the body, with
   chevrons on the rump. The black muzzle ball reads as a clown nose: blend it into the face.

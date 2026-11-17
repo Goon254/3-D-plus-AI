@@ -1,7 +1,7 @@
 {
   "character": "kiki",
   "species": "meerkat",
-  "version": 1,
+  "version": 2,
   "role": "lookout",
   "age": "young adult",
   "personality": "nervous, fast-talking, sees danger everywhere; brave once when it counts",
@@ -59,7 +59,8 @@
   "pattern_contrast_min": {},
   "dark_ok": [
     "tailtip",
-    "nose"
+    "nose",
+    "ear"
   ],
   "silhouette": {
     "side_neck_notch_min": 0.15,
