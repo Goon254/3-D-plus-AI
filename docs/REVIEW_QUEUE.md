@@ -51,6 +51,11 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
   *Laptop GPU 11-17 (DECISIONS #57, `design/bibi_kobe/v2/`): the carapace is a mesh with a high dome, raised scutes and a flared rim ✔;
   painted radiating marks with no holes ✔; a dark underside with no plastron disc ✔. Reads as a leopard tortoise at 96 px. Needs reviewer
   verification.*
+  *Verified 11-17 15:36 (cloud): dome, scutes, rays and dark underside ✔. Open: **the rays are stair-stepped** (jaggy
+  per-vertex colour, a CG look at sheet size: use a shader pattern in rest-pose shell space or a denser grid); the
+  marginal ring hangs like a vertical skirt instead of flaring; the head is tiny next to the shell (`head` 1.15–1.25);
+  the lips are a dark sausage proud of the face; the hind legs look like blobs from behind; surprised is 2.1 %. Bibi 7.
+  — [review 11-17 15:36](reviews/2026-11-17T1536Z.md)*
 - [ ] **Tembo's ears** are flat discs that look like fins when seen edge-on from 3/4: give them thickness, a cupped
   shape and a rolled top edge. His neutral upper lids sit low (he looks sleepy).
 - [ ] **Expressions don't read** at sheet size: happy changes only 1.8–3.5 % of the face close-up (the soft check
