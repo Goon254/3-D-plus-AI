@@ -69,3 +69,8 @@ meerkat in sentinel, and the 96 px thumbnail on all fours now reads as a **meerk
 hips, so the sentinel tail no longer floats below the body; that was a v2–v3 bug no review caught, and the
 floating-part check now runs on the pose silhouette too. Open: the rump is round from the back, and the legs are
 still a touch long.
+
+## zuri/v2/ — chevron stripes, upright mane (laptop GPU 2026-11-17, DECISIONS #56)
+
+Recorded critique: **7.4**, not ready. The thumbnail reads as a zebra and the bullseyes are gone (`pattern_chevron`,
+`pattern_tilt`), but the silhouette alone still reads as a pony.

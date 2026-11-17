@@ -1,0 +1,14 @@
+{
+  "reviewer": "laptop GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "27d5e9525aa9ca4841539b7c5a0f6bbe3008decf90dccdb5702043aadeb206ed",
+  "silhouette_species": "pony with an upright mane",
+  "thumbnail_species": "zebra",
+  "issues": [
+    "no bullseyes: the stripes wrap as chevrons (vertical lines down the chest, V's on the forehead, sweeps over the haunch into the hind legs, chevrons from behind)",
+    "the mane now stands on the crest of the neck from the withers past the poll with a dark top edge, but the silhouette alone still reads as a pony: legs long and thin, body horse-like",
+    "the muzzle is smaller and charcoal-brown rather than a black ball, but it is still a round knob on the end of the face",
+    "happy changes only 2.5 % of the face close-up; the mouth still hides under the muzzle"
+  ],
+  "appeal": 7
+}

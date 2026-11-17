@@ -303,7 +303,39 @@ class MaterialOps:
             wave.inputs["Scale"].default_value = spec.get("pattern_scale", 1.0)
             wave.inputs["Distortion"].default_value = spec.get("pattern_distort", 2.0)
             wave.inputs["Detail"].default_value = 1.5
-            links.new(co, wave.inputs["Vector"])
+            wco = co
+            if spec.get("pattern_chevron"):
+                # bands on (y + a|x|) instead of y: the stripes wrap the body as chevrons (V on the rump and
+                # back, vertical lines down the chest and forehead) instead of rings round any part facing +-y
+                sep_c = nodes.new("ShaderNodeSeparateXYZ")
+                links.new(co, sep_c.inputs[0])
+                ax = nodes.new("ShaderNodeMath")
+                ax.operation = "ABSOLUTE"
+                links.new(sep_c.outputs["X"], ax.inputs[0])
+                ma = nodes.new("ShaderNodeMath")
+                ma.operation = "MULTIPLY_ADD"
+                links.new(ax.outputs[0], ma.inputs[0])
+                ma.inputs[1].default_value = spec["pattern_chevron"]
+                comb = nodes.new("ShaderNodeCombineXYZ")
+                links.new(sep_c.outputs["X"], comb.inputs["X"])
+                links.new(sep_c.outputs["Z"], comb.inputs["Z"])
+                axis = spec.get("pattern_axis", "z").upper()
+                links.new(sep_c.outputs[axis], ma.inputs[2])
+                out_c = ma.outputs[0]
+                if spec.get("pattern_tilt") and axis != "Z":
+                    # + tilt * z: the flank stripes slant, and the one closed loop every round haunch must have
+                    # moves low onto the back of the thigh (arcs into the leg) instead of a ring mid-rump
+                    tl = nodes.new("ShaderNodeMath")
+                    tl.operation = "MULTIPLY_ADD"
+                    links.new(sep_c.outputs["Z"], tl.inputs[0])
+                    tl.inputs[1].default_value = spec["pattern_tilt"]
+                    links.new(ma.outputs[0], tl.inputs[2])
+                    out_c = tl.outputs[0]
+                links.new(out_c, comb.inputs[axis])
+                if axis != "Y":
+                    links.new(sep_c.outputs["Y"], comb.inputs["Y"])
+                wco = comb.outputs["Vector"]
+            links.new(wco, wave.inputs["Vector"])
             links.new(wave.outputs["Fac"], ramp.inputs["Fac"])
             w = width if kind == "stripes" else min(width, 0.25)
             # Fac is a 0..1 sine: the bottom `w` share of it is the marking

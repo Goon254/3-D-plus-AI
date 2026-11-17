@@ -102,6 +102,10 @@ class MaterialSpec(BaseModel):
     pattern_width: float = Field(0.5, gt=0, lt=1)  # share of the pattern that is marking
     pattern_axis: Literal["x", "y", "z"] = "z"  # stripes/bands run across this axis
     pattern_distort: float = Field(2.0, ge=0, le=50)
+    # stripes/bands on (axis + chevron * |x|): they wrap the body as chevrons instead of ringing every part
+    # that faces along the axis (zebra chest, rump and forehead bullseyes)
+    pattern_chevron: float = Field(0.0, ge=0, le=20)
+    pattern_tilt: float = Field(0.0, ge=-20, le=20)  # + tilt * z on the stripe coordinate (slanted stripes)
     # markings only above this object-space height (fading in over pattern_fade): a meerkat's back bands
     pattern_above: float | None = None
     pattern_fade: float = Field(0.02, gt=0, le=10)

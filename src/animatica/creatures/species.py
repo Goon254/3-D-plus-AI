@@ -238,7 +238,8 @@ SPECIES: dict[str, Species] = {
         head_size=(0.21, 0.48, 0.25),
         head_pitch=40.0,
         eye=(0.095, -0.07, 0.06, 0.058),
-        ear=("leaf", (0.06, 0.035, 0.17), (0.065, 0.12, 0.15), (-10.0, 0.0, 12.0)),
+        # big, round-tipped ears (a zebra's are broader than a horse's): part of the species read
+        ear=("leaf", (0.085, 0.04, 0.18), (0.07, 0.12, 0.15), (-10.0, 0.0, 16.0)),
         tail=Chain((0.0, 0.5, 0.14), (0.0, 0.63, -0.3), 3, 0.032, 0.018),
         tuft=0.055,
         coat=_m(
@@ -248,6 +249,8 @@ SPECIES: dict[str, Species] = {
             pattern_scale=2.6,
             pattern_axis="y",
             pattern_distort=2.5,
+            pattern_tilt=-0.8,  # slanted flank stripes sweep over the haunch into the hind leg
+            pattern_chevron=1.4,  # stripes wrap as chevrons: no bullseyes on the chest, rump or forehead
             fur=0.5,
         ),
         mats={
@@ -271,17 +274,25 @@ SPECIES: dict[str, Species] = {
             ),
             "hoof": _m("#222020", 0.5),
             "tuft": _m("#161414", 0.9),
-            "muzzle": _m("#2A2626", 0.55),
+            # a soft charcoal-brown nose, not a black ball: it continues the face
+            "muzzle": _m("#3B3431", 0.7, fur=0.3),
             "mane": _m(
                 "#F3F0E8", 0.9, **_ZEBRA_STRIPES, pattern_scale=9.0, pattern_axis="y", pattern_distort=0.5
             ),
         },
         part_mats={"foot": "hoof", "tuft": "tuft"},
-        muzzle=((0.17, 0.16, 0.15), (0.0, -0.21, -0.03)),
+        # narrower than the face and sunk into it, so it reads as the end of the nose, not a clown nose
+        muzzle=((0.15, 0.15, 0.12), (0.0, -0.195, -0.035)),
         # real zebras: neck stripes run vertically like the body's; only the legs turn horizontal
         regions=((("leg_LF_lo", "leg_RF_lo", "leg_LH_lo", "leg_RH_lo"), "legs"),),
         extras=(
-            Extra("mane", "uv_sphere", (0.05, 0.15, 0.56), (0.0, 0.085, 0.13), "neck_1", "mane", (25, 0, 0)),
+            # an upright brush mane: thick, standing tall from poll to withers, with a dark crest
+            # on the crest of the neck (centred on its back surface, along the neck line) from the withers up
+            # past the poll, standing ~14 cm proud: it changes the silhouette from a horse's to a zebra's
+            Extra("mane", "uv_sphere", (0.085, 0.28, 0.66), (0.0, 0.07, 0.19), "neck_1", "mane", (25, 0, 0)),
+            Extra(
+                "mane_crest", "uv_sphere", (0.06, 0.1, 0.62), (0.0, 0.15, 0.215), "neck_1", "tuft", (25, 0, 0)
+            ),
         ),
     ),
     # Meerkat: 0.32 m head+body. Kids'-film proportions: a big round head with a pointed snout, a short deep

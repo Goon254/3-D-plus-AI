@@ -31,6 +31,9 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
 - [ ] **Zuri's silhouette reads as a horse**: a thicker upright brush mane and larger, rounder ears. Stripes form
   bullseye rings on the chest, face front and rump (projected along one axis): they must wrap the body, with
   chevrons on the rump. The black muzzle ball reads as a clown nose: blend it into the face.
+  *Laptop GPU 11-17 (DECISIONS #56, `design/zuri/v2/`): stripes wrap as chevrons, with no bullseye on the chest, forehead or rump ✔. The
+  mane stands on the crest from the withers past the poll ✔, the ears are bigger ✔, and the muzzle is a smaller charcoal knob. The thumbnail
+  reads as a zebra; the silhouette alone still reads as a pony (legs long and thin). Needs reviewer verification.*
 - [ ] **Bibi Kobe's shell** is a near-perfect ball with panel lines: a domed carapace with raised, slightly
   pyramidal scutes and a flared rim. Spots read as holes, so use leopard-tortoise radiating marks. The pale plastron
   disc still shows.

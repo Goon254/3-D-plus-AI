@@ -291,3 +291,21 @@ def test_kiki_v4_rump_rides_the_hips_paws_only_darken_and_body_is_smoother():
     rough, res0 = metaball_elements(g)
     smooth, res1 = metaball_elements(g, 1.0)
     assert len(smooth) > len(rough) and res1 < res0
+
+
+def test_zuri_stripes_wrap_as_chevrons_and_the_mane_stands_on_the_crest():
+    """Baseline review 11-17 06:36: y-planes rang bullseyes on the chest, face and rump; the mane was a thin plate
+    behind the neck and the muzzle a black clown-nose ball."""
+    from animatica.core.protocol import parse_batch
+
+    sp = SPECIES["zebra"]
+    assert sp.coat["pattern_chevron"] > 1.0 and sp.coat["pattern_tilt"] < 0
+    parse_batch(
+        {
+            "batch_id": "z",
+            "ops": [{"op": "set_material", "targets": ["x"], "material": {**sp.coat, "name": "z"}}],
+        }
+    )
+    mane = next(e for e in sp.extras if e.id == "mane")
+    assert mane.size[1] >= 0.25 and mane.loc[1] < 0.1  # tall, and on the neck's crest, not behind it
+    assert sp.muzzle[0][0] < sp.head_size[0] * 0.75  # narrower than the face
