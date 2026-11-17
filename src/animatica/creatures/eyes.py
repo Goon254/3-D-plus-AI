@@ -39,6 +39,7 @@ UPPER_CLOSED = 146.0  # blink: the upper lid comes down past the lower lid's edg
 LOWER_CLOSED = 38.0
 UPPER_DROOP = 82.0  # a heavy lid, half over the iris
 UPPER_WIDE = 38.0  # eyes wide open
+LOWER_CHEEK = 66.0  # "smiling eyes": the cheeks push the lower lid up over the bottom of the iris (happy)
 
 
 def _norm(v: V3) -> V3:
@@ -149,4 +150,6 @@ def lid_mesh(
     if upper:
         keys["droop"] = _cap(er, axis, side, UPPER_DROOP, rows, seg)  # type: ignore[arg-type]
         keys["wide"] = _cap(er, axis, side, UPPER_WIDE, rows, seg)  # type: ignore[arg-type]
+    else:
+        keys["cheek"] = _cap(er, axis, side, LOWER_CHEEK, rows, seg)  # type: ignore[arg-type]
     return verts, faces, keys

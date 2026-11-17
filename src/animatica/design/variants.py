@@ -83,6 +83,10 @@ def apply_morph(sp: Species, m: Morph, dark_ok: tuple[str, ...] = ()) -> Species
         msize, moff = _s(muzzle[0], k), _s(muzzle[1], k)
         grow = msize[1] * (m.snout - 1.0)
         muzzle = (_r4((msize[0], msize[1] * m.snout, msize[2])), _r4((moff[0], moff[1] - grow / 2, moff[2])))
+    snout_tip = sp.snout_tip
+    if snout_tip is not None:  # the cone follows the head; ``snout`` lengthens it
+        (tx, ty, tz), tr = snout_tip
+        snout_tip = (_r4((tx * k, ty * k * m.snout, tz * k)), round(tr * k, 5))
     extras = tuple(
         replace(e, size=_r4(_s(e.size, k)), loc=_r4(_s(e.loc, k))) if e.bone == "head" else e
         for e in sp.extras
@@ -121,6 +125,7 @@ def apply_morph(sp: Species, m: Morph, dark_ok: tuple[str, ...] = ()) -> Species
         eye=(round(ex * k, 5), round(ey * k, 5), round(ez * k, 5), round(er * k * m.eye, 5)),
         ear=(ear_shape, _r4(_s(ear_size, k * m.ear)), _r4(_s(ear_off, k)), ear_rot),
         muzzle=muzzle,
+        snout_tip=snout_tip,
         extras=extras,
         trunk=trunk,
         neck=neck,

@@ -19,6 +19,7 @@ import argparse
 import json
 import math
 import sys
+import textwrap
 from pathlib import Path
 from typing import Any
 
@@ -230,7 +231,8 @@ def compose(
     dr = ImageDraw.Draw(sheet)
     font = ImageFont.load_default(size=22)
     small = ImageFont.load_default(size=15)
-    dr.text((pad, 12), f"{character} — {label}", fill=(30, 30, 30), font=font)
+    # Pillow's built-in font has no em dash (it drew a box): plain ASCII separators only
+    dr.text((pad, 12), f"{character}: {label}", fill=(30, 30, 30), font=font)
     for i, tag in enumerate(top):
         x = pad + i * (tile + pad)
         sheet.paste(_on_backdrop(views[tag]), (x, head))
@@ -257,14 +259,12 @@ def compose(
     )
     yy = y2 + 32
     fails = [c for c in result["checks"] if not c["passed"]]
+    chars = max(40, (w - px - pad) // 8)  # wrap the messages instead of cutting them off mid-word
     for c in fails[:12]:
-        dr.text(
-            (px, yy),
-            ("HARD " if c["hard"] else "") + c["message"][:70],
-            fill=(170, 40, 30) if c["hard"] else (150, 100, 20),
-            font=small,
-        )
-        yy += 19
+        text = ("HARD " if c["hard"] else "") + c["message"]
+        for line in textwrap.wrap(text, chars)[:3]:
+            dr.text((px, yy), line, fill=(170, 40, 30) if c["hard"] else (150, 100, 20), font=small)
+            yy += 19
     if result["pending"]:
         dr.text((px, yy), "pending: " + ", ".join(result["pending"]), fill=(90, 90, 90), font=small)
         yy += 19
@@ -283,9 +283,18 @@ def sheet_for(
     samples: int = 16,
     device: str = "auto",
     label: str = "",
+    rescore: bool = False,
 ) -> dict[str, Any]:
+    """Render and score one sheet. ``rescore`` reuses the views already in ``out/views`` (no rendering): the
+    composed sheet is then byte-identical, so a critique recorded for it (``critique.json``) is picked up.
+    Cycles noise differs run to run, so a fresh render never matches a recorded critique's hash."""
     sp = apply_morph(SPECIES[brief.species], morph, brief.dark_ok)
-    views = render_views(sp.name, sp, out, res, samples, device)  # face ids are keyed by species
+    if rescore:
+        views = {p.stem: p for p in sorted((out / "views").glob("*.png"))}
+        if "side" not in views:
+            raise SystemExit(f"--rescore: no rendered views in {out / 'views'}")
+    else:
+        views = render_views(sp.name, sp, out, res, samples, device)  # face ids are keyed by species
     side_sil = silhouette(views["side"], out, "side_silhouette.png")
     # the species-read silhouette is the signature pose when the species has one (the meerkat's sentinel)
     sil = silhouette(views.get("pose", views["side"]), out)
@@ -321,6 +330,9 @@ def main() -> int:
     ap.add_argument("--res", type=int, default=512)
     ap.add_argument("--samples", type=int, default=16)
     ap.add_argument("--device", default="auto")
+    ap.add_argument(
+        "--rescore", action="store_true", help="re-score the views already rendered in <out>/<char>/<tag>"
+    )
     a = ap.parse_args()
     names = list(all_briefs()) if a.all else a.characters
     if not names:
@@ -328,7 +340,13 @@ def main() -> int:
     for ch in names:
         brief = load_brief(ch)
         doc = sheet_for(
-            brief, morph_from_dict(json.loads(a.morph)), Path(a.out) / ch / a.tag, a.res, a.samples, a.device
+            brief,
+            morph_from_dict(json.loads(a.morph)),
+            Path(a.out) / ch / a.tag,
+            a.res,
+            a.samples,
+            a.device,
+            rescore=a.rescore,
         )
         print(
             json.dumps(

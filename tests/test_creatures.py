@@ -226,3 +226,40 @@ def test_savannah_set_dense_grass_canopy_clumps_and_warm_haze():
     hills = next(o for o in ops if o["op"] == "set_material" and o["material"].get("name") == "mountains")
     r_, g_, b_ = (int(hills["material"]["base_color"][i : i + 2], 16) for i in (1, 3, 5))
     assert r_ > b_ and hills["material"]["fade_glow"] < 0.5  # warm, and not blown out by the haze glow
+
+
+def test_happy_pushes_the_lower_lids_up_and_the_sentinel_keeps_the_head_level():
+    """Review 11-17 12:36: happy barely changed the face (lower lids now rise: "smiling eyes"); Kiki v3 carries
+    her head forward on all fours, so the sentinel splits its forward bend between neck and head."""
+    from animatica.creatures.eyes import eye_frame, lid_mesh
+    from animatica.creatures.face import BROW_COLOR, EXPRESSIONS, expression_at, face_keys, face_ops
+    from animatica.creatures.perform import (
+        SENTINEL_HEAD_UP,
+        SENTINEL_NECK_UP,
+        SENTINEL_PITCH,
+        sentinel_bends,
+    )
+
+    assert EXPRESSIONS["happy"].cheek > 0.5 and EXPRESSIONS["neutral"].cheek == 0.0
+    assert expression_at([(0.0, "neutral"), (1.0, "happy")], 2.0).cheek == pytest.approx(
+        EXPRESSIONS["happy"].cheek
+    )
+    sp = SPECIES["meerkat"]
+    _ops, face = face_ops("k", sp, "k_root", "k_rig", BROW_COLOR["meerkat"])
+    fk = face_keys(face, [(0.0, "neutral"), (0.5, "happy")], None, 24, 1, 48)
+    cheek = [o for o in fk if o["property"] == "shape_key:cheek"]
+    assert {o["target"] for o in cheek} == {"k_lid_L_lo", "k_lid_R_lo"}
+    assert cheek[0]["keys"][0][1] == 0.0 and cheek[0]["keys"][-1][1] == pytest.approx(0.85)
+    _v, _f, keys = lid_mesh(0.01, eye_frame(sp, 1), upper=False)
+    assert "cheek" in keys and "droop" not in keys
+    # the sentinel: the neck ends SENTINEL_NECK_UP above horizontal and the head SENTINEL_HEAD_UP nose-up,
+    # whatever the neck's angle on all fours
+    _ops, meta = build_creature("k", sp)
+    neck, head = sentinel_bends(meta)
+    dy = sum(meta.bone_dirs[b][1] for b in meta.neck_bones)
+    dz = sum(meta.bone_dirs[b][2] for b in meta.neck_bones)
+    rest = math.degrees(math.atan2(dz, -dy))
+    assert rest < 45  # v3: head carried forward on all fours, not raised like a dog's
+    assert rest + SENTINEL_PITCH - neck == pytest.approx(SENTINEL_NECK_UP)
+    assert SENTINEL_PITCH - neck - head == pytest.approx(SENTINEL_HEAD_UP)
+    assert sp.snout_tip is not None and sp.jaw > 0 and sp.belly_tuck > 0

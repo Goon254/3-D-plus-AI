@@ -73,6 +73,10 @@ def body_graph(
         (0.26, 0.93, 0.9),
         (0.45, 0.62, 0.66),
     ]
+    if sp.belly_tuck and not shell:  # the waist draws up behind the ribs: shallower loins and rump
+        t = sp.belly_tuck
+        profile[3] = (0.26, 0.93 - 0.08 * t, 0.9 - 0.22 * t)
+        profile[4] = (0.45, 0.62, 0.66 - 0.06 * t)
     ids = []
     for u, fw, fd in profile:
         ids.append(g.node(spine(u), W / 2 * fw * k, D / 2 * fd * k))
@@ -81,7 +85,8 @@ def body_graph(
         g.link(a, b)
     brisket, chest, mid, loins, rump = ids
     if not shell:  # belly mass (the barrel hangs a little below the spine line)
-        bx, by, bz = spine(0.02)
+        # with a tucked waist the belly mass sits under the ribcage, not under the loins
+        bx, by, bz = spine(0.02 - 0.16 * sp.belly_tuck)
         belly = g.node((bx, by, bz - D * 0.16), W * 0.4, D * 0.34)
         g.link(mid, belly)
     # legs: shoulder / haunch muscle mass -> joint -> thigh/forearm -> knee -> cannon/ankle -> foot
@@ -126,6 +131,14 @@ def body_graph(
     cranium = g.chain(top, [(hp((0.0, hl * 0.18, hh * 0.08)), hw * 0.5, hh * 0.5)])
     head = g.chain(cranium, [(hp((0.0, -hl * 0.05, 0.0)), hw * 0.47, hh * 0.47)])
     nose = g.chain(head, [(hp((0.0, -hl * 0.36, -hh * 0.08)), hw * 0.33, hh * 0.32)])
+    if sp.snout_tip:  # one cone from the face to the nose tip (radius tapers linearly)
+        tip, rt = sp.snout_tip
+        n0 = (0.0, -hl * 0.36, -hh * 0.08)
+        r0 = (hw * 0.33 + hh * 0.32) / 2
+        g.chain(nose, [(hp(_lerp(n0, tip, u)), r0 + (rt - r0) * u, r0 + (rt - r0) * u) for u in (0.5, 1.0)])
+    if sp.jaw:  # the jaw corner: under the back of the skull, where the neck enters the head
+        jr = hw * sp.jaw
+        g.chain(head, [(hp((0.0, hl * 0.1, -hh * 0.3)), jr, jr)])
     if sp.trunk:  # the trunk grows from the face below the eyes, tapering to the tip
         t0, t1 = sp.trunk.base, sp.trunk.tip
         pts = [

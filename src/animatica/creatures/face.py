@@ -32,6 +32,7 @@ class Expression:
     smile: float  # 0..1 (frown when negative)
     asym: float = 0.0  # extra lift of the left brow (curious: one brow up)
     lid: float = 0.0  # upper lids: + heavier (droop), - wider open
+    cheek: float = 0.0  # 0..1: the cheeks push the lower lids up ("smiling eyes")
 
 
 BROW_COLOR = {  # a shade darker than the coat around the eyes
@@ -44,14 +45,15 @@ BROW_COLOR = {  # a shade darker than the coat around the eyes
 
 EXPRESSIONS: dict[str, Expression] = {
     "neutral": Expression(0.0, 0.0, 0.1),
-    "happy": Expression(0.18, -4.0, 0.85, lid=0.12),
+    # happy reads from the eyes as much as the mouth: brows up, cheeks pushing the lower lids up, a wide smile
+    "happy": Expression(0.28, -5.0, 1.0, cheek=0.85),
     "sad": Expression(0.05, 20.0, -0.6, lid=0.55),
     "surprised": Expression(0.5, 4.0, 0.0, lid=-0.85),
     "worried": Expression(0.22, 15.0, -0.3, lid=-0.2),
     "determined": Expression(-0.16, -16.0, 0.15, lid=0.4),
     "curious": Expression(0.12, 6.0, 0.25, asym=0.3, lid=-0.25),
     "scared": Expression(0.42, 18.0, -0.45, lid=-0.9),
-    "proud": Expression(0.08, -8.0, 0.6, lid=0.3),
+    "proud": Expression(0.08, -8.0, 0.6, lid=0.3, cheek=0.4),
 }
 
 
@@ -101,7 +103,7 @@ def mouth_mesh(half_w: float, n: int = 24) -> tuple[list, list, dict[str, list]]
         "open": ring(half_w * 0.98, hh * 6.5, pinch=0.3),  # keeps its width: corners stay readable
         "wide": ring(half_w * 1.3, hh * 2.0),
         "round": ring(half_w * 0.5, hh * 4.5),
-        "smile": ring(half_w * 1.08, hh * 1.4, corner=half_w * 0.32),
+        "smile": ring(half_w * 1.2, hh * 1.6, corner=half_w * 0.46),
         "frown": ring(half_w * 0.95, hh * 1.1, corner=-half_w * 0.26),
     }
     return verts, faces, keys
@@ -201,7 +203,15 @@ def face_ops(
         }
     )
     lids = [f"{cid}_lid_{side}_up" for side in ("L", "R")]
-    meta = {"mouth": mouth, "brows": brows, "eye_r": er, "head_pitch": sp.head_pitch, "lids": lids}
+    lower = [f"{cid}_lid_{side}_lo" for side in ("L", "R")]
+    meta = {
+        "mouth": mouth,
+        "brows": brows,
+        "eye_r": er,
+        "head_pitch": sp.head_pitch,
+        "lids": lids,
+        "lower_lids": lower,
+    }
     return ops, meta
 
 
@@ -233,8 +243,8 @@ def expression_at(track: list[tuple[float, str]], t: float, blend: float = 0.3) 
             *(
                 a + (b - a) * u
                 for a, b in zip(
-                    (cur.brow_up, cur.brow_tilt, cur.smile, cur.asym, cur.lid),
-                    (nxt.brow_up, nxt.brow_tilt, nxt.smile, nxt.asym, nxt.lid),
+                    (cur.brow_up, cur.brow_tilt, cur.smile, cur.asym, cur.lid, cur.cheek),
+                    (nxt.brow_up, nxt.brow_tilt, nxt.smile, nxt.asym, nxt.lid, nxt.cheek),
                 )
             )
         )
@@ -295,6 +305,9 @@ def face_keys(
                 "keys": [[frame0 + i, round(max(0.0, -v), 3), "LINEAR"] for i, v in enumerate(es)],
             },
         ]
+    cheek = [[frame0 + i, round(expression_at(track, t).cheek, 3), "LINEAR"] for i, t in enumerate(ts)]
+    for lid in face.get("lower_lids", []):
+        ops.append({"op": "insert_keyframes", "target": lid, "property": "shape_key:cheek", "keys": cheek})
     ops += [
         {"op": "insert_keyframes", "target": face["mouth"], "property": "shape_key:smile", "keys": smile},
         {"op": "insert_keyframes", "target": face["mouth"], "property": "shape_key:frown", "keys": frown},

@@ -23,13 +23,28 @@ def _k(frame: int, v: Any) -> list[Any]:
 
 
 SENTINEL_PITCH = 82.0  # degrees the meerkat's body rises from horizontal when it stands up
-SENTINEL_NECK = 70.0  # the neck bends forward again so the head looks ahead, not at the sky
+# Standing up, the neck bends forward again so it rises SENTINEL_NECK_UP degrees from horizontal (whatever its
+# angle on all fours), and the head bends the rest of the way so it ends SENTINEL_HEAD_UP degrees nose-up:
+# head level and scanning, never looking at the sky or craning forward like a vulture.
+SENTINEL_NECK_UP = 69.0
+SENTINEL_HEAD_UP = 12.0
 SENTINEL_TAIL = 72.0  # the tail swings back down to the ground: the third leg of the tripod
 
 
 def _smooth(u: float) -> float:
     u = max(0.0, min(1.0, u))
     return u * u * (3 - 2 * u)
+
+
+def sentinel_bends(meta: CreatureMeta) -> tuple[float, float]:
+    """(neck, head) forward bends in degrees for the full sentinel pose, from the neck's rest angle."""
+    dirs = [meta.bone_dirs[b] for b in meta.neck_bones if b in meta.bone_dirs]
+    if not dirs:
+        return SENTINEL_PITCH - SENTINEL_HEAD_UP, 0.0
+    dy, dz = sum(d[1] for d in dirs), sum(d[2] for d in dirs)
+    rest = math.degrees(math.atan2(dz, -dy))  # neck rise above the body's horizontal, on all fours
+    neck = rest + SENTINEL_PITCH - SENTINEL_NECK_UP
+    return neck, SENTINEL_PITCH - SENTINEL_HEAD_UP - neck
 
 
 def apply_sentinel(meta: CreatureMeta, plan: list[LocoFrame], fps: int) -> None:
@@ -182,17 +197,21 @@ def walk_keys(
             2 * math.pi * t / 3.1 + look_t[1]
         )
 
+    neck_bend, head_bend = sentinel_bends(meta)
     for name in meta.neck_bones:
         bone(
             name,
             lambda p, t: [
-                (p.head_nod + p.neck_counter + SENTINEL_NECK * p.sentinel) / n
+                (p.head_nod + p.neck_counter + neck_bend * p.sentinel) / n
                 + 1.5 * math.sin(2 * math.pi * t / 3.1) / n,
                 0.0,
                 look(t) / n,
             ],
         )
-    bone("head", lambda p, t: [-0.5 * p.head_nod - 0.7 * p.neck_counter, 0.0, 0.0])
+    bone(
+        "head",
+        lambda p, t: [-0.5 * p.head_nod - 0.7 * p.neck_counter + head_bend * p.sentinel, 0.0, 0.0],
+    )
     # tail: a travelling swish down the chain (follow-through) plus a little lift with speed
     for k, name in enumerate(meta.tail_bones):
         amp = 8 + 4 * k

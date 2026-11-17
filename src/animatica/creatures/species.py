@@ -75,6 +75,13 @@ class Species:
     # a soft dark patch painted on the skin around and behind each eye: (colour, strength)
     eye_patch: tuple[str, float] | None = None
     separate_head: bool = False  # sculpt the head as its own mesh on the head bone (no melting into the body)
+    # organic heads: the face tapers to this tip as one cone (offset from the head centre, tip radius), so a
+    # pointed snout grows out of the face instead of being a separate tube stuck on it
+    snout_tip: tuple[V3, float] | None = None
+    # a jaw-corner mass under the back of the skull (radius as a fraction of the head width): it gives the
+    # head a chin and throat line where the neck enters, so the head never slopes straight into the chest
+    jaw: float = 0.0
+    belly_tuck: float = 0.0  # 0..1: the loins and belly draw up behind the ribcage (a lean waist, not a tube)
 
 
 def _m(color: str, rough: float = 0.75, **kw: Any) -> dict[str, Any]:
@@ -279,7 +286,7 @@ SPECIES: dict[str, Species] = {
     "meerkat": Species(
         name="meerkat",
         # length/depth 2.04: a meerkat, not a weasel tube (2.8) nor a hamster ball (1.6)
-        body_z=0.136,
+        body_z=0.13,
         torso=(0.096, 0.198, 0.097),
         torso_at=(0.0, 0.0, 0.0),
         torso_rot=4.0,
@@ -290,11 +297,13 @@ SPECIES: dict[str, Species] = {
         leg_r=(0.018, 0.0125, 0.023, 0.014),
         foot=("paw", 0.012, 0.01),
         knee_bend=0.2,
-        neck=Chain((0.0, -0.094, 0.022), (0.0, -0.13, 0.078), 2, 0.029, 0.02),
+        # the head is carried forward and only a little up on a neck that enters the back of the skull, so
+        # there is a nape and a throat line (a mongoose-family profile, not a dog's raised head)
+        neck=Chain((0.0, -0.092, 0.018), (0.0, -0.142, 0.05), 2, 0.026, 0.017),
         # a big round head (head_body 0.45) that tapers into a pointed snout
-        head_at=(0.0, -0.172, 0.086),
+        head_at=(0.0, -0.184, 0.062),
         head_size=(0.07, 0.096, 0.066),
-        head_pitch=8.0,
+        head_pitch=2.0,
         eye=(0.024, -0.022, 0.013, 0.0145),
         # small dark crescents on the sides of the head, at eye level, a little behind the eyes
         ear=("disc", (0.008, 0.021, 0.019), (0.033, 0.016, 0.012), (0.0, 0.0, -12.0)),
@@ -329,13 +338,18 @@ SPECIES: dict[str, Species] = {
         },
         part_mats={"tuft": "tailtip"},
         # a pointed face: a long, narrow, tapering snout, pale, with a dark nose
-        muzzle=((0.031, 0.05, 0.027), (0.0, -0.05, -0.016)),
+        muzzle=((0.026, 0.05, 0.024), (0.0, -0.05, -0.022)),
         regions=(
             (("hips", "chest"), "back"),
             (("leg_LF_lo", "leg_RF_lo", "leg_LH_lo", "leg_RH_lo"), "paw"),
             (("tail_3",), "tailtip"),
         ),
         extras=(Extra("nose", "uv_sphere", (0.012, 0.009, 0.009), (0.0, -0.077, -0.016), "head", "nose"),),
+        # the face itself tapers to the nose as one cone; a chin/throat line where the neck enters the skull;
+        # the waist tucks up behind the ribs
+        snout_tip=((0.0, -0.072, -0.017), 0.0065),
+        jaw=0.36,
+        belly_tuck=0.6,
         # the meerkat's dark "spectacles", painted softly round the eyes (the eyes stay visible in them)
         eye_patch=("#3A2818", 0.95),
         default_pose="sentinel",
