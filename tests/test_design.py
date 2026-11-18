@@ -10,11 +10,11 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from animatica.creatures.species import SPECIES
+from animatica.creatures.species import SPECIES, Extra
 from animatica.design.brief import Brief, BriefError, all_briefs, load_brief
 from animatica.design.critic import critique_for, load_recorded, reads_as, record
 from animatica.design.image_checks import dark_blob, floating_parts, neck_notch, sheet_metrics
-from animatica.design.measure import contrast_ratio, features, materials, proportions
+from animatica.design.measure import contrast_ratio, features, hoof_shape, mane_shape, materials, proportions
 from animatica.design.rubric import edit_morph, score
 from animatica.design.variants import Morph, apply_morph, candidates
 
@@ -365,3 +365,60 @@ def test_the_packet_index_is_written_from_the_packets_and_matches_main(tmp_path)
     for char in ("kiki", "zuri", "tembo"):
         sc = json.loads((root / "design" / "packets" / char / "scores.json").read_text(encoding="utf-8"))
         assert f"({char}/README.md) | {sc['version']} |" in text
+
+
+def _hard(r) -> set[str]:
+    return set(r.hard_failures)
+
+
+def test_a_board_mane_is_caught_and_the_ridge_passes():
+    """Zuri v2's mane was an ellipsoid board on one neck bone; only the reviewer's eye caught it (11-17 15:36)."""
+    brief, z = load_brief("zuri"), SPECIES["zebra"]
+    board = Extra("mane", "uv_sphere", (0.085, 0.28, 0.66), (0.0, 0.07, 0.19), "neck_1", "mane", (25, 0, 0))
+    v2 = replace(z, mane=None, extras=(*z.extras, board))
+    m = mane_shape(v2)
+    assert m is not None and not m["follows_neck"] and m["stand"] > 1.0
+    assert {"shape:mane_follows_neck", "shape:mane_fin"} <= _hard(score(brief, v2))
+    # the v3 ridge follows the neck and stands about half the neck's depth: no hard failure
+    assert not {"shape:mane_follows_neck", "shape:mane_fin"} & _hard(score(brief, z))
+    # a ridge stood up as a fin is caught too
+    assert "shape:mane_fin" in _hard(score(brief, replace(z, mane=(0.25, 0.06, 0))))
+    assert mane_shape(SPECIES["giraffe"]) is None
+
+
+def test_a_saw_tooth_crest_is_a_soft_failure_and_a_smooth_one_passes():
+    """The reviewer's v3 note (11-18 03:36): soften the saw-tooth mane into a brush."""
+    brief, z = load_brief("zuri"), SPECIES["zebra"]
+    saw = {c.id: c for c in score(brief, z).checks}["shape:mane_brush"]
+    assert not saw.passed and not saw.hard and saw.value > 0.3
+    smooth = {c.id: c for c in score(brief, replace(z, mane=(0.11, 0.06, 0))).checks}["shape:mane_brush"]
+    assert smooth.passed
+
+
+def test_puck_hooves_are_caught_and_the_hoof_mesh_passes(monkeypatch):
+    """Zuri v2's hooves were flat cylinders under the striped leg tube (review 11-17 15:36)."""
+    brief = load_brief("zuri")
+    for name in ("zebra", "giraffe"):
+        h = hoof_shape(SPECIES[name])
+        assert h is not None and h["taper"] < 0.8 and 55 < h["wall_deg"] < 70, (name, h)
+        assert "shape:hoof_puck" not in _hard(
+            score(load_brief("neema" if name == "giraffe" else "zuri"), SPECIES[name])
+        )
+    assert hoof_shape(SPECIES["elephant"]) is None
+
+    import math
+
+    from animatica.creatures import build
+
+    def puck(r: float, h: float, seg: int = 32):  # what v2 rendered: a straight-walled cylinder
+        ring = [
+            (math.sin(2 * math.pi * k / seg) * r, -math.cos(2 * math.pi * k / seg) * r) for k in range(seg)
+        ]
+        verts = [[x, y, z] for z in (0.0, h) for x, y in ring]
+        faces = [[k, (k + 1) % seg, seg + (k + 1) % seg, seg + k] for k in range(seg)]
+        return verts, faces
+
+    monkeypatch.setattr(build, "hoof_mesh", puck)
+    h = hoof_shape(SPECIES["zebra"])
+    assert h["taper"] == pytest.approx(1.0) and h["wall_deg"] == pytest.approx(90.0)
+    assert "shape:hoof_puck" in _hard(score(brief, SPECIES["zebra"]))

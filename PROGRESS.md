@@ -4,6 +4,13 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Cloud review 11-18 12:36 UTC ([review](docs/reviews/2026-11-18T1236Z.md), DECISIONS #71): no new notes from
+you, so fixes only. **Manes and hooves are now checked automatically**: a board or fin mane and puck hooves (both
+caught only by eye on Zuri v2) fail the rubric, and a saw-tooth crest is flagged (Zuri v3's mane is one, which the
+silhouette confirms; it gets fixed in her polish round after your notes). No designs changed. Scores: Tembo 9,
+Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. **Still waiting on you:** Kiki (which body on all fours: v5 per your
+note, or v4's) and Zuri (approve or notes). Laptop: re-render the stress takes and packets, then rescore.
+
 Cloud review 11-18 09:36 UTC ([review](docs/reviews/2026-11-18T0936Z.md), DECISIONS #70): no new notes from
 you, so fixes only. **Kiki's feet are fixed too**: her hind paws now pivot at the heel as she rises into the
 sentinel, so the soles stay flat on the ground (7.1 → 1.6 mm per stance). The foot check is now strict, and all five

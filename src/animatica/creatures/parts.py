@@ -13,6 +13,7 @@ Coordinates are root space (+X left, -Y front, +Z up), as everywhere in ``creatu
 from __future__ import annotations
 
 import math
+from typing import Any
 
 V = list[float]
 
@@ -20,6 +21,19 @@ V = list[float]
 def _norm(v: tuple[float, float, float]) -> tuple[float, float, float]:
     n = math.sqrt(sum(c * c for c in v)) or 1.0
     return (v[0] / n, v[1] / n, v[2] / n)
+
+
+def mane_line(sp: Any, stations: int = 25) -> list[tuple[tuple[float, float, float], float]]:
+    """The neck's axis for :func:`mane_ridge`: [(point, neck radius), ...] from just behind the neck's base (the
+    withers) to just past its tip (the poll). Shared by the build and the design rubric's mane checks."""
+    n0, n1 = sp.neck.base, sp.neck.tip
+    out = []
+    for i in range(stations):
+        u = -0.08 + 1.14 * i / (stations - 1)
+        uc = min(1.0, max(0.0, u))
+        p = tuple(a + (b - a) * u for a, b in zip(n0, n1, strict=True))
+        out.append((p, sp.neck.r0 + (sp.neck.r1 - sp.neck.r0) * uc))
+    return out
 
 
 def mane_ridge(

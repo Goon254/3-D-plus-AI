@@ -7,6 +7,10 @@ Checks, each with a weight:
 * **features** — every required silhouette/marking feature present (hard).
 * **materials** — pattern contrast at least the brief's minimum (hard); no near-black body region except the
   brief's intended accents (hard: the "flat black block" class).
+* **shape** — manes and hooves measured on the built meshes: a mane must follow the neck as a skinned ridge
+  and stand at most :data:`MANE_STAND_MAX` of the neck's depth (hard: the board/fin class); its crest should
+  step at most :data:`MANE_JAG_MAX` between neighbours (soft: saw-tooth); hooves must taper to the coronet
+  and slope at the front wall (hard: the puck class).
 * **silhouette** (from a rendered sheet, :mod:`.image_checks`) — the side view shows a neck notch between head
   and shoulders (hard: the melted-head class); no floating parts (hard); no large dark blob (hard).
 * **face** — each expression (happy, surprised) visibly changes ≥ 3 % of the face close-up (soft: a weak
@@ -26,13 +30,18 @@ from typing import Any
 from animatica.creatures.species import Species
 from animatica.design.brief import Brief
 from animatica.design.fingerprint import staleness
-from animatica.design.measure import features, materials, proportions
+from animatica.design.measure import features, hoof_shape, mane_shape, materials, proportions
 from animatica.design.variants import Morph
 
 READY_SCORE = 9.0
 APPEAL_MIN = 8.0  # the critic's appeal rating a design needs before the owner sees it
 EXPRESSION_MIN = 0.03  # share of the face close-up an expression must visibly change (calibrated 11-17)
 HARD_PENALTY = 1.5
+# manes and hooves (calibrated 11-18 on Zuri v2 vs v3: board 1.25 / ridge 0.49; puck 100 % / 90 deg vs 72 % / 66)
+MANE_STAND_MAX = 0.6  # crest height above the skin / the neck's depth there
+MANE_JAG_MAX = 0.2  # biggest crest step between neighbouring stations / the tallest crest
+HOOF_TAPER_MAX = 0.85  # coronet width / sole width
+HOOF_WALL_MAX = 72.0  # front wall angle from the ground, degrees
 
 # metric -> morph field that changes it, and the exponent of the response (area metrics move as k^2)
 LEVERS: dict[str, tuple[str, float]] = {
@@ -133,6 +142,7 @@ def _design_checks(brief: Brief, sp: Species) -> list[Check]:
                 got,
             )
         )
+    out += _part_shape_checks(sp)
     dark = [d for d in mats["dark_regions"] if d["material"] not in brief.dark_ok]
     ok = not dark
     msg = (
@@ -154,6 +164,75 @@ def _design_checks(brief: Brief, sp: Species) -> list[Check]:
             None if ok else {"lift_dark": 0.7},
         )
     )
+    return out
+
+
+def _part_shape_checks(sp: Species) -> list[Check]:
+    """Manes and hooves, measured on the meshes the build makes (:func:`~animatica.design.measure.mane_shape`,
+    :func:`~animatica.design.measure.hoof_shape`). Zuri v2's board mane and puck hooves were caught only by eye
+    (review 11-17 15:36); a fixed v3's saw-tooth crest too (review 11-18 03:36)."""
+    out: list[Check] = []
+    mane = mane_shape(sp)
+    if mane is not None:
+        ok = bool(mane["follows_neck"])
+        out.append(
+            Check(
+                "shape:mane_follows_neck",
+                "shape",
+                ok,
+                True,
+                1.0,
+                float(ok),
+                "the mane is a ridge skinned along the neck"
+                if ok
+                else "the mane is a rigid mesh on one neck bone: a board that ignores the neck's curve",
+            )
+        )
+        ok = mane["stand"] <= MANE_STAND_MAX
+        out.append(
+            Check(
+                "shape:mane_fin",
+                "shape",
+                ok,
+                True,
+                1.0,
+                float(ok),
+                f"the mane stands {mane['stand']:.2f} x the neck's depth (max {MANE_STAND_MAX})"
+                + ("" if ok else ": a fin or plank, not a short upright mane"),
+                mane["stand"],
+            )
+        )
+        ok = mane["jag"] <= MANE_JAG_MAX
+        out.append(
+            Check(
+                "shape:mane_brush",
+                "shape",
+                ok,
+                False,
+                0.5,
+                0.5 * ok,
+                f"the mane's crest steps {mane['jag']:.0%} between neighbours (max {MANE_JAG_MAX:.0%})"
+                + ("" if ok else ": a saw-tooth, not a brush"),
+                mane["jag"],
+            )
+        )
+    hoof = hoof_shape(sp)
+    if hoof is not None:
+        ok = hoof["taper"] <= HOOF_TAPER_MAX and hoof["wall_deg"] <= HOOF_WALL_MAX
+        out.append(
+            Check(
+                "shape:hoof_puck",
+                "shape",
+                ok,
+                True,
+                1.0,
+                float(ok),
+                f"hooves: coronet {hoof['taper']:.0%} of the sole (max {HOOF_TAPER_MAX:.0%}), front wall "
+                f"{hoof['wall_deg']:.0f} deg from the ground (max {HOOF_WALL_MAX:g})"
+                + ("" if ok else ": flat-walled pucks, not hooves"),
+                hoof,
+            )
+        )
     return out
 
 
@@ -343,7 +422,9 @@ def score(
         if c.fix:
             for k, v in c.fix.items():
                 edit[k] = max(edit.get(k, 0.0), v) if k == "lift_dark" else edit.get(k, 1.0) * v
-        elif c.group in ("proportions", "features", "face", "appeal") or c.id == "silhouette:floating":
+        elif (
+            c.group in ("proportions", "features", "shape", "face", "appeal") or c.id == "silhouette:floating"
+        ):
             manual.append(c.message)
     for note in (critique or {}).get("issues", []):
         manual.append(f"critic: {note}")

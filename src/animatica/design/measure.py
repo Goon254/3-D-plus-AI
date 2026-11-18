@@ -115,6 +115,79 @@ def features(sp: Species) -> set[str]:
     return f
 
 
+def _foot_vertices(op: dict[str, Any], sp: Species) -> list[tuple[float, float, float]]:
+    """A foot's vertices in its own frame (sole at z = 0). A ``create_primitive`` cylinder is sampled as the
+    puck it renders as."""
+    if op["op"] == "create_mesh":
+        return [tuple(v) for v in op["vertices"]]
+    _shape, r, h = sp.foot
+    ring = [(math.sin(2 * math.pi * k / 32) * r, -math.cos(2 * math.pi * k / 32) * r) for k in range(32)]
+    return [(x, y, z) for z in (0.0, h) for x, y in ring]
+
+
+def hoof_shape(sp: Species) -> dict[str, float] | None:
+    """The hooves as built (``creatures.build``), measured on the mesh: ``taper`` = coronet width / sole width
+    (a cylinder "puck" is 1.0), ``wall_deg`` = front wall angle from the ground (a puck stands at 90; a horse's
+    hoof wall is about 50-55), ``height`` = hoof height / sole length. ``None`` when the species has no hooves.
+    Zuri v2's hooves were flat cylinders the striped leg tube sat on, read as toy parts (review 11-17 15:36)."""
+    if sp.foot[0] != "hoof":
+        return None
+    from animatica.creatures.build import build_creature  # a lazy import: build imports nothing from design
+
+    ops = build_creature("m", sp)[0]
+    feet = [o for o in ops if str(o.get("id", "")).startswith("m_foot_")]
+    worst: dict[str, float] = {}
+    for op in feet:
+        vs = _foot_vertices(op, sp)
+        z0, z1 = min(v[2] for v in vs), max(v[2] for v in vs)
+        tol = 0.02 * (z1 - z0)
+        sole = [v for v in vs if v[2] <= z0 + tol]  # the sole ring (and its centre)
+        top = [v for v in vs if v[2] >= z1 - tol]  # the coronet ring (and the cap's centre)
+        sw = max(v[0] for v in sole) - min(v[0] for v in sole)
+        tw = max(v[0] for v in top) - min(v[0] for v in top)
+        sl = max(v[1] for v in sole) - min(v[1] for v in sole)
+        setback = min(v[1] for v in top) - min(v[1] for v in sole)  # the toe is -Y: + = the coronet sits back
+        m = {
+            "taper": tw / max(sw, 1e-9),
+            "wall_deg": math.degrees(math.atan2(z1 - z0, max(setback, 0.0))),
+            "height": (z1 - z0) / max(sl, 1e-9),
+        }
+        for k, v in m.items():  # the least hoof-like foot decides
+            worst[k] = v if k not in worst else (min(worst[k], v) if k == "height" else max(worst[k], v))
+    return {k: round(v, 3) for k, v in worst.items()} if worst else None
+
+
+def mane_shape(sp: Species) -> dict[str, Any] | None:
+    """The mane as built: ``follows_neck`` (a ridge skinned along the neck chain, not a rigid mesh carried by one
+    neck bone: v2's was an ellipsoid board that ignored the neck's curve and stepped at the poll), ``stand`` =
+    the tallest crest height above the neck's skin / the neck's depth there (a fin or plank stands tall), and
+    ``jag`` = the biggest crest step between neighbouring stations / the tallest crest (a saw, not a brush).
+    ``None`` when the species has no mane."""
+    rigid = [ex for ex in sp.extras if ex.id.startswith("mane")]
+    if not sp.mane and not rigid:
+        return None
+    if not sp.mane:  # rigid boards: their standing height from the extra's size (its vertical extent, halved)
+        neck_d = sp.neck.r0 + sp.neck.r1
+        stand = max(ex.size[2] / 2 + ex.loc[2] - sp.neck.r0 for ex in rigid) / neck_d
+        return {"follows_neck": False, "stand": round(stand, 3), "jag": 0.0}
+    from animatica.creatures.parts import mane_line, mane_ridge
+
+    mh, mw, teeth = sp.mane
+    line = mane_line(sp)
+    verts = mane_ridge(line, mh, mw, teeth)[0]
+    heights, stands = [], []
+    for i, (p, r) in enumerate(line):
+        a, b = verts[4 * i + 2], verts[4 * i + 3]  # the crest's two vertices at this station
+        c = [(a[k] + b[k]) / 2 for k in range(3)]
+        h = math.dist(c, p) - r
+        heights.append(h)
+        stands.append(h / (2 * r))
+    top = max(heights) or 1e-9
+    inner = heights[2:-2]  # the tapered ends are meant to step down
+    jag = max((abs(x - y) for x, y in zip(inner, inner[1:], strict=False)), default=0.0) / top
+    return {"follows_neck": not rigid, "stand": round(max(stands), 3), "jag": round(jag, 3)}
+
+
 def materials(sp: Species) -> dict[str, Any]:
     """Coat/part luminances, pattern contrast, and dark parts that may read as flat black blocks.
 

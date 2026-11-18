@@ -11,7 +11,7 @@ that raised it.
 
 ## P0-DESIGN — DESIGN_STAGE.md (owner's top priority; film production paused)
 
-**Status 11-18 09:36: no new owner reply. Kiki's hind paws pivot at the heel into the sentinel (#70): `foot_plant` is now hard and passes for all five (Kiki 7.1 → 1.6 mm). Scores unchanged: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)** Status 11-18 06:36: no new owner reply (Kiki v5, Zuri v3 waiting). Fixes only: stress reports are fingerprinted
+**Status 11-18 12:36: no new owner reply. Fixes only: manes and hooves are now measured (#71): board/fin manes and puck hooves are hard checks, a saw-tooth crest soft (Zuri v3 fails it). Scores unchanged: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 12:36](reviews/2026-11-18T1236Z.md)** Status 11-18 09:36: no new owner reply. Kiki's hind paws pivot at the heel into the sentinel (#70): `foot_plant` is now hard and passes for all five (Kiki 7.1 → 1.6 mm). Scores unchanged: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)** Status 11-18 06:36: no new owner reply (Kiki v5, Zuri v3 waiting). Fixes only: stress reports are fingerprinted
 (#68), the packets' index is generated (#68), and planted feet hang level from the ankle (#69): `foot_plant` passes
 for four of five (Tembo 77 → 21 mm, Zuri 61 → 9, Bibi 50 → 3, Neema 46 → 23; Kiki 7.1 vs 6). Scores: Tembo 9, Neema 8,
 Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 06:36](reviews/2026-11-18T0636Z.md)** Status 11-18 03:36: the owner replied. Tembo, Neema and Bibi Kobe v3 are approved and locked (#65); Kiki v5 and
@@ -42,8 +42,12 @@ packet still shows the old ears. — [review 11-17 18:36](reviews/2026-11-17T183
   pass. Workbench stills of the sentinel drop show flat soles and no heel tear.* — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)
 - [ ] **Sentinel thigh creases** (small): soft folds where Kiki's hind leg tucks under the hips in the sentinel
   (Workbench stills). A corrective shape or more hip weight later. — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)
-- [ ] **Hard checks for a fin mane and puck hooves** (tooling): both were caught only by eye (Zuri v2).
+- [x] **Hard checks for a fin mane and puck hooves** (tooling): both were caught only by eye (Zuri v2).
   — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)
+  *Done 11-18 12:36 (cloud, DECISIONS #71): rubric group `shape`, measured on the built meshes: board/fin mane and
+  puck hooves are hard, a saw-tooth crest soft. v2's board (stand 1.25, rigid) and a cylinder hoof (100 %, 90°) fail;
+  the v3 cast passes every hard one. Zuri v3 fails the soft `mane_brush` (36 % steps), which the silhouette confirms.*
+  — [review 11-18 12:36](reviews/2026-11-18T1236Z.md)
 - [x] **Planted feet skate (rig)**: `foot_plant` (soft) fails for all five: a sole strays 7.7 (Kiki) to 77 mm (Tembo) within
   one stance, because the rigid hoof or pad rocks about the ankle as the leg sweeps back (Workbench strip in the review).
   Add a foot/hoof bone that keeps the sole level and pinned while planted and lets the pastern/ankle flex. Then make
@@ -58,7 +62,7 @@ packet still shows the old ears. — [review 11-17 18:36](reviews/2026-11-17T183
 - [ ] **Kiki v6**: v5 reads as a weasel or mongoose on all fours (long low body, hunched back with three lumps, long
   level tail). Bring back v4's shorter body and higher shoulders, smooth the back, and taper the tail in a slight curve.
   Keep v5's soft patches. — [review 11-18 03:36](reviews/2026-11-18T0336Z.md)
-- [ ] **Zuri v3 polish**: soften the saw-tooth mane into a brush, seat the brows, sink the eyes into the head's sides,
+- [ ] **Zuri v3 polish** (*the crest is now measured: `shape:mane_brush` must pass, e.g. fewer, softer teeth*): soften the saw-tooth mane into a brush, seat the brows, sink the eyes into the head's sides,
   and make happy read (lighter mouth or lip line on the dark muzzle). — [review 11-18 03:36](reviews/2026-11-18T0336Z.md)
 - [x] **Stale stress reports**: store a hash of the species snapshot in `rig_stress.json`, and have the sheet or a test
   refuse "ready" when it doesn't match (the #65 brows slipped through because nothing re-ran it).

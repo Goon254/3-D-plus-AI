@@ -17,7 +17,7 @@ from .eyes import EMBED_DEPTH, IRIS_AT, eye_frame, lid_mesh, look_rotation
 from .gait import FootSpot
 from .organic import body_graph, head_elements, metaball_elements, tail_points
 from .parts import hoof as hoof_mesh
-from .parts import mane_ridge
+from .parts import mane_line, mane_ridge
 from .shell import carapace
 from .species import EYE_WHITE, GLINT, IRIS, Chain, Species
 
@@ -637,13 +637,7 @@ def build_creature(
         sp.mane
     ):  # a ridge along the neck's top line, skinned to the neck chain (owner 11-17: follows the neck)
         mh, mw, teeth = sp.mane
-        n0, n1 = sp.neck.base, sp.neck.tip
-        line = []
-        for i in range(25):
-            u = -0.08 + 1.14 * i / 24
-            uc = min(1.0, max(0.0, u))
-            line.append((_add(n0, _scale(_sub(n1, n0), u)), sp.neck.r0 + (sp.neck.r1 - sp.neck.r0) * uc))
-        mv, mf = mane_ridge(line, mh, mw, teeth)
+        mv, mf = mane_ridge(mane_line(sp), mh, mw, teeth)
         mane_op = {"op": "create_mesh", "id": f"{cid}_mane", "vertices": mv, "faces": mf, "smooth": True}
         meshes.append((mane_op, "mane", ["chest", *neck_bones, "head"]))
 
