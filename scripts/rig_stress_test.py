@@ -17,7 +17,7 @@ Measured on the deformed rig in Blender, every third frame (eyes, lids, brows, m
 * ``foot_slide``: a planted foot drifts less than :data:`SLIDE_MAX` of the leg, measured on the deformed skin (each
   foot's sole: the lowest skin under its lower-leg bone tip, followed frame to frame), and at least one planted foot-frame pair was
   measured (zero pairs fails: it would otherwise read as perfect);
-* ``foot_plant`` (soft): over a whole stance phase the sole strays less than :data:`PLANT_MAX` of the foot's radius
+* ``foot_plant``: over a whole stance phase the sole strays less than :data:`PLANT_MAX` of the foot's radius
   from where it landed (a rigid hoof that rocks about its fetlock skates by its height times the leg's sweep);
 * ``ground``: no foot sinks into the ground;
 * ``sentinel_tail`` (meerkat): the tail tip reaches the ground in the sentinel (the tripod).
@@ -219,7 +219,14 @@ def _check(cid: str, passed: bool, message: str, value: Any = None, hard: bool =
     return {"id": cid, "passed": bool(passed), "hard": hard, "message": message, "value": value}
 
 
-def run(character: str, out: Path, render: bool, res: tuple[int, int], samples: int) -> dict[str, Any]:
+def run(
+    character: str,
+    out: Path,
+    render: bool,
+    res: tuple[int, int],
+    samples: int,
+    stills: list[int] | None = None,
+) -> dict[str, Any]:
     species = CAST[character]
     sp = SPECIES[species]
     if out.exists():
@@ -304,6 +311,19 @@ def run(character: str, out: Path, render: bool, res: tuple[int, int], samples: 
             ],
         )["inspect"]["frames"]
         batch("cam", camera_ops(plan, [fr[str(k + 1)]["bone_tails"][head] for k in range(n)], size, sp, ch))
+        for f in stills or []:  # cheap Workbench looks at chosen frames (CPU review of a pose)
+            batch(
+                f"still{f}",
+                [
+                    {
+                        "op": "render_preview",
+                        "path": str(out / "stills" / f"{character}_{f:04d}.png"),
+                        "frame": f,
+                        "camera": "auto",
+                        "resolution": list(res),
+                    }
+                ],
+            )
         if render:
             batch(
                 "rs",
@@ -415,7 +435,6 @@ def run(character: str, out: Path, render: bool, res: tuple[int, int], samples: 
                 else "no stance phase lasted two frames: foot plant was not measured"
             ),
             round(float(travel["travel"]), 4),
-            False,
         )
     )
     checks.append(
@@ -493,6 +512,7 @@ def main() -> int:
     ap.add_argument("--no-render", action="store_true")
     ap.add_argument("--res", default="960x540")
     ap.add_argument("--samples", type=int, default=16)
+    ap.add_argument("--stills", default="", help="comma-separated frames to render as Workbench previews")
     a = ap.parse_args()
     names = list(CAST) if a.all else a.characters
     if not names:
@@ -500,7 +520,8 @@ def main() -> int:
     w, h = (int(v) for v in a.res.split("x"))
     ok = True
     for ch in names:
-        rep = run(ch, Path(a.out) / ch, not a.no_render, (w, h), a.samples)
+        stills = [int(f) for f in a.stills.split(",") if f.strip()]
+        rep = run(ch, Path(a.out) / ch, not a.no_render, (w, h), a.samples, stills)
         ok &= rep["passed"]
         print(
             json.dumps(

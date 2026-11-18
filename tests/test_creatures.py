@@ -547,11 +547,11 @@ def test_planted_feet_hang_level_from_the_ankle():
     """Review 11-18 03:36: rigid hooves and pads rocked heel-to-toe about the ankle as the leg swept back, so a
     planted sole skated 8-77 mm per stance. Each foot is now its own bone under the lower leg that keeps its rest
     orientation (DECISIONS #69); hooves, pads and nails ride it, and skin-grown feet are rigid to it. The meerkat's
-    hind paws keep hinging (her heel carries the sentinel)."""
+    hind paws are level too, and pivot at the heel into the sentinel (DECISIONS #70)."""
     from animatica.creatures.build import build_creature
     from animatica.creatures.species import SPECIES
 
-    for name, level in (("zebra", "FH"), ("elephant", "FH"), ("meerkat", "F")):
+    for name, level in (("zebra", "FH"), ("elephant", "FH"), ("meerkat", "FH")):
         sp = SPECIES[name]
         ops, meta = build_creature(name, sp)
         arm = next(o for o in ops if o["op"] == "create_armature")
@@ -574,3 +574,33 @@ def test_planted_feet_hang_level_from_the_ankle():
             assert sorted(rigid_feet) == sorted(
                 f"leg_{k}_lo_foot" for k in ("LF", "RF", "LH", "RH") if k[1] in level
             )
+
+
+def test_the_meerkat_heel_pivots_so_her_hind_soles_stay_flat_in_the_sentinel():
+    """Review 11-18 06:36: a level hind paw kept its pose in body space, so as Kiki pitched up into the sentinel the
+    paw tipped toes-up with her and tore the heel skin; hinged with the shin instead, it skated 7.1 mm per stance.
+    The level hind foot is now counter-rotated by the sentinel pitch (DECISIONS #70): flat on the ground standing up,
+    untouched on all fours, and no other species keys its foot bones."""
+    from animatica.creatures.build import build_creature
+    from animatica.creatures.gait import GAITS, Waypoint
+    from animatica.creatures.perform import SENTINEL_PITCH, walk_keys
+    from animatica.creatures.species import SPECIES
+
+    pts = [Waypoint(0.0, 0.0, 0.0), Waypoint(1.5, 0.0, 0.0), Waypoint(2.5, 0.0, 0.6), Waypoint(4.5, 0.0, 0.6)]
+    for name in ("meerkat", "zebra"):
+        _ops, meta = build_creature(name, SPECIES[name])
+        keys, plan = walk_keys(meta, GAITS[name]["walk"], pts, 24, 1, seed=1, yaw0=0.0)
+        foot = {
+            o["property"]: o["keys"]
+            for o in keys
+            if o["op"] == "insert_keyframes" and o["property"].endswith("_lo_foot.rotation")
+        }
+        if name == "zebra":
+            assert foot == {}
+            continue
+        assert sorted(foot) == [f"bone:leg_{k}_lo_foot.rotation" for k in ("LH", "RH")]
+        for ks in foot.values():
+            for (_f, v, _i), p in zip(ks, plan):
+                assert v[1:] == [0.0, 0.0] and abs(v[0] - SENTINEL_PITCH * p.sentinel) < 0.01
+        stood = [p.sentinel for p in plan]
+        assert max(stood) > 0.99 and min(stood) == 0.0  # the take covers both the sentinel and all fours

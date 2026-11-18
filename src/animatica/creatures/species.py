@@ -434,9 +434,9 @@ SPECIES: dict[str, Species] = {
         patch_soft=0.4,  # a softer edge than v4's 0.28 (rings), still dark enough to read round the eye
         smooth=1.0,
         default_pose="sentinel",
-        # the hind paws hinge at the heel as she rises into the sentinel and drops back: a level hind paw
-        # tore the heel skin there (planted drift 5.9 mm/frame), so only the fore paws stay level (#69)
-        level_feet="F",
+        # all four paws stay level (#69); the hind paws pivot at the heel into the sentinel, counter-rotated
+        # by the body's pitch so the soles stay flat on the ground as she rises (perform.walk_keys, #70)
+        level_feet="FH",
     ),
     # Leopard tortoise elder: a high-domed carapace of geometric scutes (dark heart and growth rings in each
     # plate); thick, scaly, elephant-like legs; a wise old head on an extendable neck.

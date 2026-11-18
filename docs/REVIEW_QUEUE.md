@@ -11,7 +11,7 @@ that raised it.
 
 ## P0-DESIGN — DESIGN_STAGE.md (owner's top priority; film production paused)
 
-**Status 11-18 06:36: no new owner reply (Kiki v5, Zuri v3 waiting). Fixes only: stress reports are fingerprinted
+**Status 11-18 09:36: no new owner reply. Kiki's hind paws pivot at the heel into the sentinel (#70): `foot_plant` is now hard and passes for all five (Kiki 7.1 → 1.6 mm). Scores unchanged: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)** Status 11-18 06:36: no new owner reply (Kiki v5, Zuri v3 waiting). Fixes only: stress reports are fingerprinted
 (#68), the packets' index is generated (#68), and planted feet hang level from the ankle (#69): `foot_plant` passes
 for four of five (Tembo 77 → 21 mm, Zuri 61 → 9, Bibi 50 → 3, Neema 46 → 23; Kiki 7.1 vs 6). Scores: Tembo 9, Neema 8,
 Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 06:36](reviews/2026-11-18T0636Z.md)** Status 11-18 03:36: the owner replied. Tembo, Neema and Bibi Kobe v3 are approved and locked (#65); Kiki v5 and
@@ -31,12 +31,19 @@ packet still shows the old ears. — [review 11-17 18:36](reviews/2026-11-17T183
   *Cloud 11-17 21:36: (2) done: `--all --no-render` re-ran on CPU; every report has `part_float` and all five pass through
   the whole take ✔. (3) done (DECISIONS #63): `foot_slide` counts planted foot-frame pairs (710–1443 per character) and
   fails on zero ✔. Left for the laptop: (1) and (4).* — [review 11-17 21:36](reviews/2026-11-17T2136Z.md)
-- [ ] **Laptop: re-render the stress takes and packets after #69** (`rig_stress_test.py --all`, then
+- [ ] **Laptop: re-render the stress takes and packets after #69 and #70** (`rig_stress_test.py --all`, then
   `design_packet.py --all`): the packet clips still show skating feet. Pull before rendering the animatic.
   — [review 11-18 06:36](reviews/2026-11-18T0636Z.md)
-- [ ] **Kiki's hind heel**: her hind paws still hinge with the shin (a level hind paw tore the heel skin in the
+- [x] **Kiki's hind heel**: her hind paws still hinge with the shin (a level hind paw tore the heel skin in the
   sentinel rise), so `foot_plant` is 7.1 mm against 6. Give the hind paw a heel pivot (level in the walk, hinged in
   the sentinel), then make `foot_plant` hard for all. — [review 11-18 06:36](reviews/2026-11-18T0636Z.md)
+  *Done 11-18 09:36 (cloud, DECISIONS #70): the level hind foot is counter-rotated by the sentinel pitch, so the sole
+  stays flat as she rises; `foot_plant` 7.1 → 1.6 mm, `foot_slide` 2.1 → 0.5 mm; `foot_plant` is hard and all five
+  pass. Workbench stills of the sentinel drop show flat soles and no heel tear.* — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)
+- [ ] **Sentinel thigh creases** (small): soft folds where Kiki's hind leg tucks under the hips in the sentinel
+  (Workbench stills). A corrective shape or more hip weight later. — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)
+- [ ] **Hard checks for a fin mane and puck hooves** (tooling): both were caught only by eye (Zuri v2).
+  — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)
 - [x] **Planted feet skate (rig)**: `foot_plant` (soft) fails for all five: a sole strays 7.7 (Kiki) to 77 mm (Tembo) within
   one stance, because the rigid hoof or pad rocks about the ankle as the leg sweeps back (Workbench strip in the review).
   Add a foot/hoof bone that keeps the sole level and pinned while planted and lets the pastern/ankle flex. Then make

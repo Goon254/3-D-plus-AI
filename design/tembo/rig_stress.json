@@ -175,7 +175,7 @@
   {
    "id": "foot_plant",
    "passed": true,
-   "hard": false,
+   "hard": true,
    "message": "a planted sole (skin) strays up to 21.1 mm within one stance (RF, frames 141-165; limit 60 mm, half the foot's radius) over 26 stance phases",
    "value": 0.0211
   },
@@ -189,7 +189,7 @@
  ],
  "fingerprint": {
   "species": "93199cdf95f7c8ec",
-  "rig_code": "1403c59cd566a69f"
+  "rig_code": "21f7e9d953c0013d"
  },
  "passed": true
 }

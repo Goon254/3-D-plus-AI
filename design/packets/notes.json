@@ -7,7 +7,7 @@
    "Your call needed: the cloud reviewer (11-18) reads the lower, longer, hunched body on all fours as a weasel/mongoose from the side and prefers v4's shorter, higher-shouldered body. v5 follows your note; say which way.",
    "Appeal 7: the critic still wants more charm in the face before 'ready'.",
    "The patches are deliberately soft; at 96 px they read as shading round the eyes rather than a mask.",
-   "Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet."
+   "Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes."
   ],
   "runners": "Both runner-ups are small head/eye/ear morphs from the re-run loop, scored 10.0 without a species read, so they aren't comparable with the current design's score.",
   "ask": "which body on all fours: v5 (your note: lower, longer, hunched) or v4's shorter, higher-shouldered one (the reviewer reads v5 as a weasel)"
@@ -19,7 +19,7 @@
    "Hard failure, recorded honestly: on the silhouette alone I read 'zebra, but a donkey is the nearest other read', and the rubric counts that as ambiguous with a known confusion (donkey). The thumbnail reads as a zebra. The pony read from v2 is gone.",
    "Appeal 7: the face is calm but not yet charming at sheet size; 'happy' changes 3.7 % of the face (a dark mouth on a dark muzzle).",
    "The cloud reviewer (11-18) finds the toothed mane a little 'saw-back'; it can be softened into more of a brush if you agree.",
-   "Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet."
+   "Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes."
   ],
   "runners": "Runner-up 1 is a bigger head and eyes; runner-up 2 has bigger eyes, a shorter snout and a thinner neck. Both scored 10.0 without a species read.",
   "ask": "approve, or notes; the reviewer would soften the toothed mane into a brush"
@@ -31,7 +31,7 @@
   "open": [
    "Locked: changes now need your sign-off (design/bibi_kobe/approved.json).",
    "Motion: she still can't turn on the spot, and has no sit pose.",
-   "Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet."
+   "Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes."
   ],
   "runners": "Both runner-ups are small head and eye morphs, scored 10.0 by the loop without a species read, so they aren't comparable with the current design's score."
  },
@@ -41,7 +41,7 @@
   "motion": "he walks, turns toward the camera, bows and comes back up (no sit pose on this rig), turns his head, runs through every expression, then says his line",
   "open": [
    "Locked: changes now need your sign-off (design/tembo/approved.json).",
-   "Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet."
+   "Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes."
   ],
   "runners": "Both runner-ups are small head and eye morphs, scored 10.0 by the loop without a species read. The current design is ready on the rubric (9.84, with the recorded critique)."
  },
@@ -52,7 +52,7 @@
   "open": [
    "Locked: changes now need your sign-off (design/neema/approved.json).",
    "Re-sheeted 11-18 with the hoof mesh every hoofed species now gets (the locked parameters are unchanged). Still open from the cloud review: pole legs with no knee.",
-   "Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet."
+   "Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes."
   ],
   "runners": "Runner-up 1 is a smaller head with bigger eyes and ears; runner-up 2 is a slightly bigger head, smaller ears, longer legs and a lighter coat. The loop scored them 9.96 and 9.91 without a species read."
  }

@@ -226,6 +226,14 @@ def walk_keys(
             ]
 
         bone(name, tail)
+    # heel pivot: a level hind paw keeps its rest orientation in body space, so when the body pitches up into
+    # the sentinel the paw would tip toes-up with it. Counter-rotate it by the sentinel pitch so the sole stays
+    # flat on the ground in the world (plantigrade, as a standing meerkat stands) while the shin rises over it
+    sp = SPECIES[meta.species]
+    if sp.default_pose == "sentinel":
+        for leg in meta.ik_targets:
+            if leg[1] == "H" and "H" in sp.level_feet:
+                bone(f"leg_{leg}_lo_foot", lambda p, t: [SENTINEL_PITCH * p.sentinel, 0.0, 0.0])
     # trunk: a pendulum that lags the step, curling a little at the tip
     for k, name in enumerate(meta.trunk_bones):
         bone(

@@ -25,7 +25,7 @@ Approved and locked at v3 (owner review 11-17): softer resting brows (they no lo
 ## Still open
 
 * Locked: changes now need your sign-off (design/tembo/approved.json).
-* Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet.
+* Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes.
 
 ## Runner-ups
 

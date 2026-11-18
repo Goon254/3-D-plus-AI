@@ -4,6 +4,13 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Cloud review 11-18 09:36 UTC ([review](docs/reviews/2026-11-18T0936Z.md), DECISIONS #70): no new notes from
+you, so fixes only. **Kiki's feet are fixed too**: her hind paws now pivot at the heel as she rises into the
+sentinel, so the soles stay flat on the ground (7.1 → 1.6 mm per stance). The foot check is now strict, and all five
+characters pass it. No designs changed. Scores: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. **Still waiting
+on you:** Kiki (which body on all fours: v5 per your note, or v4's) and Zuri (approve or notes). Laptop: re-render
+the stress takes and packets so the clips show the planted feet.
+
 Cloud review 11-18 06:36 UTC ([review](docs/reviews/2026-11-18T0636Z.md), DECISIONS #68, #69): no new notes from
 you, so fixes only. **Planted feet no longer skate**: each foot now hangs level from the ankle, and four of five pass
 (Tembo 77 → 21 mm, Zuri 61 → 9, Bibi 50 → 3, Neema 46 → 23); Kiki is 1 mm over on a hind paw. Stress reports are now
@@ -98,8 +105,10 @@ Next: the specs for SC 3–10, the film edit, SC 2 polish, then the full GPU ren
 
 ### Needs you
 
-* **Design stage: review the five packets in [`design/packets/`](design/packets/README.md)**: approve or give notes
-  on each one (Tembo and Neema are ready on the rubric; Zuri needs notes on her body plan, not approval). An
+* **Design stage: two packets left in [`design/packets/`](design/packets/README.md)** (Tembo, Neema and Bibi Kobe
+  are approved, v3): **Kiki** (which body on all fours: v5 per your note, or v4's) and **Zuri v3** (approve or
+  notes). The laptop should re-render the stress takes and packets first (`rig_stress_test.py --all`, then
+  `design_packet.py --all`) so the clips show the fixed feet (DECISIONS #69, #70). An
   `ANTHROPIC_API_KEY` would let the vision critic run live instead of relying on a reviewer's recorded critique.
 
 * *(Paused with film production until the packets and the animatic are approved.)* **Laptop session: render SC 2 at final quality** (now with the gag, eyelines and the new eyes) on the RTX 5060 (`python scripts/savannah_scene.py sc02 --quality

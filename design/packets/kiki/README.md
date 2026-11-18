@@ -28,7 +28,7 @@ v5 (owner review 11-17): soft, lighter brown eye patches instead of raccoon ring
 * Your call needed: the cloud reviewer (11-18) reads the lower, longer, hunched body on all fours as a weasel/mongoose from the side and prefers v4's shorter, higher-shouldered body. v5 follows your note; say which way.
 * Appeal 7: the critic still wants more charm in the face before 'ready'.
 * The patches are deliberately soft; at 96 px they read as shading round the eyes rather than a mask.
-* Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet.
+* Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes.
 
 ## Runner-ups
 
