@@ -609,6 +609,18 @@ class SeatPair(BaseModel):
     kind: Literal["eye", "skin"] = "eye"
 
 
+class OutlineProbe(BaseModel):
+    """Does ``target`` stay inside the outline of ``surfaces`` as seen from each of ``views`` (directions from the
+    figure toward an orthographic camera)? Per view, the share of the target's vertices whose sight line misses
+    every surface: 0 = the target is drawn entirely over the surfaces, 1 = entirely against the background. An
+    eye that breaks the head's outline is the "googly eye" class; a brow outside it floats as a dash."""
+
+    model_config = ConfigDict(extra="forbid")
+    target: str
+    surfaces: list[str] = Field(min_length=1)
+    views: list[tuple[float, float, float]] = Field(min_length=1, max_length=16)
+
+
 class SkinFoot(BaseModel):
     """A foot measured on the deformed skin, not on its bone: at ``ref_frame`` (else the first inspected frame)
     ``k`` vertices of ``meshes`` within ``radius`` of the tip of ``bone`` (``"armature:bone"``) are chosen
@@ -648,10 +660,13 @@ class Inspect(_Op):
     swim: list[str] = Field(default_factory=list)
     # report per frame the centroid and lowest point of each foot's skin vertices (foot slide on the skin)
     skin_feet: list[SkinFoot] = Field(default_factory=list)
+    # report per frame how much of each target lies outside its surfaces' outline, per view direction
+    outline: list[OutlineProbe] = Field(default_factory=list)
 
     def references(self) -> list[str]:
         refs = list(self.subjects) + ([self.camera] if self.camera else [])
         refs += [x for sp in self.seating for x in (sp.target, sp.surface)] + list(self.swim)
+        refs += [x for ol in self.outline for x in (ol.target, *ol.surfaces)]
         refs += [m for sf in self.skin_feet for m in sf.meshes] + [
             sf.bone.split(":", 1)[0] for sf in self.skin_feet
         ]

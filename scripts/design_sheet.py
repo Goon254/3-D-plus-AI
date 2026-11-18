@@ -33,6 +33,7 @@ from animatica.creatures.build import build_creature  # noqa: E402
 from animatica.creatures.face import BROW_COLOR, face_keys, face_ops, refresh_rest  # noqa: E402
 from animatica.creatures.gait import GAITS, Waypoint  # noqa: E402
 from animatica.creatures.perform import walk_keys  # noqa: E402
+from animatica.creatures.qa import outline_probe, outline_summary  # noqa: E402
 from animatica.creatures.species import SPECIES, Species  # noqa: E402
 from animatica.design.brief import Brief, all_briefs, load_brief  # noqa: E402
 from animatica.design.critic import critique_for  # noqa: E402
@@ -54,6 +55,7 @@ VIEWS = {  # camera direction from the subject (unit-ish), the animal faces -Y
     "three_quarter": (0.72, -0.72, 0.2),
     "back": (0.0, 1.0, 0.15),
 }
+FACE_DIR = (0.5, -1.0, 0.1)  # the face close-up's camera direction
 FACE_TRACK = [(0.0, "neutral"), (0.6, "happy"), (1.6, "surprised")]
 FACE_FRAMES = {"neutral": 8, "happy": 35, "surprised": 59}
 
@@ -173,12 +175,18 @@ def render_views(
             ],
         )
         aim, r = extents(sp, meta)
+        # the eyes and brows against the head's outline, from the sheet's own directions (face close-up included)
+        brows = [b["id"] for b in face["brows"].values()]
+        # (not the back view: there the ears, neck or shell stand in front of the head, and nobody reads a face)
+        ol_views = {k: v for k, v in VIEWS.items() if k != "back"} | {"face": FACE_DIR}
+        q = _run(eng, "outline", [outline_probe(meta, brows, ol_views, FACE_FRAMES["neutral"])])
+        outline = outline_summary(q["inspect"], list(ol_views), list(meta.eyes), brows)
         for tag, direction in VIEWS.items():
             _cam(eng, tag, aim, direction, r)
             paths[tag] = _render(eng, tag, FACE_FRAMES["neutral"], out)
         head = (0.0, sp.head_at[1], meta.head_height + sp.head_size[2] * 0.12)
         hr = max(sp.head_size) * 0.8 + (0.12 * max(sp.head_size) if sp.ear[0] == "disc" else 0.0)
-        _cam(eng, "face", head, (0.5, -1.0, 0.1), hr)
+        _cam(eng, "face", head, FACE_DIR, hr)
         for expr, f in FACE_FRAMES.items():
             paths[f"face_{expr}"] = _render(eng, f"face_{expr}", f, out)
         if sp.default_pose != "stand":  # the signature pose (the meerkat's sentinel), side on
@@ -190,7 +198,19 @@ def render_views(
             )
             c = q["inspect"]["frames"][str(FACE_FRAMES["neutral"])]["subjects"][meta.root]["center"]
             _cam(eng, "pose", (0.0, c[1], c[2]), VIEWS["side"], r * 1.3)
+            q = _run(
+                eng,
+                "outline_pose",
+                [outline_probe(meta, brows, {"pose": VIEWS["side"]}, FACE_FRAMES["neutral"])],
+            )
+            pose = outline_summary(q["inspect"], ["pose"], list(meta.eyes), brows)
+            outline["views"]["pose"] = pose["views"]["pose"]
+            for k in ("eye", "brow"):
+                if pose[k] > outline[k]:
+                    outline[k], outline[f"{k}_view"] = pose[k], "pose"
             paths["pose"] = _render(eng, "pose", FACE_FRAMES["neutral"], out)
+    # written next to the views, so --rescore scores the same render with the same measurement
+    (out / "outline.json").write_text(json.dumps(outline, indent=1) + "\n", encoding="utf-8")
     return paths
 
 
@@ -307,6 +327,9 @@ def sheet_for(
     img = sheet_metrics(side_sil, views["side"])
     if "pose" in views:  # a detached part in the signature pose counts too (Kiki's sentinel tail, v2-v3)
         img["floating_parts"] = max(img["floating_parts"], floating_parts(load_mask(sil)))
+    ol_path = out / "outline.json"
+    if ol_path.exists():  # renders made before the outline check have none: the check is then not scored
+        img["outline"] = json.loads(ol_path.read_text(encoding="utf-8"))
     for expr in ("happy", "surprised"):
         img[f"expression_{expr}"] = expression_change(views["face_neutral"], views[f"face_{expr}"])
     pre = score(brief, sp, img, None).as_dict()

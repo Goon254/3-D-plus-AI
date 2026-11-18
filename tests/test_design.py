@@ -438,3 +438,35 @@ def test_a_mane_that_stops_short_of_the_poll_is_a_soft_failure():
     # a mane whose crest meets the back of the head (here: a head that reaches back over the crest's end) passes
     full = replace(z, head_size=(0.24, 0.95, 0.5))
     assert {c.id: c for c in score(brief, full).checks}["shape:mane_reach"].passed
+
+
+def test_eye_and_brow_outline_checks_pick_the_near_eye_and_the_worst_brow():
+    """Googly eyes and floating brow dashes (cloud reviews 11-18): the near eye is the smaller share of the pair
+    (in a 3/4 view the far eye peeking past the far cheek is a drawing convention), a brow counts at its worst."""
+    from animatica.creatures.qa import outline_summary
+    from animatica.design.rubric import BROW_OUTLINE_MAX, EYE_OUTLINE_MAX
+
+    rep = {
+        "frames": {
+            "8": {
+                "outline": {
+                    "eye_L": {"views": [0.0, 0.0, 0.0]},
+                    "eye_R": {"views": [0.0, 0.45, 0.0]},  # the far eye in the 3/4 view: ignored
+                    "brow_L": {"views": [0.0, 0.0, 0.0]},
+                    "brow_R": {"views": [0.0, 0.9, 0.0]},  # the far brow drawn against the backdrop
+                }
+            }
+        }
+    }
+    ol = outline_summary(rep, ["front", "three_quarter", "back"], ["eye_L", "eye_R"], ["brow_L", "brow_R"])
+    assert ol["eye"] == 0.0 and ol["brow"] == 0.9 and ol["brow_view"] == "three_quarter"
+    b, sp = load_brief("tembo"), SPECIES["elephant"]
+    checks = {c.id: c for c in score(b, sp, {"outline": ol}).checks}
+    assert checks["face:eye_outline"].passed and not checks["face:brow_outline"].passed
+    assert not checks["face:brow_outline"].hard and "floats" in checks["face:brow_outline"].message
+    # a bug-eyed front view (both eyes outside the outline) fails the eye check
+    bug = {"eye": EYE_OUTLINE_MAX + 0.1, "eye_view": "front", "brow": BROW_OUTLINE_MAX, "brow_view": "front"}
+    checks = {c.id: c for c in score(b, sp, {"outline": bug}).checks}
+    assert not checks["face:eye_outline"].passed and checks["face:brow_outline"].passed
+    # a render made before the check has no outline: not scored
+    assert not any(c.id.endswith("_outline") for c in score(b, sp, {"floating_parts": 0}).checks)

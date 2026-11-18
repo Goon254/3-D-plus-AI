@@ -11,6 +11,10 @@
   scales) must not move as the rig deforms: p95 drift under :data:`SWIM_P95` metres. Coats that read
   ``rest_position`` measure 0; Object coordinates (the deformed position) measure the full body motion.
 
+* outline (design sheets, :func:`outline_probe` / :func:`outline_summary`): how much of each eye and brow is drawn
+  outside the head's outline from each sheet view. A near eye that breaks the outline is the googly-eye class; a
+  brow outside it reads as a dash floating in the air (cloud reviews 11-18 15:36, 18:36, 21:36).
+
 ``rig_probe`` builds the ``inspect`` op; ``rig_checks`` turns its report into :class:`~animatica.agents.critic.Issue`.
 """
 
@@ -141,3 +145,43 @@ def rig_checks(
         "swim_p95_mm": {k: round(v * 1000, 2) for k, v in swim.items()},
     }
     return issues, summary
+
+
+def outline_probe(
+    meta: CreatureMeta, brows: list[str], views: dict[str, tuple[float, float, float]], frame: int = 1
+) -> dict[str, Any]:
+    """An ``inspect`` op measuring, from each of ``views`` (name -> direction toward the camera), the share of each
+    eye and brow that lies outside the head surface's outline."""
+    surf = meta.head_surface or f"{meta.cid}_body"
+    return {
+        "op": "inspect",
+        "subjects": [meta.root],
+        "frames": [frame],
+        "outline": [
+            {"target": t, "surfaces": [surf], "views": [list(v) for v in views.values()]}
+            for t in list(meta.eyes) + list(brows)
+        ],
+    }
+
+
+def outline_summary(
+    report: dict[str, Any], views: list[str], eyes: list[str], brows: list[str]
+) -> dict[str, Any]:
+    """Per view: the near eye's share outside the head's outline (the smaller of the two: in a 3/4 view the far
+    eye peeking past the far cheek is a drawing convention) and the worst brow's. ``eye`` / ``brow`` are the
+    worst over the views, with the view named."""
+    fr = next(iter(report["frames"].values()))["outline"]
+    out: dict[str, Any] = {"views": {}}
+    worst = {"eye": (0.0, ""), "brow": (0.0, "")}
+    for i, name in enumerate(views):
+        e = [fr[t]["views"][i] for t in eyes if t in fr]
+        b = [fr[t]["views"][i] for t in brows if t in fr]
+        row = {"eye": min(e) if e else 0.0, "brow": max(b) if b else 0.0}
+        out["views"][name] = row
+        for k in worst:
+            if row[k] > worst[k][0]:
+                worst[k] = (row[k], name)
+    for k, (v, name) in worst.items():
+        out[k] = round(v, 3)
+        out[f"{k}_view"] = name
+    return out

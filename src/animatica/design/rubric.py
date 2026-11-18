@@ -14,7 +14,10 @@ Checks, each with a weight:
 * **silhouette** (from a rendered sheet, :mod:`.image_checks`) — the side view shows a neck notch between head
   and shoulders (hard: the melted-head class); no floating parts (hard); no large dark blob (hard).
 * **face** — each expression (happy, surprised) visibly changes ≥ 3 % of the face close-up (soft: a weak
-  expression lowers the score but needs a face-rig edit, not a morph).
+  expression lowers the score but needs a face-rig edit, not a morph). From the sheet's Blender session
+  (``outline``): the near eye stays inside the head's outline in every sheet view (soft, :data:`EYE_OUTLINE_MAX`:
+  the googly-eye class) and no brow is drawn beside the head (soft, :data:`BROW_OUTLINE_MAX`: the floating-dash
+  class).
 * **species read** (from the vision critic, :mod:`.critic`) — the silhouette and the 96 px thumbnail are each
   named as the species unprompted (hard).
 
@@ -41,6 +44,8 @@ HARD_PENALTY = 1.5
 MANE_STAND_MAX = 0.6  # crest height above the skin / the neck's depth there
 MANE_JAG_MAX = 0.2  # biggest crest step between neighbouring stations / the tallest crest
 MANE_REACH_MIN = 0.85  # share of withers -> poll the mane's crest must cover (a zebra's runs to the poll)
+EYE_OUTLINE_MAX = 0.08  # share of the near eye drawn outside the head's outline, any sheet view (Tembo: 0.02)
+BROW_OUTLINE_MAX = 0.25  # share of a brow drawn outside the head's outline, any sheet view
 HOOF_TAPER_MAX = 0.85  # coronet width / sole width
 HOOF_WALL_MAX = 72.0  # front wall angle from the ground, degrees
 
@@ -292,6 +297,27 @@ def _image_checks(brief: Brief, img: dict[str, Any]) -> list[Check]:
                 None if ok else {"lift_dark": 0.7},
             )
         )
+    ol = img.get("outline")
+    if ol:
+        for part, limit, what in (
+            ("eye", EYE_OUTLINE_MAX, "the eye bulges out of the head (googly)"),
+            ("brow", BROW_OUTLINE_MAX, "the brow floats as a dash beside the head"),
+        ):
+            v = float(ol[part])
+            ok = v <= limit
+            out.append(
+                Check(
+                    f"face:{part}_outline",
+                    "face",
+                    ok,
+                    False,
+                    0.5,
+                    0.5 if ok else 0.5 * max(0.0, 1.0 - (v - limit) / max(limit, 1e-6)),
+                    f"{part} {v:.0%} outside the head's outline ({ol.get(f'{part}_view') or 'any'} view; max {limit:.0%})"
+                    + ("" if ok else f": {what}"),
+                    v,
+                )
+            )
     for expr in ("happy", "surprised"):
         k = f"expression_{expr}"
         if k in img:

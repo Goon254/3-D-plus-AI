@@ -628,3 +628,50 @@ def test_skin_feet_follow_the_skin_not_the_bone(fresh):
     assert a["n"] == b["n"] == 4  # the four bottom corners of the near cube, none of the far one
     assert a["min_z"] == pytest.approx(0.0, abs=1e-3)
     assert b["c"][0] - a["c"][0] == pytest.approx(0.3, abs=1e-3)
+
+
+@pytest.mark.blender
+def test_outline_measures_what_is_drawn_outside_the_head(fresh):
+    """``inspect.outline``: an eye seated in the face stays inside the head's outline from the front; an eye
+    perched on the crown and a brow hovering beside the head are drawn against the background."""
+    run(
+        fresh,
+        {"op": "create_primitive", "id": "head", "shape": "uv_sphere", "radius": 0.2, "segments": 48},
+        {
+            "op": "create_primitive",
+            "id": "seated",
+            "shape": "uv_sphere",
+            "radius": 0.04,
+            "location": [0.08, -0.17, 0.05],
+        },
+        {
+            "op": "create_primitive",
+            "id": "crown",
+            "shape": "uv_sphere",
+            "radius": 0.04,
+            "location": [0, 0, 0.21],
+        },
+        {
+            "op": "create_primitive",
+            "id": "brow",
+            "shape": "cube",
+            "size": [0.06, 0.01, 0.01],
+            "location": [0.3, 0, 0],
+        },
+    )
+    views = [[0, -1, 0], [1, 0, 0]]
+    rep = run(
+        fresh,
+        {
+            "op": "inspect",
+            "subjects": ["head"],
+            "frames": [1],
+            "outline": [
+                {"target": t, "surfaces": ["head"], "views": views} for t in ("seated", "crown", "brow")
+            ],
+        },
+    ).data["inspect"]["frames"]["1"]["outline"]
+    assert rep["seated"]["views"][0] == 0.0  # from the front: drawn over the face
+    assert rep["crown"]["views"][0] > 0.4 and rep["crown"]["views"][1] > 0.4  # pokes out of the top
+    assert rep["brow"]["views"][0] == 1.0  # beside the head from the front
+    assert rep["brow"]["views"][1] == 0.0  # from the side it is drawn over the head

@@ -307,6 +307,46 @@ class RenderOps:
                     out[pr["target"]] = {"gap": round(best, 5), "size": round(size, 5)}
         return out
 
+    def _outline(self, probes: list[dict]) -> dict:
+        """Per probe and view: the share of the target's (deformed) vertices whose sight line, parallel to the
+        view direction, misses every surface, i.e. the part of the target drawn outside the surfaces' outline
+        by an orthographic camera looking from that direction."""
+        dg = bpy.context.evaluated_depsgraph_get()
+        trees: dict = {}
+        out = {}
+        for pr in probes:
+            surfs = []
+            for sid in pr["surfaces"]:
+                so = self.obj(sid)
+                if so.name not in trees:
+                    trees[so.name] = self._surface_tree(so, dg)
+                surfs.append((trees[so.name], so.evaluated_get(dg).matrix_world.inverted()))
+            oe = self.obj(pr["target"]).evaluated_get(dg)
+            me = oe.to_mesh()
+            mw = oe.matrix_world
+            step = max(1, len(me.vertices) // 400)
+            pts = [mw @ me.vertices[k].co for k in range(0, len(me.vertices), step)]
+            oe.to_mesh_clear()
+            shares = []
+            for v in pr["views"]:
+                d = mathutils.Vector(v).normalized()
+                reach = 50.0
+                miss = 0
+                for p in pts:
+                    a, b = p + d * reach, p - d * reach  # the whole sight line through the point
+                    hit = False
+                    for tree, inv in surfs:
+                        la, lb = inv @ a, inv @ b
+                        seg = lb - la
+                        loc, *_ = tree.ray_cast(la, seg.normalized(), seg.length)
+                        if loc is not None:
+                            hit = True
+                            break
+                    miss += not hit
+                shares.append(round(miss / max(1, len(pts)), 3))
+            out[pr["target"]] = {"views": shares, "share": max(shares) if shares else 0.0}
+        return out
+
     def _swim(self, ids: list[str], ref: dict) -> dict:
         """How far each mesh's texture coordinates moved since the first inspected frame (metres in object
         space; p95 and max over a fixed vertex sample). A material that reads ``rest_position`` is pinned to
@@ -468,6 +508,8 @@ class RenderOps:
                 fr["seating"] = self._seating(op["seating"])
             if op.get("swim"):
                 fr["swim"] = self._swim(op["swim"], swim_ref)
+            if op.get("outline"):
+                fr["outline"] = self._outline(op["outline"])
             if op.get("skin_feet"):
                 fr["skin_feet"] = self._skin_feet(op["skin_feet"], feet_ref)
             if op.get("shape_key_target"):

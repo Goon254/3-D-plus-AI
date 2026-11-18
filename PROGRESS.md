@@ -4,6 +4,14 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Cloud review 11-18 21:36 UTC ([review](docs/reviews/2026-11-18T2136Z.md), DECISIONS #89): main is green again,
+and your 11-18 plan is now written down: all five designs are locked (Kiki v6, Zuri v4) and the final savannah render
+runs on the laptop, so the "please confirm" note from 18:36 is answered. **New automatic check**: eyes and brows are
+measured against the head's outline from every sheet view. It confirms what the reviews saw by eye: in the 3/4 view
+every character's far brow hangs in the air beside the head, and Zuri's and Neema's eyes bulge out of the head from
+the front. These are soft checks; no locked design was changed, and the fix waits for your next design pass. Scores:
+Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9.
+
 Cloud review 11-18 18:36 UTC ([review](docs/reviews/2026-11-18T1836Z.md)): reviewer only, since the laptop was active. **Main was red for four pushes** (a formatting check, and Kiki's stress report went stale with v6); both are fixed and everything passes. Kiki v6 and Zuri's brush mane pass every motion check. Looking at the sheets: Kiki v6 still reads as a mongoose on all fours (6), and Zuri's mane stops halfway up her neck (7). Scores: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 8. **Needs you:** the packets and this page still say Kiki and Zuri are waiting for you, while the laptop treats Stage 2 as pre-approved. Please confirm which designs and which animatic you've approved, so the gates are written down.
 
 Cloud review 11-18 15:36 UTC ([review](docs/reviews/2026-11-18T1536Z.md), DECISIONS #72): no new notes from
