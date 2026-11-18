@@ -4,6 +4,14 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Cloud review 11-18 06:36 UTC ([review](docs/reviews/2026-11-18T0636Z.md), DECISIONS #68, #69): no new notes from
+you, so fixes only. **Planted feet no longer skate**: each foot now hangs level from the ankle, and four of five pass
+(Tembo 77 → 21 mm, Zuri 61 → 9, Bibi 50 → 3, Neema 46 → 23); Kiki is 1 mm over on a hind paw. Stress reports are now
+tied to the design they measured, so stale ones can't pass, and the packets' index
+([`design/packets/README.md`](design/packets/README.md)) is generated, so it shows the current versions (it still
+said Kiki v4 / Zuri v2). Scores: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. **Still waiting on you:** Kiki
+(which body on all fours: v5 per your note, or v4's) and Zuri (approve or notes).
+
 Cloud review 11-18 03:36 UTC ([review](docs/reviews/2026-11-18T0336Z.md), DECISIONS #66): your notes arrived, and the
 laptop locked **Tembo, Neema and Bibi Kobe v3** (#65). Reviewer scores: Tembo 9, Neema 8, Bibi 8, Kiki v5 6 (reads as a
 weasel on all fours: a step back from v4), Zuri v3 7, tooling 8. Foot slide is now measured on the skin, not the IK

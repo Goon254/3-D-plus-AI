@@ -74,10 +74,10 @@
    "pairs": 724
   },
   "foot_plant": {
-   "travel": 0.00769,
-   "leg": "RF",
-   "start": 79,
-   "end": 85,
+   "travel": 0.00711,
+   "leg": "RH",
+   "start": 65,
+   "end": 72,
    "phases": 44
   },
   "worst_gap": {
@@ -187,8 +187,8 @@
    "id": "foot_plant",
    "passed": false,
    "hard": false,
-   "message": "a planted sole (skin) strays up to 7.7 mm within one stance (RF, frames 79-85; limit 6 mm, half the foot's radius) over 44 stance phases",
-   "value": 0.0077
+   "message": "a planted sole (skin) strays up to 7.1 mm within one stance (RH, frames 65-72; limit 6 mm, half the foot's radius) over 44 stance phases",
+   "value": 0.0071
   },
   {
    "id": "ground",
@@ -206,8 +206,8 @@
   }
  ],
  "fingerprint": {
-  "species": "83093ff218590b51",
-  "rig_code": "cacede4d4cff5cc3"
+  "species": "6d002de19a1b08fa",
+  "rig_code": "1403c59cd566a69f"
  },
  "passed": true
 }

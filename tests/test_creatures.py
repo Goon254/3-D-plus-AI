@@ -541,3 +541,36 @@ def test_planted_travel_catches_a_sole_that_creeps_under_the_per_frame_limit():
     # a foot that never stays planted for two frames is "not measured", not "perfect"
     lone = [{leg: k % 2 == 0 for leg in LEGS} for k in range(n)]
     assert planted_travel(lone, feet)["phases"] == 0
+
+
+def test_planted_feet_hang_level_from_the_ankle():
+    """Review 11-18 03:36: rigid hooves and pads rocked heel-to-toe about the ankle as the leg swept back, so a
+    planted sole skated 8-77 mm per stance. Each foot is now its own bone under the lower leg that keeps its rest
+    orientation (DECISIONS #69); hooves, pads and nails ride it, and skin-grown feet are rigid to it. The meerkat's
+    hind paws keep hinging (her heel carries the sentinel)."""
+    from animatica.creatures.build import build_creature
+    from animatica.creatures.species import SPECIES
+
+    for name, level in (("zebra", "FH"), ("elephant", "FH"), ("meerkat", "F")):
+        sp = SPECIES[name]
+        ops, meta = build_creature(name, sp)
+        arm = next(o for o in ops if o["op"] == "create_armature")
+        bones = {b["name"]: b for b in arm["bones"]}
+        for key in ("LF", "RF", "LH", "RH"):
+            foot = bones[f"leg_{key}_lo_foot"]
+            assert foot["parent"] == f"leg_{key}_lo" and foot["head"] == bones[f"leg_{key}_lo"]["tail"]
+            assert foot["inherit_rotation"] is (key[1] not in level), (name, key)
+            binds = [
+                o for o in ops if o["op"] == "bind_mesh_to_armature" and o["mesh"] == f"{meta.cid}_foot_{key}"
+            ]
+            assert all(b.get("bone") == f"leg_{key}_lo_foot" for b in binds)
+        body = next(
+            o
+            for o in ops
+            if o["op"] == "bind_mesh_to_armature" and o.get("auto") and o["mesh"].endswith("_body")
+        )
+        rigid_feet = [r["bone"] for r in body["rigid"] if r["bone"].endswith("_foot")]
+        if sp.foot[0] != "hoof":  # skin-grown feet: one rigid region per level foot
+            assert sorted(rigid_feet) == sorted(
+                f"leg_{k}_lo_foot" for k in ("LF", "RF", "LH", "RH") if k[1] in level
+            )

@@ -61,9 +61,9 @@
   ],
   "foot_slide_source": "skin",
   "foot_slide": {
-   "drift": 0.01287,
+   "drift": 0.00321,
    "leg": "RF",
-   "frame": 106,
+   "frame": 100,
    "pairs": 1277
   },
   "foot_slide_bone": {
@@ -73,10 +73,10 @@
    "pairs": 1277
   },
   "foot_plant": {
-   "travel": 0.07668,
-   "leg": "LH",
-   "start": 122,
-   "end": 139,
+   "travel": 0.02112,
+   "leg": "RF",
+   "start": 141,
+   "end": 165,
    "phases": 26
   },
   "worst_gap": {
@@ -169,15 +169,15 @@
    "id": "foot_slide",
    "passed": true,
    "hard": true,
-   "message": "worst planted-foot drift (skin) 12.9 mm per frame (RF at frame 106; limit 22 mm) over 1277 planted foot-frame pairs",
-   "value": 0.0129
+   "message": "worst planted-foot drift (skin) 3.2 mm per frame (RF at frame 100; limit 22 mm) over 1277 planted foot-frame pairs",
+   "value": 0.0032
   },
   {
    "id": "foot_plant",
-   "passed": false,
+   "passed": true,
    "hard": false,
-   "message": "a planted sole (skin) strays up to 76.7 mm within one stance (LH, frames 122-139; limit 60 mm, half the foot's radius) over 26 stance phases",
-   "value": 0.0767
+   "message": "a planted sole (skin) strays up to 21.1 mm within one stance (RF, frames 141-165; limit 60 mm, half the foot's radius) over 26 stance phases",
+   "value": 0.0211
   },
   {
    "id": "ground",
@@ -188,8 +188,8 @@
   }
  ],
  "fingerprint": {
-  "species": "826d5bc5c3c75679",
-  "rig_code": "cacede4d4cff5cc3"
+  "species": "93199cdf95f7c8ec",
+  "rig_code": "1403c59cd566a69f"
  },
  "passed": true
 }

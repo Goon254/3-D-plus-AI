@@ -72,6 +72,8 @@ class Species:
     nails: int = 0  # toenails/claws on each skin-grown foot
     shell: tuple[V3, V3] | None = None  # (size, centre) of a tortoise carapace
     default_pose: str = "stand"  # "sentinel": the meerkat stands up when it stops
+    # legs ("F" fore, "H" hind) whose feet stay level while planted instead of rocking with the shin (#69)
+    level_feet: str = "FH"
     # a soft dark patch painted on the skin around and behind each eye: (colour, strength)
     eye_patch: tuple[str, float] | None = None
     separate_head: bool = False  # sculpt the head as its own mesh on the head bone (no melting into the body)
@@ -432,6 +434,9 @@ SPECIES: dict[str, Species] = {
         patch_soft=0.4,  # a softer edge than v4's 0.28 (rings), still dark enough to read round the eye
         smooth=1.0,
         default_pose="sentinel",
+        # the hind paws hinge at the heel as she rises into the sentinel and drops back: a level hind paw
+        # tore the heel skin there (planted drift 5.9 mm/frame), so only the fore paws stay level (#69)
+        level_feet="F",
     ),
     # Leopard tortoise elder: a high-domed carapace of geometric scutes (dark heart and growth rings in each
     # plate); thick, scaly, elephant-like legs; a wise old head on an extendable neck.

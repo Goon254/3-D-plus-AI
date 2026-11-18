@@ -11,7 +11,10 @@ that raised it.
 
 ## P0-DESIGN — DESIGN_STAGE.md (owner's top priority; film production paused)
 
-**Status 11-18 03:36: the owner replied. Tembo, Neema and Bibi Kobe v3 are approved and locked (#65); Kiki v5 and
+**Status 11-18 06:36: no new owner reply (Kiki v5, Zuri v3 waiting). Fixes only: stress reports are fingerprinted
+(#68), the packets' index is generated (#68), and planted feet hang level from the ankle (#69): `foot_plant` passes
+for four of five (Tembo 77 → 21 mm, Zuri 61 → 9, Bibi 50 → 3, Neema 46 → 23; Kiki 7.1 vs 6). Scores: Tembo 9, Neema 8,
+Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 06:36](reviews/2026-11-18T0636Z.md)** Status 11-18 03:36: the owner replied. Tembo, Neema and Bibi Kobe v3 are approved and locked (#65); Kiki v5 and
 Zuri v3 are on main and waiting. Review: Tembo 9, Neema 8, Bibi 8, Kiki 6 (weasel on all fours), Zuri 7, tooling 8.
 Foot slide is now measured on the skin (#66), and every planted sole skates 8–77 mm within a stance (rigid hooves and
 feet rock about the ankle). — [review 11-18 03:36](reviews/2026-11-18T0336Z.md)** Status 11-18 00:36: no owner reply yet; one small tooling fix (#64), scores unchanged. Status 11-17 21:36: no owner reply yet; stress reports refreshed (#63). Status 11-17 18:36: the five packets are in [`design/packets/`](../design/packets/README.md) and with the owner. Build no new
@@ -28,11 +31,21 @@ packet still shows the old ears. — [review 11-17 18:36](reviews/2026-11-17T183
   *Cloud 11-17 21:36: (2) done: `--all --no-render` re-ran on CPU; every report has `part_float` and all five pass through
   the whole take ✔. (3) done (DECISIONS #63): `foot_slide` counts planted foot-frame pairs (710–1443 per character) and
   fails on zero ✔. Left for the laptop: (1) and (4).* — [review 11-17 21:36](reviews/2026-11-17T2136Z.md)
-- [ ] **Planted feet skate (rig)**: `foot_plant` (soft) fails for all five: a sole strays 7.7 (Kiki) to 77 mm (Tembo) within
+- [ ] **Laptop: re-render the stress takes and packets after #69** (`rig_stress_test.py --all`, then
+  `design_packet.py --all`): the packet clips still show skating feet. Pull before rendering the animatic.
+  — [review 11-18 06:36](reviews/2026-11-18T0636Z.md)
+- [ ] **Kiki's hind heel**: her hind paws still hinge with the shin (a level hind paw tore the heel skin in the
+  sentinel rise), so `foot_plant` is 7.1 mm against 6. Give the hind paw a heel pivot (level in the walk, hinged in
+  the sentinel), then make `foot_plant` hard for all. — [review 11-18 06:36](reviews/2026-11-18T0636Z.md)
+- [x] **Planted feet skate (rig)**: `foot_plant` (soft) fails for all five: a sole strays 7.7 (Kiki) to 77 mm (Tembo) within
   one stance, because the rigid hoof or pad rocks about the ankle as the leg sweeps back (Workbench strip in the review).
   Add a foot/hoof bone that keeps the sole level and pinned while planted and lets the pastern/ankle flex. Then make
   `foot_plant` hard. — [review 11-18 03:36](reviews/2026-11-18T0336Z.md)
-- [ ] **Seat the v3 brows**: `brow_float` (soft) 21 % on Neema and 13 % on Zuri through the take. The brows are also
+  *Done 11-18 06:36 (cloud, DECISIONS #69): a level foot bone per leg (`inherit_rotation` off); four of five pass
+  (21, 23, 3.2, 8.9 mm); Workbench strips of Zuri's hoof and Tembo's pad confirm it. Kiki is split out above;
+  `foot_plant` stays soft until then.* — [review 11-18 06:36](reviews/2026-11-18T0636Z.md)
+- [ ] **Seat the v3 brows** (*motion part verified 11-18 06:36: `brow_float` passes for all five after the
+  laptop's BROW_SINK; Neema re-sheeted with hooves ✔. Left: the brows barely read in Neema's and Tembo's front views*): `brow_float` (soft) 21 % on Neema and 13 % on Zuri through the take. The brows are also
   visibly detached dashes in the Tembo and Neema front views. Re-sheet Neema (her sheet predates the hoof mesh).
   — [review 11-18 03:36](reviews/2026-11-18T0336Z.md)
 - [ ] **Kiki v6**: v5 reads as a weasel or mongoose on all fours (long low body, hunched back with three lumps, long
@@ -40,9 +53,12 @@ packet still shows the old ears. — [review 11-17 18:36](reviews/2026-11-17T183
   Keep v5's soft patches. — [review 11-18 03:36](reviews/2026-11-18T0336Z.md)
 - [ ] **Zuri v3 polish**: soften the saw-tooth mane into a brush, seat the brows, sink the eyes into the head's sides,
   and make happy read (lighter mouth or lip line on the dark muzzle). — [review 11-18 03:36](reviews/2026-11-18T0336Z.md)
-- [ ] **Stale stress reports**: store a hash of the species snapshot in `rig_stress.json`, and have the sheet or a test
+- [x] **Stale stress reports**: store a hash of the species snapshot in `rig_stress.json`, and have the sheet or a test
   refuse "ready" when it doesn't match (the #65 brows slipped through because nothing re-ran it).
   — [review 11-18 03:36](reviews/2026-11-18T0336Z.md)
+  *Done 11-18 06:36 (cloud, DECISIONS #68): `rig_stress.json` stores species and rig-code fingerprints; the
+  rubric's `motion:fresh` (hard) and `motion:fresh_code` (soft); a test fails on a stale report. The packets' index
+  is generated from the packets too.* — [review 11-18 06:36](reviews/2026-11-18T0636Z.md)
 - [x] **`foot_slide` on the skin** (tooling): the probe read the IK-pinned lower-leg bone tail, so 0.0 mm mostly proved
   the IK reached its target. — [review 11-17 21:36](reviews/2026-11-17T2136Z.md)
   *Done 11-18 03:36 (cloud, DECISIONS #66): `inspect skin_feet` follows each sole's vertices; `foot_slide` runs on the

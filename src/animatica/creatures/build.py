@@ -212,6 +212,7 @@ def build_creature(
     slack = 1e9
     leg_pts: dict[str, tuple[V3, V3, V3]] = {}
     joints: dict[str, tuple[float, float, float, float]] = {}
+    foot_rigid: list[dict[str, Any]] = []  # skin-grown feet follow their level foot bones
     for key in LEG_KEYS:
         side = 1 if key[0] == "L" else -1
         fore = key[1] == "F"
@@ -226,10 +227,21 @@ def build_creature(
         K: V3 = _add(mid, (0.0, -bend if fore else bend, 0.0))
         if abs(F[0] - J[0]) > 0.02:  # splayed (tortoise forelegs): the elbow also goes outward
             K = _add(K, (0.35 * bend * side, 0.0, 0.0))
-        up, lo = f"leg_{key}_up", f"leg_{key}_lo"
+        up, lo, ft = f"leg_{key}_up", f"leg_{key}_lo", f"leg_{key}_lo_foot"
+        level = key[1] in sp.level_feet
         bones += [
             {"name": up, "head": _r(J), "tail": _r(K), "parent": "chest" if fore else "hips"},
             {"name": lo, "head": _r(K), "tail": _r(F), "parent": up},
+            # the foot hangs from the ankle but keeps its rest orientation: a planted sole stays level instead
+            # of rocking heel-to-toe about the ankle as the leg sweeps back (foot_plant, DECISIONS #69). Its name
+            # extends the lower leg's, so colour regions keyed on "leg_*_lo" still cover the foot
+            {
+                "name": ft,
+                "head": _r(F),
+                "tail": _r((F[0], F[1], F[2] - max(sp.foot[2], 0.02))),
+                "parent": lo,
+                "inherit_rotation": not level,
+            },
         ]
         chain_len = _len(_sub(K, J)) + _len(_sub(F, K))
         joints[key] = (J[0], J[1], J[2], chain_len)
@@ -268,6 +280,15 @@ def build_creature(
             )
         shape, fr, fh = sp.foot
         if organic and shape != "hoof":
+            if level:  # the skin-grown foot rides the level foot bone, blending into the shin above the ankle
+                foot_rigid.append(
+                    {
+                        "bone": ft,
+                        "center": _r((F[0], F[1] - fr * 0.1, F[2] - fh * 0.5)),
+                        "radii": _r((fr * 1.25, fr * 1.4, fh * 0.8)),
+                        "falloff": 0.45,
+                    }
+                )
             # skin-grown foot; elephants and tortoises get toenails/claws on the front of it
             for t in range(sp.nails):
                 u = (t - (sp.nails - 1) / 2) / max(1, sp.nails - 1)
@@ -290,7 +311,7 @@ def build_creature(
                             "segments": 16,
                         },
                         "nail",
-                        lo,
+                        ft,
                     )
                 )
             poles.append((key, _add(K, (0.0, -d if fore else d, 0.0))))
@@ -305,7 +326,7 @@ def build_creature(
                 "location": _r((F[0], F[1] - fr * 0.15, F[2] - fh)),
                 "smooth": True,
             }
-            meshes.append((hoof_op, "foot", lo))
+            meshes.append((hoof_op, "foot", ft))
             poles.append((key, _add(K, (0.0, -d if fore else d, 0.0))))
             continue
         foot_op: dict[str, Any] = {
@@ -317,7 +338,7 @@ def build_creature(
             "segments": 24,
         }
         foot_op["size"] = [fr * 2, fr * 2.1, fh] if shape != "paw" else [fr * 2, fr * 3, fh * 1.6]
-        meshes.append((foot_op, "foot", lo))
+        meshes.append((foot_op, "foot", ft))
         poles.append((key, _add(K, (0.0, -d if fore else d, 0.0))))
 
     def chain(prefix: str, ch: Chain, parent: str) -> list[str]:
@@ -765,7 +786,8 @@ def build_creature(
                         }
                     ]
                 )
-                + rump_rigid(sp),
+                + rump_rigid(sp)
+                + foot_rigid,
             },
             {
                 "op": "set_material_by_bone",

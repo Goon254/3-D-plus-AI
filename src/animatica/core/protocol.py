@@ -455,6 +455,9 @@ class Bone(BaseModel):
     head: Vec3
     tail: Vec3
     parent: str | None = None
+    # False: the bone keeps its rest orientation in armature space whatever its parent does (a planted foot
+    # stays level while the leg above it sweeps, DECISIONS #69); it still follows the parent's tail
+    inherit_rotation: bool = True
 
 
 class CreateArmature(_Placed):

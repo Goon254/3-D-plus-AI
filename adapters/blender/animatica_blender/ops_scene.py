@@ -233,6 +233,7 @@ class SceneOps:
                     if b["parent"] not in made:
                         raise OpError(f"bone parent {b['parent']!r} must be defined before {b['name']!r}")
                     eb.parent = made[b["parent"]]
+                eb.use_inherit_rotation = bool(b.get("inherit_rotation", True))
                 made[b["name"]] = eb
         finally:
             bpy.ops.object.mode_set(mode="OBJECT")
