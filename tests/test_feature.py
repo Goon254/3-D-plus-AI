@@ -73,3 +73,32 @@ def test_casting_gives_every_character_a_distinct_voice():
     many = {"cast": [{"id": f"t{i}", "species": "tortoise", "personality": "old and wise"} for i in range(5)]}
     keys = [(c["voice"], c["pitch"]) for c in cast_voices(many)["cast"].values()]
     assert len(set(keys)) == len(keys)
+
+
+def test_the_planned_scenes_load_schedule_and_pass_continuity():
+    from animatica.feature.planner import check_plan, plan_scenes
+    from animatica.production.scene import scene_from_dict
+
+    prem, play = write_story(IDEA, ScriptedProvider())
+    plan = plan_scenes(play, prem)
+    assert [s["id"] for s in plan["scenes"]] == [s["id"] for s in play["scenes"]]
+    assert check_plan(plan) == []
+    for d in plan["scenes"]:
+        spec = scene_from_dict(d)
+        speakers = {ln.who for ln in spec.lines} - {"narrator"}
+        assert speakers <= set(spec.cast)  # everyone who speaks is on stage
+        assert spec.shots[0].type == "ews" and spec.shots[-1].type == "ws"
+
+
+def test_the_full_flow_plans_scenes_after_the_design_gate(tmp_path):
+    film = tmp_path / "films" / "race"
+    run(film, IDEA, ScriptedProvider())
+    for c in json.loads((film / "01_premise.json").read_text(encoding="utf-8"))["cast"]:
+        (film / "design" / c["id"]).mkdir(parents=True)
+        (film / "design" / c["id"] / "approved.json").write_text("{}", encoding="utf-8")
+    run(film, None, ScriptedProvider())
+    assert not (film / "07_scenes.json").exists()  # the owner hasn't passed the design gate
+    approve(film, "design")
+    log = run(film, None, ScriptedProvider())
+    assert (film / "07_scenes.json").exists() and any(line.startswith("scenes: 5 planned") for line in log)
+    assert next_stage(film).name == "animatic"

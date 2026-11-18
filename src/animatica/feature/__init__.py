@@ -16,7 +16,7 @@ NEXT_STEP = {
     "design": "run the design loop for each character (scripts/design_loop.py, design_packet.py) and approve "
     "the packets; then `animatica feature --film {film} --approve design`",
     "voices": "casting runs on the next `animatica feature` call",
-    "scenes": "the scene planner (07_scenes.json) is not automated yet (docs/FEATURE_MODE.md, next pieces)",
+    "scenes": "the scene planner runs on the next `animatica feature` call (after the design gate)",
     "animatic": "render the animatic and review it; then `animatica feature --film {film} --approve animatic`",
     "production": "render the final scenes (resumable) and mix the film",
 }
@@ -53,6 +53,23 @@ def run(film: Path, idea: str | None, llm) -> list[str]:  # noqa: ANN001 - core.
         v = cast_voices(prem)
         (film / "06_voices.json").write_text(json.dumps(v, indent=1) + "\n", encoding="utf-8")
         log.append("voices: " + ", ".join(f"{k} = {c['voice']}" for k, c in v["cast"].items()))
+    st = next_stage(film)
+    if (
+        st is not None and st.name == "scenes"
+    ):  # after the design gate: plan the scenes, checked for continuity
+        from .planner import check_plan, plan_scenes
+
+        prem = json.loads((film / "01_premise.json").read_text(encoding="utf-8"))
+        play = json.loads((film / "04_screenplay.json").read_text(encoding="utf-8"))
+        plan = plan_scenes(play, prem)
+        errs = check_plan(plan)
+        if errs:
+            log.append("scenes: the plan fails continuity, not written: " + "; ".join(errs[:5]))
+        else:
+            (film / "07_scenes.json").write_text(json.dumps(plan, indent=1) + "\n", encoding="utf-8")
+            log.append(
+                f"scenes: {len(plan['scenes'])} planned, {sum(len(s['shots']) for s in plan['scenes'])} shots"
+            )
     for s in status(film):
         log.append(
             f"  {s.name:<11} {s.state}{'' if s.done else '  (' + s.missing + ')' if s.missing else ''}"

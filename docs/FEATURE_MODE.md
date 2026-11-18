@@ -70,8 +70,11 @@ Later (not in the first pieces): a `feature.critique` pass that scores the draft
 4. ~~Casting step~~ **done** (`animatica.feature.casting`): a register per character from personality, then
    species (big & young, tall & gentle, fast & bright, small & quick, old & slow), each with two tested stock
    blends; no two characters share a voice (a semitone apart if a register runs out). Runs with the story.
-5. Scene planner: screenplay → `07_scenes.json` (layout per place, blocking from beats, shot list),
-   validated by the continuity checker.
+5. ~~Scene planner~~ **first pass done** (`animatica.feature.planner`): per scene a layout for its time of
+   day, the speaking cast in a shallow arc opening toward the cameras, each line addressed to the previous
+   speaker, moods as expressions with a listener reacting, a species call at the first line, and shots cut on the
+   lines (establishing EWS, a close shot sized by species, a two-shot on exchanges, a closing WS). The plan is
+   continuity-checked before it is written. Next: a director pass (LLM) for blocking and gestures from the beats.
 6. Generalise `savannah_scene.py` / `savannah_animatic.py` to take a film folder (today they read
    `films/savannah`).
 7. Production stage: the final render loop with per-scene resume, mix, web copy.
