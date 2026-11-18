@@ -78,19 +78,21 @@ SKY: dict[str, dict[str, Any]] = {
         "cloud": "#F7A88A",
     },
     "night": {
-        "haze": "#1E2A4E",
-        "hills": "#1A2240",
-        "zenith": "#060A1E",
-        "horizon": "#1C2850",
-        "glow": "#2A3666",
-        "elev": 35,
-        "az": 300,
-        "sun": "#9EB2FF",
-        "energy": 0.7,
-        "strength": 0.55,
+        "haze": "#2A3A68",
+        "hills": "#25305A",
+        "zenith": "#0C1434",
+        "horizon": "#2E4078",
+        "glow": "#4A5C96",
+        "elev": 24,
+        "az": 205,  # the moon low behind the action (cameras look toward +Y): a rim on every back and ear
+        "sun": "#C4D2FF",
+        "energy": 2.4,
+        "strength": 1.0,
         "stars": 1.0,
         "clouds": 0.0,
         "cloud": "#3A4670",
+        # night only: a soft cool fill from the camera side, so faces read in moonlight
+        "fill": ("#9DB0E8", 1.1),
     },
 }
 
@@ -476,6 +478,44 @@ def sky_ops(tod: str) -> list[dict[str, Any]]:
                 },
             ]
             if k["elev"] < 12 and tod != "night"
+            else []
+        ),
+        *(
+            [
+                {  # the moon: a big pale disc low in the sky behind the action
+                    "op": "create_primitive",
+                    "id": "moon_disc",
+                    "shape": "uv_sphere",
+                    "radius": 14.0,
+                    "segments": 32,
+                    "location": [
+                        round(math.sin(az) * math.cos(elev) * 420, 1),  # where the light comes from
+                        round(-math.cos(az) * math.cos(elev) * 420, 1),
+                        round(math.sin(elev) * 420, 1),
+                    ],
+                    "tags": ["set", "sky"],
+                },
+                {
+                    "op": "set_material",
+                    "targets": ["moon_disc"],
+                    "material": {
+                        "base_color": "#F2F4FF",
+                        "emission": "#EEF2FF",
+                        "emission_strength": 4.0,
+                        "name": "moon",
+                    },
+                },
+                {
+                    "op": "add_light",
+                    "id": "moon_fill",
+                    "light_type": "sun",
+                    "energy": k["fill"][1],
+                    "color": k["fill"][0],
+                    "size": 1.5,
+                    "rotation": [62.0, 0, 0.0],  # from the camera side (-Y), down onto the faces
+                },
+            ]
+            if tod == "night"
             else []
         ),
     ]

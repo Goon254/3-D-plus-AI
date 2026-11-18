@@ -19,6 +19,7 @@ BG_DUCK = 0.5  # -6 dB
 DUCK_ATTACK = 0.25  # seconds before a line the duck starts
 DUCK_RELEASE = 0.4
 DUCK_SMOOTH = 0.3
+MIN_CLARITY_DB = 12.0  # every line sits at least this far above everything else (owner: SC 10's narrator)
 
 
 def to_stereo(x: np.ndarray, sr: int) -> np.ndarray:
@@ -99,6 +100,28 @@ def mix_scene(
         bg += fit(steps, n, fade_in=0.0) * 0.8 * dip
     for t, sig in sfx or []:
         place(bg, t, sig, gain=0.9)
+    # every line clears the bed by MIN_CLARITY_DB: where music, steps and ambience still crowd a line (a long
+    # narration over a whole herd walking, SC 10), the bed dips further under that line, with smooth ramps
+    extra = np.ones(n, np.float32)
+    line_clarity = []
+    for s0, e0 in windows:
+        if e0 - s0 < SR // 10:
+            continue
+        c = db(voices[s0:e0]) - db(bg[s0:e0])
+        if c < MIN_CLARITY_DB:
+            g = 10 ** ((c - MIN_CLARITY_DB - 1.0) / 20)
+            r = int(0.3 * SR)
+            a0, b0 = max(0, s0 - r), min(n, e0 + r)
+            env = np.ones(b0 - a0, np.float32)
+            env[s0 - a0 : e0 - a0] = g
+            ramp_in = np.linspace(1.0, g, s0 - a0, dtype=np.float32)
+            env[: s0 - a0] = ramp_in
+            env[e0 - a0 :] = np.linspace(g, 1.0, b0 - e0, dtype=np.float32)
+            extra[a0:b0] = np.minimum(extra[a0:b0], env)
+    bg *= extra[:, None]
+    for s0, e0 in windows:
+        if e0 - s0 >= SR // 10:
+            line_clarity.append(db(voices[s0:e0]) - db(bg[s0:e0]))
     mix = bg + voices
     inside = duck > 0.99
     clarity = db(voices[inside]) - db(bg[inside]) if inside.any() else None
@@ -109,6 +132,7 @@ def mix_scene(
         "seconds": round(seconds, 3),
         "lines": len(lines),
         "dialogue_clarity_db": None if clarity is None else round(clarity, 1),
+        "min_line_clarity_db": round(min(line_clarity), 1) if line_clarity else None,
         "music_rms_db": None if music is None else round(db(fit(music, n)), 1),
         "peak": round(min(peak, 0.98), 3),
     }

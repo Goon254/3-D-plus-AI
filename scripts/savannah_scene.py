@@ -181,6 +181,18 @@ def main() -> int:
         grass_density=float(lay.get("grass_density", 14.0)),
     )
     ops = savannah_set(layout, spec.tod)
+
+    def prop_time(
+        k_,
+    ) -> float:  # [seconds, xyz] or {"line": i, "dt": s, "to": xyz} (timed off the voice take)
+        if isinstance(k_, dict):
+            ln_ = spec.lines[int(k_["line"])]
+            return (ln_.start if k_.get("from") == "start" else ln_.end) + float(k_.get("dt", 0.0))
+        return float(k_[0])
+
+    def prop_to(k_) -> list:
+        return list(k_["to"]) if isinstance(k_, dict) else list(k_[1])
+
     # simple props the set builder has no part for (the animatic's log and baobabs): primitives with a colour
     for k, pr in enumerate(lay.get("props", [])):
         pid = f"prop_{k}_{pr.get('name', pr['shape'])}"
@@ -208,9 +220,66 @@ def main() -> int:
                         "op": "insert_keyframes",
                         "target": pid,
                         "property": prop_,
-                        "keys": [[1 + int(t * fps), list(v), "BEZIER"] for t, v in pr[key]],
+                        "keys": [[1 + int(prop_time(k_) * fps), prop_to(k_), "BEZIER"] for k_ in pr[key]],
                     }
                 )
+    if lay.get("spring") and lay.get("water"):
+        # the singing spring (SC 9's payoff): the water lights up from inside, grows, and throws a cool glow
+        # on everyone around it, from the moment it bursts free
+        wx, wy, wr = lay["water"]
+        t_on = prop_time({**lay["spring"], "to": None})
+        f_on, f_full = 1 + int(t_on * fps), 1 + int((t_on + 2.5) * fps)
+        ops += [
+            # a glowing pool that rises over the old trickle (a separate disc: keying a material's emission on
+            # an embedded node tree doesn't work in the 5.x layered actions)
+            {
+                "op": "create_primitive",
+                "id": "spring_pool",
+                "shape": "cylinder",
+                "size": [2 * wr * 1.05, 2 * wr * 1.05, 0.02],
+                "location": [wx, wy, 0.03],
+                "segments": 48,
+                "smooth": True,
+            },
+            {
+                "op": "set_material",
+                "targets": ["spring_pool"],
+                "material": {
+                    "base_color": "#7FD8E6",
+                    "roughness": 0.05,
+                    "specular": 0.7,
+                    "emission": "#A8F4FF",
+                    "emission_strength": 2.4,
+                    "name": "spring_water",
+                },
+            },
+            {
+                "op": "insert_keyframes",
+                "target": "spring_pool",
+                "property": "scale",
+                "keys": [
+                    [1, [0.02, 0.02, 1.0], "BEZIER"],
+                    [f_on, [0.02, 0.02, 1.0], "BEZIER"],
+                    [f_on + 6, [0.35, 0.35, 1.0], "BEZIER"],
+                    [f_full, [1.0, 1.0, 1.0], "BEZIER"],
+                ],
+            },
+            {
+                "op": "add_light",
+                "id": "spring_glow",
+                "light_type": "point",
+                "energy": 0.0,
+                "color": "#A8F4FF",
+                "size": wr,
+                "location": [wx, wy, 0.6],
+            },
+            {
+                "op": "insert_keyframes",
+                "target": "spring_glow",
+                "property": "light.energy",
+                "keys": [[1, 15.0, "BEZIER"], [f_on, 15.0, "BEZIER"], [f_full, 380.0, "BEZIER"]],
+            },
+        ]
     for j, fl in enumerate(lay.get("birds", [])):  # flocks crossing the sky (life in the set)
         ops += bird_flock_ops(
             f"birds{j}",
@@ -520,14 +589,45 @@ def main() -> int:
     amb = ambience.bed(
         spec.ambience.get("tod", spec.tod), seconds, water=bool(spec.ambience.get("water")), seed=7
     )
+
+    # footsteps per species on every touchdown, placed from the camera on screen then (distance -> level,
+    # side -> pan), heavier for faster gaits; calls and SFX panned toward whoever makes them
+    def heard(t: float, xy: tuple[float, float]) -> tuple[float, float]:
+        sh = next((r for r in reversed(shot_report) if r["start"] <= t), shot_report[0])
+        cx, cy = sh["location"][0], sh["location"][1]
+        ax, ay = sh["aim"][0] - cx, sh["aim"][1] - cy
+        dn = math.hypot(ax, ay) or 1.0
+        rx, ry = ay / dn, -ax / dn  # the camera's right
+        dx, dy = xy[0] - cx, xy[1] - cy
+        d = math.hypot(dx, dy) or 1.0
+        return max(-0.85, min(0.85, (dx * rx + dy * ry) / d * 1.2)), min(1.0, 7.0 / (d + 3.0))
+
+    force = {"trot": 1.3, "canter": 1.5, "fast_walk": 1.15, "scurry": 1.0}
     steps = np.zeros((int(seconds * sound.SR), 2), np.float32)
     nsteps = 0
     for cid, actor in spec.cast.items():
         if actor.path:
-            td = ambience.touchdowns_from_plan(plans[cid], fps)
+            plan = plans[cid]
+            td, gains = [], []
+            for i in range(1, len(plan)):
+                for leg in plan[i].stance:
+                    if plan[i].stance[leg] and not plan[i - 1].stance[leg]:
+                        pan, g = heard(i / fps, plan[i].feet[leg][:2])
+                        td.append((i / fps, pan))
+                        gains.append(g)
             nsteps += len(td)
-            steps += ambience.footsteps_track(actor.species, td, seconds, seed=len(cid))
-    sfx = [(b.time(spec.lines), ambience.sfx(b.value, seed=j)) for j, b in enumerate(spec.sfx)]
+            steps += ambience.footsteps_track2(
+                actor.species, td, seconds, seed=len(cid), gains=gains, force=force.get(actor.gait, 1.0)
+            )
+    sfx = []
+    for j, b in enumerate(spec.sfx):
+        t = b.time(spec.lines)
+        pan, g = 0.0, 1.0
+        if b.who in plans:
+            p_ = plans[b.who][min(len(plans[b.who]) - 1, int(t * fps))]
+            pan, g = heard(t, p_.root[:2])
+            g = 0.45 + 0.55 * g
+        sfx.append((t, ambience.sfx(b.value, seed=j, pan=pan) * g))
     mix, mrep = sound.mix_scene(seconds, voices, music, amb, steps, sfx)
     composer.write_wav(out / "mix.wav", mix)
 

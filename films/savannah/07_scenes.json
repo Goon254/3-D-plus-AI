@@ -215,6 +215,11 @@
      "line": 1,
      "dt": 0.8,
      "kind": "drip"
+    },
+    {
+     "t": 12.5,
+     "kind": "zebra_bark",
+     "who": "zebra_b"
     }
    ],
    "shots": [
@@ -494,6 +499,16 @@
      "line": 0,
      "dt": 2.45,
      "kind": "splash"
+    },
+    {
+     "t": 1.3,
+     "kind": "trumpet",
+     "who": "tembo"
+    },
+    {
+     "t": 3.6,
+     "kind": "meerkat_chirp",
+     "who": "kiki"
     }
    ],
    "gestures": [
@@ -1100,6 +1115,25 @@
      "frame_h": 8.5,
      "note": "the five set off together, out to the right"
     }
+   ],
+   "sfx": [
+    {
+     "t": 3.2,
+     "kind": "tortoise_huff",
+     "who": "bibi_kobe"
+    },
+    {
+     "line": 8,
+     "dt": 0.05,
+     "kind": "meerkat_alarm",
+     "who": "kiki"
+    },
+    {
+     "line": 10,
+     "dt": 0.1,
+     "kind": "zebra_bark",
+     "who": "zuri"
+    }
    ]
   },
   {
@@ -1461,6 +1495,18 @@
      "side": -25,
      "note": "she smiles"
     }
+   ],
+   "sfx": [
+    {
+     "t": 5.7,
+     "kind": "zebra_bark",
+     "who": "zuri"
+    },
+    {
+     "t": 9.7,
+     "kind": "meerkat_alarm",
+     "who": "kiki"
+    }
    ]
   },
   {
@@ -1734,6 +1780,20 @@
      ],
      "line": 4
     }
+   ],
+   "sfx": [
+    {
+     "line": 1,
+     "dt": 0.6,
+     "kind": "zebra_bark",
+     "who": "zuri"
+    },
+    {
+     "line": 4,
+     "dt": 0.1,
+     "kind": "meerkat_alarm",
+     "who": "kiki"
+    }
    ]
   },
   {
@@ -1906,7 +1966,7 @@
    "lines": [
     {
      "who": "zuri",
-     "text": "Hellooo?",
+     "text": "Hello? Anybody?",
      "expr": [
       [
        0,
@@ -2102,6 +2162,14 @@
      ],
      "line": 5,
      "side": 25
+    }
+   ],
+   "sfx": [
+    {
+     "line": 0,
+     "dt": 0.7,
+     "kind": "zebra_bark",
+     "who": "zuri"
     }
    ]
   },
@@ -2372,6 +2440,14 @@
      ],
      "line": 3,
      "after": 0.2
+    }
+   ],
+   "sfx": [
+    {
+     "line": 0,
+     "dt": 0.5,
+     "kind": "tortoise_huff",
+     "who": "bibi_kobe"
     }
    ]
   },
@@ -2647,7 +2723,7 @@
        "proud"
       ]
      ],
-     "gap": 2.0
+     "gap": 3.2
     }
    ],
    "reactions": [
@@ -2752,6 +2828,13 @@
      ],
      "line": 5
     }
+   ],
+   "sfx": [
+    {
+     "t": 2.0,
+     "kind": "giraffe_hum",
+     "who": "neema"
+    }
    ]
   },
   {
@@ -2843,25 +2926,31 @@
       ],
       "color": "#5E4630",
       "moves": [
-       [
-        23.0,
-        [
+       {
+        "line": 2,
+        "dt": 0.3,
+        "to": [
          0.3,
          4.0,
          0.25
         ]
-       ],
-       [
-        25.0,
-        [
+       },
+       {
+        "line": 2,
+        "dt": 2.2,
+        "to": [
          2.6,
          5.0,
          0.25
         ]
-       ]
+       }
       ]
      }
-    ]
+    ],
+    "spring": {
+     "line": 2,
+     "dt": 2.0
+    }
    },
    "ambience": {
     "tod": "night",
@@ -3058,13 +3147,30 @@
    "sfx": [
     {
      "line": 2,
-     "dt": 0.3,
-     "kind": "splash"
+     "dt": 0.2,
+     "kind": "log_creak"
+    },
+    {
+     "line": 2,
+     "dt": 2.0,
+     "kind": "gush"
+    },
+    {
+     "line": 2,
+     "dt": 2.6,
+     "kind": "spring_song"
     },
     {
      "line": 2,
      "dt": 3.4,
-     "kind": "slurp"
+     "kind": "slurp",
+     "who": "tembo"
+    },
+    {
+     "line": 2,
+     "dt": 5.3,
+     "kind": "trumpet",
+     "who": "tembo"
     },
     {
      "line": 2,
@@ -3179,7 +3285,7 @@
       "kiki"
      ],
      "line": 1,
-     "after": 3.6,
+     "after": 2.4,
      "note": "Kiki digs out the stone"
     },
     {
@@ -3430,6 +3536,11 @@
     {
      "t": 15.6,
      "kind": "splash"
+    },
+    {
+     "t": 14.6,
+     "kind": "trumpet",
+     "who": "tembo"
     }
    ],
    "gestures": [

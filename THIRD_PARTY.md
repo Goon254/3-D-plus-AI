@@ -39,6 +39,14 @@ its rendering uses GeneralUser GS instrument samples, whose license allows comme
 rendered audio is covered by this repository's license with a credit to the SoundFont. Voices are stock
 Kokoro voices (no cloning). Showcase renders are therefore covered by this repository's license.
 
+**Savannah sound effects and animal calls (2026-11-18)**: every footstep, call and effect is synthesised in
+`src/animatica/audio/ambience.py` with numpy; no recordings or sample libraries are used, so there is nothing to
+license or attribute. Sources: footsteps (`footstep2`: per-species foot layer, granular dirt crunch, grass
+rustle), calls (`trumpet`, `zebra_bark`, `meerkat_chirp` / alarm, `giraffe_hum`, `tortoise_huff`, `hornbill`),
+the climax (`log_creak`: stick-slip impulses through wood resonances; `gush`; `spring_song`), and the older
+`splash`, `drip`, `slurp`. Licence: this repository's (Apache-2.0). CC0 field recordings were considered and
+not used, to keep the film free of per-file licence bookkeeping.
+
 ## FluidR3Mono_GM SoundFont (music samples)
 
 * What: General MIDI SoundFont used by the composer (`src/animatica/audio/soundfont.py`, a numpy sample player; no
