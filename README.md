@@ -1,5 +1,9 @@
 # Animatica — an AI-native animation studio
 
+> 🌱 **Early-stage and built in the open.** Animatica is a few weeks old: the results are rough in places and
+> improving every day. Every bug we find becomes an automatic check, so the same mistake can't happen twice.
+> **Contributors of every kind are welcome:** see [How you can help](#how-you-can-help).
+
 Describe a short film; a **team of specialist AI agents** plans it, builds it in **Blender**, animates it,
 voices it, lip-syncs it, scores it, critiques its own previews, and renders an **MP4 with sound** — and
 leaves you a **normal, editable `.blend`** you can open, change by hand, and hand back to the agents.
@@ -21,6 +25,43 @@ procedural music, Cycles 640×360 `--quality draft`: 2 min on an RTX 5060 with O
 games track: [robot-flower-platformer](examples/showcase/robot-flower-platformer/) (screenshot below)
 
 <img src="examples/showcase/robot-flower-platformer/screenshot.png" width="480" alt="generated Godot platformer">
+
+### Latest: *Tembo and the Singing Spring* (animatic, 5:16)
+
+Our first long test: a 5-minute kids' story with five savannah animals (an elephant calf, a giraffe, a zebra,
+a meerkat and a leopard tortoise), 103 shots from dawn to night, with a different voice for every character
+and music written for each scene. The animals walk with gait patterns taken from published locomotion
+research: elephants never trot, and giraffes "pace", moving both legs on one side together.
+
+[![animatic contact sheet](examples/showcase/savannah-animatic/contact_sheet.jpg)](examples/showcase/savannah-animatic/animatic_web.mp4)
+
+▶ [`examples/showcase/savannah-animatic/animatic_web.mp4`](examples/showcase/savannah-animatic/animatic_web.mp4)
+
+An **animatic** is the rough cut that studios make before the final render, to judge story, timing and
+staging. Known issues we're fixing next: the lip sync drifts, some movements and sound effects are off, the
+night scenes are too dark, and one zebra wanders where she shouldn't. The character designs come from the
+[design stage](DESIGN_STAGE.md) (design sheets and approval packets are in [`design/`](design/)).
+
+## How you can help
+
+You don't need to be a programmer. Animatica needs:
+
+| You are… | You could… |
+|---|---|
+| 🎨 **3D artist / character designer** | improve base meshes, sculpt species parts, design new characters, make CC0 textures |
+| 🏃 **Animator** | build gait and pose libraries, acting beats, expressions, camera language |
+| 🎵 **Musician / sound designer** | write character themes and scene cues, record or synthesise CC0 sound effects |
+| ✍️ **Writer / storyteller** | write kids' stories and screenplays, review story structure and dialogue |
+| 🧪 **Tester** | run it on your machine (Windows, macOS, Linux; NVIDIA, AMD, Apple GPUs) and report what breaks |
+| 💻 **Developer** | Mac (Metal) and AMD (HIP) GPU rendering, the vision critic, the web app, Godot games, tests |
+
+Start with an issue labelled **good first issue** or **help wanted**, or open a Discussion to say hello and
+tell us what you'd like to work on. Read [CONTRIBUTING.md](CONTRIBUTING.md) first (licensing rules and a DCO
+sign-off on commits). Everyone who contributes is credited in the README and in the end credits of every film
+we make.
+
+**On Windows with an NVIDIA GPU?** See [docs/SETUP.md §5](docs/SETUP.md) for the tested setup (OptiX GPU
+rendering: an HD short in about 4 minutes on a laptop RTX 5060).
 
 ## Quickstart (fresh clone, Linux/macOS, Python 3.13)
 
