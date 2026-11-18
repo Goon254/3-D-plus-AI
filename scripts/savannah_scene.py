@@ -50,7 +50,7 @@ from animatica.production.scene import (  # noqa: E402
     split_long,
     vfov,
 )
-from animatica.sets.savannah import Layout, savannah_set  # noqa: E402
+from animatica.sets.savannah import Layout, bird_flock_ops, savannah_set  # noqa: E402
 
 FILM = ROOT / "films" / "savannah"
 QUALITY = {  # resolution, samples, frame step, device
@@ -211,6 +211,17 @@ def main() -> int:
                         "keys": [[1 + int(t * fps), list(v), "BEZIER"] for t, v in pr[key]],
                     }
                 )
+    for j, fl in enumerate(lay.get("birds", [])):  # flocks crossing the sky (life in the set)
+        ops += bird_flock_ops(
+            f"birds{j}",
+            tuple(fl["from"]),
+            tuple(fl["to"]),
+            fl["t0"],
+            fl["t1"],
+            fl.get("n", 5),
+            fps,
+            seed=3 + j,
+        )
     metas, faces, plans = {}, {}, {}
     face_batch: list[dict] = []
     for cid, actor in spec.cast.items():

@@ -44,13 +44,161 @@
       3.0,
       4.0
      ]
+    ],
+    "birds": [
+     {
+      "from": [
+       -20.0,
+       15.0,
+       6.0
+      ],
+      "to": [
+       22.0,
+       11.0,
+       7.5
+      ],
+      "t0": 0.3,
+      "t1": 9.5,
+      "n": 6
+     },
+     {
+      "from": [
+       7.0,
+       10.0,
+       2.6
+      ],
+      "to": [
+       -6.0,
+       8.0,
+       2.0
+      ],
+      "t0": 11.0,
+      "t1": 16.0,
+      "n": 3
+     }
     ]
    },
    "ambience": {
     "tod": "dawn",
     "water": true
    },
-   "cast": {},
+   "cast": {
+    "giraffe_a": {
+     "species": "giraffe",
+     "at": [
+      -19.0,
+      24.0
+     ],
+     "extra": true,
+     "path": [
+      {
+       "t": 0.0,
+       "at": [
+        -19.0,
+        24.0
+       ]
+      },
+      {
+       "at": [
+        7.0,
+        25.5
+       ]
+      }
+     ]
+    },
+    "giraffe_b": {
+     "species": "giraffe",
+     "at": [
+      -22.5,
+      26.5
+     ],
+     "extra": true,
+     "path": [
+      {
+       "t": 0.6,
+       "at": [
+        -22.5,
+        26.5
+       ]
+      },
+      {
+       "at": [
+        3.5,
+        28.0
+       ]
+      }
+     ]
+    },
+    "zebra_a": {
+     "species": "zebra",
+     "at": [
+      14.0,
+      19.5
+     ],
+     "extra": true,
+     "path": [
+      {
+       "t": 0.0,
+       "at": [
+        14.0,
+        19.5
+       ]
+      },
+      {
+       "at": [
+        -5.0,
+        20.3
+       ]
+      }
+     ]
+    },
+    "zebra_b": {
+     "species": "zebra",
+     "at": [
+      16.0,
+      20.6
+     ],
+     "extra": true,
+     "path": [
+      {
+       "t": 0.4,
+       "at": [
+        16.0,
+        20.6
+       ]
+      },
+      {
+       "at": [
+        -3.0,
+        21.400000000000002
+       ]
+      }
+     ]
+    },
+    "zebra_c": {
+     "species": "zebra",
+     "at": [
+      17.8,
+      19.0
+     ],
+     "extra": true,
+     "path": [
+      {
+       "t": 1.1,
+       "at": [
+        17.8,
+        19.0
+       ]
+      },
+      {
+       "at": [
+        -1.1999999999999993,
+        19.8
+       ]
+      }
+     ]
+    }
+   },
    "lines": [
     {
      "who": "narrator",
@@ -80,7 +228,7 @@
       3.0
      ],
      "frame_h": 9.0,
-     "note": "the sun lifts behind the acacia"
+     "note": "the sun lifts behind the acacia; giraffes and a zebra herd cross the far grass, birds fly over"
     },
     {
      "type": "ws",
@@ -94,7 +242,8 @@
      "frame_h": 3.2,
      "note": "the shrinking puddle"
     }
-   ]
+   ],
+   "eyelines": false
   },
   {
    "id": "sc02",

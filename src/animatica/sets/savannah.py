@@ -95,6 +95,15 @@ SKY: dict[str, dict[str, Any]] = {
 }
 
 GROUND = "#B39558"
+# far grass seen through the haze, per time of day: between the near grass and the hills, never brighter
+# than the sky at the horizon
+FAR_GROUND = {
+    "dawn": "#A68D6E",
+    "midday": "#B09C78",
+    "afternoon": "#B0966E",
+    "sunset": "#A27C5E",
+    "night": "#1E2846",
+}
 GRASS_BASE, GRASS_TIP = "#6F6A2E", "#DCBC6E"
 
 
@@ -490,6 +499,9 @@ def savannah_set(layout: Layout, tod: str = "sunset") -> list[dict[str, Any]]:
     near, far = (14.0, 115.0) if tod in ("midday", "afternoon") else (18.0, 140.0)
     glow = {"midday": 0.2, "afternoon": 0.3, "dawn": 0.6, "sunset": 0.65}.get(tod, 1.0)
     haze = {"fade_to": hz, "fade_start": near, "fade_end": far, "fade_glow": glow}
+    # the bare far ground beyond the grass fades to a hazy far-grass tone, not to the bright haze: lit by a low
+    # sun plus the haze's glow it rendered as a white stripe under the hills (owner, animatic 11-18)
+    ground_haze = {**haze, "fade_to": FAR_GROUND[tod], "fade_glow": glow * 0.2}
     ops: list[dict[str, Any]] = [
         {
             "op": "create_primitive",
@@ -510,7 +522,7 @@ def savannah_set(layout: Layout, tod: str = "sunset") -> list[dict[str, Any]]:
                 grain=0.35,
                 grain_scale=14.0,
                 bump=0.35,
-                **haze,
+                **ground_haze,
                 name="savannah_ground",
             ),
         },
@@ -685,4 +697,105 @@ def savannah_set(layout: Layout, tod: str = "sunset") -> list[dict[str, Any]]:
         }
     )
     ops += sky_ops(tod)
+    return ops
+
+
+def bird_flock_ops(
+    fid: str,
+    start: tuple[float, float, float],
+    end: tuple[float, float, float],
+    t0: float,
+    t1: float,
+    n: int = 5,
+    fps: int = 24,
+    seed: int = 3,
+    span: float = 0.8,
+    color: str = "#2B2A33",
+) -> list[dict[str, Any]]:
+    """A loose flock of small birds flying from ``start`` to ``end`` between ``t0`` and ``t1`` seconds: each a
+    body and two wings (a flat silhouette that reads against a dawn or sunset sky), flapping in bursts with
+    glides between, bobbing a little, in a loose V that shuffles as it flies."""
+    rng = random.Random(seed)
+    h = span / 2
+    verts = [
+        [0.0, -0.22 * span, 0.0],
+        [0.05 * span, 0.0, 0.0],
+        [0.0, 0.3 * span, 0.0],
+        [-0.05 * span, 0.0, 0.0],
+        [h, 0.05 * span, 0.0],
+        [-h, 0.05 * span, 0.0],
+        [0.04 * span, -0.06 * span, 0.0],
+        [-0.04 * span, -0.06 * span, 0.0],
+    ]
+    faces = [[0, 1, 2, 3], [1, 4, 6], [3, 7, 5]]
+
+    def wings(z: float, fold: float = 1.0) -> list[list[float]]:
+        v = [list(p) for p in verts]
+        v[4] = [h * fold, 0.05 * span, z]
+        v[5] = [-h * fold, 0.05 * span, z]
+        return v
+
+    keys = {"up": wings(0.55 * h, 0.8), "down": wings(-0.5 * h, 0.85)}
+    dx, dy, dz = (end[i] - start[i] for i in range(3))
+    yaw = math.degrees(math.atan2(dx, -dy)) + 180.0  # the bird's nose is +Y
+    ops: list[dict[str, Any]] = []
+    for b in range(n):
+        bid = f"{fid}_{b}"
+        side = (b + 1) // 2 * (1 if b % 2 else -1)
+        off = (
+            side * 0.9 + rng.uniform(-0.3, 0.3),
+            abs(side) * 0.7 + rng.uniform(-0.2, 0.2),
+            rng.uniform(-0.4, 0.4),
+        )
+        dt = rng.uniform(-0.2, 0.2)
+        ops += [
+            {"op": "create_mesh", "id": bid, "vertices": verts, "faces": faces, "tags": ["set", "birds"]},
+            {"op": "add_shape_keys", "target": bid, "keys": keys},
+            {"op": "set_material", "targets": [bid], "material": _m(color, 0.9, name=f"{fid}_mat")},
+        ]
+        loc, flap = [], []
+        f0, f1 = 1 + int((t0 + dt) * fps), 1 + int((t1 + dt) * fps)
+        phase = rng.uniform(0, 1)
+        for f in range(f0, f1 + 1, 2):
+            u = (f - f0) / max(1, f1 - f0)
+            bob = 0.12 * math.sin(2 * math.pi * (u * 3 + phase))
+            loc.append(
+                [
+                    f,
+                    [
+                        round(start[i] + (dx, dy, dz)[i] * u + off[i] + (bob if i == 2 else 0.0), 3)
+                        for i in range(3)
+                    ],
+                    "LINEAR",
+                ]
+            )
+            t = (f - f0) / fps
+            burst = math.sin(2 * math.pi * (t / 1.6 + phase)) > -0.35  # flap, glide, flap
+            w = math.sin(2 * math.pi * 6.0 * t) if burst else -0.15
+            flap.append([f, round(max(0.0, w), 3), "LINEAR"])
+        ops += [
+            {"op": "insert_keyframes", "target": bid, "property": "location", "keys": loc},
+            {
+                "op": "insert_keyframes",
+                "target": bid,
+                "property": "rotation",
+                "keys": [[f0, [0.0, 0.0, round(yaw, 1)], "LINEAR"]],
+            },
+            {"op": "insert_keyframes", "target": bid, "property": "shape_key:up", "keys": flap},
+            {
+                "op": "insert_keyframes",
+                "target": bid,
+                "property": "shape_key:down",
+                "keys": [
+                    [
+                        k[0],
+                        round(
+                            max(0.0, -math.sin(2 * math.pi * 6.0 * (k[0] - f0) / fps)) * (k[1] > 0 or 0.3), 3
+                        ),
+                        "LINEAR",
+                    ]
+                    for k in flap
+                ],
+            },
+        ]
     return ops

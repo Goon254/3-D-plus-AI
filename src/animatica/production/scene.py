@@ -446,7 +446,9 @@ def schedule(spec: SceneSpec, durations: list[float], speeds: dict[str, float] |
         a.t_out = _stage_time(a, spec, a.exit, entering=False) if a.exit else 1e9
     last = prev_end if prev_end is not None else 0.0
     # an exit's walk on past the frame doesn't stretch the scene: it is over once the actor is off stage
-    latest_action = max([min(p[0], a.t_out, a.open_from) for a in spec.cast.values() for p in a.path] + [0.0])
+    latest_action = max(
+        [min(p[0], a.t_out, a.open_from) for a in spec.cast.values() if not a.extra for p in a.path] + [0.0]
+    )
     latest_beat = max(
         [b.time(spec.lines) for b in spec.reactions + spec.sfx]
         + [g.time(spec.lines) + min(g.dur, 2.5) - 0.5 for g in spec.gestures]  # long holds don't stretch it
