@@ -1,14 +1,14 @@
-# Zuri (zebra), design v2
+# Zuri (zebra), design v3
 
-v2: the stripes wrap the body as chevrons with no bullseyes on the chest, forehead or rump; an upright brush mane stands on the neck's crest; the ears are bigger; the muzzle is smaller and charcoal-brown (DECISIONS #56).
+v3 (owner review 11-17): a stockier zebra: deeper chest, thicker neck and legs, a bigger head, a short bristly striped mane that follows the neck from withers to poll (a lofted ridge skinned to the neck, so it bends with it), real hooves (flat sole, sloped front wall, narrower coronet). Lids drawn up at rest; expressions change the face as for all five.
 
 | | |
 |---|---|
-| Rubric | **7.64** / 10, not ready |
-| Silhouette reads as | pony with an upright mane |
+| Rubric | **7.46** / 10, not ready |
+| Silhouette reads as | zebra (a stocky equid with a short upright mane; a donkey is the nearest other read) |
 | 96 px thumbnail reads as | zebra |
 | Appeal (critic) | 7 |
-| Rig stress test | 7 / 7 checks pass |
+| Rig stress test | 8 / 9 checks pass |
 
 ## Files
 
@@ -20,18 +20,19 @@ v2: the stripes wrap the body as chevrons with no bullseyes on the chest, forehe
 
 ## Failed checks
 
-* `face:happy`: happy changes 2.4% of the face close-up (min 3%): the expression doesn't read
-* `read:silhouette` (hard): silhouette read as 'pony with an upright mane': misread as pony (a known confusion)
+* `motion:foot_plant`: a planted sole (skin) strays up to 60.6 mm within one stance (RF, frames 74-88; limit 29 mm, half the foot's radius) over 22 stance phases
+* `read:silhouette` (hard): silhouette read as 'zebra (a stocky equid with a short upright mane; a donkey is the nearest other read)': ambiguous: zebra but also donkey
 * `critic:appeal`: art-director appeal 7/10 (min 8)
 
 ## Still open
 
-* Her ears hover about 3.6 cm above the head in this sheet's 3/4 view and in the motion test (no check measured it then). Fixed in code after the packet was built (DECISIONS #62: the ears now sit on the head, and a new hard check, `part_float`, catches any part off its base); the sheet and clip will be re-rendered with her v3 body.
-* Hard failure: her silhouette alone still reads as a pony (long thin legs, horse body). The thumbnail reads as a zebra, because the stripes carry it. She needs a shorter-legged, stockier body plan, and the design loop has no 'shorter legs' morph yet.
-* Not ready: please give notes on the silhouette direction (stockier foal? bigger head? shorter legs?) rather than approve.
+* Hard failure, recorded honestly: on the silhouette alone I read 'zebra, but a donkey is the nearest other read', and the rubric counts that as ambiguous with a known confusion (donkey). The thumbnail reads as a zebra. The pony read from v2 is gone.
+* Appeal 7: the face is calm but not yet charming at sheet size; 'happy' changes 3.7 % of the face (a dark mouth on a dark muzzle).
+* The cloud reviewer (11-18) finds the toothed mane a little 'saw-back'; it can be softened into more of a brush if you agree.
+* Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet.
 
 ## Runner-ups
 
-Runner-up 1 is a bigger head and eyes; runner-up 2 has bigger eyes, a shorter snout and a shorter neck (a younger look). The loop scored both 10.0 without a species read, so neither has been checked against the pony read.
+Runner-up 1 is a bigger head and eyes; runner-up 2 has bigger eyes, a shorter snout and a thinner neck. Both scored 10.0 without a species read.
 
 Approve, or reply with notes.

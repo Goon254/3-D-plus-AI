@@ -1,21 +1,16 @@
 {
  "character": "bibi_kobe",
  "species": "tortoise",
- "version": "v2",
- "score": 9.68,
- "ready": false,
+ "version": "v3",
+ "score": 9.53,
+ "ready": true,
  "hard_failures": [],
  "pending": [],
  "failed_checks": [
   {
-   "id": "face:surprised",
+   "id": "motion:foot_plant",
    "hard": false,
-   "message": "surprised changes 2.1% of the face close-up (min 3%): the expression doesn't read"
-  },
-  {
-   "id": "critic:appeal",
-   "hard": false,
-   "message": "art-director appeal 7/10 (min 8)"
+   "message": "a planted sole (skin) strays up to 49.7 mm within one stance (LH, frames 113-383; limit 25 mm, half the foot's radius) over 12 stance phases"
   }
  ],
  "motion_checks": [
@@ -35,6 +30,11 @@
    "message": "lid float: ok"
   },
   {
+   "id": "motion:part_float",
+   "passed": true,
+   "message": "part float: ok"
+  },
+  {
    "id": "motion:texture_swim",
    "passed": true,
    "message": "texture swim: ok"
@@ -47,7 +47,12 @@
   {
    "id": "motion:foot_slide",
    "passed": true,
-   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 6 mm)"
+   "message": "worst planted-foot drift (skin) 5.0 mm per frame (RH at frame 103; limit 6 mm) over 1443 planted foot-frame pairs"
+  },
+  {
+   "id": "motion:foot_plant",
+   "passed": false,
+   "message": "a planted sole (skin) strays up to 49.7 mm within one stance (LH, frames 113-383; limit 25 mm, half the foot's radius) over 12 stance phases"
   },
   {
    "id": "motion:ground",
@@ -58,17 +63,17 @@
  "critique": {
   "silhouette_species": "tortoise",
   "thumbnail_species": "leopard tortoise",
-  "appeal": 7
+  "appeal": 8
  },
  "image_metrics": {
   "floating_parts": 0,
   "neck_notch": 0.0,
   "top_dip": 0.0,
   "throat": 0.0,
-  "lift": -0.1991,
-  "dark_blob": 0.0075,
-  "expression_happy": 0.031,
-  "expression_surprised": 0.0213
+  "lift": -0.2186,
+  "dark_blob": 0.0117,
+  "expression_happy": 0.051,
+  "expression_surprised": 0.0585
  },
  "runner_ups": [
   {

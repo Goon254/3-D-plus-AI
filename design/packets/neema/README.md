@@ -1,14 +1,14 @@
-# Neema (giraffe), design v2
+# Neema (giraffe), design v3
 
-v2: sturdier legs and hooves, a much bigger head and eyes so her face reads at 96 px on a 3 m animal, brows resting higher so she no longer scowls (DECISIONS #59).
+Approved and locked at v3 (owner review 11-17): friendlier brows (smaller, tilted up at the inner end), a smaller, less pouty muzzle, lids drawn up at rest. Expressions change the face clearly (DECISIONS #65).
 
 | | |
 |---|---|
-| Rubric | **9.88** / 10, ready |
+| Rubric | **9.61** / 10, ready |
 | Silhouette reads as | giraffe |
-| 96 px thumbnail reads as | young giraffe |
+| 96 px thumbnail reads as | giraffe |
 | Appeal (critic) | 8 |
-| Rig stress test | 7 / 7 checks pass |
+| Rig stress test | 8 / 9 checks pass |
 
 ## Files
 
@@ -20,12 +20,13 @@ v2: sturdier legs and hooves, a much bigger head and eyes so her face reads at 9
 
 ## Failed checks
 
-* none
+* `motion:foot_plant`: a planted sole (skin) strays up to 46.2 mm within one stance (LH, frames 76-92; limit 38 mm, half the foot's radius) over 19 stance phases
 
 ## Still open
 
-* The rig stress test caught her brows floating 16 % of their size off the skin on 'surprised'; the lift is now capped (`brow_max` 0.7, 8 %). The motion clip has the fix; the sheet's surprised panel was rendered before it and still shows the higher brows. A fresh sheet needs a new critique, so it waits for your notes.
-* No sit pose on the rig yet: the take bows and rises instead.
+* Locked: changes now need your sign-off (design/neema/approved.json).
+* Re-sheeted 11-18 with the hoof mesh every hoofed species now gets (the locked parameters are unchanged). Still open from the cloud review: pole legs with no knee.
+* Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet.
 
 ## Runner-ups
 

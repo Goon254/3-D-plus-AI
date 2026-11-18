@@ -64,7 +64,7 @@
  },
  "rig_stress": "C:\\dev\\3-D-plus-AI\\design\\tembo\\rig_stress.json",
  "character": "tembo",
- "score": 9.87,
+ "score": 9.58,
  "ready": true,
  "hard_failures": [],
  "pending": [],
@@ -246,6 +246,17 @@
    "fix": null
   },
   {
+   "id": "motion:part_float",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "part float: ok",
+   "value": null,
+   "fix": null
+  },
+  {
    "id": "motion:texture_swim",
    "group": "motion",
    "passed": true,
@@ -264,7 +275,7 @@
    "weight": 1.0,
    "earned": 1.0,
    "message": "mouth off the skin by -4% of its size",
-   "value": -0.0401270033262776,
+   "value": -0.04001326739838379,
    "fix": null
   },
   {
@@ -274,8 +285,19 @@
    "hard": true,
    "weight": 1.0,
    "earned": 1.0,
-   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 22 mm)",
-   "value": 0.0,
+   "message": "worst planted-foot drift (skin) 12.9 mm per frame (RF at frame 106; limit 22 mm) over 1277 planted foot-frame pairs",
+   "value": 0.0129,
+   "fix": null
+  },
+  {
+   "id": "motion:foot_plant",
+   "group": "motion",
+   "passed": false,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 0.0,
+   "message": "a planted sole (skin) strays up to 76.7 mm within one stance (LH, frames 122-139; limit 60 mm, half the foot's radius) over 26 stance phases",
+   "value": 0.0767,
    "fix": null
   },
   {

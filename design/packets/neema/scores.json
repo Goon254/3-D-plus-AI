@@ -1,12 +1,18 @@
 {
  "character": "neema",
  "species": "giraffe",
- "version": "v2",
- "score": 9.88,
+ "version": "v3",
+ "score": 9.61,
  "ready": true,
  "hard_failures": [],
  "pending": [],
- "failed_checks": [],
+ "failed_checks": [
+  {
+   "id": "motion:foot_plant",
+   "hard": false,
+   "message": "a planted sole (skin) strays up to 46.2 mm within one stance (LH, frames 76-92; limit 38 mm, half the foot's radius) over 19 stance phases"
+  }
+ ],
  "motion_checks": [
   {
    "id": "motion:eye_socket",
@@ -24,6 +30,11 @@
    "message": "lid float: ok"
   },
   {
+   "id": "motion:part_float",
+   "passed": true,
+   "message": "part float: ok"
+  },
+  {
    "id": "motion:texture_swim",
    "passed": true,
    "message": "texture swim: ok"
@@ -36,7 +47,12 @@
   {
    "id": "motion:foot_slide",
    "passed": true,
-   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 61 mm)"
+   "message": "worst planted-foot drift (skin) 8.6 mm per frame (RF at frame 76; limit 61 mm) over 1119 planted foot-frame pairs"
+  },
+  {
+   "id": "motion:foot_plant",
+   "passed": false,
+   "message": "a planted sole (skin) strays up to 46.2 mm within one stance (LH, frames 76-92; limit 38 mm, half the foot's radius) over 19 stance phases"
   },
   {
    "id": "motion:ground",
@@ -46,18 +62,18 @@
  ],
  "critique": {
   "silhouette_species": "giraffe",
-  "thumbnail_species": "young giraffe",
+  "thumbnail_species": "giraffe",
   "appeal": 8
  },
  "image_metrics": {
   "floating_parts": 0,
-  "neck_notch": 0.475,
+  "neck_notch": 0.4844,
   "top_dip": 0.0,
   "throat": 0.0208,
-  "lift": 1.5833,
-  "dark_blob": 0.0055,
-  "expression_happy": 0.1029,
-  "expression_surprised": 0.1423
+  "lift": 1.6146,
+  "dark_blob": 0.0045,
+  "expression_happy": 0.0896,
+  "expression_surprised": 0.071
  },
  "runner_ups": [
   {

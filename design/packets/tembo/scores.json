@@ -1,12 +1,18 @@
 {
  "character": "tembo",
  "species": "elephant",
- "version": "v2",
- "score": 9.87,
+ "version": "v3",
+ "score": 9.58,
  "ready": true,
  "hard_failures": [],
  "pending": [],
- "failed_checks": [],
+ "failed_checks": [
+  {
+   "id": "motion:foot_plant",
+   "hard": false,
+   "message": "a planted sole (skin) strays up to 76.7 mm within one stance (LH, frames 122-139; limit 60 mm, half the foot's radius) over 26 stance phases"
+  }
+ ],
  "motion_checks": [
   {
    "id": "motion:eye_socket",
@@ -24,6 +30,11 @@
    "message": "lid float: ok"
   },
   {
+   "id": "motion:part_float",
+   "passed": true,
+   "message": "part float: ok"
+  },
+  {
    "id": "motion:texture_swim",
    "passed": true,
    "message": "texture swim: ok"
@@ -36,7 +47,12 @@
   {
    "id": "motion:foot_slide",
    "passed": true,
-   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 22 mm)"
+   "message": "worst planted-foot drift (skin) 12.9 mm per frame (RF at frame 106; limit 22 mm) over 1277 planted foot-frame pairs"
+  },
+  {
+   "id": "motion:foot_plant",
+   "passed": false,
+   "message": "a planted sole (skin) strays up to 76.7 mm within one stance (LH, frames 122-139; limit 60 mm, half the foot's radius) over 26 stance phases"
   },
   {
    "id": "motion:ground",
@@ -54,10 +70,10 @@
   "neck_notch": 0.2927,
   "top_dip": 0.0,
   "throat": 0.2927,
-  "lift": 0.1138,
+  "lift": 0.0976,
   "dark_blob": 0.0024,
-  "expression_happy": 0.0355,
-  "expression_surprised": 0.031
+  "expression_happy": 0.0395,
+  "expression_surprised": 0.032
  },
  "runner_ups": [
   {

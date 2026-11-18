@@ -1,12 +1,17 @@
 {
  "character": "kiki",
  "species": "meerkat",
- "version": "v4",
- "score": 9.82,
+ "version": "v5",
+ "score": 9.55,
  "ready": false,
  "hard_failures": [],
  "pending": [],
  "failed_checks": [
+  {
+   "id": "motion:foot_plant",
+   "hard": false,
+   "message": "a planted sole (skin) strays up to 7.7 mm within one stance (RF, frames 79-85; limit 6 mm, half the foot's radius) over 44 stance phases"
+  },
   {
    "id": "critic:appeal",
    "hard": false,
@@ -30,6 +35,11 @@
    "message": "lid float: ok"
   },
   {
+   "id": "motion:part_float",
+   "passed": true,
+   "message": "part float: ok"
+  },
+  {
    "id": "motion:texture_swim",
    "passed": true,
    "message": "texture swim: ok"
@@ -42,7 +52,12 @@
   {
    "id": "motion:foot_slide",
    "passed": true,
-   "message": "worst planted-foot drift 0.6 mm per frame (RF at frame 152; limit 4 mm)"
+   "message": "worst planted-foot drift (skin) 2.1 mm per frame (RH at frame 165; limit 4 mm) over 724 planted foot-frame pairs"
+  },
+  {
+   "id": "motion:foot_plant",
+   "passed": false,
+   "message": "a planted sole (skin) strays up to 7.7 mm within one stance (RF, frames 79-85; limit 6 mm, half the foot's radius) over 44 stance phases"
   },
   {
    "id": "motion:ground",
@@ -52,7 +67,7 @@
   {
    "id": "motion:sentinel_tail",
    "passed": true,
-   "message": "in the sentinel the tail tip comes down to -12 mm (the tripod wants the ground)"
+   "message": "in the sentinel the tail tip comes down to -18 mm (the tripod wants the ground)"
   }
  ],
  "critique": {
@@ -62,13 +77,13 @@
  },
  "image_metrics": {
   "floating_parts": 0,
-  "neck_notch": 0.2838,
-  "top_dip": 0.027,
-  "throat": 0.2838,
-  "lift": 0.6081,
-  "dark_blob": 0.0402,
-  "expression_happy": 0.0317,
-  "expression_surprised": 0.0366
+  "neck_notch": 0.3611,
+  "top_dip": 0.0139,
+  "throat": 0.3611,
+  "lift": 0.5278,
+  "dark_blob": 0.0157,
+  "expression_happy": 0.0446,
+  "expression_surprised": 0.0629
  },
  "runner_ups": [
   {
@@ -101,7 +116,7 @@
  "motion_test": {
   "file": "motion.mp4",
   "from_take": "output/rig-stress/kiki/motion.mp4",
-  "clip_start_s": 3.49,
+  "clip_start_s": 3.66,
   "line": "Danger! Oh. It's a rock.",
   "turn_degrees": 90,
   "sit_stand": "sentinel drop and rise"

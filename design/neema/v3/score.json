@@ -14,9 +14,9 @@
   "top_dip": 0.0,
   "throat": 0.0208,
   "lift": 1.6146,
-  "dark_blob": 0.0055,
-  "expression_happy": 0.0902,
-  "expression_surprised": 0.0714
+  "dark_blob": 0.0045,
+  "expression_happy": 0.0896,
+  "expression_surprised": 0.071
  },
  "design": {
   "species": "giraffe",
@@ -57,21 +57,23 @@
   }
  },
  "critique": {
-  "reviewer": "overnight GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "reviewer": "overnight GPU session 2026-11-18 (Claude, re-sheet of the locked v3 with the hoof mesh; looked at silhouette.png and thumb96.png first)",
   "sheet": "sheet.png",
-  "sheet_sha256": "0f1c59a4278b1acf276e47fed59d55a41fadc4065f71d33c0e43a6586bd92610",
+  "sheet_sha256": "bb3619c3c512f5b97a87bcc16881e0a194d32b5712a3256b14f89a8b1b929969",
   "silhouette_species": "giraffe",
   "thumbnail_species": "giraffe",
   "appeal": 8,
   "issues": [
    "owner note addressed: what read as heavy scowling brows were her upper lids; they now rest drawn up, the brows are slimmer and lighter with the inner ends a touch up",
    "the muzzle is smaller (0.16 x 0.15 x 0.125, was 0.21 x 0.21 x 0.18) and sits closer to the face; the mouth still shows a dark lower edge in 3/4",
-   "happy: smiling eyes and an upturned mouth; surprised: brows up, wide eyes"
+   "happy: smiling eyes and an upturned mouth; surprised: brows up, wide eyes",
+   "re-sheet: the hooves are now the hoof mesh (flat sole, sloped wall) instead of pucks; the species parameters are unchanged, so the lock holds",
+   "still open (cloud review 11-18): pole legs with no knee"
   ]
  },
  "rig_stress": "C:\\dev\\3-D-plus-AI\\design\\neema\\rig_stress.json",
  "character": "neema",
- "score": 9.88,
+ "score": 9.61,
  "ready": true,
  "hard_failures": [],
  "pending": [],
@@ -275,6 +277,17 @@
    "fix": null
   },
   {
+   "id": "motion:part_float",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "part float: ok",
+   "value": null,
+   "fix": null
+  },
+  {
    "id": "motion:texture_swim",
    "group": "motion",
    "passed": true,
@@ -293,7 +306,7 @@
    "weight": 1.0,
    "earned": 1.0,
    "message": "mouth off the skin by -0% of its size",
-   "value": -0.004587412587412587,
+   "value": -0.00029370732065496735,
    "fix": null
   },
   {
@@ -303,8 +316,19 @@
    "hard": true,
    "weight": 1.0,
    "earned": 1.0,
-   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 61 mm)",
-   "value": 0.0,
+   "message": "worst planted-foot drift (skin) 8.6 mm per frame (RF at frame 76; limit 61 mm) over 1119 planted foot-frame pairs",
+   "value": 0.0086,
+   "fix": null
+  },
+  {
+   "id": "motion:foot_plant",
+   "group": "motion",
+   "passed": false,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 0.0,
+   "message": "a planted sole (skin) strays up to 46.2 mm within one stance (LH, frames 76-92; limit 38 mm, half the foot's radius) over 19 stance phases",
+   "value": 0.0462,
    "fix": null
   },
   {
@@ -347,8 +371,8 @@
    "hard": true,
    "weight": 1.0,
    "earned": 1.0,
-   "message": "largest near-black blob 1% of the figure (max 12%)",
-   "value": 0.0055,
+   "message": "largest near-black blob 0% of the figure (max 12%)",
+   "value": 0.0045,
    "fix": null
   },
   {
@@ -359,7 +383,7 @@
    "weight": 1.0,
    "earned": 1.0,
    "message": "happy changes 9.0% of the face close-up (min 3%)",
-   "value": 0.0902,
+   "value": 0.0896,
    "fix": null
   },
   {
@@ -370,7 +394,7 @@
    "weight": 1.0,
    "earned": 1.0,
    "message": "surprised changes 7.1% of the face close-up (min 3%)",
-   "value": 0.0714,
+   "value": 0.071,
    "fix": null
   },
   {
@@ -411,7 +435,9 @@
  "manual": [
   "critic: owner note addressed: what read as heavy scowling brows were her upper lids; they now rest drawn up, the brows are slimmer and lighter with the inner ends a touch up",
   "critic: the muzzle is smaller (0.16 x 0.15 x 0.125, was 0.21 x 0.21 x 0.18) and sits closer to the face; the mouth still shows a dark lower edge in 3/4",
-  "critic: happy: smiling eyes and an upturned mouth; surprised: brows up, wide eyes"
+  "critic: happy: smiling eyes and an upturned mouth; surprised: brows up, wide eyes",
+  "critic: re-sheet: the hooves are now the hoof mesh (flat sole, sloped wall) instead of pucks; the species parameters are unchanged, so the lock holds",
+  "critic: still open (cloud review 11-18): pole legs with no knee"
  ],
  "sheet": "sheet.jpg (from sheet.png, sha256 in critique.json)"
 }

@@ -64,7 +64,7 @@
  },
  "rig_stress": "C:\\dev\\3-D-plus-AI\\design\\bibi_kobe\\rig_stress.json",
  "character": "bibi_kobe",
- "score": 9.86,
+ "score": 9.53,
  "ready": true,
  "hard_failures": [],
  "pending": [],
@@ -224,6 +224,17 @@
    "fix": null
   },
   {
+   "id": "motion:part_float",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "part float: ok",
+   "value": null,
+   "fix": null
+  },
+  {
    "id": "motion:texture_swim",
    "group": "motion",
    "passed": true,
@@ -252,8 +263,19 @@
    "hard": true,
    "weight": 1.0,
    "earned": 1.0,
-   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 6 mm)",
-   "value": 0.0,
+   "message": "worst planted-foot drift (skin) 5.0 mm per frame (RH at frame 103; limit 6 mm) over 1443 planted foot-frame pairs",
+   "value": 0.005,
+   "fix": null
+  },
+  {
+   "id": "motion:foot_plant",
+   "group": "motion",
+   "passed": false,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 0.0,
+   "message": "a planted sole (skin) strays up to 49.7 mm within one stance (LH, frames 113-383; limit 25 mm, half the foot's radius) over 12 stance phases",
+   "value": 0.0497,
    "fix": null
   },
   {

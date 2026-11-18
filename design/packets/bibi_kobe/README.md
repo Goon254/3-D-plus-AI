@@ -1,14 +1,14 @@
-# Bibi Kobe (tortoise), design v2
+# Bibi Kobe (tortoise), design v3
 
-v2: the carapace is its own mesh: a high dome with a flared rim, raised scutes with grooves at every seam, leopard-tortoise rays painted per vertex on the real plates, no holes and no pale plastron showing (DECISIONS #57).
+Approved and locked at v3 (owner review 11-17): the skirt-like rim flare is reduced and the shell's ray marks are smooth (a denser mesh and a soft-edged ray), no more pixel steps. Expressions change the face clearly (DECISIONS #65).
 
 | | |
 |---|---|
-| Rubric | **9.68** / 10, not ready |
+| Rubric | **9.53** / 10, ready |
 | Silhouette reads as | tortoise |
 | 96 px thumbnail reads as | leopard tortoise |
-| Appeal (critic) | 7 |
-| Rig stress test | 7 / 7 checks pass |
+| Appeal (critic) | 8 |
+| Rig stress test | 8 / 9 checks pass |
 
 ## Files
 
@@ -20,14 +20,13 @@ v2: the carapace is its own mesh: a high dome with a flared rim, raised scutes w
 
 ## Failed checks
 
-* `face:surprised`: surprised changes 2.1% of the face close-up (min 3%): the expression doesn't read
-* `critic:appeal`: art-director appeal 7/10 (min 8)
+* `motion:foot_plant`: a planted sole (skin) strays up to 49.7 mm within one stance (LH, frames 113-383; limit 25 mm, half the foot's radius) over 12 stance phases
 
 ## Still open
 
-* The marginal plates hang a little like a skirt from the side.
-* Appeal 7.
-* Motion: she can't yet turn on the spot (the planner only steps as the body travels), and she has no sit pose.
+* Locked: changes now need your sign-off (design/bibi_kobe/approved.json).
+* Motion: she still can't turn on the spot, and has no sit pose.
+* Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet.
 
 ## Runner-ups
 

@@ -1,14 +1,14 @@
-# Tembo (elephant), design v2
+# Tembo (elephant), design v3
 
-v2: cupped, thick ears with a rolled top rim (no more fins edge-on from 3/4); eyes rest open instead of sleepy; darker brows; a laugh and an 'O' in the expressions (DECISIONS #58).
+Approved and locked at v3 (owner review 11-17): softer resting brows (they no longer slope into a worried look; the eyes sit a little deeper and the lids rest drawn up). Expressions change the face clearly: happy = smiling eyes and a raised mouth, surprised = wide eyes, small pupils, lifted brows (DECISIONS #65).
 
 | | |
 |---|---|
-| Rubric | **9.87** / 10, ready |
+| Rubric | **9.58** / 10, ready |
 | Silhouette reads as | elephant calf |
 | 96 px thumbnail reads as | baby elephant |
 | Appeal (critic) | 8 |
-| Rig stress test | 7 / 7 checks pass |
+| Rig stress test | 8 / 9 checks pass |
 
 ## Files
 
@@ -20,12 +20,12 @@ v2: cupped, thick ears with a rolled top rim (no more fins edge-on from 3/4); ey
 
 ## Failed checks
 
-* none
+* `motion:foot_plant`: a planted sole (skin) strays up to 76.7 mm within one stance (LH, frames 122-139; limit 60 mm, half the foot's radius) over 26 stance phases
 
 ## Still open
 
-* His surprised 'O' mouth is hidden behind the trunk from most angles (accepted: the eyes and brows carry surprise).
-* No sit pose on the rig yet: the take bows and rises instead.
+* Locked: changes now need your sign-off (design/tembo/approved.json).
+* Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet.
 
 ## Runner-ups
 

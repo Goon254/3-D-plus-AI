@@ -1,8 +1,8 @@
 {
  "character": "zuri",
  "species": "zebra",
- "version": "v2",
- "score": 7.64,
+ "version": "v3",
+ "score": 7.46,
  "ready": false,
  "hard_failures": [
   "read:silhouette"
@@ -10,14 +10,14 @@
  "pending": [],
  "failed_checks": [
   {
-   "id": "face:happy",
+   "id": "motion:foot_plant",
    "hard": false,
-   "message": "happy changes 2.4% of the face close-up (min 3%): the expression doesn't read"
+   "message": "a planted sole (skin) strays up to 60.6 mm within one stance (RF, frames 74-88; limit 29 mm, half the foot's radius) over 22 stance phases"
   },
   {
    "id": "read:silhouette",
    "hard": true,
-   "message": "silhouette read as 'pony with an upright mane': misread as pony (a known confusion)"
+   "message": "silhouette read as 'zebra (a stocky equid with a short upright mane; a donkey is the nearest other read)': ambiguous: zebra but also donkey"
   },
   {
    "id": "critic:appeal",
@@ -42,6 +42,11 @@
    "message": "lid float: ok"
   },
   {
+   "id": "motion:part_float",
+   "passed": true,
+   "message": "part float: ok"
+  },
+  {
    "id": "motion:texture_swim",
    "passed": true,
    "message": "texture swim: ok"
@@ -49,33 +54,38 @@
   {
    "id": "motion:mouth_float",
    "passed": true,
-   "message": "mouth off the skin by 0% of its size"
+   "message": "mouth off the skin by -0% of its size"
   },
   {
    "id": "motion:foot_slide",
    "passed": true,
-   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 31 mm)"
+   "message": "worst planted-foot drift (skin) 11.0 mm per frame (RH at frame 82; limit 29 mm) over 1170 planted foot-frame pairs"
+  },
+  {
+   "id": "motion:foot_plant",
+   "passed": false,
+   "message": "a planted sole (skin) strays up to 60.6 mm within one stance (RF, frames 74-88; limit 29 mm, half the foot's radius) over 22 stance phases"
   },
   {
    "id": "motion:ground",
    "passed": true,
-   "message": "feet sink up to 0.0 mm below their rest height (limit 23 mm)"
+   "message": "feet sink up to 0.0 mm below their rest height (limit 22 mm)"
   }
  ],
  "critique": {
-  "silhouette_species": "pony with an upright mane",
+  "silhouette_species": "zebra (a stocky equid with a short upright mane; a donkey is the nearest other read)",
   "thumbnail_species": "zebra",
   "appeal": 7
  },
  "image_metrics": {
   "floating_parts": 0,
-  "neck_notch": 0.4322,
+  "neck_notch": 0.996,
   "top_dip": 0.0,
-  "throat": 0.4322,
-  "lift": 0.4322,
-  "dark_blob": 0.0428,
-  "expression_happy": 0.0242,
-  "expression_surprised": 0.0415
+  "throat": 0.996,
+  "lift": 0.312,
+  "dark_blob": 0.0335,
+  "expression_happy": 0.0374,
+  "expression_surprised": 0.0465
  },
  "runner_ups": [
   {
@@ -108,7 +118,7 @@
  "motion_test": {
   "file": "motion.mp4",
   "from_take": "output/rig-stress/zuri/motion.mp4",
-  "clip_start_s": 3.81,
+  "clip_start_s": 4.06,
   "line": "I thought fastest was best. I'm sorry.",
   "turn_degrees": 90,
   "sit_stand": "bow and rise (no sit pose)"

@@ -73,7 +73,7 @@
  },
  "rig_stress": "C:\\dev\\3-D-plus-AI\\design\\zuri\\rig_stress.json",
  "character": "zuri",
- "score": 7.72,
+ "score": 7.46,
  "ready": false,
  "hard_failures": [
   "read:silhouette"
@@ -296,8 +296,8 @@
    "hard": false,
    "weight": 1.0,
    "earned": 1.0,
-   "message": "mouth off the skin by 0% of its size",
-   "value": 0.0003333333333333334,
+   "message": "mouth off the skin by -0% of its size",
+   "value": -0.0019117647058823526,
    "fix": null
   },
   {
@@ -307,8 +307,19 @@
    "hard": true,
    "weight": 1.0,
    "earned": 1.0,
-   "message": "worst planted-foot drift 0.0 mm per frame (LH at frame 2; limit 31 mm) over 1158 planted foot-frame pairs",
-   "value": 0.0,
+   "message": "worst planted-foot drift (skin) 11.0 mm per frame (RH at frame 82; limit 29 mm) over 1170 planted foot-frame pairs",
+   "value": 0.011,
+   "fix": null
+  },
+  {
+   "id": "motion:foot_plant",
+   "group": "motion",
+   "passed": false,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 0.0,
+   "message": "a planted sole (skin) strays up to 60.6 mm within one stance (RF, frames 74-88; limit 29 mm, half the foot's radius) over 22 stance phases",
+   "value": 0.0606,
    "fix": null
   },
   {
@@ -318,7 +329,7 @@
    "hard": true,
    "weight": 1.0,
    "earned": 1.0,
-   "message": "feet sink up to 0.0 mm below their rest height (limit 23 mm)",
+   "message": "feet sink up to 0.0 mm below their rest height (limit 22 mm)",
    "value": 0.0,
    "fix": null
   },
