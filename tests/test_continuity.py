@@ -101,7 +101,9 @@ def test_landmarks_and_glides():
     speeds = [math.dist(a, b) for a, b in zip(near_corner, near_corner[1:])]
     assert min(speeds) > 0.1  # still moving through the turn
     (ax, ay), (bx, by) = near_corner[0], near_corner[-1]
-    assert abs(bx - ax) > 0.05 and abs(by - ay) > 0.05  # heading diagonally through the turn: an arc, no corner
+    assert (
+        abs(bx - ax) > 0.05 and abs(by - ay) > 0.05
+    )  # heading diagonally through the turn: an arc, no corner
 
 
 def test_in_frame_projects_through_the_camera():

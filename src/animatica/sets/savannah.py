@@ -238,8 +238,11 @@ def acacia_ops(tid: str, at: tuple[float, float], scale: float, seed: int) -> li
             }
         )
 
-    clump(cx, cy, top + 0.35 * s, 0.75 * s, 0.4)
-    for ring, n, rr in ((0.45, 6, 0.62), (0.85, 11, 0.55)):
+    # the umbrella thorn's crown is a wide, flat, layered table (owner 11-18: "better acacia canopies"):
+    # a thin top tier spread past the branch tips, and lower shelves under it, sky showing between
+    crown *= 1.25
+    clump(cx, cy, top + 0.35 * s, 0.8 * s, 0.26)
+    for ring, n, rr in ((0.4, 6, 0.6), (0.78, 12, 0.55), (1.08, 15, 0.45)):
         a0 = rng.uniform(0, 2 * math.pi)
         for k in range(n):
             if rng.random() < 0.22:
@@ -249,13 +252,13 @@ def acacia_ops(tid: str, at: tuple[float, float], scale: float, seed: int) -> li
             clump(
                 cx + math.cos(a) * d,
                 cy + math.sin(a) * d,
-                top + rng.uniform(0.05, 0.3) * s - ring * 0.25 * s,
+                top + rng.uniform(0.05, 0.22) * s - ring * 0.18 * s,
                 rr * s * rng.uniform(0.8, 1.15),
-                rng.uniform(0.32, 0.45),
+                rng.uniform(0.22, 0.3),
             )
     for t in tips:  # the lower tier, under and just outside each branch tip
         a = math.atan2(t[1] - fork[1], t[0] - fork[0]) + rng.uniform(-0.4, 0.4)
-        clump(t[0] + math.cos(a) * 0.4 * s, t[1] + math.sin(a) * 0.4 * s, top - 0.45 * s, 0.5 * s, 0.42)
+        clump(t[0] + math.cos(a) * 0.5 * s, t[1] + math.sin(a) * 0.5 * s, top - 0.5 * s, 0.55 * s, 0.26)
     ops += [
         {
             "op": "create_metaball_mesh",
@@ -290,6 +293,216 @@ def acacia_ops(tid: str, at: tuple[float, float], scale: float, seed: int) -> li
             ),
         },
     ]
+    return ops
+
+
+def baobab_ops(pid: str, height: float, width: float, seed: int, **obj: Any) -> list[dict[str, Any]]:
+    """A baobab centred on its origin (``height`` tall, base ``width`` across, like the cylinder it replaces):
+    a swollen bottle trunk with a fluted, pinkish-grey bark, and a crown of short, crooked, root-like branches
+    with a few sparse leaf tufts (dry season). ``obj`` (location, rotation, parent) places the trunk object."""
+    rng = random.Random(seed)
+    h, w = height, width / 2
+    z0 = -h / 2
+    prof = [(0.0, 1.0), (0.12, 0.93), (0.35, 0.98), (0.6, 0.86), (0.8, 0.68), (0.9, 0.55)]
+    verts = [
+        [round(rng.uniform(-0.03, 0.03) * w, 3), round(rng.uniform(-0.03, 0.03) * w, 3), round(z0 + u * h, 3)]
+        for u, _ in prof
+    ]
+    radii = [[round(w * k, 3), round(w * k * rng.uniform(0.92, 1.0), 3)] for _, k in prof]
+    edges = [[i, i + 1] for i in range(len(prof) - 1)]
+    top = len(verts) - 1
+    tips = []
+    nb = rng.randint(5, 7)
+    for b in range(nb):
+        a = 2 * math.pi * (b + rng.uniform(-0.25, 0.25)) / nb
+        reach = w * rng.uniform(1.0, 1.7)
+        rise = h * rng.uniform(0.14, 0.24)
+        bend = rng.uniform(-0.5, 0.5)
+        i = len(verts)
+        p1 = [math.cos(a) * reach * 0.5, math.sin(a) * reach * 0.5, z0 + 0.9 * h + rise * 0.55]
+        p2 = [math.cos(a + bend) * reach, math.sin(a + bend) * reach, z0 + 0.9 * h + rise]
+        verts += [[round(c, 3) for c in p1], [round(c, 3) for c in p2]]
+        radii += [[round(w * 0.2, 3)] * 2, [round(w * 0.07, 3)] * 2]
+        edges += [[top, i], [i, i + 1]]
+        tips.append(p2)
+        if rng.random() < 0.6:  # a twig
+            j = len(verts)
+            p3 = [
+                p2[0] + math.cos(a - 0.8) * w * 0.35,
+                p2[1] + math.sin(a - 0.8) * w * 0.35,
+                p2[2] + h * 0.06,
+            ]
+            verts.append([round(c, 3) for c in p3])
+            radii.append([round(w * 0.04, 3)] * 2)
+            edges.append([i + 1, j])
+    ops: list[dict[str, Any]] = [
+        {
+            "op": "create_skin_mesh",
+            "id": pid,
+            "vertices": verts,
+            "edges": edges,
+            "radii": radii,
+            "subdivisions": 2,
+            "tags": ["set", "tree"],
+            **obj,
+        },
+        {
+            "op": "set_material",
+            "targets": [pid],
+            "material": _m(
+                "#8E7868",
+                0.85,
+                noise=0.35,
+                noise_scale=2.0,
+                pattern="stripes",
+                pattern_color="#7A6556",
+                pattern_scale=9.0,
+                pattern_width=0.25,
+                pattern_axis="x",
+                pattern_distort=3.0,
+                bump=0.5,
+                name=f"{pid}_bark",
+            ),
+        },
+    ]
+    els = []
+    for t in tips:
+        if rng.random() < 0.55:
+            els.append(
+                {
+                    "type": "ellipsoid",
+                    "co": [round(t[0], 3), round(t[1], 3), round(t[2] + 0.1 * w, 3)],
+                    "radius": round(w * rng.uniform(0.35, 0.5) / 0.575, 3),
+                    "size": [1.0, 1.0, 0.45],
+                }
+            )
+    if els:
+        ops += [
+            {
+                "op": "create_metaball_mesh",
+                "id": f"{pid}_leaves",
+                "elements": els,
+                "resolution": round(0.08 * w, 3),
+                "parent": pid,
+                "tags": ["set", "tree"],
+            },
+            {
+                "op": "add_modifier",
+                "target": f"{pid}_leaves",
+                "type": "displace",
+                "params": {"noise_scale": 0.3 * w, "strength": 0.2 * w},
+            },
+            {
+                "op": "set_material",
+                "targets": [f"{pid}_leaves"],
+                "material": _m(
+                    "#5A7432",
+                    0.9,
+                    noise=0.5,
+                    noise_scale=3.0,
+                    grain=0.4,
+                    grain_scale=14.0,
+                    bump=0.6,
+                    name=f"{pid}_leaf",
+                ),
+            },
+        ]
+    return ops
+
+
+def log_ops(pid: str, length: float, width: float, seed: int, **obj: Any) -> list[dict[str, Any]]:
+    """A fallen log centred on its origin along its local Z (like the cylinder it replaces): a slightly
+    crooked, tapering trunk with knots and a broken branch stub, dark furrowed bark, pale cut ends."""
+    rng = random.Random(seed)
+    r = width / 2
+    n = 7
+    verts, radii = [], []
+    for k in range(n):
+        u = k / (n - 1)
+        verts.append(
+            [
+                round(rng.uniform(-0.04, 0.04) * r, 3),
+                round(rng.uniform(-0.06, 0.06) * r, 3),
+                round((u - 0.5) * length, 3),
+            ]
+        )
+        rr = r * (1.06 - 0.16 * u) * rng.uniform(0.95, 1.05)
+        radii.append([round(rr, 3), round(rr * 0.94, 3)])
+    edges = [[k, k + 1] for k in range(n - 1)]
+    i = len(verts)  # a broken branch stub
+    base = verts[2]
+    verts += [
+        [base[0] + r * 0.9, base[1], base[2] + r * 0.2],
+        [base[0] + r * 1.5, base[1] + r * 0.2, base[2] + r * 0.5],
+    ]
+    radii += [[round(r * 0.32, 3)] * 2, [round(r * 0.2, 3)] * 2]
+    edges += [[2, i], [i, i + 1]]
+    ops: list[dict[str, Any]] = [
+        {
+            "op": "create_skin_mesh",
+            "id": pid,
+            "vertices": [[round(c, 3) for c in v] for v in verts],
+            "edges": edges,
+            "radii": radii,
+            "subdivisions": 2,
+            "tags": ["set", "prop"],
+            **obj,
+        },
+        {
+            "op": "set_material",
+            "targets": [pid],
+            "material": _m(
+                "#5A4330",
+                0.9,
+                noise=0.4,
+                noise_scale=3.0,
+                pattern="stripes",
+                pattern_color="#3E2E21",
+                pattern_scale=14.0,
+                pattern_width=0.3,
+                pattern_axis="x",
+                pattern_distort=4.0,
+                bump=0.7,
+                name=f"{pid}_bark",
+            ),
+        },
+    ]
+    ends = []
+    for k, zc in ((0, verts[0][2]), (1, verts[n - 1][2])):
+        eid = f"{pid}_end{k}"
+        ends.append(eid)
+        rr = radii[0][0] if k == 0 else radii[n - 1][0]
+        ops.append(
+            {
+                "op": "create_primitive",
+                "id": eid,
+                "shape": "cylinder",
+                "size": [round(rr * 1.5, 3), round(rr * 1.42, 3), 0.02],
+                "location": [
+                    verts[0 if k == 0 else n - 1][0],
+                    verts[0 if k == 0 else n - 1][1],
+                    round(zc - (-1 if k == 0 else 1) * rr * 0.25, 3),
+                ],
+                "segments": 24,
+                "parent": pid,
+                "tags": ["set", "prop"],
+            }
+        )
+    ops.append(
+        {
+            "op": "set_material",
+            "targets": ends,
+            "material": _m(
+                "#B08A5E",
+                0.8,
+                noise=0.45,
+                noise_scale=12.0,
+                grain=0.4,
+                grain_scale=40.0,
+                name=f"{pid}_endgrain",
+            ),
+        }
+    )
     return ops
 
 
@@ -371,16 +584,42 @@ def _reed_corner(wx: float, wy: float, wr: float, at: float, u: float, v: float)
 def water_ops(wid: str, x: float, y: float, r: float, seed: int) -> list[dict[str, Any]]:
     """Watering hole: an irregular water surface ringed by dark wet mud, with reeds along one side."""
     rng = random.Random(seed)
-    n = 48
+    n = 72
     wob = [rng.uniform(0.85, 1.12) for _ in range(6)]
+    lobe = (rng.uniform(0, 2 * math.pi), rng.uniform(0, 2 * math.pi))
 
-    def ring(rad: float, z: float) -> list[list[float]]:
+    def shape(a: float) -> float:
+        """The outline's radius factor at angle ``a``: a lopsided, lobed puddle (owner 11-18: "natural,
+        irregular"), not an ellipse with a ripple. Shared by the water and its banks, so they nest."""
+        k = 1 + 0.12 * sum(math.sin(a * (j + 2) + wob[j] * 3) * (wob[j] - 1) * 4 for j in range(3))
+        return k + 0.13 * math.sin(2 * a + lobe[0]) + 0.07 * math.sin(3 * a + lobe[1])
+
+    def ring(rad: float, z: float, jitter: float = 0.0) -> list[list[float]]:
         pts = []
         for i in range(n):
             a = 2 * math.pi * i / n
-            k = 1 + 0.12 * sum(math.sin(a * (j + 2) + wob[j] * 3) * (wob[j] - 1) * 4 for j in range(3))
+            k = shape(a) * (1 + jitter * math.sin(a * 11 + wob[3] * 7) * math.sin(a * 5 + wob[4] * 5))
             pts.append([round(x + math.cos(a) * rad * k, 3), round(y + math.sin(a) * rad * k * 0.8, 3), z])
         return pts
+
+    def bank(bid: str, profile: list[tuple[float, float, float]]) -> dict[str, Any]:
+        """A ring band through ``profile`` = [(radius factor, height, edge jitter), ...] inside to out."""
+        verts: list[list[float]] = []
+        for f, z, jit in profile:
+            verts += ring(r * f, z, jit)
+        faces = []
+        for k in range(len(profile) - 1):
+            for i in range(n):
+                a, b = k * n + i, k * n + (i + 1) % n
+                faces.append([a, b, b + n, a + n])
+        return {
+            "op": "create_mesh",
+            "id": bid,
+            "vertices": verts,
+            "faces": faces,
+            "smooth": True,
+            "tags": ["set", "water"],
+        }
 
     def disc(did: str, rad: float, z: float) -> dict[str, Any]:
         rim = ring(rad, z)
@@ -396,19 +635,39 @@ def water_ops(wid: str, x: float, y: float, r: float, seed: int) -> list[dict[st
         }
 
     return [
-        disc(f"{wid}_mud", r * 1.35, 0.004),
+        disc(f"{wid}_mud", r * 1.05, -0.03),  # the wet floor under the water
+        # the wet mud bank: from under the waterline up to a trodden lip (hoof-churned, glistening)
+        bank(
+            f"{wid}_bank", [(0.94, -0.02, 0.0), (1.06, 0.035, 0.02), (1.16, 0.075, 0.04), (1.24, 0.07, 0.05)]
+        ),
         {
             "op": "set_material",
-            "targets": [f"{wid}_mud"],
+            "targets": [f"{wid}_mud", f"{wid}_bank"],
             "material": _m(
-                "#5A4630",
-                0.45,
-                noise=0.4,
-                noise_scale=4.0,
-                grain=0.3,
-                grain_scale=50.0,
-                bump=0.3,
+                "#4A3826",
+                0.35,
+                noise=0.45,
+                noise_scale=5.0,
+                grain=0.35,
+                grain_scale=60.0,
+                bump=0.55,
                 name=f"{wid}_mud",
+            ),
+        },
+        # the dry, cracked outer bank, sloping back down into the grass
+        bank(f"{wid}_dry", [(1.24, 0.07, 0.05), (1.36, 0.045, 0.08), (1.52, 0.0, 0.12), (1.62, -0.02, 0.14)]),
+        {
+            "op": "set_material",
+            "targets": [f"{wid}_dry"],
+            "material": _m(
+                "#8C6E4C",
+                0.95,
+                noise=0.5,
+                noise_scale=3.0,
+                grain=0.4,
+                grain_scale=35.0,
+                bump=0.5,
+                name=f"{wid}_dry",
             ),
         },
         disc(wid, r, 0.012),

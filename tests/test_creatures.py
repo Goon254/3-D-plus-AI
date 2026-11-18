@@ -322,7 +322,8 @@ def test_kiki_v4_rump_rides_the_hips_paws_only_darken_and_body_is_smoother():
     )
     # v5 (owner 11-17): soft, lighter crescents, not raccoon rings (v4's crisp 0.28 / #24180E read as a mask)
     assert sp.patch_soft > 0.28 and sp.eye_patch[0] != "#24180E"  # softer edge and lighter than v4's rings
-    assert sp.hunch > 0 and sp.torso[1] / sp.body_z > 0.198 / 0.118  # lower and longer than v4 on all fours
+    # v6 (owner 11-18): back to v4's body on all fours (v5's lower, longer, hunched one read as a weasel)
+    assert sp.hunch == 0 and sp.body_z == 0.118 and sp.torso == (0.086, 0.198, 0.09)
     g = Graph()
     a, b = g.node((0.0, 0.0, 0.0), 0.02), g.node((0.0, 0.2, 0.0), 0.02)
     g.link(a, b)
@@ -643,3 +644,21 @@ def test_the_meerkat_heel_pivots_so_her_hind_soles_stay_flat_in_the_sentinel():
                 assert v[1:] == [0.0, 0.0] and abs(v[0] - SENTINEL_PITCH * p.sentinel) < 0.01
         stood = [p.sentinel for p in plan]
         assert max(stood) > 0.99 and min(stood) == 0.0  # the take covers both the sentinel and all fours
+
+
+def test_a_rider_sits_on_the_mounts_back_and_turns_with_it():
+    """Kiki rides on Neema in SC 10 (owner 11-18): carried on the back, facing the mount's way."""
+    from animatica.creatures.build import build_creature
+    from animatica.creatures.gait import LocoFrame
+    from animatica.creatures.perform import back_point, ride_plan
+
+    giraffe = SPECIES["giraffe"]
+    _, kiki = build_creature("kiki", SPECIES["meerkat"])
+    seat = back_point(giraffe)
+    assert giraffe.torso[2] * 0.4 < seat[2] < giraffe.torso[2] and seat[1] < 0  # on top, toward the withers
+    mount = [LocoFrame((2.0, 1.0, giraffe.body_z + 0.02 * k), 90.0, 0.0, 0.0, 0.0, 1.0) for k in range(3)]
+    plan = ride_plan(kiki, mount, seat)
+    p = plan[2]
+    assert p.yaw == 90.0 and abs(p.root[2] - (giraffe.body_z + 0.04 + seat[2] + kiki.body_z)) < 1e-9
+    assert abs(p.root[0] - (2.0 - seat[1])) < 1e-9  # at yaw 90 the mount's forward (-Y) is world +X
+    assert all(f[2] > giraffe.body_z for f in p.feet.values()) and all(p.stance.values())

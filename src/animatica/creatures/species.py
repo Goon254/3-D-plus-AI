@@ -127,7 +127,7 @@ GLINT = {"base_color": "#FFFFFF", "emission": "#FFFFFF", "emission_strength": 2.
 
 _ZEBRA_STRIPES = {"pattern": "stripes", "pattern_color": "#1A1818", "pattern_width": 0.46}
 # the meerkat's rest height; her paw shade is painted at the ground (root z = -body_z), so both use this
-_MEERKAT_BODY_Z = 0.112  # v5: lower on all fours (owner 11-17)
+_MEERKAT_BODY_Z = 0.118  # v6 (owner 11-18): v4's height on all fours (v5's lower body read as a weasel)
 
 SPECIES: dict[str, Species] = {
     # About a year old: 1.1 m at the shoulder; big domed head (calves are head-heavy), barrel body,
@@ -348,30 +348,29 @@ SPECIES: dict[str, Species] = {
         # length/depth 2.04: a meerkat, not a weasel tube (2.8) nor a hamster ball (1.6)
         # v4: a slimmer barrel on shorter, slightly bent legs (v3 read as a mongoose: bulky body, stilts)
         body_z=_MEERKAT_BODY_Z,
-        # v5 (owner 11-17): on all fours a lower, longer body with hunched shoulders, like a real meerkat
-        torso=(0.086, 0.212, 0.085),
+        # v6 (owner 11-18): v4's body (v5's lower, longer, hunched one read as a weasel) with v5's patches
+        torso=(0.086, 0.198, 0.09),
         torso_at=(0.0, 0.0, 0.0),
         torso_rot=4.0,
-        hunch=0.4,
-        shoulder=(0.027, -0.076, -0.014),
-        hip=(0.031, 0.073, -0.012),
-        fore_foot=(0.028, -0.08),
-        hind_foot=(0.032, 0.075),
+        shoulder=(0.027, -0.07, -0.016),
+        hip=(0.031, 0.068, -0.012),
+        fore_foot=(0.028, -0.072),
+        hind_foot=(0.032, 0.07),
         leg_r=(0.016, 0.0125, 0.0185, 0.0135),  # v4: slimmer haunches (v3 had bulbous hips)
         foot=("paw", 0.012, 0.01),
         knee_bend=0.3,
         # the head is carried forward and only a little up on a neck that enters the back of the skull, so
         # there is a nape and a throat line (a mongoose-family profile, not a dog's raised head)
-        neck=Chain((0.0, -0.098, 0.022), (0.0, -0.148, 0.046), 2, 0.026, 0.017),
+        neck=Chain((0.0, -0.092, 0.018), (0.0, -0.142, 0.05), 2, 0.026, 0.017),
         # a big round head (head_body 0.45) that tapers into a pointed snout
-        head_at=(0.0, -0.19, 0.056),  # carried low and forward of the hunched shoulders
+        head_at=(0.0, -0.184, 0.062),
         head_size=(0.07, 0.096, 0.066),
         head_pitch=2.0,
         eye=(0.024, -0.022, 0.013, 0.0145),
         # small dark crescents on the sides of the head, at eye level, a little behind the eyes
         ear=("disc", (0.008, 0.021, 0.019), (0.033, 0.016, 0.012), (0.0, 0.0, -12.0)),
         # shorter than head+body; a thick base tapering to a fine dark tip
-        tail=Chain((0.0, 0.11, 0.004), (0.0, 0.27, -0.05), 4, 0.017, 0.0042),
+        tail=Chain((0.0, 0.104, 0.004), (0.0, 0.264, -0.05), 4, 0.017, 0.0042),
         tuft=0.007,  # the dark tail tip
         coat=_m(
             "#B68A56", 0.85, noise=0.18, noise_scale=40.0, fur=0.6, fur_scale=500.0, sheen_tint="#F2D2A0"

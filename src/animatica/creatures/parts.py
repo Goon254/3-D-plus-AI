@@ -36,6 +36,9 @@ def mane_line(sp: Any, stations: int = 25) -> list[tuple[tuple[float, float, flo
     return out
 
 
+TUFT = 0.05  # crest ripple of a toothed mane ridge (share of its height)
+
+
 def mane_ridge(
     line: list[tuple[tuple[float, float, float], float]],
     height: float,
@@ -64,11 +67,13 @@ def mane_ridge(
         )  # ends lower and thinner
         tooth = 1.0
         if teeth:
-            tooth = 1.0 + 0.22 * (1 if (i * teeth // max(1, n - 1)) % 2 == 0 else -1)
+            # a soft brush (owner 11-18): the crest ripples gently over ``teeth`` tufts instead of v3's
+            # alternating +-22 % saw teeth, which read as a serrated blade in the silhouette
+            tooth = 1.0 + TUFT * math.sin(math.pi * teeth * u)
         h = height * taper * tooth
         w = width * (0.6 + 0.4 * taper)
         root = r * (1 - sink)
-        for dist, half in ((root, w / 2), (r + h, w * 0.18)):
+        for dist, half in ((root, w / 2), (r + h, w * 0.3)):  # a rounder brush top
             c = (p[0] + up[0] * dist, p[1] + up[1] * dist, p[2] + up[2] * dist)
             verts.append([round(c[0] + half, 5), round(c[1], 5), round(c[2], 5)])
             verts.append([round(c[0] - half, 5), round(c[1], 5), round(c[2], 5)])

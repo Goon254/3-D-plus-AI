@@ -310,3 +310,49 @@ def walk_keys(
                     }
                 )
     return ops, plan
+
+
+def back_point(sp: Any, along: float = -0.15) -> tuple[float, float, float]:
+    """A spot on top of ``sp``'s back in its root frame (faces -Y): ``along`` x the torso length from the
+    torso's centre (negative: toward the shoulders), on the sloped ellipsoid's top surface."""
+    W, L, D = sp.torso
+    y = sp.torso_at[1] + along * L
+    dy = (y - sp.torso_at[1]) / (L / 2)
+    z = sp.torso_at[2] - (y - sp.torso_at[1]) * math.tan(math.radians(sp.torso_rot))
+    z += (D / 2) * math.sqrt(max(0.0, 1 - dy * dy))
+    return (sp.torso_at[0], y, z + 0.005)
+
+
+def ride_plan(
+    rider: CreatureMeta, mount_plan: list[LocoFrame], seat: tuple[float, float, float]
+) -> list[LocoFrame]:
+    """The rider's plan when it sits on a mount's back (Kiki on Neema, SC 10): every frame the rider's root
+    is carried at ``seat`` (the mount's root frame) and faces the mount's way, on all fours with its feet planted
+    on the back, so it bobs and turns with the mount's walk."""
+    out = []
+    for m in mount_plan:
+        a = math.radians(m.yaw)
+        c, s = math.cos(a), math.sin(a)
+
+        def world(x: float, y: float, m: LocoFrame = m, c: float = c, s: float = s) -> tuple[float, float]:
+            return (m.root[0] + x * c - y * s, m.root[1] + x * s + y * c)
+
+        sx, sy = world(seat[0], seat[1])
+        ground = m.root[2] + seat[2]
+        feet = {}
+        for leg, spot in rider.feet.items():
+            fx, fy = world(seat[0] + spot.x, seat[1] + spot.y)
+            feet[leg] = (fx, fy, ground + rider.foot_z)
+        out.append(
+            LocoFrame(
+                (sx, sy, ground + rider.body_z),
+                m.yaw,
+                m.pitch,
+                m.roll,
+                0.0,
+                0.0,
+                feet,
+                dict.fromkeys(feet, True),
+            )
+        )
+    return out

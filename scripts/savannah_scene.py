@@ -35,7 +35,7 @@ from animatica.creatures.build import build_creature  # noqa: E402
 from animatica.creatures.face import BROW_COLOR, face_keys, face_ops, refresh_rest  # noqa: E402
 from animatica.creatures.gait import GAITS, Waypoint  # noqa: E402
 from animatica.creatures.gesture import Gesture, Rig, acting_layers, gaze_track, spray_droplets  # noqa: E402
-from animatica.creatures.perform import plan_for, walk_keys  # noqa: E402
+from animatica.creatures.perform import back_point, plan_for, ride_plan, walk_keys  # noqa: E402
 from animatica.creatures.species import SPECIES  # noqa: E402
 from animatica.production import acting, continuity, sound  # noqa: E402
 from animatica.production.scene import (  # noqa: E402
@@ -50,7 +50,7 @@ from animatica.production.scene import (  # noqa: E402
     split_long,
     vfov,
 )
-from animatica.sets.savannah import Layout, bird_flock_ops, savannah_set  # noqa: E402
+from animatica.sets.savannah import Layout, baobab_ops, bird_flock_ops, log_ops, savannah_set  # noqa: E402
 
 FILM = ROOT / "films" / "savannah"
 QUALITY = {  # resolution, samples, frame step, device
@@ -196,23 +196,32 @@ def main() -> int:
     # simple props the set builder has no part for (the animatic's log and baobabs): primitives with a colour
     for k, pr in enumerate(lay.get("props", [])):
         pid = f"prop_{k}_{pr.get('name', pr['shape'])}"
-        ops += [
-            {
-                "op": "create_primitive",
-                "id": pid,
-                "shape": pr["shape"],
-                "size": pr["size"],
-                "location": pr["at"],
-                "rotation": pr.get("rot", [0, 0, 0]),
-                "smooth": True,
-                "segments": 24,
-            },
-            {
-                "op": "set_material",
-                "targets": [pid],
-                "material": {"base_color": pr.get("color", "#6B5137"), "roughness": 0.9, "name": pid},
-            },
-        ]
+        model = pr.get("model") or next(
+            (m for m in ("baobab", "log") if pr.get("name", "").startswith(m)), None
+        )
+        if model and pr["shape"] == "cylinder":  # Stage 2 (owner 11-18): real models for the stand-ins
+            make = {"baobab": baobab_ops, "log": log_ops}[model]
+            ops += make(
+                pid, pr["size"][2], pr["size"][0], 7 + k, location=pr["at"], rotation=pr.get("rot", [0, 0, 0])
+            )
+        else:
+            ops += [
+                {
+                    "op": "create_primitive",
+                    "id": pid,
+                    "shape": pr["shape"],
+                    "size": pr["size"],
+                    "location": pr["at"],
+                    "rotation": pr.get("rot", [0, 0, 0]),
+                    "smooth": True,
+                    "segments": 24,
+                },
+                {
+                    "op": "set_material",
+                    "targets": [pid],
+                    "material": {"base_color": pr.get("color", "#6B5137"), "roughness": 0.9, "name": pid},
+                },
+            ]
         for prop_, key in (("location", "moves"), ("scale", "scales")):  # [[seconds, [x, y, z]], ...]
             if pr.get(key):
                 ops.append(
@@ -317,6 +326,10 @@ def main() -> int:
             gaits[cid] = GAITS[actor.species].get(actor.gait) or GAITS[actor.species]["walk"]
             wps[cid] = (pts, yaw0)
             plans[cid] = plan_for(metas[cid], gaits[cid], pts, fps, yaw0)
+        for cid, actor in spec.cast.items():  # riders sit on their mount's back (planned above)
+            if actor.ride:
+                mount = spec.cast[actor.ride]
+                plans[cid] = ride_plan(metas[cid], plans[actor.ride], back_point(SPECIES[mount.species]))
         gestures = [
             Gesture(g.who, g.value, g.time(spec.lines), g.dur, g.target, g.amount) for g in spec.gestures
         ]

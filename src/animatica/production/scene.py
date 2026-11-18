@@ -78,6 +78,7 @@ class Actor:
     exit: dict[str, Any] | None = None
     story_exit: bool = False  # leaves the group at the end of this scene: must re-enter in a later scene
     extra: bool = False  # a background animal (not a character): no lines, no story continuity
+    ride: str | None = None  # rides on this cast member's back all scene (Kiki on Neema, SC 10)
     t_in: float = 0.0  # filled by schedule()
     t_out: float = 1e9
     open_from: float = 1e9  # an exit walk starts here: it may still be under way when the scene ends
@@ -169,6 +170,7 @@ def _actor(cid: str, d: dict[str, Any]) -> Actor:
         exit=d.get("exit"),
         story_exit=bool(d.get("story_exit", False)),
         extra=bool(d.get("extra", False)),
+        ride=d.get("ride"),
     )
 
 

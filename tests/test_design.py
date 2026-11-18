@@ -386,11 +386,17 @@ def test_a_board_mane_is_caught_and_the_ridge_passes():
     assert mane_shape(SPECIES["giraffe"]) is None
 
 
-def test_a_saw_tooth_crest_is_a_soft_failure_and_a_smooth_one_passes():
-    """The reviewer's v3 note (11-18 03:36): soften the saw-tooth mane into a brush."""
+def test_a_saw_tooth_crest_is_a_soft_failure_and_a_smooth_one_passes(monkeypatch):
+    """The reviewer's v3 note (11-18 03:36) and the owner's (11-18): soften the saw-tooth mane into a brush.
+    v3's +-22 % alternating teeth are caught; the brush (a gentle 5 % ripple over the tufts) passes."""
+    from animatica.creatures import parts
+
     brief, z = load_brief("zuri"), SPECIES["zebra"]
+    brush = {c.id: c for c in score(brief, z).checks}["shape:mane_brush"]
+    assert brush.passed and brush.value < 0.15
+    monkeypatch.setattr(parts, "TUFT", 0.6)  # a coarse, deep-toothed crest
     saw = {c.id: c for c in score(brief, z).checks}["shape:mane_brush"]
-    assert not saw.passed and not saw.hard and saw.value > 0.3
+    assert not saw.passed and not saw.hard and saw.value > 0.2
     smooth = {c.id: c for c in score(brief, replace(z, mane=(0.11, 0.06, 0))).checks}["shape:mane_brush"]
     assert smooth.passed
 
