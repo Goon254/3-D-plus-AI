@@ -32,71 +32,85 @@
  "summary": {
   "eye_embed": {
    "giraffe_eye_L": [
-    0.648,
-    0.648
+    0.574,
+    0.574
    ],
    "giraffe_eye_R": [
-    0.648,
-    0.648
+    0.574,
+    0.574
    ]
   },
   "skin_gap": {
-   "giraffe_lid_L_up": -0.042,
-   "giraffe_lid_L_lo": -0.632,
-   "giraffe_lid_R_up": -0.042,
-   "giraffe_lid_R_lo": -0.632,
-   "giraffe_brow_L": 0.083,
-   "giraffe_brow_R": 0.083,
+   "giraffe_lid_L_up": 0.104,
+   "giraffe_lid_L_lo": -0.556,
+   "giraffe_lid_R_up": 0.104,
+   "giraffe_lid_R_lo": -0.556,
+   "giraffe_brow_L": 0.209,
+   "giraffe_brow_R": 0.209,
    "giraffe_ear_L": -0.325,
    "giraffe_ear_R": -0.336,
-   "giraffe_muzzle": -0.467,
+   "giraffe_muzzle": -0.621,
    "giraffe_ossicone_L": -0.261,
    "giraffe_ossicone_R": -0.261,
    "giraffe_ossitip_L": -0.232,
    "giraffe_ossitip_R": -0.232,
-   "giraffe_mouth": -0.006
+   "giraffe_mouth": -0.0
   },
   "swim_p95_mm": {
    "giraffe_body": 0.0
   },
   "mouth_gap_range": [
-   -0.024,
-   -0.005
+   -0.015,
+   -0.0
   ],
+  "foot_slide_source": "skin",
   "foot_slide": {
+   "drift": 0.00801,
+   "leg": "RF",
+   "frame": 76,
+   "pairs": 1119
+  },
+  "foot_slide_bone": {
    "drift": 0.0,
    "leg": "LH",
    "frame": 2,
    "pairs": 1119
   },
+  "foot_plant": {
+   "travel": 0.05009,
+   "leg": "LH",
+   "start": 102,
+   "end": 128,
+   "phases": 19
+  },
   "worst_gap": {
    "giraffe_lid_L_up": {
-    "gap": -0.042,
-    "frame": 184,
-    "expression": "surprised"
+    "gap": 0.104,
+    "frame": 1,
+    "expression": "neutral"
    },
    "giraffe_lid_L_lo": {
-    "gap": -0.632,
-    "frame": 103,
+    "gap": -0.556,
+    "frame": 1,
     "expression": "neutral"
    },
    "giraffe_lid_R_up": {
-    "gap": -0.042,
-    "frame": 184,
-    "expression": "surprised"
+    "gap": 0.104,
+    "frame": 1,
+    "expression": "neutral"
    },
    "giraffe_lid_R_lo": {
-    "gap": -0.632,
-    "frame": 103,
+    "gap": -0.556,
+    "frame": 1,
     "expression": "neutral"
    },
    "giraffe_brow_L": {
-    "gap": 0.083,
+    "gap": 0.209,
     "frame": 220,
     "expression": "scared"
    },
    "giraffe_brow_R": {
-    "gap": 0.083,
+    "gap": 0.209,
     "frame": 220,
     "expression": "scared"
    },
@@ -111,7 +125,7 @@
     "expression": "worried"
    },
    "giraffe_muzzle": {
-    "gap": -0.467,
+    "gap": -0.621,
     "frame": 1,
     "expression": "neutral"
    },
@@ -147,9 +161,9 @@
   },
   {
    "id": "brow_float",
-   "passed": true,
+   "passed": false,
    "hard": false,
-   "message": "brow float: ok",
+   "message": "giraffe_brow_L floats 21% of its size off the skin; giraffe_brow_R floats 21% of its size off the skin",
    "value": null
   },
   {
@@ -178,14 +192,21 @@
    "passed": true,
    "hard": false,
    "message": "mouth off the skin by -0% of its size",
-   "value": -0.004587412587412587
+   "value": -0.00029370732065496735
   },
   {
    "id": "foot_slide",
    "passed": true,
    "hard": true,
-   "message": "worst planted-foot drift 0.0 mm per frame (LH at frame 2; limit 61 mm) over 1119 planted foot-frame pairs",
-   "value": 0.0
+   "message": "worst planted-foot drift (skin) 8.0 mm per frame (RF at frame 76; limit 61 mm) over 1119 planted foot-frame pairs",
+   "value": 0.008
+  },
+  {
+   "id": "foot_plant",
+   "passed": false,
+   "hard": false,
+   "message": "a planted sole (skin) strays up to 50.1 mm within one stance (LH, frames 102-128; limit 38 mm, half the foot's radius) over 19 stance phases",
+   "value": 0.0501
   },
   {
    "id": "ground",

@@ -14,8 +14,11 @@ Measured on the deformed rig in Blender, every third frame (eyes, lids, brows, m
 * ``brow_float`` / ``lid_float`` / ``mouth_float``: no face part leaves the skin;
 * ``part_float``: ears, mane, ossicones, muzzle and nose touch what they grow from (``creatures.qa.part_seating``);
 * ``texture_swim``: the coat pattern is pinned to the rest pose;
-* ``foot_slide``: a planted foot drifts less than :data:`SLIDE_MAX` of the leg, and at least one planted foot-frame
-  pair was measured (zero pairs fails: it would otherwise read as perfect);
+* ``foot_slide``: a planted foot drifts less than :data:`SLIDE_MAX` of the leg, measured on the deformed skin (each
+  foot's sole: the lowest skin under its lower-leg bone tip, followed frame to frame), and at least one planted foot-frame pair was
+  measured (zero pairs fails: it would otherwise read as perfect);
+* ``foot_plant`` (soft): over a whole stance phase the sole strays less than :data:`PLANT_MAX` of the foot's radius
+  from where it landed (a rigid hoof that rocks about its fetlock skates by its height times the leg's sweep);
 * ``ground``: no foot sinks into the ground;
 * ``sentinel_tail`` (meerkat): the tail tip reaches the ground in the sentinel (the tripod).
 
@@ -45,7 +48,7 @@ from animatica.audio import lipsync, tts  # noqa: E402
 from animatica.core.engine import BlenderSession  # noqa: E402
 from animatica.creatures.build import build_creature  # noqa: E402
 from animatica.creatures.face import BROW_COLOR, face_keys, face_ops, refresh_rest  # noqa: E402
-from animatica.creatures.gait import GAITS, LEGS, Waypoint, planted_drift  # noqa: E402
+from animatica.creatures.gait import GAITS, LEGS, Waypoint, planted_drift, planted_travel  # noqa: E402
 from animatica.creatures.gesture import Gesture, Rig, acting_layers  # noqa: E402
 from animatica.creatures.perform import plan_for, walk_keys  # noqa: E402
 from animatica.creatures.qa import part_seating, rig_checks, rig_probe  # noqa: E402
@@ -53,6 +56,7 @@ from animatica.creatures.species import CAST, SPECIES  # noqa: E402
 
 FPS = 24
 SLIDE_MAX = 0.04  # share of the leg length a planted foot may drift
+PLANT_MAX = 0.5  # share of the foot's radius a sole may stray over one stance phase (soft)
 SINK_MAX = 0.03  # share of the leg length a foot may sink below its rest height
 STAND, WALK, TURN = 0.8, 2.8, 1.4  # seconds
 MAX_TURN_S = 4.0  # longest the turn may take
@@ -184,6 +188,32 @@ def voice_line(species: str, out: Path) -> tuple[Path, list, float, str]:
     return wav, cues, dur, engine
 
 
+def skin_feet(meta: Any, sp: Any, ids: set[Any], plan: list[Any]) -> list[dict[str, Any]]:
+    """``inspect`` skin-foot probes, one per leg: the sole (the lowest skin within reach of the lower-leg bone
+    tip, on the body mesh and the leg's separate hoof or pad where it has one), chosen at the leg's first planted
+    frame so a raised paw (the meerkat's sentinel) doesn't pick up the belly under it. The reach stays under half
+    the distance to the nearest other foot."""
+    _shape, fr, fh = sp.foot
+    spacing = min(2 * sp.fore_foot[0], 2 * sp.hind_foot[0], abs(sp.hind_foot[1] - sp.fore_foot[1]))
+    radius = round(min(2.0 * fr + fh, 0.45 * spacing), 4)
+    out = []
+    for leg in LEGS:
+        first = next((k + 1 for k, p in enumerate(plan) if p.stance[leg]), 1)
+        meshes = [f"{meta.cid}_body"] + [m for m in (f"{meta.cid}_foot_{leg}",) if m in ids]
+        out.append(
+            {
+                "id": leg,
+                "bone": f"{meta.rig}:leg_{leg}_lo",
+                "meshes": meshes,
+                "k": 24,
+                "radius": radius,
+                "pick": "sole",
+                "ref_frame": first,
+            }
+        )
+    return out
+
+
 def _check(cid: str, passed: bool, message: str, value: Any = None, hard: bool = True) -> dict[str, Any]:
     return {"id": cid, "passed": bool(passed), "hard": hard, "message": message, "value": value}
 
@@ -268,6 +298,7 @@ def run(character: str, out: Path, render: bool, res: tuple[int, int], samples: 
                     "subjects": [meta.root],
                     "frames": list(range(1, n + 1)),
                     "bone_tails": tails,
+                    "skin_feet": skin_feet(meta, sp, {o.get("id") for o in ops}, plan),
                 }
             ],
         )["inspect"]["frames"]
@@ -332,22 +363,58 @@ def run(character: str, out: Path, render: bool, res: tuple[int, int], samples: 
         for i in range(1, n):
             if plan[i].stance[leg]:
                 sink = max(sink, meta.foot_z - fr[str(i + 1)]["bone_tails"][ref][2])
-    feet = [{leg: fr[str(k + 1)]["bone_tails"][f"{meta.rig}:leg_{leg}_lo"] for leg in LEGS} for k in range(n)]
-    drift = planted_drift([p.stance for p in plan], feet)
+    # foot slide on the deformed skin (the IK-pinned bone tail only proves the IK reached its target; review
+    # 11-17 21:36); the bone's drift is kept in the summary for comparison
+    stance = [p.stance for p in plan]
+    bone_feet = [
+        {leg: fr[str(k + 1)]["bone_tails"][f"{meta.rig}:leg_{leg}_lo"] for leg in LEGS} for k in range(n)
+    ]
+    skin = [fr[str(k + 1)].get("skin_feet") or {} for k in range(n)]
+    if all(skin[k].get(leg, {}).get("n") for k in range(n) for leg in LEGS):
+        feet = [{leg: skin[k][leg]["c"] for leg in LEGS} for k in range(n)]
+        summary["foot_slide_source"] = "skin"
+    else:  # an older adapter or no skin near a foot: fall back to the bone and say so
+        feet = bone_feet
+        summary["foot_slide_source"] = "bone"
+    drift = planted_drift(stance, feet)
     slide, pairs = float(drift["drift"]), int(drift["pairs"])
     summary["foot_slide"] = {k: round(v, 5) if isinstance(v, float) else v for k, v in drift.items()}
+    bone_drift = planted_drift(stance, bone_feet)
+    summary["foot_slide_bone"] = {
+        k: round(v, 5) if isinstance(v, float) else v for k, v in bone_drift.items()
+    }
     # zero stance pairs is "never measured", not "perfect": fail it (review 11-17 18:36)
     checks.append(
         _check(
             "foot_slide",
             pairs > 0 and slide <= SLIDE_MAX * meta.leg,
             (
-                f"worst planted-foot drift {slide * 1000:.1f} mm per frame ({drift['leg']} at frame {drift['frame']};"
+                f"worst planted-foot drift ({summary['foot_slide_source']}) {slide * 1000:.1f} mm per frame"
+                f" ({drift['leg']} at frame {drift['frame']};"
                 f" limit {SLIDE_MAX * meta.leg * 1000:.0f} mm) over {pairs} planted foot-frame pairs"
                 if pairs
                 else "no foot stayed planted for two frames: foot slide was not measured"
             ),
             round(slide, 4),
+        )
+    )
+    # the whole stance phase: a sole may creep under the per-frame limit, or a rigid hoof rock about its fetlock
+    travel = planted_travel(stance, feet)
+    summary["foot_plant"] = {k: round(v, 5) if isinstance(v, float) else v for k, v in travel.items()}
+    plant_max = PLANT_MAX * sp.foot[1]
+    checks.append(
+        _check(
+            "foot_plant",
+            int(travel["phases"]) > 0 and float(travel["travel"]) <= plant_max,
+            (
+                f"a planted sole ({summary['foot_slide_source']}) strays up to {float(travel['travel']) * 1000:.1f} mm"
+                f" within one stance ({travel['leg']}, frames {travel['start']}-{travel['end']}; limit"
+                f" {plant_max * 1000:.0f} mm, half the foot's radius) over {travel['phases']} stance phases"
+                if travel["phases"]
+                else "no stance phase lasted two frames: foot plant was not measured"
+            ),
+            round(float(travel["travel"]), 4),
+            False,
         )
     )
     checks.append(

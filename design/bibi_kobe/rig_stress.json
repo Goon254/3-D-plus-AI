@@ -41,11 +41,11 @@
   },
   "skin_gap": {
    "tortoise_lid_L_up": -0.187,
-   "tortoise_lid_L_lo": -0.652,
+   "tortoise_lid_L_lo": -0.635,
    "tortoise_lid_R_up": -0.187,
-   "tortoise_lid_R_lo": -0.653,
-   "tortoise_brow_L": 0.055,
-   "tortoise_brow_R": 0.055,
+   "tortoise_lid_R_lo": -0.635,
+   "tortoise_brow_L": 0.089,
+   "tortoise_brow_R": 0.089,
    "tortoise_mouth": -0.007
   },
   "swim_p95_mm": {
@@ -55,11 +55,25 @@
    -0.052,
    -0.005
   ],
+  "foot_slide_source": "skin",
   "foot_slide": {
+   "drift": 0.00496,
+   "leg": "RH",
+   "frame": 103,
+   "pairs": 1443
+  },
+  "foot_slide_bone": {
    "drift": 0.0,
    "leg": "LH",
    "frame": 2,
    "pairs": 1443
+  },
+  "foot_plant": {
+   "travel": 0.04967,
+   "leg": "LH",
+   "start": 113,
+   "end": 383,
+   "phases": 12
   },
   "worst_gap": {
    "tortoise_lid_L_up": {
@@ -68,9 +82,9 @@
     "expression": "surprised"
    },
    "tortoise_lid_L_lo": {
-    "gap": -0.652,
-    "frame": 91,
-    "expression": "neutral"
+    "gap": -0.635,
+    "frame": 352,
+    "expression": "happy"
    },
    "tortoise_lid_R_up": {
     "gap": -0.187,
@@ -78,19 +92,19 @@
     "expression": "surprised"
    },
    "tortoise_lid_R_lo": {
-    "gap": -0.653,
-    "frame": 91,
-    "expression": "neutral"
+    "gap": -0.635,
+    "frame": 352,
+    "expression": "happy"
    },
    "tortoise_brow_L": {
-    "gap": 0.055,
-    "frame": 250,
-    "expression": "determined"
+    "gap": 0.089,
+    "frame": 232,
+    "expression": "worried"
    },
    "tortoise_brow_R": {
-    "gap": 0.055,
-    "frame": 250,
-    "expression": "determined"
+    "gap": 0.089,
+    "frame": 232,
+    "expression": "worried"
    }
   }
  },
@@ -141,8 +155,15 @@
    "id": "foot_slide",
    "passed": true,
    "hard": true,
-   "message": "worst planted-foot drift 0.0 mm per frame (LH at frame 2; limit 6 mm) over 1443 planted foot-frame pairs",
-   "value": 0.0
+   "message": "worst planted-foot drift (skin) 5.0 mm per frame (RH at frame 103; limit 6 mm) over 1443 planted foot-frame pairs",
+   "value": 0.005
+  },
+  {
+   "id": "foot_plant",
+   "passed": false,
+   "hard": false,
+   "message": "a planted sole (skin) strays up to 49.7 mm within one stance (LH, frames 113-383; limit 25 mm, half the foot's radius) over 12 stance phases",
+   "value": 0.0497
   },
   {
    "id": "ground",

@@ -570,3 +570,61 @@ def test_cast_appendages_touch_their_base(fresh, species):
     assert set(seated) == {p["target"] for p in parts}
     issues, _ = rig_checks(rep, species, parts)
     assert not issues, [i.message for i in issues] + [f"limit {PART_GAP:.0%}"]
+
+
+def test_skin_feet_follow_the_skin_not_the_bone(fresh):
+    """A foot pinned by its bone but sliding in the skin: the bone tail stays put, the skin centroid moves."""
+    res = run(
+        fresh,
+        {"op": "create_empty", "id": "root", "location": [0, 0, 1.0]},
+        {
+            "op": "create_armature",
+            "id": "rig",
+            "parent": "root",
+            "bones": [{"name": "shin", "head": [0, 0, 0], "tail": [0, 0, -1.0]}],
+        },
+        {
+            "op": "create_primitive",
+            "id": "foot",
+            "shape": "cube",
+            "size": [0.2, 0.2, 0.2],
+            "location": [0, 0, 0.1],
+        },
+        {
+            "op": "create_primitive",
+            "id": "far",
+            "shape": "cube",
+            "size": [0.2, 0.2, 0.2],
+            "location": [3, 0, 0.1],
+        },
+        {"op": "set_frame_range", "start": 1, "end": 10},
+        {
+            "op": "insert_keyframes",
+            "target": "foot",
+            "property": "location",
+            "keys": [[1, [0, 0, 0.1], "LINEAR"], [10, [0.3, 0, 0.1], "LINEAR"]],
+        },
+        {
+            "op": "inspect",
+            "subjects": ["root"],
+            "frames": [1, 10],
+            "bone_tails": ["rig:shin"],
+            "skin_feet": [
+                {
+                    "id": "FL",
+                    "bone": "rig:shin",
+                    "meshes": ["foot", "far"],
+                    "k": 4,
+                    "radius": 0.5,
+                    "pick": "near",
+                }
+            ],
+        },
+    )
+    assert res.ok, res.errors
+    fr = res.data["inspect"]["frames"]
+    assert fr["1"]["bone_tails"]["rig:shin"] == pytest.approx(fr["10"]["bone_tails"]["rig:shin"], abs=1e-4)
+    a, b = fr["1"]["skin_feet"]["FL"], fr["10"]["skin_feet"]["FL"]
+    assert a["n"] == b["n"] == 4  # the four bottom corners of the near cube, none of the far one
+    assert a["min_z"] == pytest.approx(0.0, abs=1e-3)
+    assert b["c"][0] - a["c"][0] == pytest.approx(0.3, abs=1e-3)

@@ -340,6 +340,68 @@ class RenderOps:
                 }
         return out
 
+    def _skin_world(self, ids: set[str]) -> dict:
+        """World coordinates (n x 3) of each mesh's deformed vertices at the current frame."""
+        import numpy as np
+
+        dg = bpy.context.evaluated_depsgraph_get()
+        world: dict = {}
+        for oid in ids:
+            oe = self.obj(oid).evaluated_get(dg)
+            me = oe.to_mesh()
+            co = np.empty(len(me.vertices) * 3, dtype=np.float64)
+            me.vertices.foreach_get("co", co)
+            oe.to_mesh_clear()
+            mw = np.array(oe.matrix_world, dtype=np.float64)
+            world[oid] = co.reshape(-1, 3) @ mw[:3, :3].T + mw[:3, 3]
+        return world
+
+    def _skin_select(self, sf: dict) -> list:
+        """The skin vertices that stand for one foot, chosen at the current frame: ``pick="sole"`` takes the
+        ``k`` lowest within ``radius`` of the bone tip (the contact patch), ``"near"`` the ``k`` nearest it."""
+        import numpy as np
+
+        aid, _, bname = sf["bone"].partition(":")
+        arm = self.obj(aid)
+        pb = arm.pose.bones.get(bname)
+        if pb is None:
+            raise OpError(f"{aid!r} has no bone {bname!r}")
+        tip = np.array(arm.matrix_world @ pb.tail, dtype=np.float64)
+        world = self._skin_world(set(sf["meshes"]))
+        sole = sf.get("pick", "sole") == "sole"
+        cand = []
+        for oid in sf["meshes"]:
+            w = world[oid]
+            d = np.linalg.norm(w - tip, axis=1)
+            key = w[:, 2] if sole else d
+            cand += [(float(key[i]), oid, int(i)) for i in np.flatnonzero(d <= sf.get("radius", 1.0))]
+        cand.sort()
+        return [(oid, i) for _k, oid, i in cand[: sf.get("k", 24)]]
+
+    def _skin_feet(self, feet: list[dict], ref: dict) -> dict:
+        """Centroid and lowest point (world) of each foot's chosen skin vertices on the deformed meshes. The
+        vertices are chosen once (at ``ref_frame``, else the first inspected frame), so later frames follow the
+        same skin wherever the weights carry it."""
+        import numpy as np
+
+        for sf in feet:
+            if sf["id"] not in ref:
+                ref[sf["id"]] = self._skin_select(sf)
+        world = self._skin_world({oid for sf in feet for oid, _i in ref[sf["id"]]})
+        out = {}
+        for sf in feet:
+            sel = ref[sf["id"]]
+            if not sel:
+                out[sf["id"]] = {"n": 0}
+                continue
+            pts = np.array([world[oid][i] for oid, i in sel])
+            out[sf["id"]] = {
+                "c": [round(float(v), 5) for v in pts.mean(axis=0)],
+                "min_z": round(float(pts[:, 2].min()), 5),
+                "n": len(sel),
+            }
+        return out
+
     def op_inspect(self, op: dict, res: dict) -> None:
         from bpy_extras.object_utils import world_to_camera_view
 
@@ -351,6 +413,11 @@ class RenderOps:
         motion = {sid: 0.0 for sid in op["subjects"]}
         swim_ref: dict = {}  # texture coordinates at the first inspected frame, per mesh
         frame0 = s.frame_current
+        feet_ref: dict = {}  # the skin vertices chosen for each foot (at its ref_frame, else the first frame)
+        for sf in op.get("skin_feet") or []:
+            if sf.get("ref_frame") is not None:
+                s.frame_set(sf["ref_frame"])
+                feet_ref[sf["id"]] = self._skin_select(sf)
         for f in op["frames"]:
             s.frame_set(f)
             cam = self.obj(op["camera"]) if op.get("camera") else s.camera
@@ -401,6 +468,8 @@ class RenderOps:
                 fr["seating"] = self._seating(op["seating"])
             if op.get("swim"):
                 fr["swim"] = self._swim(op["swim"], swim_ref)
+            if op.get("skin_feet"):
+                fr["skin_feet"] = self._skin_feet(op["skin_feet"], feet_ref)
             if op.get("shape_key_target"):
                 t = self.obj(op["shape_key_target"])
                 if t.data and t.data.shape_keys:

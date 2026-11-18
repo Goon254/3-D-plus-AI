@@ -32,21 +32,21 @@
  "summary": {
   "eye_embed": {
    "elephant_eye_L": [
-    0.645,
-    0.645
+    0.549,
+    0.549
    ],
    "elephant_eye_R": [
-    0.645,
-    0.645
+    0.549,
+    0.549
    ]
   },
   "skin_gap": {
-   "elephant_lid_L_up": -0.488,
-   "elephant_lid_L_lo": -0.659,
-   "elephant_lid_R_up": -0.488,
-   "elephant_lid_R_lo": -0.659,
-   "elephant_brow_L": 0.01,
-   "elephant_brow_R": 0.01,
+   "elephant_lid_L_up": -0.244,
+   "elephant_lid_L_lo": -0.549,
+   "elephant_lid_R_up": -0.244,
+   "elephant_lid_R_lo": -0.549,
+   "elephant_brow_L": 0.011,
+   "elephant_brow_R": 0.011,
    "elephant_ear_L": 0.019,
    "elephant_ear_R": 0.028,
    "elephant_mouth": -0.048
@@ -56,43 +56,57 @@
    "elephant_trunk": 0.0
   },
   "mouth_gap_range": [
-   -0.188,
+   -0.187,
    -0.04
   ],
+  "foot_slide_source": "skin",
   "foot_slide": {
+   "drift": 0.01287,
+   "leg": "RF",
+   "frame": 106,
+   "pairs": 1277
+  },
+  "foot_slide_bone": {
    "drift": 0.0,
    "leg": "LH",
    "frame": 2,
    "pairs": 1277
   },
+  "foot_plant": {
+   "travel": 0.07668,
+   "leg": "LH",
+   "start": 122,
+   "end": 139,
+   "phases": 26
+  },
   "worst_gap": {
    "elephant_lid_L_up": {
-    "gap": -0.488,
-    "frame": 226,
-    "expression": "surprised"
+    "gap": -0.244,
+    "frame": 1,
+    "expression": "neutral"
    },
    "elephant_lid_L_lo": {
-    "gap": -0.659,
+    "gap": -0.549,
     "frame": 352,
     "expression": "happy"
    },
    "elephant_lid_R_up": {
-    "gap": -0.488,
-    "frame": 226,
-    "expression": "surprised"
+    "gap": -0.244,
+    "frame": 1,
+    "expression": "neutral"
    },
    "elephant_lid_R_lo": {
-    "gap": -0.659,
+    "gap": -0.549,
     "frame": 352,
     "expression": "happy"
    },
    "elephant_brow_L": {
-    "gap": 0.01,
+    "gap": 0.011,
     "frame": 316,
     "expression": "determined"
    },
    "elephant_brow_R": {
-    "gap": 0.01,
+    "gap": 0.011,
     "frame": 316,
     "expression": "determined"
    },
@@ -149,14 +163,21 @@
    "passed": true,
    "hard": false,
    "message": "mouth off the skin by -4% of its size",
-   "value": -0.0401270033262776
+   "value": -0.04001326739838379
   },
   {
    "id": "foot_slide",
    "passed": true,
    "hard": true,
-   "message": "worst planted-foot drift 0.0 mm per frame (LH at frame 2; limit 22 mm) over 1277 planted foot-frame pairs",
-   "value": 0.0
+   "message": "worst planted-foot drift (skin) 12.9 mm per frame (RF at frame 106; limit 22 mm) over 1277 planted foot-frame pairs",
+   "value": 0.0129
+  },
+  {
+   "id": "foot_plant",
+   "passed": false,
+   "hard": false,
+   "message": "a planted sole (skin) strays up to 76.7 mm within one stance (LH, frames 122-139; limit 60 mm, half the foot's radius) over 26 stance phases",
+   "value": 0.0767
   },
   {
    "id": "ground",

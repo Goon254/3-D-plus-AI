@@ -1,15 +1,15 @@
 {
  "character": "kiki",
  "species": "meerkat",
- "frames": 334,
- "seconds": 13.92,
+ "frames": 338,
+ "seconds": 14.08,
  "timeline": {
   "walk": 0.8,
   "turn": 3.6,
-  "stop": 6.17,
-  "expressions": 6.57,
-  "line": 10.47,
-  "line_end": 12.29
+  "stop": 6.35,
+  "expressions": 6.75,
+  "line": 10.65,
+  "line_end": 12.46
  },
  "expressions": [
   "neutral",
@@ -32,8 +32,8 @@
  "summary": {
   "eye_embed": {
    "meerkat_eye_L": [
-    0.649,
-    0.649
+    0.65,
+    0.65
    ],
    "meerkat_eye_R": [
     0.65,
@@ -41,13 +41,13 @@
    ]
   },
   "skin_gap": {
-   "meerkat_lid_L_up": -0.151,
-   "meerkat_lid_L_lo": -0.681,
-   "meerkat_lid_R_up": -0.15,
-   "meerkat_lid_R_lo": -0.682,
+   "meerkat_lid_L_up": -0.157,
+   "meerkat_lid_L_lo": -0.636,
+   "meerkat_lid_R_up": -0.159,
+   "meerkat_lid_R_lo": -0.636,
    "meerkat_brow_L": 0.066,
    "meerkat_brow_R": 0.066,
-   "meerkat_ear_L": -0.114,
+   "meerkat_ear_L": -0.113,
    "meerkat_ear_R": -0.112,
    "meerkat_muzzle": -0.361,
    "meerkat_nose": -0.038,
@@ -57,55 +57,69 @@
    "meerkat_body": 0.0
   },
   "mouth_gap_range": [
-   0.062,
-   0.091
+   0.059,
+   0.089
   ],
+  "foot_slide_source": "skin",
   "foot_slide": {
-   "drift": 0.00061,
+   "drift": 0.0021,
+   "leg": "RH",
+   "frame": 165,
+   "pairs": 724
+  },
+  "foot_slide_bone": {
+   "drift": 0.00067,
+   "leg": "LF",
+   "frame": 156,
+   "pairs": 724
+  },
+  "foot_plant": {
+   "travel": 0.00769,
    "leg": "RF",
-   "frame": 152,
-   "pairs": 710
+   "start": 79,
+   "end": 85,
+   "phases": 44
   },
   "worst_gap": {
    "meerkat_lid_L_up": {
-    "gap": -0.151,
-    "frame": 196,
+    "gap": -0.157,
+    "frame": 199,
     "expression": "surprised"
    },
    "meerkat_lid_L_lo": {
-    "gap": -0.681,
+    "gap": -0.636,
     "frame": 319,
     "expression": "happy"
    },
    "meerkat_lid_R_up": {
-    "gap": -0.15,
-    "frame": 196,
+    "gap": -0.159,
+    "frame": 199,
     "expression": "surprised"
    },
    "meerkat_lid_R_lo": {
-    "gap": -0.682,
+    "gap": -0.636,
     "frame": 319,
     "expression": "happy"
    },
    "meerkat_brow_L": {
     "gap": 0.066,
-    "frame": 214,
+    "frame": 220,
     "expression": "determined"
    },
    "meerkat_brow_R": {
     "gap": 0.066,
-    "frame": 214,
+    "frame": 220,
     "expression": "determined"
    },
    "meerkat_ear_L": {
-    "gap": -0.114,
-    "frame": 61,
+    "gap": -0.113,
+    "frame": 55,
     "expression": "neutral"
    },
    "meerkat_ear_R": {
     "gap": -0.112,
-    "frame": 181,
-    "expression": "sad"
+    "frame": 178,
+    "expression": "happy"
    },
    "meerkat_muzzle": {
     "gap": -0.361,
@@ -160,14 +174,21 @@
    "passed": true,
    "hard": false,
    "message": "mouth off the skin by 9% of its size",
-   "value": 0.0906801007556675
+   "value": 0.08940231039678553
   },
   {
    "id": "foot_slide",
    "passed": true,
    "hard": true,
-   "message": "worst planted-foot drift 0.6 mm per frame (RF at frame 152; limit 4 mm) over 710 planted foot-frame pairs",
-   "value": 0.0006
+   "message": "worst planted-foot drift (skin) 2.1 mm per frame (RH at frame 165; limit 4 mm) over 724 planted foot-frame pairs",
+   "value": 0.0021
+  },
+  {
+   "id": "foot_plant",
+   "passed": false,
+   "hard": false,
+   "message": "a planted sole (skin) strays up to 7.7 mm within one stance (RF, frames 79-85; limit 6 mm, half the foot's radius) over 44 stance phases",
+   "value": 0.0077
   },
   {
    "id": "ground",
@@ -180,8 +201,8 @@
    "id": "sentinel_tail",
    "passed": true,
    "hard": true,
-   "message": "in the sentinel the tail tip comes down to -12 mm (the tripod wants the ground)",
-   "value": -0.0121
+   "message": "in the sentinel the tail tip comes down to -18 mm (the tripod wants the ground)",
+   "value": -0.018
   }
  ],
  "passed": true

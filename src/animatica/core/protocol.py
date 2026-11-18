@@ -606,6 +606,24 @@ class SeatPair(BaseModel):
     kind: Literal["eye", "skin"] = "eye"
 
 
+class SkinFoot(BaseModel):
+    """A foot measured on the deformed skin, not on its bone: at ``ref_frame`` (else the first inspected frame)
+    ``k`` vertices of ``meshes`` within ``radius`` of the tip of ``bone`` (``"armature:bone"``) are chosen
+    (``sole``: the lowest, the contact patch; ``near``: the nearest), and every frame reports their world
+    centroid and lowest point. An IK-pinned bone tail proves only that the IK reached its
+    target; the skin shows whether the weights let the foot slide."""
+
+    model_config = ConfigDict(extra="forbid")
+    id: str
+    bone: str = Field(pattern=r"^[^:]+:.+$")
+    meshes: list[str] = Field(min_length=1)
+    k: int = Field(default=24, ge=1, le=500)
+    radius: float = Field(default=1.0, gt=0)
+    pick: Literal["sole", "near"] = "sole"
+    # the frame at which the vertices are chosen (e.g. the foot's first planted frame); default: the first frame
+    ref_frame: int | None = None
+
+
 class Inspect(_Op):
     """Cheap geometric checks used by the Critic (frustum, floor contact, motion, mouth activity, eyes seated
     in their sockets, textures pinned to the skin)."""
@@ -625,10 +643,15 @@ class Inspect(_Op):
     # report per frame how far the texture coordinates of these deforming meshes drift from the first frame
     # (rest_position when the material reads it, else Object coordinates = the deformed position)
     swim: list[str] = Field(default_factory=list)
+    # report per frame the centroid and lowest point of each foot's skin vertices (foot slide on the skin)
+    skin_feet: list[SkinFoot] = Field(default_factory=list)
 
     def references(self) -> list[str]:
         refs = list(self.subjects) + ([self.camera] if self.camera else [])
         refs += [x for sp in self.seating for x in (sp.target, sp.surface)] + list(self.swim)
+        refs += [m for sf in self.skin_feet for m in sf.meshes] + [
+            sf.bone.split(":", 1)[0] for sf in self.skin_feet
+        ]
         return refs + ([self.facing_target] if self.facing_target else [])
 
 

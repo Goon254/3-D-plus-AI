@@ -6,7 +6,15 @@ import pytest
 
 from animatica.core.protocol import validate_batch
 from animatica.creatures.build import build_creature
-from animatica.creatures.gait import GAITS, LEGS, Waypoint, foot_slide, plan_locomotion, planted_drift
+from animatica.creatures.gait import (
+    GAITS,
+    LEGS,
+    Waypoint,
+    foot_slide,
+    plan_locomotion,
+    planted_drift,
+    planted_travel,
+)
 from animatica.creatures.perform import walk_keys
 from animatica.creatures.species import SPECIES
 
@@ -518,3 +526,18 @@ def test_zuri_v3_mane_follows_the_neck_and_hooves_are_real_hooves():
     assert len(bind.get("bones") or []) >= 4  # skinned along the neck chain: it bends with the neck
     feet = [o for o in ops if o.get("id", "").startswith("zebra_foot_")]
     assert len(feet) == 4 and all(o["op"] == "create_mesh" for o in feet) and mane["op"] == "create_mesh"
+
+
+def test_planted_travel_catches_a_sole_that_creeps_under_the_per_frame_limit():
+    """1 mm per frame for 30 frames passes a per-frame check but strays 29 mm over the stance (review 11-18 03:36)."""
+    n = 40
+    stance = [{leg: (leg == "LF" and 5 <= k < 35) or leg != "LF" for leg in LEGS} for k in range(n)]
+    feet = [{leg: ((0.001 * k if leg == "LF" else 0.0), 0.0, 0.0) for leg in LEGS} for k in range(n)]
+    assert planted_drift(stance, feet)["drift"] == pytest.approx(0.001)
+    t = planted_travel(stance, feet)
+    assert t["leg"] == "LF" and (t["start"], t["end"]) == (6, 35)
+    assert t["travel"] == pytest.approx(0.029)
+    assert t["phases"] == 4  # one per leg; the other three never move
+    # a foot that never stays planted for two frames is "not measured", not "perfect"
+    lone = [{leg: k % 2 == 0 for leg in LEGS} for k in range(n)]
+    assert planted_travel(lone, feet)["phases"] == 0

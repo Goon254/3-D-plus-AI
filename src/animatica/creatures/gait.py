@@ -412,3 +412,31 @@ def planted_drift(
             if not worst["leg"] or d > float(worst["drift"]):
                 worst.update(drift=d, leg=leg, frame=k + 1)
     return worst
+
+
+def planted_travel(
+    stance: list[dict[str, bool]], feet: list[dict[str, tuple[float, ...]]]
+) -> dict[str, float | int | str]:
+    """How far a planted foot strays over one whole stance phase (furthest from where it landed, horizontally),
+    worst over the take, plus how many phases were measured. A per-frame limit (:func:`planted_drift`) misses a
+    sole that creeps a few millimetres every frame, or a rigid hoof that rocks about its fetlock as the leg
+    sweeps back: the contact patch then skates by the hoof's height times the sweep angle."""
+    worst: dict[str, float | int | str] = {"travel": 0.0, "leg": "", "start": 0, "end": 0, "phases": 0}
+    n = min(len(stance), len(feet))
+    for leg in LEGS:
+        k = 0
+        while k < n:
+            if not stance[k].get(leg):
+                k += 1
+                continue
+            j = k
+            while j + 1 < n and stance[j + 1].get(leg):
+                j += 1
+            if j > k:
+                a = feet[k][leg]
+                d = max(math.hypot(feet[m][leg][0] - a[0], feet[m][leg][1] - a[1]) for m in range(k, j + 1))
+                worst["phases"] = int(worst["phases"]) + 1
+                if not worst["leg"] or d > float(worst["travel"]):
+                    worst.update(travel=d, leg=leg, start=k + 1, end=j + 1)
+            k = j + 1
+    return worst
