@@ -60,3 +60,15 @@ def test_talk_layer_moves_the_head_on_the_accents():
     quiet, beat = head[6], head[25]  # 0.25 s vs just after the accent at 1.0 s
     dev = lambda m: sum(abs(m[i][j] - (1.0 if i == j else 0.0)) for i in range(3) for j in range(3))  # noqa: E731
     assert dev(beat) > dev(quiet) + 0.02
+
+
+def test_a_speaker_facing_away_cheats_toward_the_cameras():
+    from animatica.creatures.gait import LocoFrame
+    from animatica.creatures.gesture import gaze_track
+
+    away = [LocoFrame((0.0, 0.0, 1.0), 180.0, 0.0, 0.0, 0.0, 0.0) for _ in range(72)]  # facing +Y, cameras at -Y
+    line = Line("tembo", "I can walk.", start=0.5, end=2.5)
+    still = gaze_track("tembo", {"tembo": away}, [line], [], 24)
+    cheat = gaze_track("tembo", {"tembo": away}, [line], [], 24, lens=(0.0, -1.0))
+    assert max(abs(a) for a in still) < 1e-6
+    assert max(abs(a) for a in cheat[24:60]) > 30  # the head comes round toward the lens while talking

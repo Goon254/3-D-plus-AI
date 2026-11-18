@@ -29,6 +29,9 @@ NECK_SHARE = 0.55
 MAX_TURN = 70.0
 EYELINE_TAU = 0.11  # seconds: heads settle on a new speaker with this time constant (no snaps)
 SPEAKER_SHARE = 0.45  # a speaker turns this much of the way toward the addressee (cheated to the lens)
+LENS_CHEAT = (
+    0.4  # ... and this much toward the cameras while talking (owner 11-18: lines delivered to the back)
+)
 
 KINDS = ("look_at", "head_duck", "ears_droop", "trunk_drink", "trunk_spray", "head_shake", "nod", "talk")
 
@@ -167,13 +170,16 @@ def gaze_track(
     gestures: list[Gesture],
     fps: int,
     speaker_targets: bool = True,
+    lens: tuple[float, float] | None = None,
 ) -> list[float]:
     """Per frame: how far (degrees, + = to the animal's left/counter-clockwise) ``me`` turns its head.
 
     Listeners look at whoever is speaking (from just before the first word to half a second after the
     last), a speaker turns part of the way toward the line's addressee (``line.to``), and explicit
     ``look_at`` gestures override both. The target angle and its on/off weight are both low-passed, so
-    heads glide between speakers instead of snapping.
+    heads glide between speakers instead of snapping. ``lens`` (world XY direction from the action toward the
+    cameras): a speaker also cheats toward it (``LENS_CHEAT`` of the way), so a line is never delivered to
+    the back of the set.
     """
     plan = plans[me]
     n = len(plan)
@@ -184,20 +190,32 @@ def gaze_track(
     for k in range(n):
         t = k / fps
         tgt, share = None, 1.0
+        cheat = False
         for ln in lines:
             if ln.start - 0.15 <= t <= ln.end + 0.5:
                 if ln.who != me and ln.who in plans:
                     tgt, share = ln.who, 1.0
                 elif ln.who == me and speaker_targets and getattr(ln, "to", "") in plans:
                     tgt, share = ln.to, SPEAKER_SHARE
+                if ln.who == me and lens is not None and not getattr(ln, "offscreen", False):
+                    cheat = True
         for g in looks:
             if g.start <= t <= g.start + g.dur:
                 tgt, share = g.target, g.amount
         want_w = 0.0
-        if tgt is not None and tgt != me:
+        if cheat and (tgt is None or tgt == me):  # talking to everyone: toward the lens
+            p = plan[k]
+            d = wrap(heading_to((0.0, 0.0), lens) - p.yaw)  # type: ignore[arg-type]
+            d = max(-MAX_TURN, min(MAX_TURN, d)) * LENS_CHEAT * 1.4
+            ang += alpha * (d - ang) if w > 0.02 else (d - ang)
+            want_w = 1.0
+        elif tgt is not None and tgt != me:
             p, q = plan[k], plans[tgt][min(k, len(plans[tgt]) - 1)]
             d = wrap(heading_to(p.root, q.root) - p.yaw)
             d = max(-MAX_TURN, min(MAX_TURN, d)) * share
+            if cheat:  # between the addressee and the lens
+                dl_ = wrap(heading_to((0.0, 0.0), lens) - p.yaw)  # type: ignore[arg-type]
+                d = (1 - LENS_CHEAT) * d + LENS_CHEAT * max(-MAX_TURN, min(MAX_TURN, dl_))
             ang += alpha * (d - ang) if w > 0.02 else (d - ang)  # first look: aim, then fade the weight in
             want_w = 1.0
         # two cascaded low-passes: the turn eases in and out instead of starting at full speed

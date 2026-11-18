@@ -329,7 +329,9 @@ def main() -> int:
         for k, (cid, actor) in enumerate(spec.cast.items()):
             meta = metas[cid]
             pts, yaw0 = wps[cid]
-            gaze = gaze_track(cid, plans, spec.lines, gestures, fps) if spec.eyelines else None
+            gaze = (
+                gaze_track(cid, plans, spec.lines, gestures, fps, lens=(0.0, -1.0)) if spec.eyelines else None
+            )
             rig = Rig(actor.species, meta.bone_dirs, meta.neck_bones, meta.trunk_bones, meta.ear_bones)
             mine = [g for g in gestures if g.who == cid]
             overlay = acting_layers(rig, plans[cid], gaze, mine, fps, targets=plans)
