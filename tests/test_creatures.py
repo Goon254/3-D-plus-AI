@@ -14,6 +14,7 @@ from animatica.creatures.gait import (
     plan_locomotion,
     planted_drift,
     planted_travel,
+    sentinel_paws,
 )
 from animatica.creatures.perform import walk_keys
 from animatica.creatures.species import SPECIES
@@ -541,6 +542,44 @@ def test_planted_travel_catches_a_sole_that_creeps_under_the_per_frame_limit():
     # a foot that never stays planted for two frames is "not measured", not "perfect"
     lone = [{leg: k % 2 == 0 for leg in LEGS} for k in range(n)]
     assert planted_travel(lone, feet)["phases"] == 0
+
+
+def test_sentinel_paws_tell_a_tuck_from_hanging_arms():
+    """Review 11-18 12:36: the sentinel's paw tuck was recorded only as a critique. Kiki's posed rig measures a
+    tuck at lift 1.97, reach 0.52, head-to-paw 1.13-1.34 chains; arms hanging straight down measure reach 0.80 and
+    head-to-paw 1.75. Synthetic upright torso: hips at z=1, chest at z=1.3, head at z=1.8, chain 0.5."""
+
+    def frame(paw_y: float, paw_z: float, dz: float = 0.0) -> dict:
+        return {
+            "hips": (0.0, 0.0, 1.0),
+            "chest": (0.0, 0.0, 1.3),
+            "head": (0.0, -0.05, 1.8),
+            "LF": (0.05, paw_y, paw_z),
+            "RF": (-0.05, paw_y, paw_z + dz),
+        }
+
+    tucked = sentinel_paws([frame(-0.25, 1.25)] * 3, 0.0, 0.5)
+    assert tucked["frames"] == 3
+    assert tucked["lift"] == pytest.approx(2.5) and tucked["reach"] < 0.65
+    assert 0.4 <= tucked["chin"] <= tucked["drop"] <= 1.55 and tucked["spread"] == 0.0
+    hanging = sentinel_paws([frame(-0.15, 0.9)], 0.0, 0.5)  # arms straight down beside the belly
+    assert hanging["drop"] > 1.55
+    held_out = sentinel_paws([frame(-0.45, 1.25)], 0.0, 0.5)  # reaching forward
+    assert held_out["reach"] > 0.65
+    lopsided = sentinel_paws([frame(-0.25, 1.25, dz=0.12)], 0.0, 0.5)
+    assert lopsided["spread"] > 0.15
+    # never stood up: nothing measured, which the stress test fails rather than passes
+    assert sentinel_paws([], 0.0, 0.5)["frames"] == 0
+
+
+def test_kikis_stress_report_measures_the_paw_tuck():
+    """The stored report carries the hard ``sentinel_paws`` check, and it passes (DECISIONS #72)."""
+    import json
+    from pathlib import Path
+
+    rep = json.loads((Path(__file__).resolve().parents[1] / "design/kiki/rig_stress.json").read_text("utf-8"))
+    paws = next(c for c in rep["checks"] if c["id"] == "sentinel_paws")
+    assert paws["hard"] and paws["passed"] and paws["value"]["frames"] > 0
 
 
 def test_planted_feet_hang_level_from_the_ankle():

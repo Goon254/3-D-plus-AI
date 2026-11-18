@@ -20,7 +20,9 @@ Measured on the deformed rig in Blender, every third frame (eyes, lids, brows, m
 * ``foot_plant``: over a whole stance phase the sole strays less than :data:`PLANT_MAX` of the foot's radius
   from where it landed (a rigid hoof that rocks about its fetlock skates by its height times the leg's sweep);
 * ``ground``: no foot sinks into the ground;
-* ``sentinel_tail`` (meerkat): the tail tip reaches the ground in the sentinel (the tripod).
+* ``sentinel_tail`` (meerkat): the tail tip reaches the ground in the sentinel (the tripod);
+* ``sentinel_paws`` (meerkat): in the sentinel the fore paws are tucked high at the chest, close to the torso, level
+  with each other and well off the ground (``creatures.gait.sentinel_paws``), not hanging or held out.
 
 Not measured: mesh-mesh intersections in general (only the face parts' contact and the feet against the ground).
 The report's ``checks`` feed the rubric (``animatica.design.rubric.score(..., stress=report)``).
@@ -48,7 +50,14 @@ from animatica.audio import lipsync, tts  # noqa: E402
 from animatica.core.engine import BlenderSession  # noqa: E402
 from animatica.creatures.build import build_creature  # noqa: E402
 from animatica.creatures.face import BROW_COLOR, face_keys, face_ops, refresh_rest  # noqa: E402
-from animatica.creatures.gait import GAITS, LEGS, Waypoint, planted_drift, planted_travel  # noqa: E402
+from animatica.creatures.gait import (  # noqa: E402
+    GAITS,
+    LEGS,
+    Waypoint,
+    planted_drift,
+    planted_travel,
+    sentinel_paws,
+)
 from animatica.creatures.gesture import Gesture, Rig, acting_layers  # noqa: E402
 from animatica.creatures.perform import plan_for, walk_keys  # noqa: E402
 from animatica.creatures.qa import part_seating, rig_checks, rig_probe  # noqa: E402
@@ -60,6 +69,11 @@ SLIDE_MAX = 0.04  # share of the leg length a planted foot may drift
 PLANT_MAX = 0.5  # share of the foot's radius a sole may stray over one stance phase (soft)
 SINK_MAX = 0.03  # share of the leg length a foot may sink below its rest height
 STAND, WALK, TURN = 0.8, 2.8, 1.4  # seconds
+# the sentinel's paw tuck, in shares of the fore-leg chain: well off the ground, close to the torso's axis, high
+# on the chest (under the chin but not at the face), level with each other. Kiki v5 measures lift 1.97, reach
+# 0.52, head-to-paw 1.13-1.34, spread 0.00; with the tuck switched off her arms hang straight down: reach 0.80,
+# head-to-paw 1.75-1.93 (both fail)
+PAW_LIFT, PAW_REACH, PAW_CHIN, PAW_SPREAD = 1.0, 0.65, (0.4, 1.55), 0.15
 MAX_TURN_S = 4.0  # longest the turn may take
 EXPR_EACH = 0.4  # seconds per expression in the expression run
 
@@ -298,6 +312,7 @@ def run(
         # feet (and the sentinel's tail tip): every frame
         head = f"{meta.rig}:head"
         tails = [f"{meta.rig}:leg_{leg}_lo" for leg in LEGS] + [f"{meta.rig}:{meta.tail_bones[-1]}", head]
+        tails += [f"{meta.rig}:hips", f"{meta.rig}:chest"]  # the torso's axis (the sentinel's paw tuck)
         fr = batch(
             "feet",
             [
@@ -455,6 +470,49 @@ def run(
                 z <= 0.02 + meta.foot_z,
                 f"in the sentinel the tail tip comes down to {z * 1000:.0f} mm (the tripod wants the ground)",
                 round(z, 4),
+            )
+        )
+        # the paws tucked at the chest (knowledge/species/meerkat.md), measured on the posed rig, not only
+        # recorded as a critique (review 11-18 12:36)
+        bt = [fr[str(k)]["bone_tails"] for k in stood]
+        chain = meta.joints["LF"][3]
+        paws = sentinel_paws(
+            [
+                {
+                    "hips": b[f"{meta.rig}:hips"],
+                    "chest": b[f"{meta.rig}:chest"],
+                    "head": b[head],
+                    "LF": b[f"{meta.rig}:leg_LF_lo"],
+                    "RF": b[f"{meta.rig}:leg_RF_lo"],
+                }
+                for b in bt
+            ],
+            meta.foot_z,
+            chain,
+        )
+        summary["sentinel_paws"] = {k: round(v, 3) if isinstance(v, float) else v for k, v in paws.items()}
+        ok = (
+            int(paws["frames"]) > 0
+            and float(paws["lift"]) >= PAW_LIFT
+            and float(paws["reach"]) <= PAW_REACH
+            and float(paws["chin"]) >= PAW_CHIN[0]
+            and float(paws["drop"]) <= PAW_CHIN[1]
+            and float(paws["spread"]) <= PAW_SPREAD
+        )
+        checks.append(
+            _check(
+                "sentinel_paws",
+                ok,
+                (
+                    f"in the sentinel the fore paws ride {float(paws['lift']):.2f} legs off the ground (want"
+                    f" >= {PAW_LIFT}), {float(paws['reach']):.2f} legs from the torso's axis (<= {PAW_REACH}),"
+                    f" {float(paws['chin']):.2f}-{float(paws['drop']):.2f} legs under the head ({PAW_CHIN[0]}-{PAW_CHIN[1]}),"
+                    f" level within"
+                    f" {float(paws['spread']):.2f} (<= {PAW_SPREAD}) over {paws['frames']} frames"
+                    if paws["frames"]
+                    else "she never stood fully up: the paw tuck was not measured"
+                ),
+                {k: v for k, v in summary["sentinel_paws"].items()},
             )
         )
     # where each face part is furthest off the skin: the frame and the expression showing then

@@ -440,3 +440,48 @@ def planted_travel(
                     worst.update(travel=d, leg=leg, start=k + 1, end=j + 1)
             k = j + 1
     return worst
+
+
+def sentinel_paws(
+    frames: list[dict[str, tuple[float, ...]]], ground_z: float, chain: float
+) -> dict[str, float | int]:
+    """How the fore paws sit in the meerkat's sentinel (paws tucked at the chest), worst over the given frames.
+
+    Each frame maps ``hips``/``chest`` (the torso's spine: body centre and front), ``head`` and the fore paws
+    ``LF``/``RF`` (lower-leg bone tips) to world points; lengths are shares of the fore-leg ``chain``:
+
+    * ``lift``: the lowest paw's height above the ground (a paw left on the ground is not tucked);
+    * ``reach``: the furthest paw's distance from the torso's axis (a paw held out, or dangling forward);
+    * ``chin`` / ``drop``: the smallest and the biggest drop from the head down to a paw (paws at or over the face
+      read as begging; paws far below it hang, they aren't tucked at the chest);
+    * ``spread``: the biggest height difference between the two paws (a tuck is a pair);
+    * ``frames``: how many frames were measured (zero is "never measured", never a pass).
+    """
+    out: dict[str, float | int] = {
+        "lift": 9.0,
+        "reach": 0.0,
+        "chin": 9.0,
+        "drop": 0.0,
+        "spread": 0.0,
+        "frames": 0,
+    }
+    c = max(chain, 1e-6)
+    for f in frames:
+        h, ch = f["hips"], f["chest"]
+        ax = [ch[i] - h[i] for i in range(3)]
+        al = math.sqrt(sum(a * a for a in ax)) or 1e-6
+        u = [a / al for a in ax]
+        zs = []
+        for leg in ("LF", "RF"):
+            p = f[leg]
+            d = [p[i] - h[i] for i in range(3)]
+            t = sum(d[i] * u[i] for i in range(3))
+            perp = math.sqrt(max(0.0, sum(x * x for x in d) - t * t))
+            out["reach"] = max(float(out["reach"]), perp / c)
+            out["lift"] = min(float(out["lift"]), (p[2] - ground_z) / c)
+            out["chin"] = min(float(out["chin"]), (f["head"][2] - p[2]) / c)
+            out["drop"] = max(float(out["drop"]), (f["head"][2] - p[2]) / c)
+            zs.append(p[2])
+        out["spread"] = max(float(out["spread"]), abs(zs[0] - zs[1]) / c)
+        out["frames"] = int(out["frames"]) + 1
+    return out

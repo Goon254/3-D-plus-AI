@@ -4,6 +4,13 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Cloud review 11-18 15:36 UTC ([review](docs/reviews/2026-11-18T1536Z.md), DECISIONS #72): no new notes from
+you, so fixes only. **Kiki's sentinel pose is now checked automatically**: her paws must stay tucked high at the
+chest (close to the body, level, well off the ground) whenever she stands up, alongside the existing tail-on-the-ground
+check; a version with hanging arms fails it. All five characters pass every motion check. No designs changed. Scores:
+Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. **Still waiting on you:** Kiki (which body on all fours: v5 per
+your note, or v4's) and Zuri (approve or notes). Laptop: re-render the stress takes and packets, then rescore.
+
 Cloud review 11-18 12:36 UTC ([review](docs/reviews/2026-11-18T1236Z.md), DECISIONS #71): no new notes from
 you, so fixes only. **Manes and hooves are now checked automatically**: a board or fin mane and puck hooves (both
 caught only by eye on Zuri v2) fail the rubric, and a saw-tooth crest is flagged (Zuri v3's mane is one, which the

@@ -80,6 +80,14 @@
    "end": 105,
    "phases": 44
   },
+  "sentinel_paws": {
+   "lift": 1.967,
+   "reach": 0.516,
+   "chin": 1.133,
+   "drop": 1.342,
+   "spread": 0.0,
+   "frames": 185
+  },
   "worst_gap": {
    "meerkat_lid_L_up": {
     "gap": -0.157,
@@ -203,11 +211,25 @@
    "hard": true,
    "message": "in the sentinel the tail tip comes down to -18 mm (the tripod wants the ground)",
    "value": -0.018
+  },
+  {
+   "id": "sentinel_paws",
+   "passed": true,
+   "hard": true,
+   "message": "in the sentinel the fore paws ride 1.97 legs off the ground (want >= 1.0), 0.52 legs from the torso's axis (<= 0.65), 1.13-1.34 legs under the head (0.4-1.55), level within 0.00 (<= 0.15) over 185 frames",
+   "value": {
+    "lift": 1.967,
+    "reach": 0.516,
+    "chin": 1.133,
+    "drop": 1.342,
+    "spread": 0.0,
+    "frames": 185
+   }
   }
  ],
  "fingerprint": {
   "species": "f66a2dcdd2998934",
-  "rig_code": "33d99e54fdbfb81e"
+  "rig_code": "8bdb3b985fd9bddc"
  },
  "passed": true
 }

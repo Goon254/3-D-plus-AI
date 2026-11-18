@@ -11,7 +11,7 @@ that raised it.
 
 ## P0-DESIGN — DESIGN_STAGE.md (owner's top priority; film production paused)
 
-**Status 11-18 12:36: no new owner reply. Fixes only: manes and hooves are now measured (#71): board/fin manes and puck hooves are hard checks, a saw-tooth crest soft (Zuri v3 fails it). Scores unchanged: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 12:36](reviews/2026-11-18T1236Z.md)** Status 11-18 09:36: no new owner reply. Kiki's hind paws pivot at the heel into the sentinel (#70): `foot_plant` is now hard and passes for all five (Kiki 7.1 → 1.6 mm). Scores unchanged: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)** Status 11-18 06:36: no new owner reply (Kiki v5, Zuri v3 waiting). Fixes only: stress reports are fingerprinted
+**Status 11-18 15:36: no new owner reply. Fixes only: Kiki's sentinel paw tuck is now a hard stress check (`sentinel_paws`, #72); all five pass every check. Scores unchanged: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 15:36](reviews/2026-11-18T1536Z.md)** Status 11-18 12:36: no new owner reply. Fixes only: manes and hooves are now measured (#71): board/fin manes and puck hooves are hard checks, a saw-tooth crest soft (Zuri v3 fails it). Scores unchanged: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 12:36](reviews/2026-11-18T1236Z.md)** Status 11-18 09:36: no new owner reply. Kiki's hind paws pivot at the heel into the sentinel (#70): `foot_plant` is now hard and passes for all five (Kiki 7.1 → 1.6 mm). Scores unchanged: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)** Status 11-18 06:36: no new owner reply (Kiki v5, Zuri v3 waiting). Fixes only: stress reports are fingerprinted
 (#68), the packets' index is generated (#68), and planted feet hang level from the ankle (#69): `foot_plant` passes
 for four of five (Tembo 77 → 21 mm, Zuri 61 → 9, Bibi 50 → 3, Neema 46 → 23; Kiki 7.1 vs 6). Scores: Tembo 9, Neema 8,
 Bibi 8, Kiki 6, Zuri 7, tooling 9. — [review 11-18 06:36](reviews/2026-11-18T0636Z.md)** Status 11-18 03:36: the owner replied. Tembo, Neema and Bibi Kobe v3 are approved and locked (#65); Kiki v5 and
@@ -40,6 +40,14 @@ packet still shows the old ears. — [review 11-17 18:36](reviews/2026-11-17T183
   *Done 11-18 09:36 (cloud, DECISIONS #70): the level hind foot is counter-rotated by the sentinel pitch, so the sole
   stays flat as she rises; `foot_plant` 7.1 → 1.6 mm, `foot_slide` 2.1 → 0.5 mm; `foot_plant` is hard and all five
   pass. Workbench stills of the sentinel drop show flat soles and no heel tear.* — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)
+- [x] **Sentinel pose check** (tooling): paws tucked to the chest and the tail on the ground were recorded only
+  as a critique. — [review 11-18 12:36](reviews/2026-11-18T1236Z.md)
+  *Done 11-18 15:36 (cloud, DECISIONS #72): hard `sentinel_paws` (lift, reach from the torso's axis, head-to-paw
+  drop, spread) next to `sentinel_tail`. Kiki passes (reach 0.52, drop 1.13-1.34); with the tuck switched off her
+  hanging arms fail two limits (reach 0.80, drop 1.75). Workbench comparison in the review.* — [review 11-18 15:36](reviews/2026-11-18T1536Z.md)
+- [ ] **Googly eyes in Kiki's 3/4 view + loaf paws** (with Kiki v6): the eyeballs bulge past the top of the head's
+  outline in the sentinel's 3/4 front view, and the tucked forearms read as two soft loaves. Seat the eyes inside the
+  outline; give the tuck small paws. Tooling: an eye-outline check on the 3/4 view. — [review 11-18 15:36](reviews/2026-11-18T1536Z.md)
 - [ ] **Sentinel thigh creases** (small): soft folds where Kiki's hind leg tucks under the hips in the sentinel
   (Workbench stills). A corrective shape or more hip weight later. — [review 11-18 09:36](reviews/2026-11-18T0936Z.md)
 - [x] **Hard checks for a fin mane and puck hooves** (tooling): both were caught only by eye (Zuri v2).
