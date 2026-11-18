@@ -40,6 +40,7 @@ HARD_PENALTY = 1.5
 # manes and hooves (calibrated 11-18 on Zuri v2 vs v3: board 1.25 / ridge 0.49; puck 100 % / 90 deg vs 72 % / 66)
 MANE_STAND_MAX = 0.6  # crest height above the skin / the neck's depth there
 MANE_JAG_MAX = 0.2  # biggest crest step between neighbouring stations / the tallest crest
+MANE_REACH_MIN = 0.85  # share of withers -> poll the mane's crest must cover (a zebra's runs to the poll)
 HOOF_TAPER_MAX = 0.85  # coronet width / sole width
 HOOF_WALL_MAX = 72.0  # front wall angle from the ground, degrees
 
@@ -202,6 +203,21 @@ def _part_shape_checks(sp: Species) -> list[Check]:
                 mane["stand"],
             )
         )
+        if "reach" in mane:
+            ok = mane["reach"] >= MANE_REACH_MIN
+            out.append(
+                Check(
+                    "shape:mane_reach",
+                    "shape",
+                    ok,
+                    False,
+                    0.5,
+                    0.5 * ok,
+                    f"the mane runs {mane['reach']:.0%} of the way from the withers to the poll (min {MANE_REACH_MIN:.0%})"
+                    + ("" if ok else ": it stops short of the head"),
+                    mane["reach"],
+                )
+            )
         ok = mane["jag"] <= MANE_JAG_MAX
         out.append(
             Check(

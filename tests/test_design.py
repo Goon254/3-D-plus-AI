@@ -428,3 +428,13 @@ def test_puck_hooves_are_caught_and_the_hoof_mesh_passes(monkeypatch):
     h = hoof_shape(SPECIES["zebra"])
     assert h["taper"] == pytest.approx(1.0) and h["wall_deg"] == pytest.approx(90.0)
     assert "shape:hoof_puck" in _hard(score(brief, SPECIES["zebra"]))
+
+
+def test_a_mane_that_stops_short_of_the_poll_is_a_soft_failure():
+    """Review 11-18 18:36: Zuri's mane runs from the withers to mid-neck; a zebra's runs to the poll."""
+    brief, z = load_brief("zuri"), SPECIES["zebra"]
+    short = {c.id: c for c in score(brief, z).checks}["shape:mane_reach"]
+    assert not short.passed and not short.hard and 0.6 < short.value < 0.85
+    # a mane whose crest meets the back of the head (here: a head that reaches back over the crest's end) passes
+    full = replace(z, head_size=(0.24, 0.95, 0.5))
+    assert {c.id: c for c in score(brief, full).checks}["shape:mane_reach"].passed

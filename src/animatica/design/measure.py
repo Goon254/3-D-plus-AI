@@ -185,7 +185,39 @@ def mane_shape(sp: Species) -> dict[str, Any] | None:
     top = max(heights) or 1e-9
     inner = heights[2:-2]  # the tapered ends are meant to step down
     jag = max((abs(x - y) for x, y in zip(inner, inner[1:], strict=False)), default=0.0) / top
-    return {"follows_neck": not rigid, "stand": round(max(stands), 3), "jag": round(jag, 3)}
+    crest = [[(verts[4 * i + 2][k] + verts[4 * i + 3][k]) / 2 for k in range(3)] for i in range(len(line))]
+    return {
+        "follows_neck": not rigid,
+        "stand": round(max(stands), 3),
+        "jag": round(jag, 3),
+        "reach": round(_mane_reach(sp, crest), 3),
+    }
+
+
+def _in_head(sp: Species, q: list[float]) -> float:
+    """``q`` in the head ellipsoid's normalised coordinates (< 1 inside), with the head's pitch."""
+    a = math.radians(-sp.head_pitch)
+    d = [q[k] - sp.head_at[k] for k in range(3)]
+    y = d[1] * math.cos(a) - d[2] * math.sin(a)
+    z = d[1] * math.sin(a) + d[2] * math.cos(a)
+    hx, hy, hz = (s / 2 for s in sp.head_size)
+    return (d[0] / hx) ** 2 + (y / hy) ** 2 + (z / hz) ** 2
+
+
+def _mane_reach(sp: Species, crest: list[list[float]]) -> float:
+    """How far the mane's crest runs from the withers toward the poll: 1 - (the gap from the crest's last point
+    to the back of the head) / (withers -> poll). A zebra's mane runs to the poll, between the ears; Zuri v4's
+    stopped about a quarter short and ended as a square-cut slab (review 11-18 18:36)."""
+    end = crest[-1]
+    if _in_head(sp, end) <= 1.0:
+        return 1.0
+    poll, step = list(end), 0
+    while _in_head(sp, poll) > 1.0 and step < 400:  # walk from the crest's end toward the head's centre
+        poll = [poll[k] + (sp.head_at[k] - end[k]) / 400 for k in range(3)]
+        step += 1
+    gap = math.dist(end, poll)
+    length = math.dist(crest[0], poll) or 1.0
+    return max(0.0, 1.0 - gap / length)
 
 
 def materials(sp: Species) -> dict[str, Any]:
