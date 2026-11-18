@@ -216,12 +216,19 @@ def main() -> int:
     ap.add_argument("--assemble", action="store_true", help="assemble the rendered scenes only")
     ap.add_argument("--work", default=str(ROOT / "output" / "savannah-animatic"))
     ap.add_argument(
+        "--film", default=str(FILM), help="the film folder (feature mode); default films/savannah"
+    )
+    ap.add_argument(
         "--out", default=str(ROOT / "examples" / "showcase" / "savannah-animatic" / "animatic.mp4")
     )
     ap.add_argument("--max-static", type=float, default=4.5)
     a = ap.parse_args()
     work = Path(a.work)
-    scenes = load_scenes(FILM / "07_scenes.json")
+    film = Path(a.film)
+    global TITLE
+    if (film / "01_premise.json").exists():  # a feature-mode film: its own title
+        TITLE = json.loads((film / "01_premise.json").read_text(encoding="utf-8"))["title"]
+    scenes = load_scenes(film / "07_scenes.json")
     ids = list(scenes)
     todo = [] if a.assemble else (a.only.split(",") if a.only else ids)
     for sid in todo:
@@ -236,6 +243,8 @@ def main() -> int:
                 "animatic",
                 "--out",
                 str(work),
+                "--film",
+                str(film),
             ]
         )
         if r.returncode:

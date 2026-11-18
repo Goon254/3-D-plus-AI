@@ -156,3 +156,42 @@ def check_plan(plan: dict[str, Any]) -> list[str]:
         vs, _ = check_scene(spec, cut_list(spec, secs), secs)
         errs += [f"{v.scene} {v.kind} {v.who}: {v.message}" for v in vs]
     return errs
+
+
+# the score: one cue per scene, its mood from where the scene sits in the story and its time of day
+CUE_MOOD = {
+    "dawn": "wonder",
+    "midday": "adventure",
+    "afternoon": "tension",
+    "sunset": "tender",
+    "night": "mystery",
+}
+CUE_BPM = {"wonder": 66, "adventure": 96, "tension": 84, "tender": 64, "mystery": 60, "triumph": 92}
+
+
+def plan_cues(screenplay: dict[str, Any], title: str) -> dict[str, Any]:
+    """``05_cue_sheet.json`` for the Composer: the opening is wonder, the last scene ends in triumph, the
+    others take their time of day's mood (a night scene is mystery). Every cue states the main theme."""
+    scenes = screenplay["scenes"]
+    cues = []
+    for k, sc in enumerate(scenes):
+        mood = CUE_MOOD.get(sc["tod"], "wonder")
+        sections = [{"at": 0.0, "mood": "wonder" if k == 0 else mood, "motifs": ["main"]}]
+        if k == len(scenes) - 1:
+            sections.append({"at": 0.5, "mood": "triumph", "motifs": ["main"]})
+        cues.append(
+            {
+                "id": sc["id"],
+                "scene": sc.get("intent", sc["id"]),
+                "seconds": 20,
+                "key": "D" if k % 2 == 0 else "G",
+                "bpm": CUE_BPM[sections[0]["mood"]],
+                "intent": sc.get("intent", ""),
+                "sections": sections,
+            }
+        )
+    return {
+        "film": title,
+        "notes": "planned by animatica.feature.planner; re-timed to picture per scene",
+        "cues": cues,
+    }

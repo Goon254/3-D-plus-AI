@@ -102,3 +102,17 @@ def test_the_full_flow_plans_scenes_after_the_design_gate(tmp_path):
     log = run(film, None, ScriptedProvider())
     assert (film / "07_scenes.json").exists() and any(line.startswith("scenes: 5 planned") for line in log)
     assert next_stage(film).name == "animatic"
+
+
+def test_the_cue_sheet_gives_every_scene_a_cue_the_composer_reads(tmp_path):
+    from animatica.audio import composer
+    from animatica.feature.planner import plan_cues
+
+    prem, play = write_story(IDEA, ScriptedProvider())
+    p = tmp_path / "05_cue_sheet.json"
+    p.write_text(json.dumps(plan_cues(play, prem["title"])), encoding="utf-8")
+    cues = composer.load_cue_sheet(p)
+    assert [c.id for c in cues] == [s["id"] for s in play["scenes"]]
+    assert cues[0].sections[0].mood == "wonder" and cues[-1].sections[-1].mood == "triumph"
+    for c in cues:  # every cue arranges
+        assert composer.arrange(c).bars > 0

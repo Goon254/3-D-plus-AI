@@ -75,6 +75,8 @@ Later (not in the first pieces): a `feature.critique` pass that scores the draft
    speaker, moods as expressions with a listener reacting, a species call at the first line, and shots cut on the
    lines (establishing EWS, a close shot sized by species, a two-shot on exchanges, a closing WS). The plan is
    continuity-checked before it is written. Next: a director pass (LLM) for blocking and gestures from the beats.
-6. Generalise `savannah_scene.py` / `savannah_animatic.py` to take a film folder (today they read
-   `films/savannah`).
+6. ~~Generalise the scene scripts~~ **done**: `savannah_scene.py` and `savannah_animatic.py` take `--film <folder>`
+   (default `films/savannah`), and the animatic's title comes from the film's premise. The planner also writes
+   the score's `05_cue_sheet.json` (wonder at the opening, the time of day's mood after, triumph at the end).
+   Not yet run end to end on a new film: that needs the GPU, which was busy with the savannah final render.
 7. Production stage: the final render loop with per-scene resume, mix, web copy.

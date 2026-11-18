@@ -111,6 +111,9 @@ def main() -> int:
     ap.add_argument("scene")
     ap.add_argument("--quality", default="preview", choices=sorted(QUALITY))
     ap.add_argument("--out", default=str(ROOT / "output" / "savannah"))
+    ap.add_argument(
+        "--film", default=str(FILM), help="the film folder (feature mode); default films/savannah"
+    )
     ap.add_argument("--fps", type=int, default=24)
     ap.add_argument("--tts", choices=["chatterbox", "kokoro"], help="override the casting's engine")
     ap.add_argument("--no-render", action="store_true", help="build, mix and save the .blend only")
@@ -124,7 +127,8 @@ def main() -> int:
     )
     a = ap.parse_args()
     t0 = time.time()
-    spec = load_scenes(FILM / "07_scenes.json")[a.scene]
+    film = Path(a.film)
+    spec = load_scenes(film / "07_scenes.json")[a.scene]
     res, samples, step, device = QUALITY[a.quality]
     out = Path(a.out).resolve() / spec.id
     if out.exists():
@@ -133,7 +137,7 @@ def main() -> int:
     fps = a.fps
 
     # ---- voices and timing
-    casting = json.loads((FILM / "06_voices.json").read_text(encoding="utf-8"))
+    casting = json.loads((film / "06_voices.json").read_text(encoding="utf-8"))
     cast_voices = casting["cast"]
     items = []
     for i, ln in enumerate(spec.lines):
@@ -597,7 +601,7 @@ def main() -> int:
     for ln, (wav, _) in zip(spec.lines, takes):
         x, sr = tts.read_wav(wav)
         voices.append((ln.start - PRE, sound.dialogue(x, sr, seed=len(voices))))
-    cue = next(c for c in composer.load_cue_sheet(FILM / "05_cue_sheet.json") if c.id == spec.cue)
+    cue = next(c for c in composer.load_cue_sheet(film / "05_cue_sheet.json") if c.id == spec.cue)
     cue = dataclasses.replace(cue, seconds=seconds)  # re-timed to picture: the arrangement fits the bars
     rep = composer.render_cue(composer.arrange(cue), out / "music")
     music = composer._read(out / "music" / rep["wav"])

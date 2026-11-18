@@ -67,6 +67,10 @@ def run(film: Path, idea: str | None, llm) -> list[str]:  # noqa: ANN001 - core.
             log.append("scenes: the plan fails continuity, not written: " + "; ".join(errs[:5]))
         else:
             (film / "07_scenes.json").write_text(json.dumps(plan, indent=1) + "\n", encoding="utf-8")
+            from .planner import plan_cues
+
+            cues = plan_cues(play, prem["title"])
+            (film / "05_cue_sheet.json").write_text(json.dumps(cues, indent=1) + "\n", encoding="utf-8")
             log.append(
                 f"scenes: {len(plan['scenes'])} planned, {sum(len(s['shots']) for s in plan['scenes'])} shots"
             )
