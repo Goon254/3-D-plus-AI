@@ -90,6 +90,8 @@ def test_rhubarb_is_used_when_installed(tmp_path):
 def test_soundfont_player_plays_real_samples_in_tune():
     import pytest
 
+    pytest.importorskip("soundfile")  # the optional .[tts] extra (review 11-18 18:36)
+
     from animatica.audio.soundfont import Note, default_soundfont, load, render, render_note
 
     path = default_soundfont()
