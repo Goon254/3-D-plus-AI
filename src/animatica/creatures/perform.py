@@ -122,6 +122,7 @@ def walk_keys(
     yaw0: float | None = None,
     plan: list[LocoFrame] | None = None,
     overlay: dict[str, list[Mat]] | None = None,
+    blinks: list[float] | None = None,
 ) -> tuple[list[dict[str, Any]], list[LocoFrame]]:
     """Keys for a creature walking ``points``. Pass a precomputed ``plan`` (from :func:`plan_for`) to
     reuse it, and an ``overlay`` (bone -> per-frame bone-local rotation, from
@@ -267,12 +268,16 @@ def walk_keys(
                 return [-25 * flick, 0.0, s * 6 * math.sin(2 * math.pi * t / 4.1 + s)]
 
             bone(name, ear)
-    # blinks every 2.5-5 s: the lids close (a quick squash of the eye on rigs without lids)
-    blinks: list[float] = []
+    # blinks every 2.5-5 s: the lids close (a quick squash of the eye on rigs without lids); ``blinks`` from
+    # the dialogue (phrase breaks, a listener's attention shifting) replace the idle ones near them
+    idle: list[float] = []
     t = rng.uniform(0.6, 1.6)
     while t < ts[-1]:
-        blinks.append(t)
+        idle.append(t)
         t += rng.uniform(2.5, 5.0)
+    if blinks:
+        idle = sorted(list(blinks) + [b for b in idle if all(abs(b - a) >= 0.7 for a in blinks)])
+    blinks = idle
 
     def lid(t: float) -> float:
         v = 1.0

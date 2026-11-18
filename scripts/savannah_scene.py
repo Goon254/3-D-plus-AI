@@ -37,7 +37,7 @@ from animatica.creatures.gait import GAITS, Waypoint  # noqa: E402
 from animatica.creatures.gesture import Gesture, Rig, acting_layers, gaze_track, spray_droplets  # noqa: E402
 from animatica.creatures.perform import plan_for, walk_keys  # noqa: E402
 from animatica.creatures.species import SPECIES  # noqa: E402
-from animatica.production import continuity, sound  # noqa: E402
+from animatica.production import acting, continuity, sound  # noqa: E402
 from animatica.production.scene import (  # noqa: E402
     Occluder,
     Subject,
@@ -240,6 +240,11 @@ def main() -> int:
         gestures = [
             Gesture(g.who, g.value, g.time(spec.lines), g.dur, g.target, g.amount) for g in spec.gestures
         ]
+        # acting from the dialogue (the real takes): head beats on the stressed syllables, blinks at phrase
+        # breaks, listeners blinking and nodding (production.acting); the spec's own gestures win
+        spans = {c: [(a_.t_in, min(a_.t_out, seconds))] for c, a_ in spec.cast.items()}
+        beats = acting.dialogue_beats(spec.lines, [tts.read_wav(w) for w, _ in takes], spans, gestures)
+        gestures += beats.gestures
         anim: list[dict] = []
         for k, (cid, actor) in enumerate(spec.cast.items()):
             meta = metas[cid]
@@ -249,14 +254,24 @@ def main() -> int:
             mine = [g for g in gestures if g.who == cid]
             overlay = acting_layers(rig, plans[cid], gaze, mine, fps, targets=plans)
             keys, _ = walk_keys(
-                meta, gaits[cid], pts, fps, 1, seed=11 + k, yaw0=yaw0, plan=plans[cid], overlay=overlay
+                meta,
+                gaits[cid],
+                pts,
+                fps,
+                1,
+                seed=11 + k,
+                yaw0=yaw0,
+                plan=plans[cid],
+                overlay=overlay,
+                blinks=beats.blinks.get(cid),
             )
             cues = []
             for ln, (wav, _) in zip(spec.lines, takes):
                 if ln.who == cid:
                     cs, _engine = lipsync.lipsync(wav, ln.text.replace("*", ""))
+                    lead = ln.start - acting.LIP_LEAD_S  # the mouth lands a frame before the sound
                     cues += [
-                        dataclasses.replace(c, start=c.start + ln.start, end=c.end + ln.start) for c in cs
+                        dataclasses.replace(c, start=max(0.0, c.start + lead), end=c.end + lead) for c in cs
                     ]
             anim += keys + face_keys(faces[cid], tracks[cid], cues or None, fps, 1, n)
         if anim:
@@ -309,6 +324,22 @@ def main() -> int:
                     ],
                 )["inspect"]["frames"]
                 use = samples_f if sh.type in ("ws", "ews") else [samples_f[len(samples_f) // 2]]
+                # a single talking in a medium shot: if the face would be small in the frame (an upright
+                # meerkat, a giraffe's head 3 m up, a tortoise), go in to a medium close-up so the mouth reads
+                talking = any(
+                    ln.who in sh.subjects
+                    and not ln.offscreen
+                    and ln.start < sh.end - 0.3
+                    and ln.end > sh.start + 0.3
+                    for ln in spec.lines
+                )
+                if sh.type == "ms" and len(sh.subjects) == 1 and talking:
+                    c0 = sh.subjects[0]
+                    sp0 = SPECIES[spec.cast[c0].species]
+                    top = metas[c0].head_height + max(sp0.head_size) * 0.5
+                    if max(sp0.head_size) / max(1.45 * top, 1.3 * metas[c0].length / 1.7778) < 0.24:
+                        sh = dataclasses.replace(sh, type="mcu")
+                        shots[i] = sh
                 for f in use:
                     for c in sh.subjects:
                         head = tuple(d[str(f)]["bone_tails"][f"{metas[c].rig}:head"])

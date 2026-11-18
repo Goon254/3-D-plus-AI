@@ -30,7 +30,7 @@ MAX_TURN = 70.0
 EYELINE_TAU = 0.11  # seconds: heads settle on a new speaker with this time constant (no snaps)
 SPEAKER_SHARE = 0.45  # a speaker turns this much of the way toward the addressee (cheated to the lens)
 
-KINDS = ("look_at", "head_duck", "ears_droop", "trunk_drink", "trunk_spray", "head_shake", "nod")
+KINDS = ("look_at", "head_duck", "ears_droop", "trunk_drink", "trunk_spray", "head_shake", "nod", "talk")
 
 
 def mat_mul(a: Mat, b: Mat) -> Mat:
@@ -141,6 +141,8 @@ class Gesture:
     dur: float = 1.5
     target: str = ""  # look_at / trunk_spray: another cast member
     amount: float = 1.0  # scales the gesture's angles
+    # talk: (seconds, strength) syllable accents of the line (production.acting.speech_accents)
+    accents: list[tuple[float, float]] = field(default_factory=list)
 
 
 @dataclass
@@ -239,7 +241,25 @@ def acting_layers(
                 continue
             u = (t - g.start) / g.dur
             a = g.amount
-            if g.kind == "head_duck":
+            if g.kind == "talk":
+                # the head beats on the stressed syllables (a quick dip and a small rebound), over a slow tilt
+                # and sway across the phrase, so a speaking head is never a statue
+                beat = 0.0
+                for ta, w in g.accents:
+                    du = t - ta
+                    if -0.2 < du < 0.45:
+                        beat += w * (
+                            math.exp(-(((du - 0.03) / 0.07) ** 2))
+                            - 0.35 * math.exp(-(((du - 0.17) / 0.09) ** 2))
+                        )
+                turn(5.5 * a * beat * e, side, head_share=0.85)
+                turn(2.5 * a * math.sin(2 * math.pi * (t - g.start) / 2.6) * e, up, head_share=0.7)
+                turn(
+                    3.0 * a * math.sin(2 * math.pi * (t - g.start) / 3.4 + 1.0) * e,
+                    (0.0, 1.0, 0.0),
+                    head_share=0.9,
+                )
+            elif g.kind == "head_duck":
                 # an embarrassed duck: the neck bows forward, the head tucks to keep the eyes looking ahead
                 turn(60 * a * e, side, head_share=-0.35)
             elif g.kind == "nod":

@@ -251,7 +251,17 @@ def resolve_path(
             if not out:
                 raise ValueError(f"{a.cid}: the first waypoint needs a time")
             v = float(p.get("speed", speed or 1.0))
-            t = out[-1][0] + float(p.get("wait", 0.0)) + math.hypot(x - here[0], y - here[1]) / max(v, 0.05)
+            # the whole run since the last stop (through any glide points) at the gait's pace
+            k = len(out) - 1
+            while k > 0 and len(out[k]) > 3:
+                k -= 1
+            chain = [(w[1], w[2]) for w in out[k:]] + [(x, y)]
+            seg = [math.dist(a_, b_) for a_, b_ in zip(chain, chain[1:])]
+            t = out[k][0] + float(p.get("wait", 0.0)) + sum(seg) / max(v, 0.05)
+            run, acc = sum(seg) or 1.0, 0.0
+            for j in range(k + 1, len(out)):  # glide points pass at their share of the run (kept in order)
+                acc += seg[j - k - 1]
+                out[j] = (round(out[k][0] + (t - out[k][0]) * acc / run, 3), *out[j][1:])
         wp: tuple[float, ...] = (round(t, 3), round(x, 3), round(y, 3))
         if p.get("glide"):
             wp += (1.0,)
