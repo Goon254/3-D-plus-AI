@@ -3577,6 +3577,16 @@
     {
      "type": "ws",
      "subjects": [
+      "neema",
+      "kiki"
+     ],
+     "t": 4.8,
+     "side": 30,
+     "note": "Kiki rides home on Neema's back"
+    },
+    {
+     "type": "ws",
+     "subjects": [
       "zuri",
       "bibi_kobe"
      ],
