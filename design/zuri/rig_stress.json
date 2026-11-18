@@ -1,15 +1,15 @@
 {
  "character": "zuri",
  "species": "zebra",
- "frames": 342,
- "seconds": 14.25,
+ "frames": 348,
+ "seconds": 14.5,
  "timeline": {
   "walk": 0.8,
   "turn": 3.6,
-  "stop": 5.99,
-  "expressions": 6.39,
-  "line": 10.29,
-  "line_end": 12.61
+  "stop": 6.24,
+  "expressions": 6.64,
+  "line": 10.54,
+  "line_end": 12.86
  },
  "expressions": [
   "neutral",
@@ -31,109 +31,103 @@
  "summary": {
   "eye_embed": {
    "zebra_eye_L": [
-    0.646,
-    0.646
+    0.645,
+    0.645
    ],
    "zebra_eye_R": [
-    0.646,
-    0.646
+    0.645,
+    0.645
    ]
   },
   "skin_gap": {
-   "zebra_lid_L_up": 0.028,
+   "zebra_lid_L_up": 0.014,
    "zebra_lid_L_lo": -0.651,
-   "zebra_lid_R_up": 0.028,
+   "zebra_lid_R_up": 0.014,
    "zebra_lid_R_lo": -0.651,
-   "zebra_brow_L": 0.138,
-   "zebra_brow_R": 0.138,
-   "zebra_ear_L": -0.042,
-   "zebra_ear_R": -0.042,
-   "zebra_muzzle": -0.556,
-   "zebra_mane": -0.181,
-   "zebra_mane_crest": 0.02,
-   "zebra_mouth": 0.0
+   "zebra_brow_L": 0.129,
+   "zebra_brow_R": 0.128,
+   "zebra_ear_L": -0.157,
+   "zebra_ear_R": -0.162,
+   "zebra_muzzle": -0.553,
+   "zebra_mane": -0.278,
+   "zebra_mouth": -0.002
   },
   "swim_p95_mm": {
    "zebra_body": 0.0
   },
   "mouth_gap_range": [
-   -0.017,
-   0.0
+   -0.019,
+   -0.002
   ],
   "foot_slide_source": "skin",
   "foot_slide": {
-   "drift": 0.00814,
-   "leg": "RF",
-   "frame": 79,
-   "pairs": 1158
+   "drift": 0.01097,
+   "leg": "RH",
+   "frame": 82,
+   "pairs": 1170
   },
   "foot_slide_bone": {
    "drift": 0.0,
    "leg": "LH",
    "frame": 2,
-   "pairs": 1158
+   "pairs": 1170
   },
   "foot_plant": {
-   "travel": 0.04833,
+   "travel": 0.06064,
    "leg": "RF",
-   "start": 73,
-   "end": 87,
-   "phases": 21
+   "start": 74,
+   "end": 88,
+   "phases": 22
   },
   "worst_gap": {
    "zebra_lid_L_up": {
-    "gap": 0.028,
-    "frame": 193,
-    "expression": "worried"
+    "gap": 0.014,
+    "frame": 1,
+    "expression": "neutral"
    },
    "zebra_lid_L_lo": {
     "gap": -0.651,
-    "frame": 172,
+    "frame": 178,
     "expression": "happy"
    },
    "zebra_lid_R_up": {
-    "gap": 0.028,
-    "frame": 193,
-    "expression": "worried"
+    "gap": 0.014,
+    "frame": 1,
+    "expression": "neutral"
    },
    "zebra_lid_R_lo": {
     "gap": -0.651,
-    "frame": 172,
+    "frame": 178,
     "expression": "happy"
    },
    "zebra_brow_L": {
-    "gap": 0.138,
-    "frame": 190,
+    "gap": 0.129,
+    "frame": 196,
     "expression": "surprised"
    },
    "zebra_brow_R": {
-    "gap": 0.138,
-    "frame": 190,
+    "gap": 0.128,
+    "frame": 196,
     "expression": "surprised"
    },
    "zebra_ear_L": {
-    "gap": -0.042,
-    "frame": 181,
+    "gap": -0.157,
+    "frame": 184,
     "expression": "sad"
    },
    "zebra_ear_R": {
-    "gap": -0.042,
-    "frame": 133,
+    "gap": -0.162,
+    "frame": 136,
     "expression": "neutral"
    },
    "zebra_muzzle": {
-    "gap": -0.556,
+    "gap": -0.553,
     "frame": 1,
     "expression": "neutral"
    },
    "zebra_mane": {
-    "gap": -0.181,
+    "gap": -0.278,
     "frame": 169,
-    "expression": "happy"
-   },
-   "zebra_mane_crest": {
-    "gap": 0.02,
-    "frame": 163,
     "expression": "neutral"
    }
   }
@@ -150,7 +144,7 @@
    "id": "brow_float",
    "passed": false,
    "hard": false,
-   "message": "zebra_brow_L floats 14% of its size off the skin; zebra_brow_R floats 14% of its size off the skin",
+   "message": "zebra_brow_L floats 13% of its size off the skin; zebra_brow_R floats 13% of its size off the skin",
    "value": null
   },
   {
@@ -178,28 +172,28 @@
    "id": "mouth_float",
    "passed": true,
    "hard": false,
-   "message": "mouth off the skin by 0% of its size",
-   "value": 0.0003333333333333334
+   "message": "mouth off the skin by -0% of its size",
+   "value": -0.0019117647058823526
   },
   {
    "id": "foot_slide",
    "passed": true,
    "hard": true,
-   "message": "worst planted-foot drift (skin) 8.1 mm per frame (RF at frame 79; limit 31 mm) over 1158 planted foot-frame pairs",
-   "value": 0.0081
+   "message": "worst planted-foot drift (skin) 11.0 mm per frame (RH at frame 82; limit 29 mm) over 1170 planted foot-frame pairs",
+   "value": 0.011
   },
   {
    "id": "foot_plant",
    "passed": false,
    "hard": false,
-   "message": "a planted sole (skin) strays up to 48.3 mm within one stance (RF, frames 73-87; limit 26 mm, half the foot's radius) over 21 stance phases",
-   "value": 0.0483
+   "message": "a planted sole (skin) strays up to 60.6 mm within one stance (RF, frames 74-88; limit 29 mm, half the foot's radius) over 22 stance phases",
+   "value": 0.0606
   },
   {
    "id": "ground",
    "passed": true,
    "hard": true,
-   "message": "feet sink up to 0.0 mm below their rest height (limit 23 mm)",
+   "message": "feet sink up to 0.0 mm below their rest height (limit 22 mm)",
    "value": 0.0
   }
  ],
