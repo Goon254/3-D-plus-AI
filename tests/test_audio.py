@@ -295,3 +295,19 @@ def test_asr_prompt_names_and_hyphen_wer():
     cbw = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cbw)
     assert cbw.wer("you lovely lamp-post", "You lovely lamppost.") == 0.0
+
+
+def test_the_line_cache_survives_a_crlf_checkout(tmp_path, monkeypatch):
+    """Animatic v2 ran from a fresh worktree whose files had CRLF line endings: every cache key changed,
+    every line was re-voiced, and the takes re-voiced by hand were missed (DECISIONS #82)."""
+    from animatica.audio import tts
+
+    src = tts.Path(tts.__file__).parent
+    for name in ("tts.py", "delivery.py", "voice_fx.py"):
+        b = (src / name).read_bytes().replace(b"\r\n", b"\n")
+        (tmp_path / name).write_bytes(b.replace(b"\n", b"\r\n"))
+    monkeypatch.setattr(tts, "_CODE_HASH", [])
+    lf = tts._code_hash()
+    monkeypatch.setattr(tts, "_CODE_HASH", [])
+    monkeypatch.setattr(tts, "__file__", str(tmp_path / "tts.py"))
+    assert tts._code_hash() == lf

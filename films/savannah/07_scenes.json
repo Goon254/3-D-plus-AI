@@ -2782,7 +2782,8 @@
      "subjects": [
       "bibi_kobe"
      ],
-     "line": 0
+     "line": 0,
+     "side": -50
     },
     {
      "type": "cu",

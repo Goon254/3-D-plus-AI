@@ -103,7 +103,8 @@ def _code_hash() -> str:
         here = Path(__file__).parent
         h = hashlib.sha256()
         for f in (here / "tts.py", here / "delivery.py", here / "voice_fx.py", CHATTERBOX_WORKER, WORKER):
-            h.update(f.read_bytes() if f.exists() else b"")
+            # line endings normalised: a checkout with CRLF must not invalidate every cached take
+            h.update(f.read_bytes().replace(b"\r\n", b"\n") if f.exists() else b"")
         _CODE_HASH.append(h.hexdigest()[:12])
     return _CODE_HASH[0]
 
