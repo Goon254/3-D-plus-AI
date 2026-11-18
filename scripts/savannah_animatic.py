@@ -116,6 +116,100 @@ def static_shots(rep: dict, max_static: float) -> list[dict]:
     return bad
 
 
+def join_av(parts: list[Path], seconds: list[float], work: Path, out: Path, crf: int = 21) -> None:
+    """Join scene clips with picture and sound concatenated separately, then muxed: the concat demuxer on
+    clips with AAC audio started the joined video a frame (42 ms) after its sound (animatic v1), which the
+    owner saw as lips out of sync. Each scene's sound is cut or padded to its exact length first."""
+    import numpy as np
+
+    from animatica.audio import composer
+
+    lst = work / "concat.txt"
+    lst.write_text("".join(f"file '{p.as_posix()}'\n" for p in parts), encoding="utf-8")
+    video = work / "joined_video.mp4"
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-y",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            str(lst),
+            "-an",
+            "-c:v",
+            "libx264",
+            "-crf",
+            str(crf),
+            "-preset",
+            "medium",
+            "-pix_fmt",
+            "yuv420p",
+            "-r",
+            "24",
+            str(video),
+        ],
+        check=True,
+    )
+    chunks = []
+    for p, secs in zip(parts, seconds):
+        wav = p.with_suffix(".wav")
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-v",
+                "error",
+                "-y",
+                "-i",
+                str(p),
+                "-vn",
+                "-ac",
+                "2",
+                "-ar",
+                "48000",
+                "-c:a",
+                "pcm_s16le",
+                str(wav),
+            ],
+            check=True,
+        )
+        x = composer._read(wav)
+        n = int(round(secs * 48000))
+        x = x[:n] if len(x) >= n else np.concatenate([x, np.zeros((n - len(x), x.shape[1]), x.dtype)])
+        chunks.append(x)
+    audio = work / "joined_audio.wav"
+    composer.write_wav(audio, np.concatenate(chunks))
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-y",
+            "-i",
+            str(video),
+            "-i",
+            str(audio),
+            "-map",
+            "0:v",
+            "-map",
+            "1:a",
+            "-c:v",
+            "copy",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "192k",
+            "-movflags",
+            "+faststart",
+            str(out),
+        ],
+        check=True,
+    )
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", help="comma-separated scene ids to (re)render")
@@ -186,38 +280,7 @@ def main() -> int:
         )
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    lst = work / "concat.txt"
-    lst.write_text("".join(f"file '{p.as_posix()}'\n" for p in parts), encoding="utf-8")
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-v",
-            "error",
-            "-y",
-            "-f",
-            "concat",
-            "-safe",
-            "0",
-            "-i",
-            str(lst),
-            "-c:v",
-            "libx264",
-            "-crf",
-            "21",
-            "-preset",
-            "medium",
-            "-pix_fmt",
-            "yuv420p",
-            "-c:a",
-            "aac",
-            "-b:a",
-            "192k",
-            "-movflags",
-            "+faststart",
-            str(out),
-        ],
-        check=True,
-    )
+    join_av(parts, [r["seconds"] for r in report["scenes"]], work, out)
     report["seconds"] = round(sum(s["seconds"] for s in report["scenes"]), 2)
     report["shots"] = sum(s["shots"] for s in report["scenes"])
     report["longest_shot"] = max(s["longest_shot"] for s in report["scenes"])
