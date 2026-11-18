@@ -1,15 +1,15 @@
 {
  "character": "kiki",
  "species": "meerkat",
- "frames": 338,
- "seconds": 14.08,
+ "frames": 334,
+ "seconds": 13.92,
  "timeline": {
   "walk": 0.8,
   "turn": 3.6,
-  "stop": 6.35,
-  "expressions": 6.75,
-  "line": 10.65,
-  "line_end": 12.46
+  "stop": 6.17,
+  "expressions": 6.57,
+  "line": 10.47,
+  "line_end": 12.29
  },
  "expressions": [
   "neutral",
@@ -32,8 +32,8 @@
  "summary": {
   "eye_embed": {
    "meerkat_eye_L": [
-    0.65,
-    0.65
+    0.649,
+    0.649
    ],
    "meerkat_eye_R": [
     0.65,
@@ -41,13 +41,13 @@
    ]
   },
   "skin_gap": {
-   "meerkat_lid_L_up": -0.157,
-   "meerkat_lid_L_lo": -0.636,
-   "meerkat_lid_R_up": -0.159,
-   "meerkat_lid_R_lo": -0.636,
+   "meerkat_lid_L_up": -0.151,
+   "meerkat_lid_L_lo": -0.635,
+   "meerkat_lid_R_up": -0.15,
+   "meerkat_lid_R_lo": -0.634,
    "meerkat_brow_L": 0.067,
    "meerkat_brow_R": 0.067,
-   "meerkat_ear_L": -0.113,
+   "meerkat_ear_L": -0.114,
    "meerkat_ear_R": -0.112,
    "meerkat_muzzle": -0.361,
    "meerkat_nose": -0.038,
@@ -57,77 +57,77 @@
    "meerkat_body": 0.0
   },
   "mouth_gap_range": [
-   0.059,
+   0.062,
    0.09
   ],
   "foot_slide_source": "skin",
   "foot_slide": {
-   "drift": 0.00045,
-   "leg": "RH",
-   "frame": 91,
-   "pairs": 724
+   "drift": 0.00051,
+   "leg": "RF",
+   "frame": 90,
+   "pairs": 719
   },
   "foot_slide_bone": {
-   "drift": 0.00067,
-   "leg": "LF",
-   "frame": 156,
-   "pairs": 724
+   "drift": 0.00061,
+   "leg": "RF",
+   "frame": 152,
+   "pairs": 719
   },
   "foot_plant": {
-   "travel": 0.00157,
+   "travel": 0.00166,
    "leg": "RF",
-   "start": 99,
-   "end": 105,
-   "phases": 44
+   "start": 88,
+   "end": 94,
+   "phases": 42
   },
   "sentinel_paws": {
-   "lift": 1.967,
-   "reach": 0.516,
-   "chin": 1.133,
-   "drop": 1.342,
+   "lift": 1.825,
+   "reach": 0.519,
+   "chin": 1.154,
+   "drop": 1.35,
    "spread": 0.0,
    "frames": 185
   },
   "worst_gap": {
    "meerkat_lid_L_up": {
-    "gap": -0.157,
-    "frame": 199,
+    "gap": -0.151,
+    "frame": 196,
     "expression": "surprised"
    },
    "meerkat_lid_L_lo": {
-    "gap": -0.636,
+    "gap": -0.635,
     "frame": 319,
     "expression": "happy"
    },
    "meerkat_lid_R_up": {
-    "gap": -0.159,
-    "frame": 199,
+    "gap": -0.15,
+    "frame": 196,
     "expression": "surprised"
    },
    "meerkat_lid_R_lo": {
-    "gap": -0.636,
+    "gap": -0.634,
     "frame": 319,
     "expression": "happy"
    },
    "meerkat_brow_L": {
     "gap": 0.067,
-    "frame": 220,
+    "frame": 214,
     "expression": "determined"
    },
    "meerkat_brow_R": {
     "gap": 0.067,
-    "frame": 220,
+    "frame": 214,
     "expression": "determined"
    },
    "meerkat_ear_L": {
-    "gap": -0.113,
-    "frame": 55,
+    "gap": -0.114,
+    "frame": 61,
     "expression": "neutral"
    },
    "meerkat_ear_R": {
     "gap": -0.112,
-    "frame": 178,
-    "expression": "happy"
+    "frame": 181,
+    "expression": "sad"
    },
    "meerkat_muzzle": {
     "gap": -0.361,
@@ -182,21 +182,21 @@
    "passed": true,
    "hard": false,
    "message": "mouth off the skin by 9% of its size",
-   "value": 0.08990457056755399
+   "value": 0.09045226130653265
   },
   {
    "id": "foot_slide",
    "passed": true,
    "hard": true,
-   "message": "worst planted-foot drift (skin) 0.5 mm per frame (RH at frame 91; limit 4 mm) over 724 planted foot-frame pairs",
+   "message": "worst planted-foot drift (skin) 0.5 mm per frame (RF at frame 90; limit 4 mm) over 719 planted foot-frame pairs",
    "value": 0.0005
   },
   {
    "id": "foot_plant",
    "passed": true,
    "hard": true,
-   "message": "a planted sole (skin) strays up to 1.6 mm within one stance (RF, frames 99-105; limit 6 mm, half the foot's radius) over 44 stance phases",
-   "value": 0.0016
+   "message": "a planted sole (skin) strays up to 1.7 mm within one stance (RF, frames 88-94; limit 6 mm, half the foot's radius) over 42 stance phases",
+   "value": 0.0017
   },
   {
    "id": "ground",
@@ -209,27 +209,27 @@
    "id": "sentinel_tail",
    "passed": true,
    "hard": true,
-   "message": "in the sentinel the tail tip comes down to -18 mm (the tripod wants the ground)",
-   "value": -0.018
+   "message": "in the sentinel the tail tip comes down to -12 mm (the tripod wants the ground)",
+   "value": -0.0121
   },
   {
    "id": "sentinel_paws",
    "passed": true,
    "hard": true,
-   "message": "in the sentinel the fore paws ride 1.97 legs off the ground (want >= 1.0), 0.52 legs from the torso's axis (<= 0.65), 1.13-1.34 legs under the head (0.4-1.55), level within 0.00 (<= 0.15) over 185 frames",
+   "message": "in the sentinel the fore paws ride 1.82 legs off the ground (want >= 1.0), 0.52 legs from the torso's axis (<= 0.65), 1.15-1.35 legs under the head (0.4-1.55), level within 0.00 (<= 0.15) over 185 frames",
    "value": {
-    "lift": 1.967,
-    "reach": 0.516,
-    "chin": 1.133,
-    "drop": 1.342,
+    "lift": 1.825,
+    "reach": 0.519,
+    "chin": 1.154,
+    "drop": 1.35,
     "spread": 0.0,
     "frames": 185
    }
   }
  ],
  "fingerprint": {
-  "species": "f66a2dcdd2998934",
-  "rig_code": "8bdb3b985fd9bddc"
+  "species": "356af1e5df21c353",
+  "rig_code": "8f13b87a6f4d5315"
  },
  "passed": true
 }

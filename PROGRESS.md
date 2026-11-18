@@ -4,6 +4,8 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Cloud review 11-18 18:36 UTC ([review](docs/reviews/2026-11-18T1836Z.md)): reviewer only, since the laptop was active. **Main was red for four pushes** (a formatting check, and Kiki's stress report went stale with v6); both are fixed and everything passes. Kiki v6 and Zuri's brush mane pass every motion check. Looking at the sheets: Kiki v6 still reads as a mongoose on all fours (6), and Zuri's mane stops halfway up her neck (7). Scores: Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 8. **Needs you:** the packets and this page still say Kiki and Zuri are waiting for you, while the laptop treats Stage 2 as pre-approved. Please confirm which designs and which animatic you've approved, so the gates are written down.
+
 Cloud review 11-18 15:36 UTC ([review](docs/reviews/2026-11-18T1536Z.md), DECISIONS #72): no new notes from
 you, so fixes only. **Kiki's sentinel pose is now checked automatically**: her paws must stay tucked high at the
 chest (close to the body, level, well off the ground) whenever she stands up, alongside the existing tail-on-the-ground

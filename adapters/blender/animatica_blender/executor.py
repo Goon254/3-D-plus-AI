@@ -24,7 +24,14 @@ from typing import Any
 import bpy
 import mathutils
 
-from .common import ID_PROP, TAGS_PROP, OpError, fast_cycles, rad, workbench_setup  # noqa: F401  (re-exported for scripts)
+from .common import (  # noqa: F401  (re-exported for scripts)
+    ID_PROP,
+    TAGS_PROP,
+    OpError,
+    fast_cycles,
+    rad,
+    workbench_setup,
+)
 from .ops_anim import AnimOps
 from .ops_material import MaterialOps
 from .ops_render import RenderOps

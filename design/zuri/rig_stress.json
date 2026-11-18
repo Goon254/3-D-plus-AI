@@ -49,31 +49,31 @@
    "zebra_ear_L": -0.157,
    "zebra_ear_R": -0.162,
    "zebra_muzzle": -0.553,
-   "zebra_mane": -0.278,
-   "zebra_mouth": -0.002
+   "zebra_mane": -0.284,
+   "zebra_mouth": 0.007
   },
   "swim_p95_mm": {
    "zebra_body": 0.0
   },
   "mouth_gap_range": [
    -0.019,
-   -0.002
+   0.005
   ],
   "foot_slide_source": "skin",
   "foot_slide": {
-   "drift": 0.00116,
+   "drift": 0.00142,
    "leg": "LH",
-   "frame": 92,
-   "pairs": 1170
+   "frame": 91,
+   "pairs": 1172
   },
   "foot_slide_bone": {
    "drift": 0.0,
    "leg": "LH",
    "frame": 2,
-   "pairs": 1170
+   "pairs": 1172
   },
   "foot_plant": {
-   "travel": 0.00887,
+   "travel": 0.00892,
    "leg": "LF",
    "start": 110,
    "end": 128,
@@ -126,7 +126,7 @@
     "expression": "neutral"
    },
    "zebra_mane": {
-    "gap": -0.278,
+    "gap": -0.284,
     "frame": 169,
     "expression": "neutral"
    }
@@ -172,15 +172,15 @@
    "id": "mouth_float",
    "passed": true,
    "hard": false,
-   "message": "mouth off the skin by -0% of its size",
-   "value": -0.0019117647058823526
+   "message": "mouth off the skin by 1% of its size",
+   "value": 0.005147058823529412
   },
   {
    "id": "foot_slide",
    "passed": true,
    "hard": true,
-   "message": "worst planted-foot drift (skin) 1.2 mm per frame (LH at frame 92; limit 29 mm) over 1170 planted foot-frame pairs",
-   "value": 0.0012
+   "message": "worst planted-foot drift (skin) 1.4 mm per frame (LH at frame 91; limit 29 mm) over 1172 planted foot-frame pairs",
+   "value": 0.0014
   },
   {
    "id": "foot_plant",
@@ -199,7 +199,7 @@
  ],
  "fingerprint": {
   "species": "734870f924fd49c1",
-  "rig_code": "8bdb3b985fd9bddc"
+  "rig_code": "8f13b87a6f4d5315"
  },
  "passed": true
 }

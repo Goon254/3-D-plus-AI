@@ -123,7 +123,9 @@ def test_an_animal_walking_into_a_termite_mound_is_caught():
         "tod": "midday",
         "seconds": 6,
         "layout": {"mounds": [[0.0, 3.0, 1.0]]},
-        "cast": {"kiki": {"species": "meerkat", "at": [0.0, 0.0], "path": [[0.5, 0.0, 0.0], [3.0, 0.0, 2.9]]}},
+        "cast": {
+            "kiki": {"species": "meerkat", "at": [0.0, 0.0], "path": [[0.5, 0.0, 0.0], [3.0, 0.0, 2.9]]}
+        },
         "lines": [],
         "shots": [],
     }
