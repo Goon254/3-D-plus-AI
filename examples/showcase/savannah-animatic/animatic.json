@@ -53,7 +53,7 @@
   {
    "scene": "sc03",
    "title": "Morning - the singing spring",
-   "seconds": 55.116,
+   "seconds": 55.407,
    "shots": 18,
    "longest_shot": 4.4,
    "warnings": [],
@@ -70,8 +70,8 @@
     },
     {
      "who": "neema",
-     "engine": "kokoro",
-     "wer": null
+     "engine": "chatterbox",
+     "wer": 0.0
     },
     {
      "who": "bibi_kobe",
@@ -190,13 +190,13 @@
    "title": "Late afternoon - stripes in the grass",
    "seconds": 36.0,
    "shots": 12,
-   "longest_shot": 3.93,
+   "longest_shot": 4.4,
    "warnings": [],
    "lines": [
     {
      "who": "zuri",
-     "engine": "kokoro",
-     "wer": null
+     "engine": "chatterbox",
+     "wer": 0.0
     },
     {
      "who": "tembo",
@@ -259,11 +259,9 @@
    "scene": "sc08",
    "title": "Night - what everyone notices",
    "seconds": 30.0,
-   "shots": 9,
+   "shots": 10,
    "longest_shot": 4.48,
-   "warnings": [
-    "shot ws ['tembo', 'neema', 'zuri', 'kiki', 'bibi_kobe'] at 21.03s is under 1.2s; dropped"
-   ],
+   "warnings": [],
    "lines": [
     {
      "who": "bibi_kobe",
@@ -287,13 +285,13 @@
     },
     {
      "who": "neema",
-     "engine": "kokoro",
-     "wer": null
+     "engine": "chatterbox",
+     "wer": 0.0
     },
     {
      "who": "zuri",
-     "engine": "kokoro",
-     "wer": null
+     "engine": "chatterbox",
+     "wer": 0.25
     }
    ]
   },
@@ -301,11 +299,9 @@
    "scene": "sc09",
    "title": "Night - the singing spring",
    "seconds": 40.0,
-   "shots": 12,
+   "shots": 13,
    "longest_shot": 4.25,
-   "warnings": [
-    "shot cu ['kiki'] at 15.76s is under 1.2s; dropped"
-   ],
+   "warnings": [],
    "lines": [
     {
      "who": "tembo",
@@ -324,8 +320,8 @@
     },
     {
      "who": "kiki",
-     "engine": "kokoro",
-     "wer": null
+     "engine": "chatterbox",
+     "wer": 0.0
     }
    ]
   },
@@ -347,7 +343,7 @@
  ],
  "static_shots": [],
  "max_static_seconds": 4.5,
- "seconds": 316.49,
- "shots": 103,
+ "seconds": 316.78,
+ "shots": 105,
  "longest_shot": 4.5
 }

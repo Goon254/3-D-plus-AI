@@ -2778,12 +2778,11 @@
      "note": "stars fill the sky; the grass glows silver"
     },
     {
-     "type": "mcu",
+     "type": "ms",
      "subjects": [
       "bibi_kobe"
      ],
-     "line": 0,
-     "side": -50
+     "line": 0
     },
     {
      "type": "cu",
