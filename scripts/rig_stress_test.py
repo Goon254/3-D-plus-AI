@@ -245,7 +245,9 @@ def run(character: str, out: Path, render: bool, res: tuple[int, int], samples: 
         fkeys = face_keys(face, ch["track"], cues, FPS, 1, n, line_start=ch["line_start"])
         batch("anim", keys + fkeys)
         # face parts, eyes and coat: every third frame
-        parts = part_seating(meta, [ex.id for ex in sp.extras], bool(sp.muzzle))
+        parts = part_seating(
+            meta, [ex.id for ex in sp.extras] + (["mane"] if sp.mane else []), bool(sp.muzzle)
+        )
         probe = rig_probe(meta, list(range(1, n + 1, 3)), parts=parts)
         surf = (
             f"{meta.cid}_muzzle"

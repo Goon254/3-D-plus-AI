@@ -1,0 +1,13 @@
+{
+  "reviewer": "overnight GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "535280e963e6e778d9c5d332264c98502c54848a39d335f9b681a5cdf7d296c1",
+  "silhouette_species": "zebra (a stocky equid with a short upright mane; a donkey is the nearest other read)",
+  "thumbnail_species": "zebra",
+  "appeal": 7,
+  "issues": [
+    "owner notes addressed: stockier (chest 0.52 -> 0.57 deep, legs 0.86 -> 0.82 m to the body, thicker legs and neck), a bigger head (0.21 x 0.48 x 0.25 -> 0.24 x 0.53 x 0.29), a short bristly striped mane following the neck from withers to poll, real hooves (flat sole, sloped front wall, narrower coronet)",
+    "the pony read is gone from the silhouette: the upright toothed mane and the deep barrel carry it",
+    "still plain: the face reads calm but not yet charming at sheet size; happy is 3.7 % (a dark mouth on a dark muzzle)"
+  ]
+}

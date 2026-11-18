@@ -109,6 +109,8 @@ def features(sp: Species) -> set[str]:
         f.add("separate_head")
     for ex in sp.extras:
         f.add(ex.id.rstrip("_LR").split("_")[0])  # ossicone_L -> ossicone, mane -> mane
+    if sp.mane:  # the mane ridge mesh (creatures.parts)
+        f.add("mane")
     f |= {f"pattern:{p}" for p in _patterns(sp)}
     return f
 

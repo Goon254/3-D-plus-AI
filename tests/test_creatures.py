@@ -335,8 +335,9 @@ def test_zuri_stripes_wrap_as_chevrons_and_the_mane_stands_on_the_crest():
             "ops": [{"op": "set_material", "targets": ["x"], "material": {**sp.coat, "name": "z"}}],
         }
     )
-    mane = next(e for e in sp.extras if e.id == "mane")
-    assert mane.size[1] >= 0.25 and mane.loc[1] < 0.1  # tall, and on the neck's crest, not behind it
+    # v3 (owner 11-17): a short bristly ridge along the neck (creatures.parts.mane_ridge), not v2's board
+    assert sp.mane is not None and sp.mane[0] <= 0.15 and sp.mane[2] >= 8
+    assert not any(e.id.startswith("mane") for e in sp.extras)
     assert sp.muzzle[0][0] < sp.head_size[0] * 0.75  # narrower than the face
 
 
@@ -454,7 +455,7 @@ def test_part_float_check():
         ear_bones = ["ear_L", "ear_R"]
 
     sp = SPECIES["zebra"]
-    parts = part_seating(Meta(), [e.id for e in sp.extras], True)  # type: ignore[arg-type]
+    parts = part_seating(Meta(), [e.id for e in sp.extras] + (["mane"] if sp.mane else []), True)  # type: ignore[arg-type]
     assert {p["target"] for p in parts} >= {"zebra_ear_L", "zebra_ear_R", "zebra_muzzle", "zebra_mane"}
     assert all(p["surface"] == "zebra_body" for p in parts)
     g = SPECIES["giraffe"]
@@ -493,3 +494,27 @@ def test_owner_notes_1117_surprise_shrinks_irises_in_plane_and_approved_faces_ar
     assert shell.FLARE <= 0
     v, f, c = shell.carapace(0.4, 0.35, 0.3, 0.0, -0.1, rings=40, seg=64)
     assert len(v) == len(c) and shell.signed_volume(v, f) > 0
+
+
+def test_zuri_v3_mane_follows_the_neck_and_hooves_are_real_hooves():
+    """Owner 11-17: a short bristly mane following the neck, real hoof shapes."""
+    from animatica.creatures.build import build_creature
+    from animatica.creatures.parts import hoof, mane_ridge
+    from animatica.creatures.shell import signed_volume
+
+    v, f = hoof(0.05, 0.06)
+    assert signed_volume(v, f) > 0
+    sole = [p for p in v if p[2] == 0.0 and (p[0] or p[1])]
+    top = [p for p in v if abs(p[2] - 0.06) < 1e-9 and (p[0] or p[1])]
+    width = lambda ps: max(p[0] for p in ps) - min(p[0] for p in ps)  # noqa: E731
+    assert width(top) < width(sole)  # the coronet is narrower than the sole
+    assert min(p[1] for p in top) > min(p[1] for p in sole)  # the front wall slopes back
+    line = [((0.0, -0.4 - 0.22 * u, 0.12 + 0.46 * u), 0.14) for u in (0.0, 0.25, 0.5, 0.75, 1.0)]
+    mv, mf = mane_ridge(line, 0.1, 0.05, 6)
+    assert signed_volume(mv, mf) > 0
+    ops, _meta = build_creature("zebra", SPECIES["zebra"], at=(0.0, 0.0))
+    mane = next(o for o in ops if o.get("id") == "zebra_mane")
+    bind = next(o for o in ops if o.get("op") == "bind_mesh_to_armature" and o.get("mesh") == "zebra_mane")
+    assert len(bind.get("bones") or []) >= 4  # skinned along the neck chain: it bends with the neck
+    feet = [o for o in ops if o.get("id", "").startswith("zebra_foot_")]
+    assert len(feet) == 4 and all(o["op"] == "create_mesh" for o in feet) and mane["op"] == "create_mesh"

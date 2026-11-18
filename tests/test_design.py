@@ -201,7 +201,7 @@ def test_a_design_is_ready_only_with_every_check_passing():
     crit = {"silhouette_species": "zebra", "thumbnail_species": "zebra"}
     assert score(b, SPECIES["zebra"], img, crit).ready
     assert not score(b, SPECIES["zebra"], {**img, "floating_parts": 1}, crit).ready
-    no_mane = replace(SPECIES["zebra"], extras=())
+    no_mane = replace(SPECIES["zebra"], extras=(), mane=None)
     assert "feature:mane" in score(b, no_mane, img, crit).hard_failures
 
 

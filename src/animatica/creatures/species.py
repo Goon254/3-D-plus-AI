@@ -104,6 +104,8 @@ class Species:
     patch_shape: tuple[float, float, float] = (1.0, 1.0, 1.0)
     # 0..1 the withers rise: the chest (and the shoulder muscle) sit higher than the back line, a hunched walk
     hunch: float = 0.0
+    # a mane ridge along the neck's top line (creatures.parts.mane_ridge): (height, root width, teeth) in metres
+    mane: tuple[float, float, int] | None = None
     # eyeball centre this many radii under the skin (None: eyes.EMBED_DEPTH, 0.3 = 65 % buried). On a round skull
     # with side-set eyes the skin's edge cuts diagonally over a deep eye and reads as a worried lid (Tembo)
     eye_embed: float | None = None
@@ -266,22 +268,23 @@ SPECIES: dict[str, Species] = {
     # broad stripes, vertical on the body, horizontal on the legs, rings around the neck.
     "zebra": Species(
         name="zebra",
-        body_z=0.86,
-        torso=(0.44, 1.0, 0.52),
+        # v3 (owner 11-17): a stockier zebra, not a pony: deeper chest, thicker neck and legs, a bigger head
+        body_z=0.82,
+        torso=(0.47, 0.98, 0.57),
         torso_at=(0.0, 0.0, 0.02),
         torso_rot=0.0,
         shoulder=(0.12, -0.33, -0.06),
         hip=(0.13, 0.33, -0.02),
         fore_foot=(0.12, -0.34),
         hind_foot=(0.13, 0.34),
-        leg_r=(0.075, 0.045, 0.09, 0.045),
-        foot=("hoof", 0.052, 0.06),
+        leg_r=(0.085, 0.052, 0.1, 0.052),
+        foot=("hoof", 0.058, 0.075),  # a real hoof mesh (creatures.parts.hoof)
         knee_bend=0.16,
-        neck=Chain((0.0, -0.4, 0.12), (0.0, -0.62, 0.58), 3, 0.14, 0.1),
-        head_at=(0.0, -0.8, 0.58),
-        head_size=(0.21, 0.48, 0.25),
+        neck=Chain((0.0, -0.4, 0.12), (0.0, -0.62, 0.56), 3, 0.165, 0.118),
+        head_at=(0.0, -0.81, 0.57),
+        head_size=(0.24, 0.53, 0.29),
         head_pitch=40.0,
-        eye=(0.095, -0.07, 0.06, 0.058),
+        eye=(0.108, -0.077, 0.068, 0.064),
         # big, round-tipped ears (a zebra's are broader than a horse's): part of the species read. The base sits 8.5 cm
         # up the head, sunk ~1 cm into it: at 15 cm the ears hovered 3.6 cm above the head (qa part_float)
         ear=("leaf", (0.085, 0.04, 0.18), (0.07, 0.12, 0.085), (-10.0, 0.0, 16.0)),
@@ -327,18 +330,12 @@ SPECIES: dict[str, Species] = {
         },
         part_mats={"foot": "hoof", "tuft": "tuft"},
         # narrower than the face and sunk into it, so it reads as the end of the nose, not a clown nose
-        muzzle=((0.15, 0.15, 0.12), (0.0, -0.195, -0.035)),
+        muzzle=((0.17, 0.165, 0.135), (0.0, -0.215, -0.04)),
         # real zebras: neck stripes run vertically like the body's; only the legs turn horizontal
         regions=((("leg_LF_lo", "leg_RF_lo", "leg_LH_lo", "leg_RH_lo"), "legs"),),
-        extras=(
-            # an upright brush mane: thick, standing tall from poll to withers, with a dark crest
-            # on the crest of the neck (centred on its back surface, along the neck line) from the withers up
-            # past the poll, standing ~14 cm proud: it changes the silhouette from a horse's to a zebra's
-            Extra("mane", "uv_sphere", (0.085, 0.28, 0.66), (0.0, 0.07, 0.19), "neck_1", "mane", (25, 0, 0)),
-            Extra(
-                "mane_crest", "uv_sphere", (0.06, 0.1, 0.62), (0.0, 0.15, 0.215), "neck_1", "tuft", (25, 0, 0)
-            ),
-        ),
+        # a short, stiff, striped mane standing along the neck's crest from withers to poll (v2's was a board)
+        mane=(0.11, 0.06, 14),
+        lid_bias=-1.0,  # lids drawn up at rest: the grey caps over her eyes read sleepy (surprise widens the irises)
     ),
     # Meerkat: 0.32 m head+body. Kids'-film proportions: a big round head with a pointed snout, a short deep
     # chest (not a tube), a tail shorter than the body that tapers from a thick base, small dark crescent
