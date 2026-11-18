@@ -1,24 +1,25 @@
 {
  "character": "kiki",
  "species": "meerkat",
- "version": "v5",
- "score": 9.55,
+ "version": "v6",
+ "score": 10.0,
  "ready": false,
  "hard_failures": [],
- "pending": [],
- "failed_checks": [
+ "pending": [
+  "species read"
+ ],
+ "failed_checks": [],
+ "motion_checks": [
   {
-   "id": "motion:foot_plant",
-   "hard": false,
-   "message": "a planted sole (skin) strays up to 7.7 mm within one stance (RF, frames 79-85; limit 6 mm, half the foot's radius) over 44 stance phases"
+   "id": "motion:fresh",
+   "passed": true,
+   "message": "the rig stress report measured these species parameters"
   },
   {
-   "id": "critic:appeal",
-   "hard": false,
-   "message": "art-director appeal 7/10 (min 8)"
-  }
- ],
- "motion_checks": [
+   "id": "motion:fresh_code",
+   "passed": true,
+   "message": "the rig code is the one the stress test ran"
+  },
   {
    "id": "motion:eye_socket",
    "passed": true,
@@ -52,12 +53,12 @@
   {
    "id": "motion:foot_slide",
    "passed": true,
-   "message": "worst planted-foot drift (skin) 2.1 mm per frame (RH at frame 165; limit 4 mm) over 724 planted foot-frame pairs"
+   "message": "worst planted-foot drift (skin) 0.5 mm per frame (RF at frame 90; limit 4 mm) over 719 planted foot-frame pairs"
   },
   {
    "id": "motion:foot_plant",
-   "passed": false,
-   "message": "a planted sole (skin) strays up to 7.7 mm within one stance (RF, frames 79-85; limit 6 mm, half the foot's radius) over 44 stance phases"
+   "passed": true,
+   "message": "a planted sole (skin) strays up to 1.7 mm within one stance (RF, frames 88-94; limit 6 mm, half the foot's radius) over 42 stance phases"
   },
   {
    "id": "motion:ground",
@@ -67,23 +68,28 @@
   {
    "id": "motion:sentinel_tail",
    "passed": true,
-   "message": "in the sentinel the tail tip comes down to -18 mm (the tripod wants the ground)"
+   "message": "in the sentinel the tail tip comes down to -12 mm (the tripod wants the ground)"
+  },
+  {
+   "id": "motion:sentinel_paws",
+   "passed": true,
+   "message": "in the sentinel the fore paws ride 1.82 legs off the ground (want >= 1.0), 0.52 legs from the torso's axis (<= 0.65), 1.15-1.35 legs under the head (0.4-1.55), level within 0.00 (<= 0.15) over 185 frames"
   }
  ],
  "critique": {
-  "silhouette_species": "meerkat standing sentinel",
-  "thumbnail_species": "meerkat",
-  "appeal": 7
+  "silhouette_species": null,
+  "thumbnail_species": null,
+  "appeal": null
  },
  "image_metrics": {
   "floating_parts": 0,
-  "neck_notch": 0.3611,
-  "top_dip": 0.0139,
-  "throat": 0.3611,
-  "lift": 0.5278,
-  "dark_blob": 0.0157,
-  "expression_happy": 0.0446,
-  "expression_surprised": 0.0629
+  "neck_notch": 0.2838,
+  "top_dip": 0.027,
+  "throat": 0.2838,
+  "lift": 0.6081,
+  "dark_blob": 0.0155,
+  "expression_happy": 0.0445,
+  "expression_surprised": 0.0627
  },
  "runner_ups": [
   {
@@ -116,7 +122,7 @@
  "motion_test": {
   "file": "motion.mp4",
   "from_take": "output/rig-stress/kiki/motion.mp4",
-  "clip_start_s": 3.66,
+  "clip_start_s": 3.49,
   "line": "Danger! Oh. It's a rock.",
   "turn_degrees": 90,
   "sit_stand": "sentinel drop and rise"

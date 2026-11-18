@@ -9,10 +9,10 @@ current design (`design/<char>/v*`), its rig stress report (`design/<char>/rig_s
 | Character | Design | Owner | Rubric | Ready | Rig stress | Asks of you |
 |---|---|---|---|---|---|---|
 | [Bibi Kobe](bibi_kobe/README.md) | v3 | **approved** v3 | 9.53 | yes | 8 / 9 | nothing: locked |
-| [Kiki](kiki/README.md) | v5 | waiting | 9.55 | no: `critic:appeal` | 9 / 10 | which body on all fours: v5 (your note: lower, longer, hunched) or v4's shorter, higher-shouldered one (the reviewer reads v5 as a weasel) |
+| [Kiki](kiki/README.md) | v6 | **approved** v6 | 10.0 | no | 13 / 13 | nothing: locked v6 (v4 body, v5 patches) per your 11-18 plan; notes still welcome |
 | [Neema](neema/README.md) | v3 | **approved** v3 | 9.61 | yes | 8 / 9 | nothing: locked |
 | [Tembo](tembo/README.md) | v3 | **approved** v3 | 9.58 | yes | 8 / 9 | nothing: locked |
-| [Zuri](zuri/README.md) | v3 | waiting | 7.46 | no: `read:silhouette` | 8 / 9 | approve, or notes; the reviewer would soften the toothed mane into a brush |
+| [Zuri](zuri/README.md) | v4 | **approved** v4 | 10.0 | no | 11 / 11 | nothing: locked v4 (brush mane) per your 11-18 plan; notes still welcome |
 
 Read the scores this way: "ready" needs 9.0+, no hard failure, the species read and appeal 8+. The species read and
 appeal come from a recorded critique (no live vision key on this machine). The runner-ups' 10.0s were scored

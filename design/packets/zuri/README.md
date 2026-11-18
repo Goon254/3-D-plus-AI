@@ -1,14 +1,14 @@
-# Zuri (zebra), design v3
+# Zuri (zebra), design v4
 
 v3 (owner review 11-17): a stockier zebra: deeper chest, thicker neck and legs, a bigger head, a short bristly striped mane that follows the neck from withers to poll (a lofted ridge skinned to the neck, so it bends with it), real hooves (flat sole, sloped front wall, narrower coronet). Lids drawn up at rest; expressions change the face as for all five.
 
 | | |
 |---|---|
-| Rubric | **7.46** / 10, not ready |
-| Silhouette reads as | zebra (a stocky equid with a short upright mane; a donkey is the nearest other read) |
-| 96 px thumbnail reads as | zebra |
-| Appeal (critic) | 7 |
-| Rig stress test | 8 / 9 checks pass |
+| Rubric | **10.0** / 10, not ready |
+| Silhouette reads as | — |
+| 96 px thumbnail reads as | — |
+| Appeal (critic) | — |
+| Rig stress test | 11 / 11 checks pass |
 
 ## Files
 
@@ -20,9 +20,7 @@ v3 (owner review 11-17): a stockier zebra: deeper chest, thicker neck and legs, 
 
 ## Failed checks
 
-* `motion:foot_plant`: a planted sole (skin) strays up to 60.6 mm within one stance (RF, frames 74-88; limit 29 mm, half the foot's radius) over 22 stance phases
-* `read:silhouette` (hard): silhouette read as 'zebra (a stocky equid with a short upright mane; a donkey is the nearest other read)': ambiguous: zebra but also donkey
-* `critic:appeal`: art-director appeal 7/10 (min 8)
+* none
 
 ## Still open
 

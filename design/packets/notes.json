@@ -10,7 +10,7 @@
    "Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes."
   ],
   "runners": "Both runner-ups are small head/eye/ear morphs from the re-run loop, scored 10.0 without a species read, so they aren't comparable with the current design's score.",
-  "ask": "which body on all fours: v5 (your note: lower, longer, hunched) or v4's shorter, higher-shouldered one (the reviewer reads v5 as a weasel)"
+  "ask": "nothing: locked v6 (v4 body, v5 patches) per your 11-18 plan; notes still welcome"
  },
  "zuri": {
   "name": "Zuri",
@@ -22,7 +22,7 @@
    "Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes."
   ],
   "runners": "Runner-up 1 is a bigger head and eyes; runner-up 2 has bigger eyes, a shorter snout and a thinner neck. Both scored 10.0 without a species read.",
-  "ask": "approve, or notes; the reviewer would soften the toothed mane into a brush"
+  "ask": "nothing: locked v4 (brush mane) per your 11-18 plan; notes still welcome"
  },
  "bibi_kobe": {
   "name": "Bibi Kobe",

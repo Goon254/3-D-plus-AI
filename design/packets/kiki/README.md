@@ -1,14 +1,14 @@
-# Kiki (meerkat), design v5
+# Kiki (meerkat), design v6
 
 v5 (owner review 11-17): soft, lighter brown eye patches instead of raccoon rings; faint darker back bands; on all fours a lower, longer body with hunched shoulders (Species.hunch). Expressions now change the face: happy has smiling (lower-lid) eyes and a raised mouth, surprised has wide eyes, shrunk pupils and lifted brows.
 
 | | |
 |---|---|
-| Rubric | **9.55** / 10, not ready |
-| Silhouette reads as | meerkat standing sentinel |
-| 96 px thumbnail reads as | meerkat |
-| Appeal (critic) | 7 |
-| Rig stress test | 9 / 10 checks pass |
+| Rubric | **10.0** / 10, not ready |
+| Silhouette reads as | — |
+| 96 px thumbnail reads as | — |
+| Appeal (critic) | — |
+| Rig stress test | 13 / 13 checks pass |
 
 ## Files
 
@@ -20,8 +20,7 @@ v5 (owner review 11-17): soft, lighter brown eye patches instead of raccoon ring
 
 ## Failed checks
 
-* `motion:foot_plant`: a planted sole (skin) strays up to 7.7 mm within one stance (RF, frames 79-85; limit 6 mm, half the foot's radius) over 44 stance phases
-* `critic:appeal`: art-director appeal 7/10 (min 8)
+* none
 
 ## Still open
 

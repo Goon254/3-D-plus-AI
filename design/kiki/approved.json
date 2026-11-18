@@ -1,0 +1,295 @@
+{
+ "character": "kiki",
+ "version": "v6",
+ "approved": "owner's day plan 2026-11-18 (Stage 2 item 9: lock all five designs)",
+ "notes": [
+  "Owner 11-18: v4's body on all fours with v5's soft lighter eye patches and faint back bands.",
+  "Rig stress: all checks pass incl. sentinel tail and paws (2026-11-18)."
+ ],
+ "score": 10.0,
+ "species_snapshot": {
+  "name": "meerkat",
+  "body_z": 0.118,
+  "torso": [
+   0.086,
+   0.198,
+   0.09
+  ],
+  "torso_at": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "torso_rot": 4.0,
+  "shoulder": [
+   0.027,
+   -0.07,
+   -0.016
+  ],
+  "hip": [
+   0.031,
+   0.068,
+   -0.012
+  ],
+  "fore_foot": [
+   0.028,
+   -0.072
+  ],
+  "hind_foot": [
+   0.032,
+   0.07
+  ],
+  "leg_r": [
+   0.016,
+   0.0125,
+   0.0185,
+   0.0135
+  ],
+  "foot": [
+   "paw",
+   0.012,
+   0.01
+  ],
+  "knee_bend": 0.3,
+  "neck": {
+   "base": [
+    0.0,
+    -0.092,
+    0.018
+   ],
+   "tip": [
+    0.0,
+    -0.142,
+    0.05
+   ],
+   "bones": 2,
+   "r0": 0.026,
+   "r1": 0.017
+  },
+  "head_at": [
+   0.0,
+   -0.184,
+   0.062
+  ],
+  "head_size": [
+   0.07,
+   0.096,
+   0.066
+  ],
+  "head_pitch": 2.0,
+  "eye": [
+   0.024,
+   -0.022,
+   0.013,
+   0.0145
+  ],
+  "ear": [
+   "disc",
+   [
+    0.008,
+    0.021,
+    0.019
+   ],
+   [
+    0.033,
+    0.016,
+    0.012
+   ],
+   [
+    0.0,
+    0.0,
+    -12.0
+   ]
+  ],
+  "tail": {
+   "base": [
+    0.0,
+    0.104,
+    0.004
+   ],
+   "tip": [
+    0.0,
+    0.264,
+    -0.05
+   ],
+   "bones": 4,
+   "r0": 0.017,
+   "r1": 0.0042
+  },
+  "tuft": 0.007,
+  "coat": {
+   "base_color": "#B68A56",
+   "roughness": 0.85,
+   "specular": 0.3,
+   "noise": 0.18,
+   "noise_scale": 40.0,
+   "fur": 0.6,
+   "fur_scale": 500.0,
+   "sheen_tint": "#F2D2A0"
+  },
+  "mats": {
+   "back": {
+    "base_color": "#B08452",
+    "roughness": 0.85,
+    "specular": 0.3,
+    "pattern": "bands",
+    "pattern_color": "#A67D4D",
+    "pattern_scale": 6.0,
+    "pattern_width": 0.08,
+    "pattern_axis": "y",
+    "pattern_distort": 2.0,
+    "pattern_above": 0.024,
+    "pattern_fade": 0.014,
+    "fur": 0.6,
+    "fur_scale": 500.0
+   },
+   "paw": {
+    "base_color": "#B68A56",
+    "roughness": 0.82,
+    "specular": 0.3,
+    "fur": 0.5,
+    "fur_scale": 500.0,
+    "marks": [
+     {
+      "at": [
+       0.0,
+       0.0,
+       -0.118
+      ],
+      "radii": [
+       1.0,
+       1.0,
+       0.026
+      ],
+      "color": "#6E4E2E",
+      "soft": 0.6
+     }
+    ]
+   },
+   "ear": {
+    "base_color": "#3A281A",
+    "roughness": 0.8,
+    "specular": 0.3
+   },
+   "muzzle": {
+    "base_color": "#BE925C",
+    "roughness": 0.8,
+    "specular": 0.3,
+    "fur": 0.4,
+    "fur_scale": 500.0
+   },
+   "nose": {
+    "base_color": "#1E1612",
+    "roughness": 0.4,
+    "specular": 0.3
+   },
+   "tailtip": {
+    "base_color": "#1E150F",
+    "roughness": 0.8,
+    "specular": 0.3
+   }
+  },
+  "part_mats": {
+   "tuft": "tailtip"
+  },
+  "trunk": null,
+  "extras": [
+   {
+    "id": "nose",
+    "shape": "uv_sphere",
+    "size": [
+     0.012,
+     0.009,
+     0.009
+    ],
+    "loc": [
+     0.0,
+     -0.077,
+     -0.016
+    ],
+    "bone": "head",
+    "mat": "nose",
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "gait": "walk",
+  "muzzle": [
+   [
+    0.026,
+    0.05,
+    0.024
+   ],
+   [
+    0.0,
+    -0.05,
+    -0.022
+   ]
+  ],
+  "regions": [
+   [
+    [
+     "hips",
+     "chest"
+    ],
+    "back"
+   ],
+   [
+    [
+     "leg_LF_lo",
+     "leg_RF_lo",
+     "leg_LH_lo",
+     "leg_RH_lo"
+    ],
+    "paw"
+   ],
+   [
+    [
+     "tail_3"
+    ],
+    "tailtip"
+   ]
+  ],
+  "nails": 0,
+  "shell": null,
+  "default_pose": "sentinel",
+  "level_feet": "FH",
+  "eye_patch": [
+   "#40291A",
+   1.0
+  ],
+  "separate_head": false,
+  "snout_tip": [
+   [
+    0.0,
+    -0.072,
+    -0.017
+   ],
+   0.0065
+  ],
+  "jaw": 0.36,
+  "belly_tuck": 0.85,
+  "smooth": 1.0,
+  "patch_soft": 0.4,
+  "ear_cup": 0.0,
+  "lid_bias": 0.0,
+  "brow_max": 0.3,
+  "brow_bias": 0.0,
+  "brow_tilt": 0.0,
+  "patch_shape": [
+   1.0,
+   0.95,
+   0.9
+  ],
+  "hunch": 0.0,
+  "mane": null,
+  "eye_embed": null,
+  "brow_size": [
+   1.0,
+   1.0
+  ]
+ }
+}

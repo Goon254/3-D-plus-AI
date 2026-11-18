@@ -1,0 +1,250 @@
+{
+ "character": "zuri",
+ "version": "v4",
+ "approved": "owner's day plan 2026-11-18 (Stage 2 item 9: lock all five designs)",
+ "notes": [
+  "Owner 11-18: a softer brush mane (gentle 5 % ripple, rounder crest; was v3's saw teeth).",
+  "Rig stress: all checks pass (2026-11-18)."
+ ],
+ "score": 10.0,
+ "species_snapshot": {
+  "name": "zebra",
+  "body_z": 0.82,
+  "torso": [
+   0.47,
+   0.98,
+   0.57
+  ],
+  "torso_at": [
+   0.0,
+   0.0,
+   0.02
+  ],
+  "torso_rot": 0.0,
+  "shoulder": [
+   0.12,
+   -0.33,
+   -0.06
+  ],
+  "hip": [
+   0.13,
+   0.33,
+   -0.02
+  ],
+  "fore_foot": [
+   0.12,
+   -0.34
+  ],
+  "hind_foot": [
+   0.13,
+   0.34
+  ],
+  "leg_r": [
+   0.085,
+   0.052,
+   0.1,
+   0.052
+  ],
+  "foot": [
+   "hoof",
+   0.058,
+   0.075
+  ],
+  "knee_bend": 0.16,
+  "neck": {
+   "base": [
+    0.0,
+    -0.4,
+    0.12
+   ],
+   "tip": [
+    0.0,
+    -0.62,
+    0.56
+   ],
+   "bones": 3,
+   "r0": 0.165,
+   "r1": 0.118
+  },
+  "head_at": [
+   0.0,
+   -0.81,
+   0.57
+  ],
+  "head_size": [
+   0.24,
+   0.53,
+   0.29
+  ],
+  "head_pitch": 40.0,
+  "eye": [
+   0.108,
+   -0.077,
+   0.068,
+   0.064
+  ],
+  "ear": [
+   "leaf",
+   [
+    0.085,
+    0.04,
+    0.18
+   ],
+   [
+    0.07,
+    0.12,
+    0.085
+   ],
+   [
+    -10.0,
+    0.0,
+    16.0
+   ]
+  ],
+  "tail": {
+   "base": [
+    0.0,
+    0.5,
+    0.14
+   ],
+   "tip": [
+    0.0,
+    0.63,
+    -0.3
+   ],
+   "bones": 3,
+   "r0": 0.032,
+   "r1": 0.018
+  },
+  "tuft": 0.055,
+  "coat": {
+   "base_color": "#F3F0E8",
+   "roughness": 0.8,
+   "specular": 0.3,
+   "pattern": "stripes",
+   "pattern_color": "#1A1818",
+   "pattern_width": 0.46,
+   "pattern_scale": 2.6,
+   "pattern_axis": "y",
+   "pattern_distort": 2.5,
+   "pattern_tilt": -0.8,
+   "pattern_chevron": 1.4,
+   "fur": 0.5
+  },
+  "mats": {
+   "legs": {
+    "base_color": "#F3F0E8",
+    "roughness": 0.8,
+    "specular": 0.3,
+    "pattern": "stripes",
+    "pattern_color": "#1A1818",
+    "pattern_width": 0.46,
+    "pattern_scale": 4.2,
+    "pattern_axis": "z",
+    "pattern_distort": 1.0,
+    "fur": 0.5
+   },
+   "neck": {
+    "base_color": "#F3F0E8",
+    "roughness": 0.8,
+    "specular": 0.3,
+    "pattern": "stripes",
+    "pattern_color": "#1A1818",
+    "pattern_width": 0.46,
+    "pattern_scale": 3.4,
+    "pattern_axis": "z",
+    "pattern_distort": 1.5,
+    "fur": 0.5
+   },
+   "hoof": {
+    "base_color": "#222020",
+    "roughness": 0.5,
+    "specular": 0.3
+   },
+   "tuft": {
+    "base_color": "#161414",
+    "roughness": 0.9,
+    "specular": 0.3
+   },
+   "muzzle": {
+    "base_color": "#3B3431",
+    "roughness": 0.7,
+    "specular": 0.3,
+    "fur": 0.3
+   },
+   "mane": {
+    "base_color": "#F3F0E8",
+    "roughness": 0.9,
+    "specular": 0.3,
+    "pattern": "stripes",
+    "pattern_color": "#1A1818",
+    "pattern_width": 0.46,
+    "pattern_scale": 9.0,
+    "pattern_axis": "y",
+    "pattern_distort": 0.5
+   }
+  },
+  "part_mats": {
+   "foot": "hoof",
+   "tuft": "tuft"
+  },
+  "trunk": null,
+  "extras": [],
+  "gait": "walk",
+  "muzzle": [
+   [
+    0.17,
+    0.165,
+    0.135
+   ],
+   [
+    0.0,
+    -0.215,
+    -0.04
+   ]
+  ],
+  "regions": [
+   [
+    [
+     "leg_LF_lo",
+     "leg_RF_lo",
+     "leg_LH_lo",
+     "leg_RH_lo"
+    ],
+    "legs"
+   ]
+  ],
+  "nails": 0,
+  "shell": null,
+  "default_pose": "stand",
+  "level_feet": "FH",
+  "eye_patch": null,
+  "separate_head": false,
+  "snout_tip": null,
+  "jaw": 0.0,
+  "belly_tuck": 0.0,
+  "smooth": 0.0,
+  "patch_soft": 0.55,
+  "ear_cup": 0.0,
+  "lid_bias": -1.0,
+  "brow_max": 1.0,
+  "brow_bias": 0.0,
+  "brow_tilt": 0.0,
+  "patch_shape": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "hunch": 0.0,
+  "mane": [
+   0.11,
+   0.06,
+   14
+  ],
+  "eye_embed": null,
+  "brow_size": [
+   1.0,
+   1.0
+  ]
+ }
+}

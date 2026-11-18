@@ -48,7 +48,7 @@
    "elephant_brow_L": 0.011,
    "elephant_brow_R": 0.011,
    "elephant_ear_L": 0.019,
-   "elephant_ear_R": 0.028,
+   "elephant_ear_R": 0.027,
    "elephant_mouth": -0.048
   },
   "swim_p95_mm": {
@@ -63,20 +63,20 @@
   "foot_slide": {
    "drift": 0.00321,
    "leg": "RF",
-   "frame": 100,
-   "pairs": 1277
+   "frame": 98,
+   "pairs": 1276
   },
   "foot_slide_bone": {
    "drift": 0.0,
    "leg": "LH",
    "frame": 2,
-   "pairs": 1277
+   "pairs": 1276
   },
   "foot_plant": {
-   "travel": 0.02112,
+   "travel": 0.01954,
    "leg": "RF",
-   "start": 141,
-   "end": 165,
+   "start": 95,
+   "end": 109,
    "phases": 26
   },
   "worst_gap": {
@@ -116,7 +116,7 @@
     "expression": "worried"
    },
    "elephant_ear_R": {
-    "gap": 0.028,
+    "gap": 0.027,
     "frame": 220,
     "expression": "sad"
    }
@@ -169,15 +169,15 @@
    "id": "foot_slide",
    "passed": true,
    "hard": true,
-   "message": "worst planted-foot drift (skin) 3.2 mm per frame (RF at frame 100; limit 22 mm) over 1277 planted foot-frame pairs",
+   "message": "worst planted-foot drift (skin) 3.2 mm per frame (RF at frame 98; limit 22 mm) over 1276 planted foot-frame pairs",
    "value": 0.0032
   },
   {
    "id": "foot_plant",
    "passed": true,
    "hard": true,
-   "message": "a planted sole (skin) strays up to 21.1 mm within one stance (RF, frames 141-165; limit 60 mm, half the foot's radius) over 26 stance phases",
-   "value": 0.0211
+   "message": "a planted sole (skin) strays up to 19.5 mm within one stance (RF, frames 95-109; limit 60 mm, half the foot's radius) over 26 stance phases",
+   "value": 0.0195
   },
   {
    "id": "ground",
@@ -189,7 +189,7 @@
  ],
  "fingerprint": {
   "species": "93199cdf95f7c8ec",
-  "rig_code": "8bdb3b985fd9bddc"
+  "rig_code": "8f13b87a6f4d5315"
  },
  "passed": true
 }
