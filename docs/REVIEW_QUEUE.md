@@ -11,7 +11,7 @@ that raised it.
 
 ## P0-DESIGN — DESIGN_STAGE.md (owner's top priority; film production paused)
 
-**Status 11-17 21:36: no owner reply yet; stress reports refreshed (#63). Status 11-17 18:36: the five packets are in [`design/packets/`](../design/packets/README.md) and with the owner. Build no new
+**Status 11-18 00:36: no owner reply yet; one small tooling fix (#64), scores unchanged. Status 11-17 21:36: no owner reply yet; stress reports refreshed (#63). Status 11-17 18:36: the five packets are in [`design/packets/`](../design/packets/README.md) and with the owner. Build no new
 features until he replies; fixes only.** Review: Tembo 8, Neema 7, Kiki 7, Zuri 6, Bibi 7, tooling 8. Zuri's ears floated
 3.6 cm above her head (packet clip and 3/4 view); fixed in code with a new hard `part_float` check (DECISIONS #62), but the
 packet still shows the old ears. — [review 11-17 18:36](reviews/2026-11-17T1836Z.md)
@@ -109,8 +109,10 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
   context name the animal from `silhouette.png` and `thumb96.png` alone and record its answer next to the reviewer's. On
   11-17 15:36 it read Kiki v3 as a meerkat where the reviewer had written "mongoose", so reviewers who know the
   brief are stricter. Keep the stricter read for scoring, and record both. — [review 11-17 15:36](reviews/2026-11-17T1536Z.md)
-- [ ] `materials:flat_black` ignores `marks` colours (a near-black paw mark would pass), and Kiki's paw mark repeats
+- [x] `materials:flat_black` ignores `marks` colours (a near-black paw mark would pass), and Kiki's paw mark repeats
   `body_z` as a literal: derive it, or test that the two stay tied. — [review 11-17 15:36](reviews/2026-11-17T1536Z.md)
+  *Done 11-18 00:36 (cloud, DECISIONS #64): near-black marks are flagged and lifted; the paw mark uses `_MEERKAT_BODY_Z`
+  with a test. Verified by the 2 new tests.* — [review 11-18 00:36](reviews/2026-11-18T0036Z.md)
 - [ ] Rubric gaps the baseline exposed: Add: a fin-like mane (flat plate standing off the neck) and puck hooves (flat cylinders wider than the leg). there is no automatic check yet for stripe bullseyes, edge-on ears or a
   ball-shaped shell. Consider symmetry/ring detection on the front and back views (`docs/LESSONS.md`, §8).
 

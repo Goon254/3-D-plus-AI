@@ -4,6 +4,11 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Cloud review 11-18 00:36 UTC ([review](docs/reviews/2026-11-18T0036Z.md), DECISIONS #64): still waiting for your
+notes on the packets in [`design/packets/`](design/packets/README.md), so fixes only. The flat-black check now also
+catches near-black painted marks (not only base colours), and Kiki's paw shade is tied to her rest height. No design
+changed; scores unchanged.
+
 Cloud review 11-17 21:36 UTC ([review](docs/reviews/2026-11-17T2136Z.md), DECISIONS #63): still waiting for your
 notes on the packets, so fixes only. The rig stress reports were refreshed for all five: the new `part_float` check
 passes through every take (Zuri's ears stay on her head in motion), and `foot_slide` now records how many planted
@@ -82,7 +87,7 @@ Next: the specs for SC 3–10, the film edit, SC 2 polish, then the full GPU ren
   on each one (Tembo and Neema are ready on the rubric; Zuri needs notes on her body plan, not approval). An
   `ANTHROPIC_API_KEY` would let the vision critic run live instead of relying on a reviewer's recorded critique.
 
-* **Laptop session: render SC 2 at final quality** (now with the gag, eyelines and the new eyes) on the RTX 5060 (`python scripts/savannah_scene.py sc02 --quality
+* *(Paused with film production until the packets and the animatic are approved.)* **Laptop session: render SC 2 at final quality** (now with the gag, eyelines and the new eyes) on the RTX 5060 (`python scripts/savannah_scene.py sc02 --quality
   final`, OptiX, ~530 frames at 1280×720) and commit a ≤ 25 MB cut to `examples/showcase/savannah-scenes/`.
 * **Listen to the score** (`examples/showcase/savannah-score/score.m4a`); the cloud reviewer has no speakers.
 * **Install FluidSynth on the laptop** and put it on PATH (or place `fluidsynth.exe` in
