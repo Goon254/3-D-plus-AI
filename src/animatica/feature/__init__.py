@@ -15,7 +15,7 @@ NEXT_STEP = {
     "story": "the story engine runs on the next `animatica feature` call",
     "design": "run the design loop for each character (scripts/design_loop.py, design_packet.py) and approve "
     "the packets; then `animatica feature --film {film} --approve design`",
-    "voices": "casting (06_voices.json) is not automated yet (docs/FEATURE_MODE.md, next pieces)",
+    "voices": "casting runs on the next `animatica feature` call",
     "scenes": "the scene planner (07_scenes.json) is not automated yet (docs/FEATURE_MODE.md, next pieces)",
     "animatic": "render the animatic and review it; then `animatica feature --film {film} --approve animatic`",
     "production": "render the final scenes (resumable) and mix the film",
@@ -45,6 +45,14 @@ def run(film: Path, idea: str | None, llm) -> list[str]:  # noqa: ANN001 - core.
         (film / "01_premise.json").write_text(json.dumps(prem, indent=1) + "\n", encoding="utf-8")
         (film / "04_screenplay.json").write_text(json.dumps(play, indent=1) + "\n", encoding="utf-8")
         log.append(f"story: {prem['title']!r}, {len(prem['cast'])} characters, {len(play['scenes'])} scenes")
+    if not (film / "06_voices.json").exists() and (film / "01_premise.json").exists():
+        # casting needs no approval of its own: the voices are heard (and judged) at the animatic gate
+        from .casting import cast_voices
+
+        prem = json.loads((film / "01_premise.json").read_text(encoding="utf-8"))
+        v = cast_voices(prem)
+        (film / "06_voices.json").write_text(json.dumps(v, indent=1) + "\n", encoding="utf-8")
+        log.append("voices: " + ", ".join(f"{k} = {c['voice']}" for k, c in v["cast"].items()))
     for s in status(film):
         log.append(
             f"  {s.name:<11} {s.state}{'' if s.done else '  (' + s.missing + ')' if s.missing else ''}"

@@ -67,7 +67,9 @@ Later (not in the first pieces): a `feature.critique` pass that scores the draft
 
 ## Next pieces
 
-4. Casting step (`06_voices.json`) from the premise's personalities (stock Kokoro blends + Chatterbox).
+4. ~~Casting step~~ **done** (`animatica.feature.casting`): a register per character from personality, then
+   species (big & young, tall & gentle, fast & bright, small & quick, old & slow), each with two tested stock
+   blends; no two characters share a voice (a semitone apart if a register runs out). Runs with the story.
 5. Scene planner: screenplay → `07_scenes.json` (layout per place, blocking from beats, shot list),
    validated by the continuity checker.
 6. Generalise `savannah_scene.py` / `savannah_animatic.py` to take a film folder (today they read

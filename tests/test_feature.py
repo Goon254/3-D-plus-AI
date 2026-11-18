@@ -52,9 +52,24 @@ def test_the_stages_resume_and_stop_at_the_owner_gates(tmp_path):
     st = {s.name: s for s in status(film)}
     assert st["design"].ready and st["design"].state == "awaiting owner" and next_stage(film).name == "design"
     approve(film, "design", "looks good")
-    assert next_stage(film).name == "voices"
+    assert (film / "06_voices.json").exists()  # casting ran with the story
+    assert next_stage(film).name == "scenes"
     before = (film / "01_premise.json").read_text(encoding="utf-8")
     run(film, None, ScriptedProvider())  # a second run doesn't redo the story
     assert (film / "01_premise.json").read_text(encoding="utf-8") == before
     with pytest.raises(ValueError):
         approve(film, "story")
+
+
+def test_casting_gives_every_character_a_distinct_voice():
+    from animatica.feature.casting import cast_voices
+
+    prem, _ = write_story(IDEA, ScriptedProvider())
+    v = cast_voices(prem)
+    assert set(v["cast"]) == {"narrator"} | {c["id"] for c in prem["cast"]}
+    keys = [(c["voice"], c["pitch"]) for c in v["cast"].values()]
+    assert len(set(keys)) == len(keys) and all(c["ref_text"] for c in v["cast"].values())
+    # five tortoises still get five different voices
+    many = {"cast": [{"id": f"t{i}", "species": "tortoise", "personality": "old and wise"} for i in range(5)]}
+    keys = [(c["voice"], c["pitch"]) for c in cast_voices(many)["cast"].values()]
+    assert len(set(keys)) == len(keys)
