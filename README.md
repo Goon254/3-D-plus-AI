@@ -42,6 +42,133 @@ staging. Known issues we're fixing next: the lip sync drifts, some movements and
 night scenes are too dark, and one zebra wanders where she shouldn't. The character designs come from the
 [design stage](DESIGN_STAGE.md) (design sheets and approval packets are in [`design/`](design/)).
 
+## Get started
+
+### What you need
+
+| | |
+|---|---|
+| **Python 3.13** | exactly 3.13: Blender's Python module (`bpy` 5.3) only supports this version |
+| **Git** and **ffmpeg** | to download the project and assemble the videos |
+| **Disk** | about 3 GB (Blender module ≈ 360 MB, voices, lip-sync and music tools) |
+| **GPU** | optional. An NVIDIA RTX card makes renders ~3–4× faster than a strong CPU (OptiX). Other machines render on the CPU |
+| **API key** | optional. Everything runs offline for free; see [Offline vs. with an API key](#offline-vs-with-an-api-key) |
+
+### Install
+
+<details open>
+<summary><b>Windows</b> (PowerShell; tested on Windows 11 + RTX 5060)</summary>
+
+```powershell
+winget install Git.Git Python.Python.3.13 Gyan.FFmpeg
+# close and reopen PowerShell so the new tools are found, then:
+git clone https://github.com/Goon254/3-D-plus-AI; cd 3-D-plus-AI
+py -3.13 -m venv .venv
+.\.venv\Scripts\Activate.ps1      # if this errors: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+pip install -e ".[dev,tts,mcp]" bpy==5.3.0
+& "C:\Program Files\Git\bin\bash.exe" scripts/setup_assets.sh   # optional: voice model, lip sync, music samples
+animatica dev doctor              # checks what was found, including your GPU
+```
+</details>
+
+<details>
+<summary><b>macOS</b> (Apple Silicon or Intel; renders on the CPU)</summary>
+
+```bash
+brew install python@3.13 ffmpeg git
+git clone https://github.com/Goon254/3-D-plus-AI && cd 3-D-plus-AI
+python3.13 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev,tts,mcp]" bpy==5.3.0
+scripts/setup_assets.sh           # optional: voice model, lip sync, music samples
+animatica dev doctor
+```
+</details>
+
+<details>
+<summary><b>Linux</b></summary>
+
+```bash
+# install Python 3.13 (your distro, deadsnakes, or pyenv), ffmpeg and git; fluidsynth is optional (better music)
+git clone https://github.com/Goon254/3-D-plus-AI && cd 3-D-plus-AI
+python3.13 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev,tts,mcp]" bpy==5.3.0
+scripts/setup_assets.sh           # optional: voice model, lip sync, music samples
+animatica dev doctor
+```
+</details>
+
+The first install downloads a few hundred MB, so give it a few minutes. Every optional tool has a fallback, so
+the pipeline always runs: without the voice model you get a simpler synthetic voice, and without Rhubarb you
+get simpler lip sync.
+
+### Make your first film
+
+```bash
+animatica film "A shy little fox finds a glowing mushroom in a forest at night. It whispers: 'Are you lost too?'" --quality preview
+```
+
+This takes about 2–5 minutes. If you like the preview, render the real thing:
+
+```bash
+animatica film "A shy little fox finds a glowing mushroom in a forest at night. It whispers: 'Are you lost too?'" --quality final
+```
+
+Quality levels, fastest first: `preview` (rough look, for checking timing), `draft`, `final` (960×540) and
+`high` (1280×720). GPU use is automatic (`--device auto`); add `--device cpu` to force the CPU.
+
+**What you get:** the command prints a project folder under `output/`, containing:
+
+* `final.mp4`: the film, with voice, lip sync, music and captions
+* `scene.blend`: the whole scene, which you can open and edit in [Blender](https://www.blender.org/download/)
+* `edit.mlt`: the edit, which opens in Kdenlive or Shotcut
+* `log/index.html`: a page showing every decision each agent made, with the critic's preview images
+
+Changed something by hand in Blender? Run `animatica continue <project folder>`: your edits are locked in and
+the agents rebuild around them. Or ask for a change in words:
+`animatica revise <project folder> "make the fox orange and slow down shot 2"`.
+
+### Offline vs. with an API key
+
+**Offline (default, free):** a built-in planner reads your prompt for keywords. Use these words and your film
+follows them:
+
+* **Who:** a robot, or a small animal (fox, cat, bunny, dog)
+* **Where:** junkyard, forest, meadow, beach, desert, snow, city, space, room
+* **When:** dawn, day, sunset, night
+* **What they find:** flower, lantern, ball, crystal, mushroom, star
+* **What they say:** put the line in quotes
+
+**With an Anthropic API key** (paid per use, from [console.anthropic.com](https://console.anthropic.com)),
+Claude plans the film from your full prompt, chooses the acting and camera work, and reviews the previews by
+looking at them:
+
+```bash
+pip install -e ".[anthropic]"
+export ANTHROPIC_API_KEY=sk-...          # PowerShell: $env:ANTHROPIC_API_KEY="sk-..."
+animatica film "your story" --quality final
+```
+
+### How the 5-minute savannah film was made
+
+*Tembo and the Singing Spring* was **not** made with one command. A Claude Code session acted as the director
+and screenwriter. It researched the animals, wrote and revised the screenplay, ran the
+[design stage](DESIGN_STAGE.md), and produced the film scene by scene with the project's scripts
+(`films/savannah/`, `scripts/savannah_*.py`), while the owner reviewed and approved each stage. Turning this
+into a single `animatica feature` command is on the roadmap.
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `No matching distribution found for bpy==5.3.0` | you're not on Python 3.13; check with `python --version` inside the venv |
+| `ffmpeg not found` | install ffmpeg and reopen your terminal; `animatica dev doctor` should then list it |
+| Render stops or the machine freezes (out of memory) | close browsers and other heavy apps, render one film at a time, use `--quality preview` while iterating |
+| Robotic or flat voice | run `setup_assets.sh` to get the Kokoro voice model; `animatica dev doctor` shows which voice engine is active |
+| Mouth barely moves | Rhubarb isn't installed; run `setup_assets.sh` |
+| GPU not used | `animatica dev doctor` lists `render_devices`; update the NVIDIA driver. Mac (Metal) and AMD (HIP) GPUs aren't supported yet ([help wanted](#how-you-can-help)) |
+
+More detail: [docs/SETUP.md](docs/SETUP.md) has exact setups that worked, including Windows + RTX benchmarks.
+
 ## How you can help
 
 You don't need to be a programmer. Animatica needs:
@@ -60,27 +187,6 @@ tell us what you'd like to work on. Read [CONTRIBUTING.md](CONTRIBUTING.md) firs
 sign-off on commits). Everyone who contributes is credited in the README and in the end credits of every film
 we make.
 
-**On Windows with an NVIDIA GPU?** See [docs/SETUP.md §5](docs/SETUP.md) for the tested setup (OptiX GPU
-rendering: an HD short in about 4 minutes on a laptop RTX 5060).
-
-## Quickstart (fresh clone, Linux/macOS, Python 3.13)
-
-```bash
-git clone https://github.com/Goon254/3-D-plus-AI && cd 3-D-plus-AI
-python3.13 -m venv .venv && . .venv/bin/activate
-pip install -e ".[dev]" bpy==5.3.0 kokoro-onnx soundfile mcp   # Blender as a Python module + voice + MCP
-scripts/setup_assets.sh            # optional: Kokoro voice model, Piper fallback voices, Rhubarb lip sync
-animatica dev doctor               # shows what was found (ffmpeg must be on PATH)
-animatica demo --quality preview   # ~2–3 min: fast Workbench render of the north-star short
-animatica demo --quality final     # Cycles 960×540 (≈9 s/frame on 2 CPU cores)
-```
-
-No API key needed: without `ANTHROPIC_API_KEY` the agents use a deterministic offline "scripted" provider.
-With a key, Claude plans the film, chooses performance/camera parameters and reviews previews visually.
-
-Outputs land in `output/<project>/`: `final.mp4`, `scene.blend`, `scene.usda`, `audio/`, and
-`log/index.html` — a production log with every agent decision, every batch, and every critic review
-with its preview.
 
 ## Commands
 
