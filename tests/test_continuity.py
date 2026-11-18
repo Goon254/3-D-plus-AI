@@ -111,3 +111,23 @@ def test_in_frame_projects_through_the_camera():
     assert in_frame(cam, (0.0, 0.0, 1.0))
     assert not in_frame(cam, (12.0, 0.0, 1.0))  # far off to the side
     assert not in_frame(cam, (0.0, -12.0, 1.0))  # behind the camera
+
+
+def test_an_animal_walking_into_a_termite_mound_is_caught():
+    """Animatic v2: Kiki's path ended inside the SC 4 mound and her close-up was a brown frame."""
+    from animatica.production.continuity import inside_set
+    from animatica.production.scene import scene_from_dict
+
+    d = {
+        "id": "scx",
+        "tod": "midday",
+        "seconds": 6,
+        "layout": {"mounds": [[0.0, 3.0, 1.0]]},
+        "cast": {"kiki": {"species": "meerkat", "at": [0.0, 0.0], "path": [[0.5, 0.0, 0.0], [3.0, 0.0, 2.9]]}},
+        "lines": [],
+        "shots": [],
+    }
+    spec = scene_from_dict(d)
+    assert [v.kind for v in inside_set(spec, 6.0)] == ["inside_set"]
+    d["cast"]["kiki"]["path"][-1] = [3.0, 0.0, 2.0]  # stops in front of it
+    assert not inside_set(scene_from_dict(d), 6.0)

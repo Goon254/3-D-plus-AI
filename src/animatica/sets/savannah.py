@@ -92,7 +92,7 @@ SKY: dict[str, dict[str, Any]] = {
         "clouds": 0.0,
         "cloud": "#3A4670",
         # night only: a soft cool fill from the camera side, so faces read in moonlight
-        "fill": ("#9DB0E8", 1.1),
+        "fill": ("#9DB0E8", 1.8),
     },
 }
 

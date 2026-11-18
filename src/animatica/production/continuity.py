@@ -137,7 +137,46 @@ def check_scene(spec: SceneSpec, shots: list[Shot], seconds: float) -> tuple[lis
                     f"off stage but only {worst[1]:.1f} m from the action (< {OFFSTAGE_M})",
                 )
             )
+    out += inside_set(spec, seconds)
     return out, pres
+
+
+SOLID = {"mounds": 0.62, "acacias": 0.2}  # footprint radius (x the item's scale) an animal can't stand in
+
+
+def inside_set(spec: SceneSpec, seconds: float, step: float = 0.25) -> list[Violation]:
+    """An animal whose body centre walks into a termite mound or a tree trunk (animatic v2: Kiki "popped up"
+    inside the SC 4 mound and the close-up was a brown frame)."""
+    out = []
+    for cid, a in spec.cast.items():
+        if a.ride:
+            continue
+        t = 0.0
+        while t <= seconds:
+            if on_stage(spec, cid, t):
+                x, y = position(spec, cid, t)
+                hit = next(
+                    (
+                        (kind, i)
+                        for kind, r in SOLID.items()
+                        for i, (mx, my, sc) in enumerate(spec.layout.get(kind, []))
+                        if math.hypot(x - mx, y - my) < r * sc
+                    ),
+                    None,
+                )
+                if hit:
+                    out.append(
+                        Violation(
+                            spec.id,
+                            "inside_set",
+                            cid,
+                            t,
+                            f"stands inside {hit[0][:-1]} {hit[1]} at ({x:.2f}, {y:.2f})",
+                        )
+                    )
+                    break
+            t += step
+    return out
 
 
 def check_story(specs: list[SceneSpec]) -> list[Violation]:

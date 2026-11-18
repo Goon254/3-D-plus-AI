@@ -1210,26 +1210,26 @@
     "kiki": {
      "species": "meerkat",
      "at": [
-      -3.3,
-      1.6
+      -3.95,
+      2.3
      ],
      "yaw": 0,
      "gait": "scurry",
      "path": [
       [
        8.8,
-       -3.3,
-       1.6
+       -3.95,
+       2.3
       ],
       [
        9.6,
        -3.05,
-       2.35
+       1.72
       ],
       [
        24.0,
-       -3.05,
-       2.4
+       -3.0,
+       1.7
       ]
      ]
     },
@@ -1440,7 +1440,7 @@
       "kiki"
      ],
      "t": 8.6,
-     "note": "Kiki pops up on the mound"
+     "note": "Kiki pops out from behind the mound"
     },
     {
      "type": "cu",
@@ -3280,7 +3280,7 @@
      "note": "Neema hooks a branch; Zuri braces beside Tembo"
     },
     {
-     "type": "cu",
+     "type": "ms",
      "subjects": [
       "kiki"
      ],
