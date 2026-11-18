@@ -39,6 +39,26 @@ def cmd_film(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_feature(args: argparse.Namespace) -> int:
+    from ..core.llm import get_provider
+    from ..feature import approve, run, slug, status
+
+    if not args.idea and not args.film:
+        print("give a story idea, or --film <folder> to resume one")
+        return 2
+    film = Path(args.film) if args.film else Path("films") / slug(args.idea)
+    if args.approve:
+        approve(film, args.approve, args.note or "")
+        print(f"{args.approve}: approved")
+    if args.status:
+        for s in status(film):
+            print(f"{s.name:<11} {s.state}  {s.missing}")
+        return 0
+    for line in run(film, args.idea, get_provider(args.llm)):
+        print(line)
+    return 0
+
+
 def cmd_demo(args: argparse.Namespace) -> int:
     args.prompt = DEMO_PROMPT
     args.name = args.name or "hello-little-one"
@@ -191,6 +211,18 @@ def build_parser() -> argparse.ArgumentParser:
     f.add_argument("--style", default=None, help="apply a style learned with `animatica study`")
     common(f)
     f.set_defaults(fn=cmd_film)
+
+    ft = sub.add_parser(
+        "feature",
+        help="story idea -> feature film: story, design gate, animatic gate, production (resumable)",
+    )
+    ft.add_argument("idea", nargs="?", default=None)
+    ft.add_argument("--film", default=None, help="the film folder (default films/<slug of the idea>)")
+    ft.add_argument("--status", action="store_true", help="print the stages and stop")
+    ft.add_argument("--approve", default=None, choices=["design", "animatic"], help="owner gate")
+    ft.add_argument("--note", default=None)
+    ft.add_argument("--llm", default="auto", choices=["auto", "scripted", "anthropic"])
+    ft.set_defaults(fn=cmd_feature)
 
     d = sub.add_parser("demo", help="render the north-star demo short")
     d.add_argument("--out", default="output")
