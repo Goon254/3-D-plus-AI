@@ -44,8 +44,8 @@
    "zebra_lid_L_lo": -0.651,
    "zebra_lid_R_up": 0.014,
    "zebra_lid_R_lo": -0.651,
-   "zebra_brow_L": 0.129,
-   "zebra_brow_R": 0.128,
+   "zebra_brow_L": 0.028,
+   "zebra_brow_R": 0.028,
    "zebra_ear_L": -0.157,
    "zebra_ear_R": -0.162,
    "zebra_muzzle": -0.553,
@@ -101,12 +101,12 @@
     "expression": "happy"
    },
    "zebra_brow_L": {
-    "gap": 0.129,
+    "gap": 0.028,
     "frame": 196,
     "expression": "surprised"
    },
    "zebra_brow_R": {
-    "gap": 0.128,
+    "gap": 0.028,
     "frame": 196,
     "expression": "surprised"
    },
@@ -142,9 +142,9 @@
   },
   {
    "id": "brow_float",
-   "passed": false,
+   "passed": true,
    "hard": false,
-   "message": "zebra_brow_L floats 13% of its size off the skin; zebra_brow_R floats 13% of its size off the skin",
+   "message": "brow float: ok",
    "value": null
   },
   {

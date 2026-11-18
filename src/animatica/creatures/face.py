@@ -43,7 +43,7 @@ class Expression:
 
 PUPIL_SHRINK = 0.18  # the most an iris shrinks (share of its size) on a surprised face
 # a raised brow slides back over the ridge this much per unit of lift (0.35 left Neema's thin brows and Zuri's
-# floating 13-21 % of their size on scared / surprised in the rig stress test, DECISIONS #66)
+# floating 13-21 % of their size on scared / surprised in the rig stress test, DECISIONS #67)
 BROW_SINK = 0.6
 
 BROW_COLOR = {  # a shade darker than the coat around the eyes

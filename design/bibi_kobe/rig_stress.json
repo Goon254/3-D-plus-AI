@@ -44,8 +44,8 @@
    "tortoise_lid_L_lo": -0.635,
    "tortoise_lid_R_up": -0.187,
    "tortoise_lid_R_lo": -0.635,
-   "tortoise_brow_L": 0.089,
-   "tortoise_brow_R": 0.089,
+   "tortoise_brow_L": 0.057,
+   "tortoise_brow_R": 0.057,
    "tortoise_mouth": -0.007
   },
   "swim_p95_mm": {
@@ -97,14 +97,14 @@
     "expression": "happy"
    },
    "tortoise_brow_L": {
-    "gap": 0.089,
-    "frame": 232,
-    "expression": "worried"
+    "gap": 0.057,
+    "frame": 250,
+    "expression": "determined"
    },
    "tortoise_brow_R": {
-    "gap": 0.089,
-    "frame": 232,
-    "expression": "worried"
+    "gap": 0.057,
+    "frame": 250,
+    "expression": "determined"
    }
   }
  },

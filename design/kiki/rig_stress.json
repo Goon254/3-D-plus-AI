@@ -45,8 +45,8 @@
    "meerkat_lid_L_lo": -0.636,
    "meerkat_lid_R_up": -0.159,
    "meerkat_lid_R_lo": -0.636,
-   "meerkat_brow_L": 0.066,
-   "meerkat_brow_R": 0.066,
+   "meerkat_brow_L": 0.067,
+   "meerkat_brow_R": 0.067,
    "meerkat_ear_L": -0.113,
    "meerkat_ear_R": -0.112,
    "meerkat_muzzle": -0.361,
@@ -102,12 +102,12 @@
     "expression": "happy"
    },
    "meerkat_brow_L": {
-    "gap": 0.066,
+    "gap": 0.067,
     "frame": 220,
     "expression": "determined"
    },
    "meerkat_brow_R": {
-    "gap": 0.066,
+    "gap": 0.067,
     "frame": 220,
     "expression": "determined"
    },

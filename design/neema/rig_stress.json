@@ -45,8 +45,8 @@
    "giraffe_lid_L_lo": -0.556,
    "giraffe_lid_R_up": 0.104,
    "giraffe_lid_R_lo": -0.556,
-   "giraffe_brow_L": 0.209,
-   "giraffe_brow_R": 0.209,
+   "giraffe_brow_L": 0.116,
+   "giraffe_brow_R": 0.116,
    "giraffe_ear_L": -0.325,
    "giraffe_ear_R": -0.336,
    "giraffe_muzzle": -0.621,
@@ -105,12 +105,12 @@
     "expression": "neutral"
    },
    "giraffe_brow_L": {
-    "gap": 0.209,
+    "gap": 0.116,
     "frame": 220,
     "expression": "scared"
    },
    "giraffe_brow_R": {
-    "gap": 0.209,
+    "gap": 0.116,
     "frame": 220,
     "expression": "scared"
    },
@@ -161,9 +161,9 @@
   },
   {
    "id": "brow_float",
-   "passed": false,
+   "passed": true,
    "hard": false,
-   "message": "giraffe_brow_L floats 21% of its size off the skin; giraffe_brow_R floats 21% of its size off the skin",
+   "message": "brow float: ok",
    "value": null
   },
   {
