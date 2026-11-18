@@ -4,6 +4,13 @@
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
 
+Cloud review 11-18 03:36 UTC ([review](docs/reviews/2026-11-18T0336Z.md), DECISIONS #66): your notes arrived, and the
+laptop locked **Tembo, Neema and Bibi Kobe v3** (#65). Reviewer scores: Tembo 9, Neema 8, Bibi 8, Kiki v5 6 (reads as a
+weasel on all fours: a step back from v4), Zuri v3 7, tooling 8. Foot slide is now measured on the skin, not the IK
+bone: every planted foot **skates 8–77 mm within a stance**, because the rigid hooves and feet rock about the ankle.
+That needs a rig fix before the animatic. The slimmer v3 brows float off the skin in motion (Neema 21 %, Zuri 13 %).
+Still waiting on you: Kiki and Zuri.
+
 Cloud review 11-18 00:36 UTC ([review](docs/reviews/2026-11-18T0036Z.md), DECISIONS #64): still waiting for your
 notes on the packets in [`design/packets/`](design/packets/README.md), so fixes only. The flat-black check now also
 catches near-black painted marks (not only base colours), and Kiki's paw shade is tied to her rest height. No design
