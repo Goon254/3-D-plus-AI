@@ -82,13 +82,17 @@ def rig_checks(
     issues: list[Issue] = []
     embeds: dict[str, list[float]] = {}
     gaps: dict[str, list[float]] = {}
+    worst_at: dict[str, tuple[float, str]] = {}  # the frame of each part's biggest gap, for the message
     swim: dict[str, float] = {}
-    for fr in report.get("frames", {}).values():
+    for fkey, fr in report.get("frames", {}).items():
         for tid, v in (fr.get("seating") or {}).items():
             if "embed" in v:
                 embeds.setdefault(tid, []).append(v["embed"])
             elif "gap" in v:
-                gaps.setdefault(tid, []).append(v["gap"] / max(v["size"], 1e-6))
+                g = v["gap"] / max(v["size"], 1e-6)
+                gaps.setdefault(tid, []).append(g)
+                if g > worst_at.get(tid, (-1.0, ""))[0]:
+                    worst_at[tid] = (g, str(fkey))
         for mid, v in (fr.get("swim") or {}).items():
             swim[mid] = max(swim.get(mid, 0.0), v["p95"])
     for tid, es in embeds.items():
@@ -119,7 +123,12 @@ def rig_checks(
         if max(gs) > SKIN_GAP:
             kind = "brow_float" if "_brow_" in tid else "lid_float"
             issues.append(
-                Issue(shot, kind, "warning", f"{tid} floats {max(gs):.0%} of its size off the skin")
+                Issue(
+                    shot,
+                    kind,
+                    "warning",
+                    f"{tid} floats {max(gs):.0%} of its size off the skin (frame {worst_at[tid][1]})",
+                )
             )
     for mid, p95 in swim.items():
         if p95 > SWIM_P95:

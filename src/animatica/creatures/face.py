@@ -42,6 +42,9 @@ class Expression:
 
 
 PUPIL_SHRINK = 0.18  # the most an iris shrinks (share of its size) on a surprised face
+# a raised brow slides back over the ridge this much per unit of lift (0.35 left Neema's thin brows and Zuri's
+# floating 13-21 % of their size on scared / surprised in the rig stress test, DECISIONS #66)
+BROW_SINK = 0.6
 
 BROW_COLOR = {  # a shade darker than the coat around the eyes
     "elephant": "#5A5450",  # softer than v2's near-black (owner 11-17: less worried)  # dark enough to read on the grey skin (the brows carry his surprise)
@@ -294,7 +297,7 @@ def face_keys(
             # follow the brow ridge as it curves back: a raised brow also sinks a little, so it slides on
             # the skin (the shrinkwrap keeps it on the surface) instead of lifting off into the air
             sink = b.get("out", (0.0, 0.0, 0.0))
-            mv = [up[k] - sink[k] * 0.35 * abs(lift) for k in range(3)]
+            mv = [up[k] - sink[k] * BROW_SINK * abs(lift) for k in range(3)]
             loc_keys.append([frame0 + i, [round(rest[k] + mv[k], 5) for k in range(3)], "LINEAR"])
             # rotating about the head's forward axis: + lowers the +X (outer) end of the left brow, i.e. the
             # inner end goes up; mirrored on the right

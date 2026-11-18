@@ -84,26 +84,6 @@
    },
    {
     "morph": {
-     "head": 1.14,
-     "eye": 1.1,
-     "ear": 1.0,
-     "snout": 0.92,
-     "leg": 1.06,
-     "neck": 0.9,
-     "lift_dark": 0.8
-    },
-    "score": 10.0,
-    "ready": false,
-    "hard_failures": [],
-    "pending": [
-     "species read"
-    ],
-    "edit": {},
-    "manual": [],
-    "sheet": "output/design-loop/zuri/r0_c5/sheet.png"
-   },
-   {
-    "morph": {
      "head": 0.94,
      "eye": 1.12,
      "ear": 1.1,
@@ -112,7 +92,7 @@
      "neck": 1.0,
      "lift_dark": 0.0
     },
-    "score": 9.99,
+    "score": 9.97,
     "ready": false,
     "hard_failures": [],
     "pending": [
@@ -123,6 +103,28 @@
     },
     "manual": [],
     "sheet": "output/design-loop/zuri/r0_c2/sheet.png"
+   },
+   {
+    "morph": {
+     "head": 1.14,
+     "eye": 1.1,
+     "ear": 1.0,
+     "snout": 0.92,
+     "leg": 1.06,
+     "neck": 0.9,
+     "lift_dark": 0.8
+    },
+    "score": 9.93,
+    "ready": false,
+    "hard_failures": [],
+    "pending": [
+     "species read"
+    ],
+    "edit": {
+     "head": 0.9002
+    },
+    "manual": [],
+    "sheet": "output/design-loop/zuri/r0_c5/sheet.png"
    }
   ]
  ],

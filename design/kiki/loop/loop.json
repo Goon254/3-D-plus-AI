@@ -112,15 +112,13 @@
      "neck": 0.9,
      "lift_dark": 0.8
     },
-    "score": 9.98,
+    "score": 10.0,
     "ready": false,
     "hard_failures": [],
     "pending": [
      "species read"
     ],
-    "edit": {
-     "head": 0.9273
-    },
+    "edit": {},
     "manual": [],
     "sheet": "output/design-loop/kiki/r0_c5/sheet.png"
    }
