@@ -1,0 +1,13 @@
+{
+  "reviewer": "overnight GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "1427ddfd87619dcd90c0861070e2b2c0573a2b051d9309db34cae9f030b21daa",
+  "silhouette_species": "meerkat standing sentinel",
+  "thumbnail_species": "meerkat",
+  "appeal": 7,
+  "issues": [
+    "owner notes addressed: the eye patches are a soft, lighter brown crescent (#40291A, soft edge 0.4) instead of v4's crisp near-black rings; the back bands are fainter",
+    "on all fours she is lower (body_z 0.118 -> 0.112 m) and longer (torso 0.198 -> 0.212 m) with the withers raised (hunch 0.4) and the head carried low and forward",
+    "still open: the back line shows soft bumps between the metaball masses in the 3/4 view and the thumbnail; the hunch is subtle at sheet size"
+  ]
+}

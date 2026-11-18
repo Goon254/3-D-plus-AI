@@ -77,9 +77,11 @@ def body_graph(
         t = sp.belly_tuck
         profile[3] = (0.26, 0.93 - 0.08 * t, 0.9 - 0.22 * t)
         profile[4] = (0.45, 0.62, 0.66 - 0.06 * t)
+    hunch = [0.6, 1.0, 0.65, 0.25, 0.0]  # the withers rise over the chest and ease into the back (no step)
     ids = []
-    for u, fw, fd in profile:
-        ids.append(g.node(spine(u), W / 2 * fw * k, D / 2 * fd * k))
+    for (u, fw, fd), h in zip(profile, hunch):
+        x, y, z = spine(u)
+        ids.append(g.node((x, y, z + sp.hunch * h * D * 0.16), W / 2 * fw * k, D / 2 * fd * k))
         g.spine.add(ids[-1])
     for a, b in zip(ids, ids[1:]):
         g.link(a, b)
@@ -94,7 +96,12 @@ def body_graph(
         fore = key[1] == "F"
         ru, rl = (sp.leg_r[0], sp.leg_r[1]) if fore else (sp.leg_r[2], sp.leg_r[3])
         anchor = chest if fore else loins
-        mass_at = (J[0] * 0.8, J[1] + (0.01 if fore else 0.03), J[2] + D * (0.12 if fore else 0.16) * k)
+        lift = sp.hunch * D * 0.14 if fore else 0.0  # hunched shoulders: the shoulder muscle rides higher
+        mass_at = (
+            J[0] * 0.8,
+            J[1] + (0.01 if fore else 0.03),
+            J[2] + D * (0.12 if fore else 0.16) * k + lift,
+        )
         mass_r = ru * (1.75 if fore else 2.05)
         top = g.chain(
             anchor,

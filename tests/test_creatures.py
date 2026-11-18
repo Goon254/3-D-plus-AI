@@ -311,7 +311,9 @@ def test_kiki_v4_rump_rides_the_hips_paws_only_darken_and_body_is_smoother():
     assert paw["base_color"] == sp.coat["base_color"] and paw["marks"][0]["at"][2] == pytest.approx(
         -sp.body_z
     )
-    assert sp.patch_soft < 0.4  # crisp eye patches that carry at 96 px
+    # v5 (owner 11-17): soft, lighter crescents, not raccoon rings (v4's crisp 0.28 / #24180E read as a mask)
+    assert sp.patch_soft >= 0.5 and sp.eye_patch[1] < 1.0 and max(sp.patch_shape) < 1.0
+    assert sp.hunch > 0 and sp.torso[1] / sp.body_z > 2.0  # lower and longer on all fours
     g = Graph()
     a, b = g.node((0.0, 0.0, 0.0), 0.02), g.node((0.0, 0.2, 0.0), 0.02)
     g.link(a, b)

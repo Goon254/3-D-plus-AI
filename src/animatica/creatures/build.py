@@ -142,11 +142,14 @@ def eye_patch_marks(sp: Species) -> dict[str, Any]:
     for sx in (1, -1):
         fr = eye_frame(sp, sx)
         er = fr.radius
-        back = _rx((0.0, 0.7 * er, -0.3 * er), sp.head_pitch)
+        px, py, pz = sp.patch_shape
+        back = _rx(
+            (0.0, (0.7 + 0.5 * (1 - px)) * er, -0.3 * er), sp.head_pitch
+        )  # a smaller patch sits further back
         marks.append(
             {
                 "at": _r(_add(fr.centre, back), 5),
-                "radii": _r((er * 1.7, er * 2.9, er * 1.9), 5),
+                "radii": _r((er * 1.7 * px, er * 2.9 * py, er * 1.9 * pz), 5),
                 "color": color,
                 "soft": sp.patch_soft,
                 "strength": strength,

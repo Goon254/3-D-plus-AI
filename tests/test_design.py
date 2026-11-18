@@ -260,7 +260,7 @@ def test_rig_stress_checks_join_the_rubric_and_a_hard_motion_failure_blocks_read
 def test_approved_designs_are_locked_to_their_species_snapshot():
     """An owner-approved design (design/<char>/approved.json) must not drift: changing an approved species'
     parameters needs a new approval (update the snapshot only with the owner's sign-off)."""
-    from dataclasses import asdict
+    from dataclasses import MISSING, asdict, fields
 
     root = Path(__file__).resolve().parents[1] / "design"
     locked = sorted(root.glob("*/approved.json"))
@@ -269,6 +269,12 @@ def test_approved_designs_are_locked_to_their_species_snapshot():
         rec = json.loads(p.read_text(encoding="utf-8"))
         sp = SPECIES[load_brief(rec["character"]).species]
         now = json.loads(json.dumps(asdict(sp), default=str))
-        drift = sorted(k for k in now if now[k] != rec["species_snapshot"].get(k))
+        snap = rec["species_snapshot"]
+        # a field added after the approval counts only if it moved off its default (which changes nothing)
+        default = {f.name: f.default for f in fields(sp) if f.default is not MISSING}
+        new_ok = {
+            k for k in now if k not in snap and now[k] == json.loads(json.dumps(default.get(k), default=str))
+        }
+        drift = sorted(k for k in now if k not in new_ok and now[k] != snap.get(k))
         assert not drift, f"{rec['character']} is approved as {rec['version']} but changed: {drift}"
         assert (p.parent / rec["version"] / "sheet.jpg").exists()
