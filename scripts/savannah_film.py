@@ -39,21 +39,25 @@ END = "Made with Animatica · open source"
 MAX_MB = 24.0  # web copies stay under the 25 MB repo limit with a margin
 LUFS = -14.0
 
-# the trailer: (scene, start s, seconds), in order. Built from the story beats: the world, the need, the
-# friends, the trouble, the night, the push, the spring, the rainbow. Times are within each final scene.
+# the trailer: (scene, start s, seconds), in order, cut on the lines (timings from the scene reports): the world
+# and the need, the friends, the legend and the vow, setting off, the trouble, lost together, the night, the push
+# and the spring, the moral. About 64 s of film between two 3 s cards.
 TRAILER: list[tuple[str, float, float]] = [
-    ("sc01", 1.0, 5.0),
-    ("sc02", 2.0, 5.0),
-    ("sc03", 6.0, 6.0),
-    ("sc03", 24.0, 5.0),
-    ("sc04", 3.0, 5.0),
-    ("sc05", 2.0, 5.0),
-    ("sc06", 4.0, 5.0),
-    ("sc07", 3.0, 5.0),
-    ("sc08", 0.0, 5.0),
-    ("sc09", 8.0, 7.0),
-    ("sc09", 16.0, 6.0),
-    ("sc10", 4.0, 7.0),
+    ("sc01", 1.8, 5.6),  # "Far away, where the grass grows golden..."
+    ("sc01", 8.2, 4.8),  # "...smaller... and smaller"
+    ("sc02", 6.2, 2.8),  # "Morning, Zuri! Morning, Kiki! Water!"
+    ("sc02", 15.2, 1.9),  # "Your trunk's a hose with hiccups!"
+    ("sc03", 9.2, 7.7),  # the singing spring past the two baobabs
+    ("sc03", 22.6, 2.7),  # "Then I'll find it. For everyone."
+    ("sc03", 45.0, 6.0),  # "So five friends set off together..."
+    ("sc04", 10.2, 2.6),  # "DANGER! ...Oh. It's a rock."
+    ("sc05", 15.5, 1.9),  # "EVERYBODY PANIC!"
+    ("sc06", 11.1, 4.1),  # "There! Stripes!" / "And I hear her."
+    ("sc07", 16.4, 2.6),  # "We're not lost if we're together."
+    ("sc08", 17.0, 4.0),  # "Two trees, bowing! Right under the stars!"
+    ("sc09", 7.0, 5.4),  # "I can't... do it... alone." / "Then don't."
+    ("sc09", 16.6, 7.4),  # "One... two... PUSH!", the gush, the spring lights up
+    ("sc10", 3.8, 4.8),  # "Fast or slow, tall or small... it takes all of us."
 ]
 
 
