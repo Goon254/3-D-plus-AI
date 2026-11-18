@@ -442,7 +442,6 @@ def test_glide_waypoints_are_walked_through_without_stopping():
     assert math.dist(path_xy(glide, 1.0), (1, 0)) < 1e-9
 
 
-<<<<<<< Updated upstream
 def test_part_float_check():
     """An appendage off its base is a hard error of its own, not a lid warning (Zuri v2's hovering ears)."""
     from animatica.creatures.qa import PART_GAP, part_seating, rig_checks
@@ -469,7 +468,8 @@ def test_part_float_check():
     assert 0.036 / 0.18 > PART_GAP
     # without the parts list the same gap is judged as a face part (back-compatible)
     assert [i.check for i in rig_checks(rep(0.036))[0]] == ["lid_float"]
-=======
+
+
 def test_owner_notes_1117_surprise_shrinks_irises_in_plane_and_approved_faces_are_softened():
     from animatica.creatures import shell
     from animatica.creatures.face import EXPRESSIONS, PUPIL_SHRINK, face_keys, face_ops
@@ -491,4 +491,3 @@ def test_owner_notes_1117_surprise_shrinks_irises_in_plane_and_approved_faces_ar
     assert shell.FLARE <= 0
     v, f, c = shell.carapace(0.4, 0.35, 0.3, 0.0, -0.1, rings=40, seg=64)
     assert len(v) == len(c) and shell.signed_volume(v, f) > 0
->>>>>>> Stashed changes
