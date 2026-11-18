@@ -1,0 +1,12 @@
+{
+  "reviewer": "overnight GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "c3316e074c69d17902a78666515ff967f7c751a32eb67d40403b05582473b542",
+  "silhouette_species": "tortoise",
+  "thumbnail_species": "leopard tortoise",
+  "appeal": 8,
+  "issues": [
+    "owner notes addressed: the rim no longer flares (it tucks in 2 %), so the side reads as a dome, not a skirt; the shell mesh is 200 x 480 and the rays have soft edges, so the marks are smooth (no stair steps)",
+    "happy: smiling eyes and an open smile; surprised: brows up, wide eyes and an O"
+  ]
+}

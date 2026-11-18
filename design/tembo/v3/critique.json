@@ -1,0 +1,13 @@
+{
+  "reviewer": "overnight GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "73ad926e7f8eb921e12a853f7ce99a9f90a0c9b5425132d74353072e37b7493f",
+  "silhouette_species": "elephant calf",
+  "thumbnail_species": "baby elephant",
+  "appeal": 8,
+  "issues": [
+    "owner note addressed: the resting brows are slimmer, lighter and level (outer ends up 8 deg); the eyes sit shallower (55 % buried) and the lids rest drawn up, so no skin edge or lid slopes across the eyes",
+    "happy: the lower lids rise (smiling eyes) and the smile curls up either side of the trunk",
+    "surprised: brows lift higher and the irises shrink, so the eyes read wide; the round mouth still hides behind the trunk"
+  ]
+}

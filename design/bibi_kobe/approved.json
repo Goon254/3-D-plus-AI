@@ -1,0 +1,184 @@
+{
+ "character": "bibi_kobe",
+ "version": "v3",
+ "approved": "owner review of the design packets, 2026-11-17",
+ "notes": [
+  "Approved with notes: reduce the skirt-like rim flare; smooth the pixelated shell marks.",
+  "v3: the rim tucks in 2 % instead of flaring 5 %; the shell mesh is 200 x 480 with soft-edged rays."
+ ],
+ "score": 9.86,
+ "species_snapshot": {
+  "name": "tortoise",
+  "body_z": 0.2,
+  "torso": [
+   0.36,
+   0.46,
+   0.2
+  ],
+  "torso_at": [
+   0.0,
+   0.0,
+   -0.02
+  ],
+  "torso_rot": 0.0,
+  "shoulder": [
+   0.14,
+   -0.16,
+   -0.07
+  ],
+  "hip": [
+   0.13,
+   0.17,
+   -0.07
+  ],
+  "fore_foot": [
+   0.22,
+   -0.2
+  ],
+  "hind_foot": [
+   0.19,
+   0.2
+  ],
+  "leg_r": [
+   0.05,
+   0.046,
+   0.058,
+   0.052
+  ],
+  "foot": [
+   "pad",
+   0.05,
+   0.03
+  ],
+  "knee_bend": 0.25,
+  "neck": {
+   "base": [
+    0.0,
+    -0.21,
+    -0.05
+   ],
+   "tip": [
+    0.0,
+    -0.32,
+    0.0
+   ],
+   "bones": 2,
+   "r0": 0.046,
+   "r1": 0.04
+  },
+  "head_at": [
+   0.0,
+   -0.37,
+   0.02
+  ],
+  "head_size": [
+   0.09,
+   0.125,
+   0.078
+  ],
+  "head_pitch": 0.0,
+  "eye": [
+   0.034,
+   -0.03,
+   0.015,
+   0.019
+  ],
+  "ear": [
+   "none",
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "tail": {
+   "base": [
+    0.0,
+    0.25,
+    -0.08
+   ],
+   "tip": [
+    0.0,
+    0.31,
+    -0.11
+   ],
+   "bones": 1,
+   "r0": 0.02,
+   "r1": 0.01
+  },
+  "tuft": 0.0,
+  "coat": {
+   "base_color": "#B9A27A",
+   "roughness": 0.85,
+   "specular": 0.3,
+   "pattern": "scales",
+   "pattern_color": "#7D6A4E",
+   "pattern_scale": 55.0,
+   "subsurface": 0.08,
+   "grain": 0.2,
+   "grain_scale": 120.0
+  },
+  "mats": {
+   "shell": {
+    "base_color": "#E3C46A",
+    "roughness": 0.45,
+    "specular": 0.3,
+    "vertex_color": true,
+    "grain": 0.15,
+    "grain_scale": 60.0
+   },
+   "nail": {
+    "base_color": "#4A3E30",
+    "roughness": 0.6,
+    "specular": 0.3
+   }
+  },
+  "part_mats": {},
+  "trunk": null,
+  "extras": [],
+  "gait": "walk",
+  "muzzle": null,
+  "regions": [],
+  "nails": 3,
+  "shell": [
+   [
+    0.46,
+    0.58,
+    0.46
+   ],
+   [
+    0.0,
+    0.0,
+    0.07
+   ]
+  ],
+  "default_pose": "stand",
+  "eye_patch": null,
+  "separate_head": false,
+  "snout_tip": null,
+  "jaw": 0.0,
+  "belly_tuck": 0.0,
+  "smooth": 0.0,
+  "patch_soft": 0.55,
+  "ear_cup": 0.0,
+  "lid_bias": 0.0,
+  "brow_max": 1.0,
+  "brow_bias": 0.0,
+  "brow_tilt": 0.0,
+  "eye_embed": null,
+  "brow_size": [
+   1.0,
+   1.0
+  ]
+ }
+}

@@ -274,7 +274,9 @@ def test_happy_pushes_the_lower_lids_up_and_the_sentinel_keeps_the_head_level():
     fk = face_keys(face, [(0.0, "neutral"), (0.5, "happy")], None, 24, 1, 48)
     cheek = [o for o in fk if o["property"] == "shape_key:cheek"]
     assert {o["target"] for o in cheek} == {"k_lid_L_lo", "k_lid_R_lo"}
-    assert cheek[0]["keys"][0][1] == 0.0 and cheek[0]["keys"][-1][1] == pytest.approx(0.85)
+    assert cheek[0]["keys"][0][1] == 0.0 and cheek[0]["keys"][-1][1] == pytest.approx(
+        EXPRESSIONS["happy"].cheek
+    )
     _v, _f, keys = lid_mesh(0.01, eye_frame(sp, 1), upper=False)
     assert "cheek" in keys and "droop" not in keys
     # the sentinel: the neck ends SENTINEL_NECK_UP above horizontal and the head SENTINEL_HEAD_UP nose-up,
@@ -440,6 +442,7 @@ def test_glide_waypoints_are_walked_through_without_stopping():
     assert math.dist(path_xy(glide, 1.0), (1, 0)) < 1e-9
 
 
+<<<<<<< Updated upstream
 def test_part_float_check():
     """An appendage off its base is a hard error of its own, not a lid warning (Zuri v2's hovering ears)."""
     from animatica.creatures.qa import PART_GAP, part_seating, rig_checks
@@ -466,3 +469,26 @@ def test_part_float_check():
     assert 0.036 / 0.18 > PART_GAP
     # without the parts list the same gap is judged as a face part (back-compatible)
     assert [i.check for i in rig_checks(rep(0.036))[0]] == ["lid_float"]
+=======
+def test_owner_notes_1117_surprise_shrinks_irises_in_plane_and_approved_faces_are_softened():
+    from animatica.creatures import shell
+    from animatica.creatures.face import EXPRESSIONS, PUPIL_SHRINK, face_keys, face_ops
+
+    sp = SPECIES["elephant"]
+    _ops, face = face_ops("elephant", sp, "elephant", "elephant_rig", "#5A5450")
+    keys = face_keys(face, [(0.0, "neutral"), (0.5, "surprised")], None, 24, 1, 48)
+    iris = [o for o in keys if o["property"] == "scale"]
+    assert {o["target"] for o in iris} == {"elephant_iris_L", "elephant_iris_R"}
+    last = iris[0]["keys"][-1][1]
+    assert last[0] == pytest.approx(1 - PUPIL_SHRINK) and last[1] == 1.0  # never in depth (would sink)
+    # brows: the species tilt is added to every expression (Tembo's outer ends up), and slimmer brows
+    rot = [o for o in keys if o["target"] == "elephant_brow_L" and o["property"] == "rotation"][0]
+    assert rot["keys"][0][1][1] == pytest.approx(EXPRESSIONS["neutral"].brow_tilt + sp.brow_tilt)
+    assert sp.brow_tilt < 0 and SPECIES["giraffe"].brow_size[1] < 1 and SPECIES["giraffe"].lid_bias == -1.0
+    # happy: smiling eyes and a raised mouth win over an open jaw
+    assert EXPRESSIONS["happy"].cheek >= 1.0 and EXPRESSIONS["happy"].jaw < 0.25
+    # Bibi: no skirt flare, and a mesh fine enough for smooth marks
+    assert shell.FLARE <= 0
+    v, f, c = shell.carapace(0.4, 0.35, 0.3, 0.0, -0.1, rings=40, seg=64)
+    assert len(v) == len(c) and shell.signed_volume(v, f) > 0
+>>>>>>> Stashed changes

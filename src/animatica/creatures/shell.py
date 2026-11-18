@@ -20,7 +20,9 @@ from __future__ import annotations
 import math
 
 DOME = 0.85  # profile exponent: < 1 = steeper sides and a fuller, higher top
-FLARE = 0.05  # outward flare of the marginal rim (fraction of the footprint)
+FLARE = (
+    -0.02
+)  # the marginal rim tucks in a little (negative): v2's outward 0.05 hung like a skirt (owner 11-17)
 RAISE = 0.045  # scute relief (fraction of the radius from the shell centre)
 SEAM = 0.11  # seam ramp width in the map: smaller = sharper plates
 
@@ -72,7 +74,7 @@ def mark_colour(
     ang = math.atan2(y - cy, x - cx)
     rays = 0.5 + 0.5 * math.cos(6 * ang + 1.7 * i)  # six rays per plate, each plate turned differently
     # soft-edged rays: the colour is per vertex, so a hard threshold shows the mesh as stair-steps
-    ray = _smooth((rays - 0.55) / 0.3) * _smooth((rel - 0.3) / 0.15) * (1 - _smooth((rel - 0.82) / 0.1))
+    ray = _smooth((rays - 0.5) / 0.42) * _smooth((rel - 0.3) / 0.15) * (1 - _smooth((rel - 0.82) / 0.1))
     c = _mix(AREOLA, GROUND, _smooth((rel - 0.12) / 0.25))
     c = _mix(c, RAY, 0.9 * ray)
     c = _mix(c, SEAM_C, 1 - _smooth(edge / 0.025))
@@ -86,8 +88,8 @@ def carapace(
     height: float,
     rim_z: float,
     under_z: float,
-    rings: int = 110,
-    seg: int = 256,
+    rings: int = 200,  # fine enough that no colour edge is narrower than two vertices (v2's 110 x 256 stair-stepped)
+    seg: int = 480,
 ) -> tuple[list[list[float]], list[list[int]], list[list[float]]]:
     """(vertices, faces, colours) of a closed carapace + plastron. ``rim_z`` is the rim height and ``under_z``
     the plastron's, both relative to the shell's location; the apex is at ``rim_z + height``."""

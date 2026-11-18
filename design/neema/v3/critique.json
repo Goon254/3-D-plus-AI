@@ -1,0 +1,13 @@
+{
+  "reviewer": "overnight GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "0f1c59a4278b1acf276e47fed59d55a41fadc4065f71d33c0e43a6586bd92610",
+  "silhouette_species": "giraffe",
+  "thumbnail_species": "giraffe",
+  "appeal": 8,
+  "issues": [
+    "owner note addressed: what read as heavy scowling brows were her upper lids; they now rest drawn up, the brows are slimmer and lighter with the inner ends a touch up",
+    "the muzzle is smaller (0.16 x 0.15 x 0.125, was 0.21 x 0.21 x 0.18) and sits closer to the face; the mouth still shows a dark lower edge in 3/4",
+    "happy: smiling eyes and an upturned mouth; surprised: brows up, wide eyes"
+  ]
+}

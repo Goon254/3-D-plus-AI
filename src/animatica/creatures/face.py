@@ -16,7 +16,7 @@
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import astuple, dataclass
 from typing import Any
 
 from ..audio.lipsync import Cue, cues_to_keyframes
@@ -36,11 +36,16 @@ class Expression:
     # the mouth shape the emotion holds when nobody is talking (lip sync owns these keys during a line)
     jaw: float = 0.0  # 0..1 the mouth opens (a laugh)
     oh: float = 0.0  # 0..1 a round "O" (surprise)
+    # 0..1 the irises shrink (by up to PUPIL_SHRINK): more white around them, so the eyes read wide even where the
+    # lids already rest open (Tembo; owner 11-17: "surprised = wide eyes")
+    pupil: float = 0.0
 
+
+PUPIL_SHRINK = 0.18  # the most an iris shrinks (share of its size) on a surprised face
 
 BROW_COLOR = {  # a shade darker than the coat around the eyes
-    "elephant": "#47423E",  # dark enough to read on the grey skin (the brows carry his surprise)
-    "giraffe": "#7A4422",
+    "elephant": "#5A5450",  # softer than v2's near-black (owner 11-17: less worried)  # dark enough to read on the grey skin (the brows carry his surprise)
+    "giraffe": "#9A6038",  # lighter, slimmer brows read friendlier (owner 11-17)
     "zebra": "#161414",
     "meerkat": "#24180F",
     "tortoise": "#6A5840",
@@ -49,14 +54,15 @@ BROW_COLOR = {  # a shade darker than the coat around the eyes
 EXPRESSIONS: dict[str, Expression] = {
     "neutral": Expression(0.0, 0.0, 0.1),
     # happy reads from the eyes as much as the mouth: brows up, cheeks pushing the lower lids up, a wide smile
-    "happy": Expression(0.4, -5.0, 1.0, cheek=0.85, jaw=0.35),
+    # (owner 11-17: "smiling eyes and a raised mouth": the jaw opens less so the curled corners carry the smile)
+    "happy": Expression(0.4, -5.0, 1.0, cheek=1.0, jaw=0.18),
     "sad": Expression(0.05, 20.0, -0.6, lid=0.55),
     # surprise has to read at sheet size: brows high, the eyes wide with white above the iris, a round "O"
-    "surprised": Expression(0.85, 4.0, 0.0, lid=-1.0, oh=0.85),
+    "surprised": Expression(1.1, 4.0, 0.0, lid=-1.0, oh=0.85, pupil=1.0),
     "worried": Expression(0.22, 15.0, -0.3, lid=-0.2),
     "determined": Expression(-0.16, -16.0, 0.15, lid=0.4),
     "curious": Expression(0.12, 6.0, 0.25, asym=0.3, lid=-0.25),
-    "scared": Expression(0.42, 18.0, -0.45, lid=-0.9, oh=0.4),
+    "scared": Expression(0.42, 18.0, -0.45, lid=-0.9, oh=0.4, pupil=0.7),
     "proud": Expression(0.08, -8.0, 0.6, lid=0.3, cheek=0.4),
 }
 
@@ -107,7 +113,7 @@ def mouth_mesh(half_w: float, n: int = 24) -> tuple[list, list, dict[str, list]]
         "open": ring(half_w * 0.98, hh * 6.5, pinch=0.3),  # keeps its width: corners stay readable
         "wide": ring(half_w * 1.3, hh * 2.0),
         "round": ring(half_w * 0.5, hh * 4.5),
-        "smile": ring(half_w * 1.2, hh * 1.6, corner=half_w * 0.46),
+        "smile": ring(half_w * 1.2, hh * 1.6, corner=half_w * 0.62),
         "frown": ring(half_w * 0.95, hh * 1.1, corner=-half_w * 0.26),
     }
     return verts, faces, keys
@@ -173,7 +179,11 @@ def face_ops(
                 "op": "create_primitive",
                 "id": bid,
                 "shape": "uv_sphere",
-                "size": [round(er * 1.7, 4), round(er * 0.42, 4), round(er * 0.36, 4)],
+                "size": [
+                    round(er * 1.7 * sp.brow_size[0], 4),
+                    round(er * 0.42 * sp.brow_size[1], 4),
+                    round(er * 0.36 * sp.brow_size[1], 4),
+                ],
                 "location": [round(c, 4) for c in rest],
                 "rotation": [sp.head_pitch, 0, 0],
                 "smooth": True,
@@ -214,10 +224,12 @@ def face_ops(
         "eye_r": er,
         "head_pitch": sp.head_pitch,
         "lids": lids,
+        "irises": [f"{cid}_iris_{side}" for side in ("L", "R")],
         "lower_lids": lower,
         "lid_bias": sp.lid_bias,
         "brow_max": sp.brow_max,
         "brow_bias": sp.brow_bias,
+        "brow_tilt": sp.brow_tilt,
     }
     return ops, meta
 
@@ -250,8 +262,8 @@ def expression_at(track: list[tuple[float, str]], t: float, blend: float = 0.3) 
             *(
                 a + (b - a) * u
                 for a, b in zip(
-                    (cur.brow_up, cur.brow_tilt, cur.smile, cur.asym, cur.lid, cur.cheek, cur.jaw, cur.oh),
-                    (nxt.brow_up, nxt.brow_tilt, nxt.smile, nxt.asym, nxt.lid, nxt.cheek, nxt.jaw, nxt.oh),
+                    astuple(cur),
+                    astuple(nxt),
                 )
             )
         )
@@ -286,7 +298,13 @@ def face_keys(
             loc_keys.append([frame0 + i, [round(rest[k] + mv[k], 5) for k in range(3)], "LINEAR"])
             # rotating about the head's forward axis: + lowers the +X (outer) end of the left brow, i.e. the
             # inner end goes up; mirrored on the right
-            rot_keys.append([frame0 + i, [round(pitch, 2), round(e.brow_tilt * sx, 2), 0.0], "LINEAR"])
+            rot_keys.append(
+                [
+                    frame0 + i,
+                    [round(pitch, 2), round((e.brow_tilt + face.get("brow_tilt", 0.0)) * sx, 2), 0.0],
+                    "LINEAR",
+                ]
+            )
         ops += [
             {"op": "insert_keyframes", "target": b["id"], "property": "location", "keys": loc_keys},
             {"op": "insert_keyframes", "target": b["id"], "property": "rotation", "keys": rot_keys},
@@ -297,6 +315,15 @@ def face_keys(
     frown = [
         [frame0 + i, round(max(0.0, -expression_at(track, t).smile), 3), "LINEAR"] for i, t in enumerate(ts)
     ]
+    pupils = [expression_at(track, t).pupil for t in ts]
+    if any(pupils):
+        for iris in face.get("irises", []):
+            kf = [
+                # in the iris's own plane only (local y is its depth: shrinking that would sink it into the ball)
+                [frame0 + i, [round(1 - PUPIL_SHRINK * p, 3), 1.0, round(1 - PUPIL_SHRINK * p, 3)], "LINEAR"]
+                for i, p in enumerate(pupils)
+            ]
+            ops.append({"op": "insert_keyframes", "target": iris, "property": "scale", "keys": kf})
     for lid in face.get("lids", []):
         bias = face.get("lid_bias", 0.0)  # the species' resting openness (Tembo: wider)
         es = [max(-1.0, min(1.0, expression_at(track, t).lid + bias)) for t in ts]

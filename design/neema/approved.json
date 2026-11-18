@@ -1,0 +1,300 @@
+{
+ "character": "neema",
+ "version": "v3",
+ "approved": "owner review of the design packets, 2026-11-17",
+ "notes": [
+  "Approved with notes: friendlier brows; a smaller, less pouty muzzle.",
+  "v3: lids drawn up at rest (they were the heavy 'brows'), slimmer lighter brows with the inner ends up, muzzle 0.16 x 0.15 x 0.125."
+ ],
+ "score": 9.88,
+ "species_snapshot": {
+  "name": "giraffe",
+  "body_z": 1.55,
+  "torso": [
+   0.5,
+   1.05,
+   0.62
+  ],
+  "torso_at": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "torso_rot": 10.0,
+  "shoulder": [
+   0.15,
+   -0.36,
+   0.02
+  ],
+  "hip": [
+   0.14,
+   0.38,
+   -0.08
+  ],
+  "fore_foot": [
+   0.15,
+   -0.38
+  ],
+  "hind_foot": [
+   0.14,
+   0.38
+  ],
+  "leg_r": [
+   0.105,
+   0.072,
+   0.118,
+   0.072
+  ],
+  "foot": [
+   "hoof",
+   0.075,
+   0.075
+  ],
+  "knee_bend": 0.1,
+  "neck": {
+   "base": [
+    0.0,
+    -0.42,
+    0.18
+   ],
+   "tip": [
+    0.0,
+    -0.78,
+    1.45
+   ],
+   "bones": 4,
+   "r0": 0.14,
+   "r1": 0.08
+  },
+  "head_at": [
+   0.0,
+   -0.95,
+   1.52
+  ],
+  "head_size": [
+   0.27,
+   0.55,
+   0.295
+  ],
+  "head_pitch": 22.0,
+  "eye": [
+   0.12,
+   -0.06,
+   0.068,
+   0.08
+  ],
+  "ear": [
+   "leaf",
+   [
+    0.05,
+    0.035,
+    0.15
+   ],
+   [
+    0.1,
+    0.1,
+    0.06
+   ],
+   [
+    0.0,
+    70.0,
+    -20.0
+   ]
+  ],
+  "tail": {
+   "base": [
+    0.0,
+    0.5,
+    0.0
+   ],
+   "tip": [
+    0.0,
+    0.62,
+    -0.7
+   ],
+   "bones": 3,
+   "r0": 0.028,
+   "r1": 0.014
+  },
+  "tuft": 0.05,
+  "coat": {
+   "base_color": "#F2DFB2",
+   "roughness": 0.8,
+   "specular": 0.3,
+   "pattern": "patches",
+   "pattern_color": "#9A5428",
+   "pattern_scale": 4.2,
+   "pattern_width": 0.55,
+   "fur": 0.45,
+   "sheen_tint": "#FFE8C0"
+  },
+  "mats": {
+   "hoof": {
+    "base_color": "#3A2E26",
+    "roughness": 0.5,
+    "specular": 0.3
+   },
+   "tuft": {
+    "base_color": "#2E2420",
+    "roughness": 0.9,
+    "specular": 0.3
+   },
+   "muzzle": {
+    "base_color": "#EBD9B4",
+    "roughness": 0.8,
+    "specular": 0.3,
+    "fur": 0.3
+   },
+   "ossicone": {
+    "base_color": "#B07A48",
+    "roughness": 0.8,
+    "specular": 0.3
+   },
+   "shins": {
+    "base_color": "#F5E8C8",
+    "roughness": 0.8,
+    "specular": 0.3,
+    "pattern": "patches",
+    "pattern_color": "#A86233",
+    "pattern_scale": 9.0,
+    "pattern_width": 0.4,
+    "fur": 0.4
+   }
+  },
+  "part_mats": {
+   "foot": "hoof",
+   "tuft": "tuft"
+  },
+  "trunk": null,
+  "extras": [
+   {
+    "id": "ossicone_L",
+    "shape": "cylinder",
+    "size": [
+     0.045,
+     0.045,
+     0.14
+    ],
+    "loc": [
+     0.06,
+     0.11,
+     0.185
+    ],
+    "bone": "head",
+    "mat": "ossicone",
+    "rot": [
+     -15,
+     0,
+     0
+    ]
+   },
+   {
+    "id": "ossicone_R",
+    "shape": "cylinder",
+    "size": [
+     0.045,
+     0.045,
+     0.14
+    ],
+    "loc": [
+     -0.06,
+     0.11,
+     0.185
+    ],
+    "bone": "head",
+    "mat": "ossicone",
+    "rot": [
+     -15,
+     0,
+     0
+    ]
+   },
+   {
+    "id": "ossitip_L",
+    "shape": "uv_sphere",
+    "size": [
+     0.06,
+     0.06,
+     0.055
+    ],
+    "loc": [
+     0.06,
+     0.1,
+     0.26
+    ],
+    "bone": "head",
+    "mat": "tuft",
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "id": "ossitip_R",
+    "shape": "uv_sphere",
+    "size": [
+     0.06,
+     0.06,
+     0.055
+    ],
+    "loc": [
+     -0.06,
+     0.1,
+     0.26
+    ],
+    "bone": "head",
+    "mat": "tuft",
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "gait": "walk",
+  "muzzle": [
+   [
+    0.16,
+    0.15,
+    0.125
+   ],
+   [
+    0.0,
+    -0.22,
+    -0.04
+   ]
+  ],
+  "regions": [
+   [
+    [
+     "leg_LF_lo",
+     "leg_RF_lo",
+     "leg_LH_lo",
+     "leg_RH_lo"
+    ],
+    "shins"
+   ]
+  ],
+  "nails": 0,
+  "shell": null,
+  "default_pose": "stand",
+  "eye_patch": null,
+  "separate_head": false,
+  "snout_tip": null,
+  "jaw": 0.0,
+  "belly_tuck": 0.0,
+  "smooth": 0.0,
+  "patch_soft": 0.55,
+  "ear_cup": 0.0,
+  "lid_bias": -1.0,
+  "brow_max": 0.7,
+  "brow_bias": 0.3,
+  "brow_tilt": 6.0,
+  "eye_embed": 0.15,
+  "brow_size": [
+   0.72,
+   0.5
+  ]
+ }
+}

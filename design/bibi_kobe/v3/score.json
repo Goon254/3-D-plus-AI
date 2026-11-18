@@ -1,0 +1,354 @@
+{
+ "morph": {
+  "head": 1.0,
+  "eye": 1.0,
+  "ear": 1.0,
+  "snout": 1.0,
+  "leg": 1.0,
+  "neck": 1.0,
+  "lift_dark": 0.0
+ },
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.0,
+  "top_dip": 0.0,
+  "throat": 0.0,
+  "lift": -0.2186,
+  "dark_blob": 0.0117,
+  "expression_happy": 0.051,
+  "expression_surprised": 0.0585
+ },
+ "design": {
+  "species": "tortoise",
+  "proportions": {
+   "head_body": 0.2155,
+   "eye_head": 0.4872,
+   "eye_spacing": 0.7556,
+   "neck_head": 1.0256,
+   "elongation": 2.3,
+   "belly_gap": 0.4,
+   "leg_thickness": 0.1278,
+   "ear_head": 0.0,
+   "neck_length": 0.6042,
+   "snout": 0.0
+  },
+  "features": [
+   "pattern:scales",
+   "pattern:scutes",
+   "shell"
+  ],
+  "materials": {
+   "luminance": {
+    "coat": 0.3756,
+    "shell": 0.5685,
+    "nail": 0.0511
+   },
+   "pattern_contrast": {
+    "coat": 2.11,
+    "shell": 5.16
+   },
+   "dark_regions": []
+  }
+ },
+ "critique": {
+  "reviewer": "overnight GPU session 2026-11-17 (Claude, looked at silhouette.png and thumb96.png before the sheet)",
+  "sheet": "sheet.png",
+  "sheet_sha256": "c3316e074c69d17902a78666515ff967f7c751a32eb67d40403b05582473b542",
+  "silhouette_species": "tortoise",
+  "thumbnail_species": "leopard tortoise",
+  "appeal": 8,
+  "issues": [
+   "owner notes addressed: the rim no longer flares (it tucks in 2 %), so the side reads as a dome, not a skirt; the shell mesh is 200 x 480 and the rays have soft edges, so the marks are smooth (no stair steps)",
+   "happy: smiling eyes and an open smile; surprised: brows up, wide eyes and an O"
+  ]
+ },
+ "rig_stress": "C:\\dev\\3-D-plus-AI\\design\\bibi_kobe\\rig_stress.json",
+ "character": "bibi_kobe",
+ "score": 9.86,
+ "ready": true,
+ "hard_failures": [],
+ "pending": [],
+ "checks": [
+  {
+   "id": "range:head_body",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "head_body 0.215 in [0.18, 0.3]",
+   "value": 0.2155,
+   "fix": null
+  },
+  {
+   "id": "range:eye_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_head 0.487 in [0.38, 0.6]",
+   "value": 0.4872,
+   "fix": null
+  },
+  {
+   "id": "range:eye_spacing",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye_spacing 0.756 in [0.6, 0.9]",
+   "value": 0.7556,
+   "fix": null
+  },
+  {
+   "id": "range:neck_head",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "neck_head 1.026 in [0.0, 1.1]",
+   "value": 1.0256,
+   "fix": null
+  },
+  {
+   "id": "range:belly_gap",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "belly_gap 0.400 in [0.2, 0.7]",
+   "value": 0.4,
+   "fix": null
+  },
+  {
+   "id": "range:leg_thickness",
+   "group": "proportions",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "leg_thickness 0.128 in [0.1, 0.18]",
+   "value": 0.1278,
+   "fix": null
+  },
+  {
+   "id": "feature:shell",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "shell present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:pattern:scutes",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "pattern:scutes present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "feature:pattern:scales",
+   "group": "features",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "pattern:scales present",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "contrast:shell",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "shell pattern contrast 5.16 (min 4.0)",
+   "value": 5.16,
+   "fix": null
+  },
+  {
+   "id": "materials:flat_black",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "no near-black body regions",
+   "value": [],
+   "fix": null
+  },
+  {
+   "id": "motion:eye_socket",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "eye socket: ok",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "motion:brow_float",
+   "group": "motion",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "brow float: ok",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "motion:lid_float",
+   "group": "motion",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "lid float: ok",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "motion:texture_swim",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "texture swim: ok",
+   "value": null,
+   "fix": null
+  },
+  {
+   "id": "motion:mouth_float",
+   "group": "motion",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "mouth off the skin by -1% of its size",
+   "value": -0.005429978532643011,
+   "fix": null
+  },
+  {
+   "id": "motion:foot_slide",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "worst planted-foot drift 0.0 mm per frame ( at frame 0; limit 6 mm)",
+   "value": 0.0,
+   "fix": null
+  },
+  {
+   "id": "motion:ground",
+   "group": "motion",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "feet sink up to 0.0 mm below their rest height (limit 4 mm)",
+   "value": 0.0,
+   "fix": null
+  },
+  {
+   "id": "silhouette:floating",
+   "group": "silhouette",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "0 floating part(s)",
+   "value": 0,
+   "fix": null
+  },
+  {
+   "id": "materials:dark_blob",
+   "group": "materials",
+   "passed": true,
+   "hard": true,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "largest near-black blob 1% of the figure (max 12%)",
+   "value": 0.0117,
+   "fix": null
+  },
+  {
+   "id": "face:happy",
+   "group": "face",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "happy changes 5.1% of the face close-up (min 3%)",
+   "value": 0.051,
+   "fix": null
+  },
+  {
+   "id": "face:surprised",
+   "group": "face",
+   "passed": true,
+   "hard": false,
+   "weight": 1.0,
+   "earned": 1.0,
+   "message": "surprised changes 5.9% of the face close-up (min 3%)",
+   "value": 0.0585,
+   "fix": null
+  },
+  {
+   "id": "read:silhouette",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "silhouette read as 'tortoise': named tortoise",
+   "value": "tortoise",
+   "fix": null
+  },
+  {
+   "id": "read:thumbnail",
+   "group": "species read",
+   "passed": true,
+   "hard": true,
+   "weight": 2.0,
+   "earned": 2.0,
+   "message": "thumbnail read as 'leopard tortoise': named tortoise",
+   "value": "leopard tortoise",
+   "fix": null
+  },
+  {
+   "id": "critic:appeal",
+   "group": "appeal",
+   "passed": true,
+   "hard": false,
+   "weight": 2.0,
+   "earned": 1.6,
+   "message": "art-director appeal 8/10 (min 8)",
+   "value": 8.0,
+   "fix": null
+  }
+ ],
+ "edit": {},
+ "manual": [
+  "critic: owner notes addressed: the rim no longer flares (it tucks in 2 %), so the side reads as a dome, not a skirt; the shell mesh is 200 x 480 and the rays have soft edges, so the marks are smooth (no stair steps)",
+  "critic: happy: smiling eyes and an open smile; surprised: brows up, wide eyes and an O"
+ ],
+ "sheet": "sheet.jpg (from sheet.png, sha256 in critique.json)"
+}

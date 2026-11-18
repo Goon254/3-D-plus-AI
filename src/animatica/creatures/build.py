@@ -413,7 +413,7 @@ def build_creature(
                 "target": f"{cid}_eye_{side}",
                 "surface": head_surface,
                 "direction": _r(fr.socket, 5),
-                "offset": round(-EMBED_DEPTH * er, 5),
+                "offset": round(-(EMBED_DEPTH if sp.eye_embed is None else sp.eye_embed) * er, 5),
                 "reach": round(max(6 * er, 0.05), 4),
                 "carry": [f"{cid}_iris_{side}", f"{cid}_glint_{side}", *lids],
             }

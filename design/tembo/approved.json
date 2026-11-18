@@ -1,0 +1,189 @@
+{
+ "character": "tembo",
+ "version": "v3",
+ "approved": "owner review of the design packets, 2026-11-17",
+ "notes": [
+  "Approved with a note: soften his resting worried brows.",
+  "v3: level, slimmer, lighter brows; eyes seated shallower and lids drawn up at rest (the skin edge and the lid were what sloped)."
+ ],
+ "score": 9.87,
+ "species_snapshot": {
+  "name": "elephant",
+  "body_z": 0.72,
+  "torso": [
+   0.64,
+   0.86,
+   0.7
+  ],
+  "torso_at": [
+   0.0,
+   0.02,
+   0.05
+  ],
+  "torso_rot": 3.0,
+  "shoulder": [
+   0.19,
+   -0.27,
+   -0.1
+  ],
+  "hip": [
+   0.19,
+   0.29,
+   -0.08
+  ],
+  "fore_foot": [
+   0.19,
+   -0.29
+  ],
+  "hind_foot": [
+   0.19,
+   0.29
+  ],
+  "leg_r": [
+   0.13,
+   0.11,
+   0.135,
+   0.105
+  ],
+  "foot": [
+   "pad",
+   0.12,
+   0.08
+  ],
+  "knee_bend": 0.12,
+  "neck": {
+   "base": [
+    0.0,
+    -0.36,
+    0.14
+   ],
+   "tip": [
+    0.0,
+    -0.52,
+    0.24
+   ],
+   "bones": 1,
+   "r0": 0.21,
+   "r1": 0.19
+  },
+  "head_at": [
+   0.0,
+   -0.74,
+   0.36
+  ],
+  "head_size": [
+   0.66,
+   0.56,
+   0.68
+  ],
+  "head_pitch": 6.0,
+  "eye": [
+   0.17,
+   -0.22,
+   0.1,
+   0.088
+  ],
+  "ear": [
+   "disc",
+   [
+    0.06,
+    0.48,
+    0.62
+   ],
+   [
+    0.31,
+    0.1,
+    -0.28
+   ],
+   [
+    0.0,
+    -8.0,
+    38.0
+   ]
+  ],
+  "tail": {
+   "base": [
+    0.0,
+    0.48,
+    0.14
+   ],
+   "tip": [
+    0.0,
+    0.58,
+    -0.3
+   ],
+   "bones": 3,
+   "r0": 0.03,
+   "r1": 0.014
+  },
+  "tuft": 0.035,
+  "coat": {
+   "base_color": "#918D88",
+   "roughness": 0.82,
+   "specular": 0.3,
+   "noise": 0.22,
+   "noise_scale": 5.0,
+   "wrinkles": 0.45,
+   "wrinkle_scale": 14.0,
+   "subsurface": 0.12,
+   "subsurface_radius": 0.03,
+   "grain": 0.15,
+   "grain_scale": 70.0,
+   "bump": 0.15
+  },
+  "mats": {
+   "nail": {
+    "base_color": "#D9CCB2",
+    "roughness": 0.45,
+    "specular": 0.3
+   },
+   "tuft": {
+    "base_color": "#3A3430",
+    "roughness": 0.9,
+    "specular": 0.3
+   }
+  },
+  "part_mats": {
+   "tuft": "tuft"
+  },
+  "trunk": {
+   "base": [
+    0.0,
+    -0.98,
+    0.2
+   ],
+   "tip": [
+    0.0,
+    -1.06,
+    -0.3
+   ],
+   "bones": 5,
+   "r0": 0.095,
+   "r1": 0.045
+  },
+  "extras": [],
+  "gait": "walk",
+  "muzzle": null,
+  "regions": [],
+  "nails": 3,
+  "shell": null,
+  "default_pose": "stand",
+  "eye_patch": null,
+  "separate_head": true,
+  "snout_tip": null,
+  "jaw": 0.0,
+  "belly_tuck": 0.0,
+  "smooth": 0.0,
+  "patch_soft": 0.55,
+  "ear_cup": 0.16,
+  "lid_bias": -1.0,
+  "brow_max": 1.35,
+  "brow_bias": 0.15,
+  "brow_tilt": -8.0,
+  "eye_embed": 0.1,
+  "brow_size": [
+   0.9,
+   0.8
+  ]
+ }
+}

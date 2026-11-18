@@ -255,3 +255,20 @@ def test_rig_stress_checks_join_the_rubric_and_a_hard_motion_failure_blocks_read
     assert any(c.id == "motion:foot_slide" and c.group == "motion" for c in good.checks)
     assert "motion:foot_slide" not in base.hard_failures and "motion:foot_slide" in worse.hard_failures
     assert worse.score < good.score and not worse.ready
+
+
+def test_approved_designs_are_locked_to_their_species_snapshot():
+    """An owner-approved design (design/<char>/approved.json) must not drift: changing an approved species'
+    parameters needs a new approval (update the snapshot only with the owner's sign-off)."""
+    from dataclasses import asdict
+
+    root = Path(__file__).resolve().parents[1] / "design"
+    locked = sorted(root.glob("*/approved.json"))
+    assert locked, "no approved designs found"
+    for p in locked:
+        rec = json.loads(p.read_text(encoding="utf-8"))
+        sp = SPECIES[load_brief(rec["character"]).species]
+        now = json.loads(json.dumps(asdict(sp), default=str))
+        drift = sorted(k for k in now if now[k] != rec["species_snapshot"].get(k))
+        assert not drift, f"{rec['character']} is approved as {rec['version']} but changed: {drift}"
+        assert (p.parent / rec["version"] / "sheet.jpg").exists()

@@ -39,7 +39,7 @@ UPPER_CLOSED = 146.0  # blink: the upper lid comes down past the lower lid's edg
 LOWER_CLOSED = 38.0
 UPPER_DROOP = 82.0  # a heavy lid, half over the iris
 UPPER_WIDE = 20.0  # eyes wide open: white shows above the iris (surprise reads at sheet size)
-LOWER_CHEEK = 66.0  # "smiling eyes": the cheeks push the lower lid up over the bottom of the iris (happy)
+LOWER_CHEEK = 74.0  # "smiling eyes": the cheeks push the lower lid up over the bottom of the iris (happy)
 
 
 def _norm(v: V3) -> V3:

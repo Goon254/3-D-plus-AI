@@ -97,6 +97,16 @@ class Species:
     brow_bias: float = (
         0.0  # added to every expression's brow lift (eye radii): + rests the brows higher (less grumpy)
     )
+    # added to every expression's brow tilt (degrees): - lifts the outer ends. A round skull curves the brows'
+    # outer ends down, which reads as worried at rest (Tembo, owner review 11-17)
+    brow_tilt: float = 0.0
+    # eyeball centre this many radii under the skin (None: eyes.EMBED_DEPTH, 0.3 = 65 % buried). On a round skull
+    # with side-set eyes the skin's edge cuts diagonally over a deep eye and reads as a worried lid (Tembo)
+    eye_embed: float | None = None
+    brow_size: tuple[float, float] = (
+        1.0,
+        1.0,
+    )  # brow length and thickness multipliers (slimmer = friendlier)
 
 
 def _m(color: str, rough: float = 0.75, **kw: Any) -> dict[str, Any]:
@@ -136,7 +146,12 @@ SPECIES: dict[str, Species] = {
         # angled forward so the big ears frame the face instead of showing their edge
         ear=("disc", (0.06, 0.48, 0.62), (0.31, 0.1, -0.28), (0.0, -8.0, 38.0)),
         ear_cup=0.16,  # cupped, thick, a rolled top edge: never a fin edge-on
-        lid_bias=-0.4,  # bright, open eyes at rest (the baseline neutral looked sleepy)
+        lid_bias=-1.0,  # lids drawn up at rest: a part-open lid slopes with his side-set eyes (worried, owner 11-17)
+        brow_tilt=-8.0,  # owner 11-17: soften his resting worried brows (outer ends up)
+        brow_bias=0.15,
+        brow_size=(0.9, 0.8),
+        eye_embed=0.1,  # 55 % buried: the skin's edge no longer slopes across the eye (owner 11-17: worried)
+        brow_max=1.35,  # a big skull: room for surprise above the raised resting brows
         tail=Chain((0.0, 0.48, 0.14), (0.0, 0.58, -0.3), 3, 0.03, 0.014),
         tuft=0.035,
         trunk=Chain((0.0, -0.98, 0.2), (0.0, -1.06, -0.3), 5, 0.095, 0.045),
@@ -181,6 +196,12 @@ SPECIES: dict[str, Species] = {
         head_pitch=22.0,
         eye=(0.12, -0.06, 0.068, 0.08),
         brow_bias=0.3,  # her low resting brows read as a scowl
+        brow_tilt=6.0,  # owner 11-17: friendlier brows: slimmer, lighter, the inner ends a touch up (soft, not a scowl)
+        brow_size=(0.72, 0.5),
+        # the heavy "brows" were her upper lids: brown caps sloping over the top third of each eye. Drawn up at
+        # rest, with the eyes a little shallower, the face opens up (surprise widens through the irises)
+        lid_bias=-1.0,
+        eye_embed=0.15,
         brow_max=0.7,  # rig stress test: a surprised lift of 1.0 floated her brows 16 % off the skin
         ear=("leaf", (0.05, 0.035, 0.15), (0.1, 0.1, 0.06), (0.0, 70.0, -20.0)),
         tail=Chain((0.0, 0.5, 0.0), (0.0, 0.62, -0.7), 3, 0.028, 0.014),
@@ -211,7 +232,8 @@ SPECIES: dict[str, Species] = {
             ),
         },
         part_mats={"foot": "hoof", "tuft": "tuft"},
-        muzzle=((0.21, 0.21, 0.18), (0.0, -0.25, -0.05)),
+        # owner 11-17: a smaller, less pouty muzzle (v2's 0.21 x 0.21 x 0.18 bulb pushed a lower lip out)
+        muzzle=((0.16, 0.15, 0.125), (0.0, -0.22, -0.04)),
         regions=((("leg_LF_lo", "leg_RF_lo", "leg_LH_lo", "leg_RH_lo"), "shins"),),
         extras=(
             Extra(
