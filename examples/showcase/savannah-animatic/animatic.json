@@ -1,0 +1,353 @@
+{
+ "scenes": [
+  {
+   "scene": "sc01",
+   "title": "Dawn - the old watering hole",
+   "seconds": 22.0,
+   "shots": 6,
+   "longest_shot": 4.02,
+   "warnings": [],
+   "lines": [
+    {
+     "who": "narrator",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "narrator",
+     "engine": "chatterbox",
+     "wer": 0.0
+    }
+   ]
+  },
+  {
+   "scene": "sc02",
+   "title": "Morning - the puddle",
+   "seconds": 23.372,
+   "shots": 8,
+   "longest_shot": 3.99,
+   "warnings": [],
+   "lines": [
+    {
+     "who": "tembo",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "kiki",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "zuri",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "zuri",
+     "engine": "chatterbox",
+     "wer": 0.125
+    }
+   ]
+  },
+  {
+   "scene": "sc03",
+   "title": "Morning - the singing spring",
+   "seconds": 55.116,
+   "shots": 18,
+   "longest_shot": 4.4,
+   "warnings": [],
+   "lines": [
+    {
+     "who": "bibi_kobe",
+     "engine": "chatterbox",
+     "wer": 0.118
+    },
+    {
+     "who": "bibi_kobe",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "neema",
+     "engine": "kokoro",
+     "wer": null
+    },
+    {
+     "who": "bibi_kobe",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "tembo",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "zuri",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "tembo",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "neema",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "kiki",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "bibi_kobe",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "zuri",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "narrator",
+     "engine": "chatterbox",
+     "wer": 0.0
+    }
+   ]
+  },
+  {
+   "scene": "sc04",
+   "title": "Midday - the journey",
+   "seconds": 36.0,
+   "shots": 13,
+   "longest_shot": 3.33,
+   "warnings": [],
+   "lines": [
+    {
+     "who": "kiki",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "neema",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "bibi_kobe",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "tembo",
+     "engine": "chatterbox",
+     "wer": 0.0
+    }
+   ]
+  },
+  {
+   "scene": "sc05",
+   "title": "Afternoon - the fork",
+   "seconds": 26.0,
+   "shots": 9,
+   "longest_shot": 4.22,
+   "warnings": [],
+   "lines": [
+    {
+     "who": "bibi_kobe",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "zuri",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "tembo",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "kiki",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "kiki",
+     "engine": "chatterbox",
+     "wer": 0.0
+    }
+   ]
+  },
+  {
+   "scene": "sc06",
+   "title": "Late afternoon - stripes in the grass",
+   "seconds": 36.0,
+   "shots": 12,
+   "longest_shot": 3.93,
+   "warnings": [],
+   "lines": [
+    {
+     "who": "zuri",
+     "engine": "kokoro",
+     "wer": null
+    },
+    {
+     "who": "tembo",
+     "engine": "chatterbox",
+     "wer": 0.083
+    },
+    {
+     "who": "neema",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "kiki",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "zuri",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "zuri",
+     "engine": "chatterbox",
+     "wer": 0.0
+    }
+   ]
+  },
+  {
+   "scene": "sc07",
+   "title": "Sunset - lost together",
+   "seconds": 26.0,
+   "shots": 10,
+   "longest_shot": 3.24,
+   "warnings": [],
+   "lines": [
+    {
+     "who": "tembo",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "bibi_kobe",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "tembo",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "tembo",
+     "engine": "chatterbox",
+     "wer": 0.0
+    }
+   ]
+  },
+  {
+   "scene": "sc08",
+   "title": "Night - what everyone notices",
+   "seconds": 30.0,
+   "shots": 9,
+   "longest_shot": 4.48,
+   "warnings": [
+    "shot ws ['tembo', 'neema', 'zuri', 'kiki', 'bibi_kobe'] at 21.03s is under 1.2s; dropped"
+   ],
+   "lines": [
+    {
+     "who": "bibi_kobe",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "kiki",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "kiki",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "tembo",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "neema",
+     "engine": "kokoro",
+     "wer": null
+    },
+    {
+     "who": "zuri",
+     "engine": "kokoro",
+     "wer": null
+    }
+   ]
+  },
+  {
+   "scene": "sc09",
+   "title": "Night - the singing spring",
+   "seconds": 40.0,
+   "shots": 12,
+   "longest_shot": 4.25,
+   "warnings": [
+    "shot cu ['kiki'] at 15.76s is under 1.2s; dropped"
+   ],
+   "lines": [
+    {
+     "who": "tembo",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "neema",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "bibi_kobe",
+     "engine": "chatterbox",
+     "wer": 0.0
+    },
+    {
+     "who": "kiki",
+     "engine": "kokoro",
+     "wer": null
+    }
+   ]
+  },
+  {
+   "scene": "sc10",
+   "title": "Dawn - home",
+   "seconds": 22.0,
+   "shots": 6,
+   "longest_shot": 4.5,
+   "warnings": [],
+   "lines": [
+    {
+     "who": "narrator",
+     "engine": "chatterbox",
+     "wer": 0.0
+    }
+   ]
+  }
+ ],
+ "static_shots": [],
+ "max_static_seconds": 4.5,
+ "seconds": 316.49,
+ "shots": 103,
+ "longest_shot": 4.5
+}

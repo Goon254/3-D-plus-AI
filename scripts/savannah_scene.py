@@ -37,7 +37,7 @@ from animatica.creatures.gait import GAITS, Waypoint  # noqa: E402
 from animatica.creatures.gesture import Gesture, Rig, acting_layers, gaze_track, spray_droplets  # noqa: E402
 from animatica.creatures.perform import plan_for, walk_keys  # noqa: E402
 from animatica.creatures.species import SPECIES  # noqa: E402
-from animatica.production import sound  # noqa: E402
+from animatica.production import continuity, sound  # noqa: E402
 from animatica.production.scene import (  # noqa: E402
     Occluder,
     Subject,
@@ -71,13 +71,13 @@ def heading_yaw(a: tuple[float, float], b: tuple[float, float]) -> float:
 def waypoints(actor, seconds: float) -> tuple[list[Waypoint], float]:
     if not actor.path:
         return [Waypoint(0.0, *actor.at), Waypoint(seconds, *actor.at)], actor.yaw
-    pts = [Waypoint(t, x, y) for t, x, y in actor.path]
+    pts = [Waypoint(w[0], w[1], w[2], glide=len(w) > 3 and bool(w[3])) for w in actor.path]
     if pts[0].t > 0:
         pts.insert(0, Waypoint(0.0, pts[0].x, pts[0].y))
     if pts[-1].t < seconds:
         pts.append(Waypoint(seconds, pts[-1].x, pts[-1].y))
     moving = [p for p in actor.path]
-    yaw0 = heading_yaw(moving[0][1:], moving[1][1:]) if len(moving) > 1 else actor.yaw
+    yaw0 = heading_yaw(moving[0][1:3], moving[1][1:3]) if len(moving) > 1 else actor.yaw
     return pts, yaw0
 
 
@@ -161,12 +161,13 @@ def main() -> int:
             + (f" FALLBACK {info['fallback']}" if "fallback" in info else "")
         )
     takes = [(Path(info["path"]), float(info["duration"])) for info in voice_info]
-    seconds = schedule(spec, [d for _, d in takes])
+    seconds = schedule(spec, [d for _, d in takes], continuity.actor_speeds(spec))
     n = int(round(seconds * fps)) + 1
     shots = cut_list(spec, seconds)
     if a.quality == "animatic":  # DESIGN_STAGE §7: no set-up holds longer than about 4 s
         shots = split_long(shots, seconds)
     tracks = expression_tracks(spec)
+    cont_issues, _ = continuity.check_scene(spec, shots, seconds)
 
     # ---- set + cast
     lay = spec.layout
@@ -404,10 +405,20 @@ def main() -> int:
                     "frame_h_m": round(frame_h_m, 3),
                     "camera_move_frac": round(moved / max(frame_h_m, 1e-6), 3),
                     "subject_move_frac": round(sub_move / max(frame_h_m, 1e-6), 3),
+                    "end_location": [round(v, 4) for v in end_loc],
                     **cam,
                 }
             )
         run(eng, "cameras", cam_ops)
+        # continuity on the real cameras: nobody off stage may be in a frame (head height over the root path)
+        where = {
+            c: [(p.root[0], p.root[1], metas[c].head_height) for p in plans[c]]
+            for c, a_ in spec.cast.items()
+            if a_.enter or a_.exit
+        }
+        cont_issues += continuity.check_frames(spec, shot_report, where, fps)
+        for v in cont_issues:
+            print(f"  CONTINUITY {v}")
         run(
             eng,
             "render-settings",
@@ -500,6 +511,7 @@ def main() -> int:
         "footsteps": nsteps,
         "sound": mrep,
         "warnings": spec.warnings,
+        "continuity": [str(v) for v in cont_issues],
         "render_seconds": render_s,
         "wall_seconds": None,
     }

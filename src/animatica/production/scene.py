@@ -53,6 +53,7 @@ class Line:
     at: float | None = None
     gap: float = 0.45
     to: str = ""  # the addressee: the speaker turns partly toward them (eyeline)
+    offscreen: bool = False  # heard, not seen (the speaker is off stage, e.g. lost in the grass)
     start: float = 0.0  # filled by schedule()
     end: float = 0.0
 
@@ -64,10 +65,22 @@ class Actor:
     at: tuple[float, float]
     yaw: float = 0.0  # degrees; rest faces -Y (toward the default camera side)
     gait: str = "walk"
-    path: list[tuple[float, float, float]] = field(default_factory=list)  # (t, x, y) waypoints
-    # the path as written, when some waypoints are timed off the lines (resolved by schedule()):
-    # [t, x, y], {"line": i, "dt": s, "from": "end"|"start", "at": [x, y]} or {"then": s, "at": [x, y]}
+    path: list[tuple[float, ...]] = field(default_factory=list)  # (t, x, y[, glide]) waypoints
+    # the path as written, when some waypoints are timed off the lines or aimed at places (resolved by
+    # schedule()): [t, x, y], {"line": i, "dt": s, "from": "end"|"start", "at": [x, y]}, {"then": s, "at": ...};
+    # instead of "at", "to" names a destination ("water", "mound:0", "acacia:1", "prop:log", "actor:tembo",
+    # "exit:right|left|back|front"), with "near": metres to stop short of it; without "then", the move takes
+    # as long as the actor's gait needs (distance / speed); "glide": true passes through without stopping
     path_spec: list[Any] = field(default_factory=list)
+    # on stage from ``enter`` (a beat: {"t": s} or {"line": i, "dt": s, "from": "start"|"end"}) until ``exit``;
+    # off stage the actor must be out of every shot (production.continuity checks it)
+    enter: dict[str, Any] | None = None
+    exit: dict[str, Any] | None = None
+    story_exit: bool = False  # leaves the group at the end of this scene: must re-enter in a later scene
+    extra: bool = False  # a background animal (not a character): no lines, no story continuity
+    t_in: float = 0.0  # filled by schedule()
+    t_out: float = 1e9
+    open_from: float = 1e9  # an exit walk starts here: it may still be under way when the scene ends
 
 
 @dataclass
@@ -152,25 +165,97 @@ def _actor(cid: str, d: dict[str, Any]) -> Actor:
         gait=d.get("gait", "walk"),
         path=[(float(p[0]), float(p[1]), float(p[2])) for p in d.get("path", []) if not isinstance(p, dict)],
         path_spec=list(d.get("path", [])) if any(isinstance(p, dict) for p in d.get("path", [])) else [],
+        enter=d.get("enter"),
+        exit=d.get("exit"),
+        story_exit=bool(d.get("story_exit", False)),
+        extra=bool(d.get("extra", False)),
     )
 
 
-def resolve_path(a: Actor, lines: list[Line]) -> None:
-    """Turn ``a.path_spec`` into absolute ``(t, x, y)`` waypoints once the lines are placed in time: walks that
-    start on a line stay on it whatever length the voice take turned out to be."""
+EXIT_DIST = 16.0  # metres an exit walks on past its last mark: well outside the widest shot
+EXIT_DIRS = {"right": (1.0, 0.0), "left": (-1.0, 0.0), "back": (0.0, 1.0), "front": (0.0, -1.0)}
+
+
+def _beat_time(b: dict[str, Any], lines: list[Line]) -> float:
+    if "line" in b:
+        ln = lines[int(b["line"])]
+        return (ln.start if b.get("from") == "start" else ln.end) + float(b.get("dt", 0.0))
+    return float(b.get("t", 0.0))
+
+
+def landmark(
+    name: str,
+    layout: dict[str, Any],
+    here: tuple[float, float],
+    others: dict[str, tuple[float, float]] | None = None,
+) -> tuple[float, float]:
+    """World XY of a named destination on the set (see ``Actor.path_spec``)."""
+    kind, _, arg = name.partition(":")
+    if kind == "exit":
+        dx, dy = EXIT_DIRS[arg or "right"]
+        return here[0] + dx * EXIT_DIST, here[1] + dy * EXIT_DIST
+    if kind == "water":
+        w = layout.get("water")
+        if not w:
+            raise ValueError("no water on this set")
+        return float(w[0]), float(w[1])
+    if kind in ("mound", "acacia"):
+        items = layout.get(kind + "s", [])
+        x = items[int(arg or 0)]
+        return float(x[0]), float(x[1])
+    if kind == "prop":
+        for pr in layout.get("props", []):
+            if pr.get("name") == arg:
+                return float(pr["at"][0]), float(pr["at"][1])
+        raise ValueError(f"no prop named {arg!r}")
+    if kind == "actor":
+        if not others or arg not in others:
+            raise ValueError(f"no actor {arg!r} to walk to")
+        return others[arg]
+    raise ValueError(f"unknown destination {name!r}")
+
+
+def resolve_path(
+    a: Actor,
+    lines: list[Line],
+    layout: dict[str, Any] | None = None,
+    speed: float | None = None,
+    others: dict[str, tuple[float, float]] | None = None,
+) -> None:
+    """Turn ``a.path_spec`` into absolute ``(t, x, y[, glide])`` waypoints once the lines are placed in time:
+    walks that start on a line stay on it whatever length the voice take turned out to be, destinations
+    resolve to places on the set, and an untimed move takes distance / ``speed`` (the gait's own pace)."""
     if not a.path_spec:
         return
-    out: list[tuple[float, float, float]] = []
+    out: list[tuple[float, ...]] = []
     for p in a.path_spec:
         if not isinstance(p, dict):
             out.append((float(p[0]), float(p[1]), float(p[2])))
             continue
-        if "line" in p:
-            ln = lines[int(p["line"])]
-            t = (ln.start if p.get("from") == "start" else ln.end) + float(p.get("dt", 0.0))
+        here = (out[-1][1], out[-1][2]) if out else a.at
+        if "to" in p:
+            x, y = landmark(p["to"], layout or {}, here, others)
+            if p["to"].startswith("exit") and out:
+                a.open_from = min(a.open_from, out[-1][0] + float(p.get("wait", 0.0)))
+            near = float(p.get("near", 0.0))
+            d = math.hypot(x - here[0], y - here[1])
+            if near and d > near:  # stop short, on the line from here
+                x, y = here[0] + (x - here[0]) * (1 - near / d), here[1] + (y - here[1]) * (1 - near / d)
         else:
+            x, y = float(p["at"][0]), float(p["at"][1])
+        if "line" in p or "t" in p:
+            t = _beat_time(p, lines)
+        elif "then" in p:
             t = (out[-1][0] if out else 0.0) + float(p["then"])
-        out.append((round(t, 3), float(p["at"][0]), float(p["at"][1])))
+        else:
+            if not out:
+                raise ValueError(f"{a.cid}: the first waypoint needs a time")
+            v = float(p.get("speed", speed or 1.0))
+            t = out[-1][0] + float(p.get("wait", 0.0)) + math.hypot(x - here[0], y - here[1]) / max(v, 0.05)
+        wp: tuple[float, ...] = (round(t, 3), round(x, 3), round(y, 3))
+        if p.get("glide"):
+            wp += (1.0,)
+        out.append(wp)
     if [w[0] for w in out] != sorted(w[0] for w in out):
         raise ValueError(f"{a.cid}'s path times must increase once resolved: {[w[0] for w in out]}")
     a.path = out
@@ -186,6 +271,7 @@ def scene_from_dict(d: dict[str, Any]) -> SceneSpec:
             at=ln.get("at"),
             gap=float(ln.get("gap", 0.45)),
             to=ln.get("to", ""),
+            offscreen=bool(ln.get("offscreen", False)),
         )
         for ln in d.get("lines", [])
     ]
@@ -294,8 +380,42 @@ def validate(spec: SceneSpec) -> None:
             raise ValueError(f"{spec.id}: {a.cid}'s path times must increase")
 
 
-def schedule(spec: SceneSpec, durations: list[float]) -> float:
-    """Place every line in time (fills ``Line.start/end``); return the scene length in seconds."""
+OFFSTAGE_M = 9.0  # metres outside the nearest action circle: far enough to be out of every shot
+
+
+def offstage_distance(layout: dict[str, Any], xy: tuple[float, float]) -> float:
+    """Distance (m) from ``xy`` to the edge of the nearest action circle (negative inside one)."""
+    circles = layout.get("action") or [(0.0, 0.0, 4.0)]
+    return min(math.hypot(xy[0] - c[0], xy[1] - c[1]) - c[2] for c in circles)
+
+
+def _stage_time(a: Actor, spec: SceneSpec, beat: Any, entering: bool) -> float:
+    """An entrance or exit time: a beat, or ``"auto"``: the moment the actor's path crosses ``OFFSTAGE_M``
+    from the set (the last time it is still that far out, entering; the first time it gets there, exiting)."""
+    if beat != "auto":
+        return round(_beat_time(beat, spec.lines), 3)
+    if not a.path:
+        raise ValueError(f"{spec.id}: {a.cid} has an automatic entrance/exit but no path")
+    from animatica.creatures.gait import Waypoint, path_xy
+
+    pts = [Waypoint(w[0], w[1], w[2], glide=len(w) > 3 and bool(w[3])) for w in a.path]
+    t0, t1 = pts[0].t, pts[-1].t
+    ts = [t0 + (t1 - t0) * k / 400 for k in range(401)]
+    far = [offstage_distance(spec.layout, path_xy(pts, t)) >= OFFSTAGE_M for t in ts]
+    if entering:
+        last = max((k for k, f in enumerate(far) if f), default=None)
+        if last is None or not far[0]:
+            raise ValueError(f"{spec.id}: {a.cid}'s entrance does not start off stage")
+        return round(ts[last], 3)
+    first = next((k for k, f in enumerate(far) if f), None)
+    if first is None:
+        raise ValueError(f"{spec.id}: {a.cid}'s exit never leaves the stage (walk further: 'to': 'exit:...')")
+    return round(ts[first], 3)
+
+
+def schedule(spec: SceneSpec, durations: list[float], speeds: dict[str, float] | None = None) -> float:
+    """Place every line in time (fills ``Line.start/end``), resolve the paths (``speeds``: each actor's gait
+    pace in m/s, for untimed moves) and the stage entrances/exits; return the scene length in seconds."""
     if len(durations) != len(spec.lines):
         raise ValueError("one duration per line")
     t = spec.lead
@@ -309,10 +429,14 @@ def schedule(spec: SceneSpec, durations: list[float]) -> float:
             want = prev_end + 0.15
         ln.start, ln.end = round(want, 3), round(want + d, 3)
         prev_end = ln.end
-    for a in spec.cast.values():
-        resolve_path(a, spec.lines)
+    marks = {cid: a.at for cid, a in spec.cast.items()}
+    for cid, a in spec.cast.items():
+        resolve_path(a, spec.lines, spec.layout, (speeds or {}).get(cid), marks)
+        a.t_in = _stage_time(a, spec, a.enter, entering=True) if a.enter else 0.0
+        a.t_out = _stage_time(a, spec, a.exit, entering=False) if a.exit else 1e9
     last = prev_end if prev_end is not None else 0.0
-    latest_action = max([p[0] for a in spec.cast.values() for p in a.path] + [0.0])
+    # an exit's walk on past the frame doesn't stretch the scene: it is over once the actor is off stage
+    latest_action = max([min(p[0], a.t_out, a.open_from) for a in spec.cast.values() for p in a.path] + [0.0])
     latest_beat = max(
         [b.time(spec.lines) for b in spec.reactions + spec.sfx]
         + [g.time(spec.lines) + min(g.dur, 2.5) - 0.5 for g in spec.gestures]  # long holds don't stretch it

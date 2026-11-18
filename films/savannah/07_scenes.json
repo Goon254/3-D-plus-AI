@@ -505,7 +505,21 @@
       1.6,
       1.4
      ],
-     "yaw": -15
+     "yaw": -15,
+     "path": [
+      {
+       "line": 11,
+       "from": "start",
+       "dt": 1.3,
+       "at": [
+        1.6,
+        1.4
+       ]
+      },
+      {
+       "to": "exit:right"
+      }
+     ]
     },
     "neema": {
      "species": "giraffe",
@@ -513,7 +527,21 @@
       3.9,
       3.4
      ],
-     "yaw": -25
+     "yaw": -25,
+     "path": [
+      {
+       "line": 11,
+       "from": "start",
+       "dt": 0.9,
+       "at": [
+        3.9,
+        3.4
+       ]
+      },
+      {
+       "to": "exit:right"
+      }
+     ]
     },
     "zuri": {
      "species": "zebra",
@@ -521,7 +549,21 @@
       -1.4,
       1.6
      ],
-     "yaw": 25
+     "yaw": 25,
+     "path": [
+      {
+       "line": 11,
+       "from": "start",
+       "dt": 0.2,
+       "at": [
+        -1.4,
+        1.6
+       ]
+      },
+      {
+       "to": "exit:right"
+      }
+     ]
     },
     "kiki": {
      "species": "meerkat",
@@ -529,7 +571,22 @@
       -3.0,
       1.0
      ],
-     "yaw": 20
+     "yaw": 20,
+     "path": [
+      {
+       "line": 11,
+       "from": "start",
+       "dt": 1.9,
+       "at": [
+        -3.0,
+        1.0
+       ]
+      },
+      {
+       "to": "exit:right"
+      }
+     ],
+     "gait": "scurry"
     },
     "bibi_kobe": {
      "species": "tortoise",
@@ -548,7 +605,19 @@
        8.5,
        -1.0,
        0.2
-      ]
+      ],
+      {
+       "line": 11,
+       "from": "start",
+       "dt": 2.4,
+       "at": [
+        -1.0,
+        0.2
+       ]
+      },
+      {
+       "to": "exit:right"
+      }
      ]
     }
    },
@@ -871,15 +940,16 @@
      "side": 15
     },
     {
-     "type": "ws",
-     "subjects": [
-      "tembo",
-      "neema",
-      "zuri",
-      "kiki",
-      "bibi_kobe"
+     "type": "ews",
+     "subjects": [],
+     "line": 11,
+     "look": [
+      3.5,
+      2.0,
+      1.3
      ],
-     "line": 11
+     "frame_h": 8.5,
+     "note": "the five set off together, out to the right"
     }
    ]
   },
@@ -941,42 +1011,18 @@
        -7.0,
        0.5
       ],
-      [
-       2.6,
-       -2.0,
-       0.0
-      ],
-      [
-       3.4,
-       0.0,
-       -0.8
-      ],
-      [
-       4.4,
-       1.6,
-       0.4
-      ],
-      [
-       5.2,
-       0.8,
-       1.6
-      ],
-      [
-       6.0,
-       -0.6,
-       1.0
-      ],
-      [
-       7.6,
-       3.5,
-       0.0
-      ],
-      [
-       10.0,
-       9.0,
-       1.0
-      ]
-     ]
+      {
+       "at": [
+        3.2,
+        0.7
+       ]
+      },
+      {
+       "wait": 1.9,
+       "to": "exit:right"
+      }
+     ],
+     "exit": "auto"
     },
     "kiki": {
      "species": "meerkat",
@@ -1160,7 +1206,7 @@
      "line": 0,
      "dt": -2.0,
      "dur": 1.6,
-     "target": "zuri"
+     "target": "tembo"
     },
     {
      "who": "tembo",
@@ -1169,6 +1215,14 @@
      "dt": 0.1,
      "dur": 3.0,
      "target": "bibi_kobe"
+    },
+    {
+     "who": "zuri",
+     "kind": "look_at",
+     "t": 5.4,
+     "dur": 1.6,
+     "target": "tembo",
+     "note": "she waits, glancing back at the slow ones"
     }
    ],
    "shots": [
@@ -1178,7 +1232,7 @@
       "zuri"
      ],
      "t": 0,
-     "note": "tracking WS: Zuri trots ahead, loops, comes back"
+     "note": "tracking WS: Zuri trots ahead up the trail"
     },
     {
      "type": "ms",
@@ -1194,7 +1248,8 @@
       "zuri"
      ],
      "t": 6.2,
-     "side": -20
+     "side": -20,
+     "note": "she waits, looks back, trots on out of frame"
     },
     {
      "type": "ms",
@@ -1335,27 +1390,27 @@
        ]
       },
       {
-       "then": 0.6,
+       "then": 0.7,
        "at": [
-        1.6,
-        2.2
-       ]
-      },
-      {
-       "then": 1.6,
-       "at": [
-        5.0,
-        7.5
-       ]
+        1.8,
+        2.6
+       ],
+       "glide": true
       },
       {
        "then": 1.4,
        "at": [
-        7.0,
-        12.0
-       ]
+        3.6,
+        6.8
+       ],
+       "glide": true
+      },
+      {
+       "to": "exit:back"
       }
-     ]
+     ],
+     "exit": "auto",
+     "story_exit": true
     },
     "tembo": {
      "species": "elephant",
@@ -1670,7 +1725,25 @@
       3.6,
       9.4
      ],
-     "yaw": 160
+     "yaw": 180,
+     "path": [
+      {
+       "line": 1,
+       "from": "start",
+       "dt": 0.0,
+       "at": [
+        5.2,
+        21.5
+       ]
+      },
+      {
+       "at": [
+        3.6,
+        9.6
+       ]
+      }
+     ],
+     "enter": "auto"
     }
    },
    "lines": [
@@ -1683,7 +1756,8 @@
        "scared"
       ]
      ],
-     "at": 2.6
+     "at": 2.6,
+     "offscreen": true
     },
     {
      "who": "tembo",

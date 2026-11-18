@@ -115,6 +115,37 @@ def _smooth(u: float) -> float:
     return u * u * (3 - 2 * u)
 
 
+def _curve(run: list[Waypoint], steps: int = 12) -> list[Waypoint]:
+    """A run through glide points as a Catmull-Rom curve (densified), so turns are arcs, not corners."""
+    if len(run) < 3:
+        return run
+    pts = [(p.x, p.y) for p in run]
+    ext = [
+        (2 * pts[0][0] - pts[1][0], 2 * pts[0][1] - pts[1][1]),
+        *pts,
+        (2 * pts[-1][0] - pts[-2][0], 2 * pts[-1][1] - pts[-2][1]),
+    ]
+    out = [run[0]]
+    for i in range(1, len(ext) - 2):
+        p0, p1, p2, p3 = ext[i - 1], ext[i], ext[i + 1], ext[i + 2]
+        for j in range(1, steps + 1):
+            u = j / steps
+            u2, u3 = u * u, u * u * u
+            x, y = (
+                0.5
+                * (
+                    2 * p1[k]
+                    + (p2[k] - p0[k]) * u
+                    + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * u2
+                    + (3 * p1[k] - p0[k] - 3 * p2[k] + p3[k]) * u3
+                )
+                for k in (0, 1)
+            )
+            out.append(Waypoint(run[0].t, x, y, glide=True))
+    out[-1] = run[-1]
+    return out
+
+
 def path_xy(points: list[Waypoint], t: float) -> tuple[float, float]:
     """Position on the path at time t: eased between consecutive waypoints (starts and stops gently).
 
@@ -127,7 +158,7 @@ def path_xy(points: list[Waypoint], t: float) -> tuple[float, float]:
     for a, b in zip(stops, stops[1:]):
         if t <= b.t:
             ia, ib = points.index(a), points.index(b)
-            run = points[ia : ib + 1]
+            run = _curve(points[ia : ib + 1])
             u = _smooth((t - a.t) / max(b.t - a.t, 1e-6))
             segs = [math.hypot(q.x - p.x, q.y - p.y) for p, q in zip(run, run[1:])]
             goal = u * sum(segs)
