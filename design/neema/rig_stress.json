@@ -216,5 +216,9 @@
    "value": 0.0
   }
  ],
+ "fingerprint": {
+  "species": "ba8718dc63639350",
+  "rig_code": "cacede4d4cff5cc3"
+ },
  "passed": true
 }

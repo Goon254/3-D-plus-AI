@@ -53,6 +53,7 @@ from animatica.creatures.gesture import Gesture, Rig, acting_layers  # noqa: E40
 from animatica.creatures.perform import plan_for, walk_keys  # noqa: E402
 from animatica.creatures.qa import part_seating, rig_checks, rig_probe  # noqa: E402
 from animatica.creatures.species import CAST, SPECIES  # noqa: E402
+from animatica.design.fingerprint import fingerprint  # noqa: E402
 
 FPS = 24
 SLIDE_MAX = 0.04  # share of the leg length a planted foot may drift
@@ -455,6 +456,8 @@ def run(character: str, out: Path, render: bool, res: tuple[int, int], samples: 
     }
     report["summary"] = summary
     report["checks"] = checks
+    # ties the report to the design it measured: the rubric fails a report about other parameters (#68)
+    report["fingerprint"] = fingerprint(sp)
     report["passed"] = all(c["passed"] for c in checks if c["hard"])
     (out / "report.json").write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
     # the design record: the rubric reads it on the next sheet score (scripts/design_sheet.py)

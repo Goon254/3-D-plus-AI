@@ -139,12 +139,73 @@ def packet(char: str, notes: dict[str, Any]) -> dict[str, Any]:
     return scores
 
 
+INDEX_HEAD = """# Design packets (DESIGN_STAGE §6): for owner approval
+
+One folder per character: `sheet.jpg`, a 10-second `motion.mp4` with the character's line, `scores.json`, the
+design loop's two runner-ups, and a one-page `README.md`. Built by `scripts/design_packet.py --all` from the
+current design (`design/<char>/v*`), its rig stress report (`design/<char>/rig_stress.json`) and the loop log
+(`design/<char>/loop/`); the notes are in `notes.json`. This index is written from the packets' `scores.json` and
+`design/<char>/approved.json` (`design_packet.py --index` rebuilds it alone), so it can't fall behind them.
+"""
+
+INDEX_FOOT = """
+Read the scores this way: "ready" needs 9.0+, no hard failure, the species read and appeal 8+. The species read and
+appeal come from a recorded critique (no live vision key on this machine). The runner-ups' 10.0s were scored
+*without* a species read, so they don't compete with the current designs' numbers. An approved design is locked to
+its species parameters (`design/<char>/approved.json`); production may not change it.
+"""
+
+
+def index(root: Path | None = None) -> str:
+    """The packets' index README, from each packet's ``scores.json``, the approvals and ``notes.json``."""
+    base = root or ROOT
+    packets = base / "design" / "packets"
+    npath = packets / "notes.json"
+    notes = json.loads(npath.read_text(encoding="utf-8")) if npath.exists() else {}
+    rows = [
+        "| Character | Design | Owner | Rubric | Ready | Rig stress | Asks of you |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for sp in sorted(packets.glob("*/scores.json")):
+        char = sp.parent.name
+        sc = json.loads(sp.read_text(encoding="utf-8"))
+        ap = base / "design" / char / "approved.json"
+        appr = json.loads(ap.read_text(encoding="utf-8")) if ap.exists() else None
+        n = notes.get(char, {})
+        mine = appr is not None and appr.get("version") == sc["version"]
+        owner = (
+            f"**approved** {appr['version']}"
+            if mine
+            else (f"approved {appr['version']}" if appr else "waiting")
+        )
+        if sc["ready"]:
+            ready = "yes"
+        else:
+            why = sc["hard_failures"] or [
+                c["id"] for c in sc["failed_checks"] if c["id"].startswith("critic:")
+            ]
+            ready = "no: " + ", ".join(f"`{w}`" for w in why) if why else "no"
+        mc = sc["motion_checks"]
+        ask = n.get("ask") or ("nothing: locked" if mine else "approve or give notes")
+        rows.append(
+            f"| [{n.get('name', char)}]({char}/README.md) | {sc['version']} | {owner} | {sc['score']} | {ready} "
+            f"| {sum(c['passed'] for c in mc)} / {len(mc)} | {ask} |"
+        )
+    text = INDEX_HEAD + "\n" + "\n".join(rows) + "\n" + INDEX_FOOT
+    (packets / "README.md").write_text(text, encoding="utf-8")
+    return text
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("characters", nargs="*")
     ap.add_argument("--all", action="store_true")
+    ap.add_argument("--index", action="store_true", help="only rebuild design/packets/README.md")
     ap.add_argument("--notes", default=str(ROOT / "design" / "packets" / "notes.json"))
     a = ap.parse_args()
+    if a.index:
+        index()
+        return 0
     names = list(all_briefs()) if a.all else a.characters
     if not names:
         ap.error("name a character or pass --all")
@@ -152,6 +213,7 @@ def main() -> int:
     for ch in names:
         s = packet(ch, notes)
         print(json.dumps({k: s[k] for k in ("character", "version", "score", "ready", "hard_failures")}))
+    index()
     return 0
 
 

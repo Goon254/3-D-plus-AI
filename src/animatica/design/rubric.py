@@ -25,6 +25,7 @@ from typing import Any
 
 from animatica.creatures.species import Species
 from animatica.design.brief import Brief
+from animatica.design.fingerprint import staleness
 from animatica.design.measure import features, materials, proportions
 from animatica.design.variants import Morph
 
@@ -254,6 +255,44 @@ def _read_checks(brief: Brief, critique: dict[str, Any]) -> list[Check]:
     return out
 
 
+def _freshness_checks(stress: dict[str, Any], sp: Species) -> list[Check]:
+    """Is the stress report about *this* design? Hard when it measured other species parameters (or carries no
+    fingerprint); soft when only the shared rig/face code changed since (review 11-18 03:36: the v3 brows)."""
+    st = staleness(stress, sp)
+    out = [
+        Check(
+            "motion:fresh",
+            "motion",
+            st["species_ok"],
+            True,
+            1.0,
+            1.0 if st["species_ok"] else 0.0,
+            "the rig stress report measured these species parameters"
+            if st["species_ok"]
+            else (
+                "the rig stress report measured other species parameters: re-run scripts/rig_stress_test.py"
+                if st["recorded"]
+                else "the rig stress report has no fingerprint: re-run scripts/rig_stress_test.py"
+            ),
+        )
+    ]
+    if st["species_ok"]:
+        out.append(
+            Check(
+                "motion:fresh_code",
+                "motion",
+                st["code_ok"],
+                False,
+                0.5,
+                0.5 if st["code_ok"] else 0.0,
+                "the rig code is the one the stress test ran"
+                if st["code_ok"]
+                else "the rig/face code changed since the stress test ran: re-run scripts/rig_stress_test.py",
+            )
+        )
+    return out
+
+
 def _motion_checks(stress: dict[str, Any]) -> list[Check]:
     """The rig stress test (DESIGN_STAGE §5, ``scripts/rig_stress_test.py``): one check per measured class."""
     return [
@@ -282,7 +321,7 @@ def score(
     design packet always passes it, so nothing reaches the owner unmeasured)."""
     checks = _range_checks(brief, sp) + _design_checks(brief, sp)
     if stress:
-        checks += _motion_checks(stress)
+        checks += _freshness_checks(stress, sp) + _motion_checks(stress)
     pending = []
     if image_metrics:
         checks += _image_checks(brief, image_metrics)

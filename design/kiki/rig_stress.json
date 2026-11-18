@@ -58,7 +58,7 @@
   },
   "mouth_gap_range": [
    0.059,
-   0.089
+   0.09
   ],
   "foot_slide_source": "skin",
   "foot_slide": {
@@ -174,7 +174,7 @@
    "passed": true,
    "hard": false,
    "message": "mouth off the skin by 9% of its size",
-   "value": 0.08940231039678553
+   "value": 0.08990457056755399
   },
   {
    "id": "foot_slide",
@@ -205,5 +205,9 @@
    "value": -0.018
   }
  ],
+ "fingerprint": {
+  "species": "83093ff218590b51",
+  "rig_code": "cacede4d4cff5cc3"
+ },
  "passed": true
 }

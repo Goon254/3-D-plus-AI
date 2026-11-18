@@ -9,7 +9,8 @@
    "The patches are deliberately soft; at 96 px they read as shading round the eyes rather than a mask.",
    "Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet."
   ],
-  "runners": "Both runner-ups are small head/eye/ear morphs from the re-run loop, scored 10.0 without a species read, so they aren't comparable with the current design's score."
+  "runners": "Both runner-ups are small head/eye/ear morphs from the re-run loop, scored 10.0 without a species read, so they aren't comparable with the current design's score.",
+  "ask": "which body on all fours: v5 (your note: lower, longer, hunched) or v4's shorter, higher-shouldered one (the reviewer reads v5 as a weasel)"
  },
  "zuri": {
   "name": "Zuri",
@@ -20,7 +21,8 @@
    "The cloud reviewer (11-18) finds the toothed mane a little 'saw-back'; it can be softened into more of a brush if you agree.",
    "Feet: the new skin probe (DECISIONS #66) shows planted soles rocking heel-to-toe within a stance (soft `foot_plant` fails for all five). The fix is a planted-sole foot/hoof bone in the rig; not done yet."
   ],
-  "runners": "Runner-up 1 is a bigger head and eyes; runner-up 2 has bigger eyes, a shorter snout and a thinner neck. Both scored 10.0 without a species read."
+  "runners": "Runner-up 1 is a bigger head and eyes; runner-up 2 has bigger eyes, a shorter snout and a thinner neck. Both scored 10.0 without a species read.",
+  "ask": "approve, or notes; the reviewer would soften the toothed mane into a brush"
  },
  "bibi_kobe": {
   "name": "Bibi Kobe",

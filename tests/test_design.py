@@ -247,14 +247,72 @@ def test_rig_stress_checks_join_the_rubric_and_a_hard_motion_failure_blocks_read
 
     brief = load_brief("tembo")
     sp = SPECIES[brief.species]
-    ok = {"checks": [{"id": "foot_slide", "passed": True, "hard": True, "message": "ok"}]}
-    bad = {"checks": [{"id": "foot_slide", "passed": False, "hard": True, "message": "65 mm"}]}
+    from animatica.design.fingerprint import fingerprint
+
+    fp = fingerprint(sp)
+    ok = {"checks": [{"id": "foot_slide", "passed": True, "hard": True, "message": "ok"}], "fingerprint": fp}
+    bad = {
+        "checks": [{"id": "foot_slide", "passed": False, "hard": True, "message": "65 mm"}],
+        "fingerprint": fp,
+    }
     base = score(brief, sp)
     good = score(brief, sp, stress=ok)
     worse = score(brief, sp, stress=bad)
     assert any(c.id == "motion:foot_slide" and c.group == "motion" for c in good.checks)
     assert "motion:foot_slide" not in base.hard_failures and "motion:foot_slide" in worse.hard_failures
     assert worse.score < good.score and not worse.ready
+
+
+def test_a_stress_report_about_other_parameters_blocks_ready():
+    """Review 11-18 03:36: the owner's brow notes (#65) changed three species and nothing re-ran the stress test,
+    so the reports described the old faces. A report carries fingerprints; another species' parameters (or none)
+    is a hard failure, changed rig code a soft one."""
+    from animatica.design.fingerprint import fingerprint, rig_code_hash, species_hash
+
+    brief = load_brief("tembo")
+    sp = SPECIES[brief.species]
+    checks = [{"id": "foot_slide", "passed": True, "hard": True, "message": "ok"}]
+    fresh = score(brief, sp, stress={"checks": checks, "fingerprint": fingerprint(sp)})
+    assert "motion:fresh" not in fresh.hard_failures
+    assert all(c.passed for c in fresh.checks if c.id.startswith("motion:fresh"))
+    none = score(brief, sp, stress={"checks": checks})
+    assert "motion:fresh" in none.hard_failures and not none.ready
+    moved = replace(sp, brow_size=(sp.brow_size[0] * 1.2, sp.brow_size[1]))
+    assert species_hash(moved) != species_hash(sp)
+    other = score(brief, moved, stress={"checks": checks, "fingerprint": fingerprint(sp)})
+    assert "motion:fresh" in other.hard_failures
+    old_code = {"species": species_hash(sp), "rig_code": "0" * 16}
+    code = score(brief, sp, stress={"checks": checks, "fingerprint": old_code})
+    stale = next(c for c in code.checks if c.id == "motion:fresh_code")
+    assert not stale.passed and not stale.hard and "motion:fresh" not in code.hard_failures
+    assert code.score < fresh.score
+    assert len(rig_code_hash()) == 16
+
+
+def test_rig_code_hash_ignores_line_endings(tmp_path):
+    """The laptop is Windows: a CRLF checkout must fingerprint the same as the Linux one."""
+    from animatica.design.fingerprint import _CREATURES, RIG_MODULES, rig_code_hash
+
+    for name in RIG_MODULES:
+        src = (_CREATURES / f"{name}.py").read_bytes().replace(b"\r\n", b"\n")
+        (tmp_path / f"{name}.py").write_bytes(src.replace(b"\n", b"\r\n"))
+    assert rig_code_hash(tmp_path) == rig_code_hash()
+
+
+def test_every_rig_stress_report_on_main_measured_the_current_design():
+    """design/<char>/rig_stress.json must be about the species parameters on main: change a species, re-run
+    ``scripts/rig_stress_test.py <char> --no-render`` (CPU, ~30 s) in the same commit."""
+    from animatica.design.fingerprint import staleness
+
+    root = Path(__file__).resolve().parents[1] / "design"
+    reports = sorted(root.glob("*/rig_stress.json"))
+    assert len(reports) == 5
+    for p in reports:
+        sp = SPECIES[load_brief(p.parent.name).species]
+        st = staleness(json.loads(p.read_text(encoding="utf-8")), sp)
+        assert st["species_ok"], (
+            f"{p.parent.name}: rig_stress.json is stale; re-run scripts/rig_stress_test.py"
+        )
 
 
 def test_approved_designs_are_locked_to_their_species_snapshot():
@@ -278,3 +336,32 @@ def test_approved_designs_are_locked_to_their_species_snapshot():
         drift = sorted(k for k in now if k not in new_ok and now[k] != snap.get(k))
         assert not drift, f"{rec['character']} is approved as {rec['version']} but changed: {drift}"
         assert (p.parent / rec["version"] / "sheet.jpg").exists()
+
+
+def test_the_packet_index_is_written_from_the_packets_and_matches_main(tmp_path):
+    """The packets' index README said Kiki v4 / Zuri v2 for a day after both moved on (review 11-18 06:36): it was
+    hand-written. It is now generated from each packet's scores.json and approved.json; this test fails when the
+    committed index differs from what the packets on main would write."""
+    import importlib.util
+    import shutil
+
+    root = Path(__file__).resolve().parents[1]
+    spec = importlib.util.spec_from_file_location("design_packet", root / "scripts" / "design_packet.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    committed = (root / "design" / "packets" / "README.md").read_text(encoding="utf-8")
+    tmp = tmp_path
+    for p in (root / "design").glob("*/approved.json"):
+        (tmp / "design" / p.parent.name).mkdir(parents=True, exist_ok=True)
+        shutil.copy(p, tmp / "design" / p.parent.name / "approved.json")
+    for p in (root / "design" / "packets").glob("*/scores.json"):
+        (tmp / "design" / "packets" / p.parent.name).mkdir(parents=True, exist_ok=True)
+        shutil.copy(p, tmp / "design" / "packets" / p.parent.name / "scores.json")
+    shutil.copy(root / "design" / "packets" / "notes.json", tmp / "design" / "packets" / "notes.json")
+    text = mod.index(tmp)
+    assert text.replace("\r\n", "\n") == committed.replace("\r\n", "\n"), (
+        "run scripts/design_packet.py --index"
+    )
+    for char in ("kiki", "zuri", "tembo"):
+        sc = json.loads((root / "design" / "packets" / char / "scores.json").read_text(encoding="utf-8"))
+        assert f"({char}/README.md) | {sc['version']} |" in text
