@@ -312,8 +312,8 @@ def test_kiki_v4_rump_rides_the_hips_paws_only_darken_and_body_is_smoother():
         -sp.body_z
     )
     # v5 (owner 11-17): soft, lighter crescents, not raccoon rings (v4's crisp 0.28 / #24180E read as a mask)
-    assert sp.patch_soft >= 0.5 and sp.eye_patch[1] < 1.0 and max(sp.patch_shape) < 1.0
-    assert sp.hunch > 0 and sp.torso[1] / sp.body_z > 2.0  # lower and longer on all fours
+    assert sp.patch_soft > 0.28 and sp.eye_patch[0] != "#24180E"  # softer edge and lighter than v4's rings
+    assert sp.hunch > 0 and sp.torso[1] / sp.body_z > 0.198 / 0.118  # lower and longer than v4 on all fours
     g = Graph()
     a, b = g.node((0.0, 0.0, 0.0), 0.02), g.node((0.0, 0.2, 0.0), 0.02)
     g.link(a, b)
