@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import json
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -65,6 +65,9 @@ class Actor:
     yaw: float = 0.0  # degrees; rest faces -Y (toward the default camera side)
     gait: str = "walk"
     path: list[tuple[float, float, float]] = field(default_factory=list)  # (t, x, y) waypoints
+    # the path as written, when some waypoints are timed off the lines (resolved by schedule()):
+    # [t, x, y], {"line": i, "dt": s, "from": "end"|"start", "at": [x, y]} or {"then": s, "at": [x, y]}
+    path_spec: list[Any] = field(default_factory=list)
 
 
 @dataclass
@@ -147,8 +150,30 @@ def _actor(cid: str, d: dict[str, Any]) -> Actor:
         at=(float(d["at"][0]), float(d["at"][1])),
         yaw=float(d.get("yaw", 0.0)),
         gait=d.get("gait", "walk"),
-        path=[(float(t), float(x), float(y)) for t, x, y in d.get("path", [])],
+        path=[(float(p[0]), float(p[1]), float(p[2])) for p in d.get("path", []) if not isinstance(p, dict)],
+        path_spec=list(d.get("path", [])) if any(isinstance(p, dict) for p in d.get("path", [])) else [],
     )
+
+
+def resolve_path(a: Actor, lines: list[Line]) -> None:
+    """Turn ``a.path_spec`` into absolute ``(t, x, y)`` waypoints once the lines are placed in time: walks that
+    start on a line stay on it whatever length the voice take turned out to be."""
+    if not a.path_spec:
+        return
+    out: list[tuple[float, float, float]] = []
+    for p in a.path_spec:
+        if not isinstance(p, dict):
+            out.append((float(p[0]), float(p[1]), float(p[2])))
+            continue
+        if "line" in p:
+            ln = lines[int(p["line"])]
+            t = (ln.start if p.get("from") == "start" else ln.end) + float(p.get("dt", 0.0))
+        else:
+            t = (out[-1][0] if out else 0.0) + float(p["then"])
+        out.append((round(t, 3), float(p["at"][0]), float(p["at"][1])))
+    if [w[0] for w in out] != sorted(w[0] for w in out):
+        raise ValueError(f"{a.cid}'s path times must increase once resolved: {[w[0] for w in out]}")
+    a.path = out
 
 
 def scene_from_dict(d: dict[str, Any]) -> SceneSpec:
@@ -284,6 +309,8 @@ def schedule(spec: SceneSpec, durations: list[float]) -> float:
             want = prev_end + 0.15
         ln.start, ln.end = round(want, 3), round(want + d, 3)
         prev_end = ln.end
+    for a in spec.cast.values():
+        resolve_path(a, spec.lines)
     last = prev_end if prev_end is not None else 0.0
     latest_action = max([p[0] for a in spec.cast.values() for p in a.path] + [0.0])
     latest_beat = max(
@@ -337,6 +364,26 @@ def cut_list(spec: SceneSpec, seconds: float) -> list[Shot]:
     for i, s in enumerate(kept):
         s.end = kept[i + 1].start if i + 1 < len(kept) else seconds
     return kept
+
+
+def split_long(shots: list[Shot], seconds: float, max_len: float = 4.5) -> list[Shot]:
+    """Cut any shot longer than ``max_len`` into equal parts, each from a new angle (the camera swings
+    alternately 22 degrees either side of the written one), so no single set-up holds the screen too long
+    (DESIGN_STAGE §7: no static shot longer than about 4 s)."""
+    out: list[Shot] = []
+    for i, s in enumerate(shots):
+        end = shots[i + 1].start if i + 1 < len(shots) else seconds
+        dur = end - s.start
+        n = max(1, math.ceil(dur / max_len - 1e-6))
+        for k in range(n):
+            part = replace(s, start=round(s.start + dur * k / n, 3))
+            if k:
+                part.side = s.side + (22.0 if k % 2 else -22.0)
+                part.note = (s.note + " " if s.note else "") + f"(part {k + 1}/{n})"
+            out.append(part)
+    for i, s in enumerate(out):
+        s.end = out[i + 1].start if i + 1 < len(out) else seconds
+    return out
 
 
 def expression_tracks(spec: SceneSpec) -> dict[str, list[tuple[float, str]]]:

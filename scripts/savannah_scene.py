@@ -47,6 +47,8 @@ from animatica.production.scene import (  # noqa: E402
     load_scenes,
     schedule,
     set_subject,
+    split_long,
+    vfov,
 )
 from animatica.sets.savannah import Layout, savannah_set  # noqa: E402
 
@@ -55,7 +57,10 @@ QUALITY = {  # resolution, samples, frame step, device
     "preview": ((480, 270), 8, 2, "cpu"),
     "draft": ((960, 540), 16, 1, "auto"),
     "final": ((1280, 720), 48, 1, "optix"),
+    # the animatic gate (DESIGN_STAGE §7): fast EEVEE frames on the GPU with the final voices, music and timing
+    "animatic": ((960, 540), 16, 1, "optix"),
 }
+ENGINE = {"animatic": "eevee"}  # everything else renders in Cycles
 
 
 def heading_yaw(a: tuple[float, float], b: tuple[float, float]) -> float:
@@ -159,6 +164,8 @@ def main() -> int:
     seconds = schedule(spec, [d for _, d in takes])
     n = int(round(seconds * fps)) + 1
     shots = cut_list(spec, seconds)
+    if a.quality == "animatic":  # DESIGN_STAGE §7: no set-up holds longer than about 4 s
+        shots = split_long(shots, seconds)
     tracks = expression_tracks(spec)
 
     # ---- set + cast
@@ -169,8 +176,40 @@ def main() -> int:
         mounds=[tuple(x) for x in lay.get("mounds", [])],
         action=[tuple(x) for x in lay.get("action", [(0.0, 0.0, 4.0)])],
         reeds_at=float(lay.get("reeds_at", 90.0)),
+        paths=[tuple(x) for x in lay.get("paths", [])],
+        grass_density=float(lay.get("grass_density", 14.0)),
     )
     ops = savannah_set(layout, spec.tod)
+    # simple props the set builder has no part for (the animatic's log and baobabs): primitives with a colour
+    for k, pr in enumerate(lay.get("props", [])):
+        pid = f"prop_{k}_{pr.get('name', pr['shape'])}"
+        ops += [
+            {
+                "op": "create_primitive",
+                "id": pid,
+                "shape": pr["shape"],
+                "size": pr["size"],
+                "location": pr["at"],
+                "rotation": pr.get("rot", [0, 0, 0]),
+                "smooth": True,
+                "segments": 24,
+            },
+            {
+                "op": "set_material",
+                "targets": [pid],
+                "material": {"base_color": pr.get("color", "#6B5137"), "roughness": 0.9, "name": pid},
+            },
+        ]
+        for prop_, key in (("location", "moves"), ("scale", "scales")):  # [[seconds, [x, y, z]], ...]
+            if pr.get(key):
+                ops.append(
+                    {
+                        "op": "insert_keyframes",
+                        "target": pid,
+                        "property": prop_,
+                        "keys": [[1 + int(t * fps), list(v), "BEZIER"] for t, v in pr[key]],
+                    }
+                )
     metas, faces, plans = {}, {}, {}
     face_batch: list[dict] = []
     for cid, actor in spec.cast.items():
@@ -307,6 +346,22 @@ def main() -> int:
                 sh.type, subs, side=sh.side, aim_z=sh.look[2] if sh.look else None, occluders=occ
             )
             cid = f"cam_{i:02d}_{sh.type}"
+            # every shot moves: a slow push-in with a small orbit round the aim (longer shots orbit further),
+            # alternating sides shot to shot, eased in and out, so no shot is a locked-off still
+            loc, aim = cam["location"], cam["aim"]
+            dur = max(0.1, sh.end - sh.start)
+            push = 0.05 if sh.type in ("ws", "ews") else 0.08
+            orbit = math.radians(min(8.0, 1.2 + 1.1 * dur)) * (1 if i % 2 == 0 else -1)
+            rx, ry, rz = (loc[0] - aim[0], loc[1] - aim[1], loc[2] - aim[2])
+            ca, sa = math.cos(orbit), math.sin(orbit)
+            end_loc = [
+                aim[0] + (rx * ca - ry * sa) * (1 - push),
+                aim[1] + (rx * sa + ry * ca) * (1 - push),
+                aim[2] + rz * (1 - push),
+            ]
+            dist = math.dist(loc, aim)
+            frame_h_m = 2 * dist * math.tan(vfov(cam["lens"]) / 2)  # vfov is in radians
+            moved = math.dist(loc, end_loc)
             cam_ops += [
                 {"op": "create_empty", "id": f"{cid}_aim", "location": cam["aim"]},
                 {
@@ -317,7 +372,27 @@ def main() -> int:
                     "look_at": f"{cid}_aim",
                 },
                 {"op": "set_camera_active", "id": cid, "frame": f0},
+                {
+                    "op": "insert_keyframes",
+                    "target": cid,
+                    "property": "location",
+                    "keys": [
+                        [f0, [round(v, 4) for v in loc], "BEZIER"],
+                        [max(f0 + 1, f1), [round(v, 4) for v in end_loc], "BEZIER"],
+                    ],
+                },
             ]
+            # subjects' own travel in the shot (root positions at its first and last frame)
+            sub_move = max(
+                [
+                    math.dist(
+                        plans[c][min(len(plans[c]) - 1, f0 - 1)].root[:2],
+                        plans[c][min(len(plans[c]) - 1, f1 - 1)].root[:2],
+                    )
+                    for c in sh.subjects
+                ]
+                + [0.0]
+            )
             shot_report.append(
                 {
                     "shot": i,
@@ -326,6 +401,9 @@ def main() -> int:
                     "start": sh.start,
                     "end": round(sh.end, 3),
                     "note": sh.note,
+                    "frame_h_m": round(frame_h_m, 3),
+                    "camera_move_frac": round(moved / max(frame_h_m, 1e-6), 3),
+                    "subject_move_frac": round(sub_move / max(frame_h_m, 1e-6), 3),
                     **cam,
                 }
             )
@@ -336,7 +414,7 @@ def main() -> int:
             [
                 {
                     "op": "set_render",
-                    "engine": "cycles",
+                    "engine": ENGINE.get(a.quality, "cycles"),
                     "resolution": list(res),
                     "samples": samples,
                     "fps": fps,

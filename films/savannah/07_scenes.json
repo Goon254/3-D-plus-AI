@@ -1,87 +1,3268 @@
 {
-  "_about": "Production specs per scene for Tembo and the Singing Spring (from 04_screenplay.md). Coordinates in metres; the cameras sit on the -Y side looking toward +Y (mountains and acacias behind the action). Creatures rest facing -Y (yaw 0, toward the cameras); yaw 90 faces +X. Lines start 'gap' seconds after the previous line (or at 'at'). Shots cut on 't', on a line ('line': i, a little before its first word) or after a line ends ('line': i, 'after': seconds). Reactions/SFX: [t, ...] or {'line': i, 'dt': seconds after that line ends}. Built by scripts/savannah_scene.py with animatica.production.",
-  "scenes": [
+ "_about": "Production specs per scene for Tembo and the Singing Spring (from 04_screenplay.md). Coordinates in metres; the cameras sit on the -Y side looking toward +Y (mountains and acacias behind the action). Creatures rest facing -Y (yaw 0, toward the cameras); yaw 90 faces +X. Lines start 'gap' seconds after the previous line (or at 'at'). Shots cut on 't', on a line ('line': i, a little before its first word) or after a line ends ('line': i, 'after': seconds). Reactions/SFX: [t, ...] or {'line': i, 'dt': seconds after that line ends}. Built by scripts/savannah_scene.py with animatica.production.",
+ "scenes": [
+  {
+   "id": "sc01",
+   "title": "Dawn - the old watering hole",
+   "tod": "dawn",
+   "cue": "sc01",
+   "seconds": 22,
+   "lead": 2.0,
+   "layout": {
+    "water": [
+     0.6,
+     6.0,
+     1.6
+    ],
+    "acacias": [
+     [
+      -5.5,
+      12.0,
+      1.1
+     ],
+     [
+      9.0,
+      20.0,
+      0.85
+     ],
+     [
+      -16.0,
+      30.0,
+      0.9
+     ]
+    ],
+    "mounds": [
+     [
+      6.5,
+      5.5,
+      0.9
+     ]
+    ],
+    "action": [
+     [
+      0.0,
+      3.0,
+      4.0
+     ]
+    ]
+   },
+   "ambience": {
+    "tod": "dawn",
+    "water": true
+   },
+   "cast": {},
+   "lines": [
     {
-      "id": "sc01",
-      "title": "Dawn - the old watering hole",
-      "tod": "dawn",
-      "cue": "sc01",
-      "seconds": 22,
-      "lead": 2.0,
-      "layout": {
-        "water": [0.6, 6.0, 1.6],
-        "acacias": [[-5.5, 12.0, 1.1], [9.0, 20.0, 0.85], [-16.0, 30.0, 0.9]],
-        "mounds": [[6.5, 5.5, 0.9]],
-        "action": [[0.0, 3.0, 4.0]]
-      },
-      "ambience": {"tod": "dawn", "water": true},
-      "cast": {},
-      "lines": [
-        {"who": "narrator", "text": "Far away, where the grass grows golden and the sky goes on forever, the rains were late."},
-        {"who": "narrator", "text": "And the old watering hole was getting smaller... and smaller... and smaller.", "gap": 1.2}
-      ],
-      "sfx": [{"line": 1, "dt": 0.8, "kind": "drip"}],
-      "shots": [
-        {"type": "ews", "subjects": [], "t": 0, "look": [-2.0, 12.0, 3.0], "frame_h": 9.0, "note": "the sun lifts behind the acacia"},
-        {"type": "ws", "subjects": [], "line": 1, "look": [0.6, 6.0, 0.3], "frame_h": 3.2, "note": "the shrinking puddle"}
-      ]
+     "who": "narrator",
+     "text": "Far away, where the grass grows golden and the sky goes on forever, the rains were late."
     },
     {
-      "id": "sc02",
-      "title": "Morning - the puddle",
-      "tod": "dawn",
-      "cue": "sc02",
-      "seconds": 22,
-      "tail": 2.6,
-      "lead": 1.0,
-      "layout": {
-        "water": [0.2, 3.3, 1.35],
-        "acacias": [[-8.0, 12.0, 1.0], [10.0, 18.0, 0.85], [-18.0, 28.0, 0.9]],
-        "mounds": [[-4.6, 5.3, 0.8]],
-        "action": [[0.5, 2.6, 6.5]],
-        "reeds_at": 150
-      },
-      "ambience": {"tod": "dawn", "water": true},
-      "cast": {
-        "zuri": {"species": "zebra", "at": [-1.7, 2.2], "yaw": 70},
-        "kiki": {"species": "meerkat", "at": [-4.8, 3.4], "gait": "scurry", "path": [[0.6, -4.8, 3.4], [3.2, -3.3, 3.9], [4.0, -3.35, 3.65]]},
-        "tembo": {"species": "elephant", "at": [5.6, 1.0], "gait": "fast_walk", "path": [[0.3, 5.6, 1.0], [5.2, 2.3, 5.5], [6.8, 0.85, 4.75]]},
-        "neema": {"species": "giraffe", "at": [8.6, 3.8], "path": [[0.8, 8.6, 3.8], [5.8, 4.3, 4.1]]}
-      },
-      "lines": [
-        {"who": "tembo", "text": "Morning, Zuri! Morning, Kiki! Water!", "at": 6.4, "expr": [[0, "happy"]]},
-        {"who": "kiki", "text": "Thank you, Tembo. Very refreshing.", "gap": 3.4, "to": "tembo", "expr": [[0, "proud"]]},
-        {"who": "zuri", "text": "Your trunk's a hose with hiccups!", "gap": 0.5, "to": "tembo", "expr": [[0, "happy"]]},
-        {"who": "zuri", "text": "And stand up straight, Neema, you lovely lamp-post!", "gap": 0.45, "to": "neema", "expr": [[0, "proud"], [1.2, "happy"]]}
-      ],
-      "reactions": [
-        {"who": "kiki", "line": 0, "dt": 0.2, "expr": "curious"},
-        {"who": "tembo", "line": 0, "dt": 0.5, "expr": "determined"},
-        {"who": "tembo", "line": 0, "dt": 1.6, "expr": "worried"},
-        {"who": "kiki", "line": 0, "dt": 2.45, "expr": "surprised"},
-        {"who": "tembo", "line": 0, "dt": 2.2, "expr": "surprised"},
-        {"who": "zuri", "line": 1, "dt": 0.1, "expr": "happy"},
-        {"who": "neema", "line": 3, "dt": -1.5, "expr": "surprised"},
-        {"who": "neema", "line": 3, "dt": 0.1, "expr": "sad"},
-        {"who": "tembo", "line": 3, "dt": 0.2, "expr": "sad"}
-      ],
-      "sfx": [{"line": 0, "dt": 1.0, "kind": "slurp"}, {"line": 0, "dt": 2.45, "kind": "splash"}],
-      "gestures": [
-        {"who": "neema", "kind": "head_duck", "t": 0.4, "dur": 40, "amount": 0.5, "note": "ambles in ducking her head to look shorter"},
-        {"who": "tembo", "kind": "trunk_drink", "line": 0, "dt": 0.25, "dur": 1.6, "note": "dips, sucks, wobbles"},
-        {"who": "tembo", "kind": "trunk_spray", "line": 0, "dt": 1.6, "dur": 1.1, "target": "kiki", "note": "the hiccup: it all comes out at Kiki"},
-        {"who": "neema", "kind": "head_duck", "line": 3, "dt": 0.1, "dur": 6, "amount": 0.35, "note": "ducks lower, embarrassed"},
-        {"who": "tembo", "kind": "ears_droop", "line": 3, "dt": 0.2, "dur": 6}
-      ],
-      "shots": [
-        {"type": "ws", "subjects": ["zuri", "kiki", "tembo", "neema"], "t": 0, "note": "Tembo hurries in, Neema ambles behind, Kiki scurries to the mound"},
-        {"type": "ms", "subjects": ["tembo"], "line": 0},
-        {"type": "ms", "subjects": ["tembo"], "line": 0, "after": 0.4, "side": 45, "note": "the trunk dips, sucks, wobbles: in profile, so the trunk reads against the sky and the water"},
-        {"type": "ms", "subjects": ["kiki"], "line": 0, "after": 2.25, "note": "the spray hits Kiki"},
-        {"type": "ms", "subjects": ["zuri"], "line": 2, "side": -10},
-        {"type": "ws", "subjects": ["zuri", "neema"], "line": 3},
-        {"type": "cu", "subjects": ["tembo"], "line": 3, "after": 0.1, "note": "Tembo's ears droop"}
-      ]
+     "who": "narrator",
+     "text": "And the old watering hole was getting smaller... and smaller... and smaller.",
+     "gap": 1.2
     }
-  ]
+   ],
+   "sfx": [
+    {
+     "line": 1,
+     "dt": 0.8,
+     "kind": "drip"
+    }
+   ],
+   "shots": [
+    {
+     "type": "ews",
+     "subjects": [],
+     "t": 0,
+     "look": [
+      -2.0,
+      12.0,
+      3.0
+     ],
+     "frame_h": 9.0,
+     "note": "the sun lifts behind the acacia"
+    },
+    {
+     "type": "ws",
+     "subjects": [],
+     "line": 1,
+     "look": [
+      0.6,
+      6.0,
+      0.3
+     ],
+     "frame_h": 3.2,
+     "note": "the shrinking puddle"
+    }
+   ]
+  },
+  {
+   "id": "sc02",
+   "title": "Morning - the puddle",
+   "tod": "dawn",
+   "cue": "sc02",
+   "seconds": 22,
+   "tail": 2.6,
+   "lead": 1.0,
+   "layout": {
+    "water": [
+     0.2,
+     3.3,
+     1.35
+    ],
+    "acacias": [
+     [
+      -8.0,
+      12.0,
+      1.0
+     ],
+     [
+      10.0,
+      18.0,
+      0.85
+     ],
+     [
+      -18.0,
+      28.0,
+      0.9
+     ]
+    ],
+    "mounds": [
+     [
+      -4.6,
+      5.3,
+      0.8
+     ]
+    ],
+    "action": [
+     [
+      0.5,
+      2.6,
+      6.5
+     ]
+    ],
+    "reeds_at": 150
+   },
+   "ambience": {
+    "tod": "dawn",
+    "water": true
+   },
+   "cast": {
+    "zuri": {
+     "species": "zebra",
+     "at": [
+      -1.7,
+      2.2
+     ],
+     "yaw": 70
+    },
+    "kiki": {
+     "species": "meerkat",
+     "at": [
+      -4.8,
+      3.4
+     ],
+     "gait": "scurry",
+     "path": [
+      [
+       0.6,
+       -4.8,
+       3.4
+      ],
+      [
+       3.2,
+       -3.3,
+       3.9
+      ],
+      [
+       4.0,
+       -3.35,
+       3.65
+      ]
+     ]
+    },
+    "tembo": {
+     "species": "elephant",
+     "at": [
+      5.6,
+      1.0
+     ],
+     "gait": "fast_walk",
+     "path": [
+      [
+       0.3,
+       5.6,
+       1.0
+      ],
+      [
+       5.2,
+       2.3,
+       5.5
+      ],
+      [
+       6.8,
+       0.85,
+       4.75
+      ]
+     ]
+    },
+    "neema": {
+     "species": "giraffe",
+     "at": [
+      8.6,
+      3.8
+     ],
+     "path": [
+      [
+       0.8,
+       8.6,
+       3.8
+      ],
+      [
+       5.8,
+       4.3,
+       4.1
+      ]
+     ]
+    }
+   },
+   "lines": [
+    {
+     "who": "tembo",
+     "text": "Morning, Zuri! Morning, Kiki! Water!",
+     "at": 6.4,
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ]
+    },
+    {
+     "who": "kiki",
+     "text": "Thank you, Tembo. Very refreshing.",
+     "gap": 3.4,
+     "to": "tembo",
+     "expr": [
+      [
+       0,
+       "proud"
+      ]
+     ]
+    },
+    {
+     "who": "zuri",
+     "text": "Your trunk's a hose with hiccups!",
+     "gap": 0.5,
+     "to": "tembo",
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ]
+    },
+    {
+     "who": "zuri",
+     "text": "And stand up straight, Neema, you lovely lamp-post!",
+     "gap": 0.45,
+     "to": "neema",
+     "expr": [
+      [
+       0,
+       "proud"
+      ],
+      [
+       1.2,
+       "happy"
+      ]
+     ]
+    }
+   ],
+   "reactions": [
+    {
+     "who": "kiki",
+     "line": 0,
+     "dt": 0.2,
+     "expr": "curious"
+    },
+    {
+     "who": "tembo",
+     "line": 0,
+     "dt": 0.5,
+     "expr": "determined"
+    },
+    {
+     "who": "tembo",
+     "line": 0,
+     "dt": 1.6,
+     "expr": "worried"
+    },
+    {
+     "who": "kiki",
+     "line": 0,
+     "dt": 2.45,
+     "expr": "surprised"
+    },
+    {
+     "who": "tembo",
+     "line": 0,
+     "dt": 2.2,
+     "expr": "surprised"
+    },
+    {
+     "who": "zuri",
+     "line": 1,
+     "dt": 0.1,
+     "expr": "happy"
+    },
+    {
+     "who": "neema",
+     "line": 3,
+     "dt": -1.5,
+     "expr": "surprised"
+    },
+    {
+     "who": "neema",
+     "line": 3,
+     "dt": 0.1,
+     "expr": "sad"
+    },
+    {
+     "who": "tembo",
+     "line": 3,
+     "dt": 0.2,
+     "expr": "sad"
+    }
+   ],
+   "sfx": [
+    {
+     "line": 0,
+     "dt": 1.0,
+     "kind": "slurp"
+    },
+    {
+     "line": 0,
+     "dt": 2.45,
+     "kind": "splash"
+    }
+   ],
+   "gestures": [
+    {
+     "who": "neema",
+     "kind": "head_duck",
+     "t": 0.4,
+     "dur": 40,
+     "amount": 0.5,
+     "note": "ambles in ducking her head to look shorter"
+    },
+    {
+     "who": "tembo",
+     "kind": "trunk_drink",
+     "line": 0,
+     "dt": 0.25,
+     "dur": 1.6,
+     "note": "dips, sucks, wobbles"
+    },
+    {
+     "who": "tembo",
+     "kind": "trunk_spray",
+     "line": 0,
+     "dt": 1.6,
+     "dur": 1.1,
+     "target": "kiki",
+     "note": "the hiccup: it all comes out at Kiki"
+    },
+    {
+     "who": "neema",
+     "kind": "head_duck",
+     "line": 3,
+     "dt": 0.1,
+     "dur": 6,
+     "amount": 0.35,
+     "note": "ducks lower, embarrassed"
+    },
+    {
+     "who": "tembo",
+     "kind": "ears_droop",
+     "line": 3,
+     "dt": 0.2,
+     "dur": 6
+    }
+   ],
+   "shots": [
+    {
+     "type": "ws",
+     "subjects": [
+      "zuri",
+      "kiki",
+      "tembo",
+      "neema"
+     ],
+     "t": 0,
+     "note": "Tembo hurries in, Neema ambles behind, Kiki scurries to the mound"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 0
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 0,
+     "after": 0.4,
+     "side": 45,
+     "note": "the trunk dips, sucks, wobbles: in profile, so the trunk reads against the sky and the water"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "kiki"
+     ],
+     "line": 0,
+     "after": 2.25,
+     "note": "the spray hits Kiki"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "zuri"
+     ],
+     "line": 2,
+     "side": -10
+    },
+    {
+     "type": "ws",
+     "subjects": [
+      "zuri",
+      "neema"
+     ],
+     "line": 3
+    },
+    {
+     "type": "cu",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 3,
+     "after": 0.1,
+     "note": "Tembo's ears droop"
+    }
+   ]
+  },
+  {
+   "id": "sc03",
+   "title": "Morning - the singing spring",
+   "tod": "dawn",
+   "cue": "sc03",
+   "seconds": 42,
+   "lead": 1.0,
+   "layout": {
+    "acacias": [
+     [
+      -8.0,
+      13.0,
+      1.0
+     ],
+     [
+      11.0,
+      19.0,
+      0.85
+     ],
+     [
+      -19.0,
+      30.0,
+      0.9
+     ]
+    ],
+    "mounds": [
+     [
+      -5.2,
+      5.0,
+      0.8
+     ]
+    ],
+    "action": [
+     [
+      0.0,
+      2.5,
+      6.5
+     ]
+    ]
+   },
+   "ambience": {
+    "tod": "dawn"
+   },
+   "cast": {
+    "tembo": {
+     "species": "elephant",
+     "at": [
+      1.6,
+      1.4
+     ],
+     "yaw": -15
+    },
+    "neema": {
+     "species": "giraffe",
+     "at": [
+      3.9,
+      3.4
+     ],
+     "yaw": -25
+    },
+    "zuri": {
+     "species": "zebra",
+     "at": [
+      -1.4,
+      1.6
+     ],
+     "yaw": 25
+    },
+    "kiki": {
+     "species": "meerkat",
+     "at": [
+      -3.0,
+      1.0
+     ],
+     "yaw": 20
+    },
+    "bibi_kobe": {
+     "species": "tortoise",
+     "at": [
+      -6.5,
+      0.6
+     ],
+     "yaw": 0,
+     "path": [
+      [
+       0.5,
+       -6.5,
+       0.6
+      ],
+      [
+       8.5,
+       -1.0,
+       0.2
+      ]
+     ]
+    }
+   },
+   "lines": [
+    {
+     "who": "bibi_kobe",
+     "text": "When I was young... there was a spring past the two baobabs that bow to each other.",
+     "expr": [
+      [
+       0,
+       "curious"
+      ]
+     ],
+     "at": 9.4
+    },
+    {
+     "who": "bibi_kobe",
+     "text": "Its water sings... and it never runs dry.",
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ],
+     "gap": 0.5
+    },
+    {
+     "who": "neema",
+     "text": "A *singing* spring?",
+     "expr": [
+      [
+       0,
+       "surprised"
+      ]
+     ],
+     "gap": 0.4,
+     "to": "bibi_kobe"
+    },
+    {
+     "who": "bibi_kobe",
+     "text": "Nobody's walked that way since my grandmother's grandmother.",
+     "expr": [
+      [
+       0,
+       "sad"
+      ]
+     ],
+     "gap": 0.4,
+     "to": "neema"
+    },
+    {
+     "who": "tembo",
+     "text": "Then I'll find it. For everyone.",
+     "expr": [
+      [
+       0,
+       "determined"
+      ]
+     ],
+     "gap": 0.6
+    },
+    {
+     "who": "zuri",
+     "text": "You can't even hold a drink!",
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ],
+     "gap": 0.4,
+     "to": "tembo"
+    },
+    {
+     "who": "tembo",
+     "text": "I can walk. And I'm going.",
+     "expr": [
+      [
+       0,
+       "determined"
+      ]
+     ],
+     "gap": 0.4,
+     "to": "zuri"
+    },
+    {
+     "who": "neema",
+     "text": "I'll come.",
+     "expr": [
+      [
+       0,
+       "proud"
+      ]
+     ],
+     "gap": 0.7,
+     "to": "tembo"
+    },
+    {
+     "who": "kiki",
+     "text": "Someone has to watch for danger. There's *so much* danger.",
+     "expr": [
+      [
+       0,
+       "worried"
+      ]
+     ],
+     "gap": 0.5
+    },
+    {
+     "who": "bibi_kobe",
+     "text": "And you'll need someone who remembers the way.",
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ],
+     "gap": 0.5
+    },
+    {
+     "who": "zuri",
+     "text": "Then we'll get there next rainy season! ...Fine. I'm coming. Somebody has to be first.",
+     "expr": [
+      [
+       0,
+       "sad"
+      ],
+      [
+       2.2,
+       "proud"
+      ]
+     ],
+     "gap": 0.5
+    },
+    {
+     "who": "narrator",
+     "text": "So five friends set off together: one fast, one tall, one small, one slow... and one with a very wobbly trunk.",
+     "gap": 0.6
+    }
+   ],
+   "reactions": [
+    {
+     "who": "kiki",
+     "t": 4.5,
+     "expr": "worried"
+    },
+    {
+     "who": "zuri",
+     "t": 5.5,
+     "expr": "worried"
+    },
+    {
+     "who": "tembo",
+     "line": 1,
+     "dt": 0.2,
+     "expr": "happy"
+    },
+    {
+     "who": "neema",
+     "line": 1,
+     "dt": 0.1,
+     "expr": "surprised"
+    },
+    {
+     "who": "tembo",
+     "line": 3,
+     "dt": 0.2,
+     "expr": "determined"
+    },
+    {
+     "who": "tembo",
+     "line": 5,
+     "dt": 0.1,
+     "expr": "sad"
+    },
+    {
+     "who": "bibi_kobe",
+     "line": 10,
+     "dt": 0.1,
+     "expr": "happy"
+    },
+    {
+     "who": "tembo",
+     "line": 10,
+     "dt": 0.2,
+     "expr": "happy"
+    }
+   ],
+   "gestures": [
+    {
+     "who": "kiki",
+     "kind": "head_shake",
+     "t": 5.0,
+     "dur": 1.2,
+     "note": "the wait gag: Kiki shakes her head at how slow Bibi is"
+    },
+    {
+     "who": "tembo",
+     "kind": "nod",
+     "line": 4,
+     "dt": -1.0,
+     "dur": 1.0
+    },
+    {
+     "who": "neema",
+     "kind": "nod",
+     "line": 7,
+     "dt": -0.4,
+     "dur": 0.8
+    },
+    {
+     "who": "zuri",
+     "kind": "head_shake",
+     "line": 10,
+     "dt": -3.8,
+     "dur": 1.0
+    }
+   ],
+   "shots": [
+    {
+     "type": "ws",
+     "subjects": [
+      "bibi_kobe",
+      "tembo",
+      "zuri",
+      "kiki"
+     ],
+     "t": 0,
+     "note": "Bibi Kobe plods in; everyone waits"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "kiki"
+     ],
+     "t": 4.4,
+     "note": "the wait gag"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "bibi_kobe"
+     ],
+     "t": 6.6,
+     "side": 20,
+     "note": "still plodding"
+    },
+    {
+     "type": "mcu",
+     "subjects": [
+      "bibi_kobe"
+     ],
+     "line": 0
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "neema"
+     ],
+     "line": 2
+    },
+    {
+     "type": "mcu",
+     "subjects": [
+      "bibi_kobe"
+     ],
+     "line": 3,
+     "side": -15
+    },
+    {
+     "type": "cu",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 4
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "zuri"
+     ],
+     "line": 5
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 6,
+     "side": 25
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "neema"
+     ],
+     "line": 7,
+     "side": -20
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "kiki"
+     ],
+     "line": 8
+    },
+    {
+     "type": "mcu",
+     "subjects": [
+      "bibi_kobe"
+     ],
+     "line": 9
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "zuri"
+     ],
+     "line": 10,
+     "side": 15
+    },
+    {
+     "type": "ws",
+     "subjects": [
+      "tembo",
+      "neema",
+      "zuri",
+      "kiki",
+      "bibi_kobe"
+     ],
+     "line": 11
+    }
+   ]
+  },
+  {
+   "id": "sc04",
+   "title": "Midday - the journey",
+   "tod": "midday",
+   "cue": "sc04",
+   "seconds": 36,
+   "lead": 0.5,
+   "layout": {
+    "acacias": [
+     [
+      1.5,
+      6.5,
+      1.0
+     ],
+     [
+      -12.0,
+      16.0,
+      0.9
+     ],
+     [
+      14.0,
+      22.0,
+      0.85
+     ]
+    ],
+    "mounds": [
+     [
+      -3.0,
+      2.6,
+      0.9
+     ]
+    ],
+    "action": [
+     [
+      0.0,
+      2.0,
+      9.0
+     ]
+    ]
+   },
+   "ambience": {
+    "tod": "midday"
+   },
+   "cast": {
+    "zuri": {
+     "species": "zebra",
+     "at": [
+      -7.0,
+      0.5
+     ],
+     "yaw": 0,
+     "gait": "trot",
+     "path": [
+      [
+       0.3,
+       -7.0,
+       0.5
+      ],
+      [
+       2.6,
+       -2.0,
+       0.0
+      ],
+      [
+       3.4,
+       0.0,
+       -0.8
+      ],
+      [
+       4.4,
+       1.6,
+       0.4
+      ],
+      [
+       5.2,
+       0.8,
+       1.6
+      ],
+      [
+       6.0,
+       -0.6,
+       1.0
+      ],
+      [
+       7.6,
+       3.5,
+       0.0
+      ],
+      [
+       10.0,
+       9.0,
+       1.0
+      ]
+     ]
+    },
+    "kiki": {
+     "species": "meerkat",
+     "at": [
+      -3.3,
+      1.6
+     ],
+     "yaw": 0,
+     "gait": "scurry",
+     "path": [
+      [
+       8.8,
+       -3.3,
+       1.6
+      ],
+      [
+       9.6,
+       -3.05,
+       2.35
+      ],
+      [
+       24.0,
+       -3.05,
+       2.4
+      ]
+     ]
+    },
+    "neema": {
+     "species": "giraffe",
+     "at": [
+      -2.0,
+      7.0
+     ],
+     "yaw": 70,
+     "path": [
+      {
+       "line": 1,
+       "dt": -3.0,
+       "at": [
+        -2.0,
+        7.0
+       ]
+      },
+      {
+       "then": 3.6,
+       "at": [
+        1.3,
+        6.6
+       ]
+      }
+     ]
+    },
+    "tembo": {
+     "species": "elephant",
+     "at": [
+      -3.0,
+      -1.4
+     ],
+     "yaw": 0,
+     "path": [
+      {
+       "line": 2,
+       "dt": -3.6,
+       "at": [
+        -3.0,
+        -1.4
+       ]
+      },
+      {
+       "then": 14.0,
+       "at": [
+        1.4,
+        -1.4
+       ]
+      }
+     ]
+    },
+    "bibi_kobe": {
+     "species": "tortoise",
+     "at": [
+      -2.0,
+      -0.4
+     ],
+     "yaw": 0,
+     "path": [
+      {
+       "line": 2,
+       "dt": -3.6,
+       "at": [
+        -2.0,
+        -0.4
+       ]
+      },
+      {
+       "then": 14.0,
+       "at": [
+        2.4,
+        -0.4
+       ]
+      }
+     ]
+    }
+   },
+   "lines": [
+    {
+     "who": "kiki",
+     "text": "DANGER! ...Oh. It's a rock.",
+     "expr": [
+      [
+       0,
+       "scared"
+      ],
+      [
+       1.3,
+       "sad"
+      ]
+     ],
+     "at": 10.4
+    },
+    {
+     "who": "neema",
+     "text": "I'm fine!",
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ],
+     "gap": 3.6
+    },
+    {
+     "who": "bibi_kobe",
+     "text": "You walk slowly, for a big fellow.",
+     "expr": [
+      [
+       0,
+       "curious"
+      ]
+     ],
+     "gap": 4.0,
+     "to": "tembo"
+    },
+    {
+     "who": "tembo",
+     "text": "You'd get lonely back here.",
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ],
+     "gap": 0.8,
+     "to": "bibi_kobe"
+    }
+   ],
+   "reactions": [
+    {
+     "who": "bibi_kobe",
+     "line": 3,
+     "dt": 0.3,
+     "expr": "happy"
+    },
+    {
+     "who": "zuri",
+     "t": 3.6,
+     "expr": "happy"
+    }
+   ],
+   "gestures": [
+    {
+     "who": "neema",
+     "kind": "head_duck",
+     "line": 1,
+     "dt": -2.2,
+     "dur": 2.6,
+     "amount": 0.2
+    },
+    {
+     "who": "kiki",
+     "kind": "look_at",
+     "line": 0,
+     "dt": -2.0,
+     "dur": 1.6,
+     "target": "zuri"
+    },
+    {
+     "who": "tembo",
+     "kind": "look_at",
+     "line": 2,
+     "dt": 0.1,
+     "dur": 3.0,
+     "target": "bibi_kobe"
+    }
+   ],
+   "shots": [
+    {
+     "type": "ws",
+     "subjects": [
+      "zuri"
+     ],
+     "t": 0,
+     "note": "tracking WS: Zuri trots ahead, loops, comes back"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "zuri"
+     ],
+     "t": 3.2,
+     "side": 30
+    },
+    {
+     "type": "ws",
+     "subjects": [
+      "zuri"
+     ],
+     "t": 6.2,
+     "side": -20
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "kiki"
+     ],
+     "t": 8.6,
+     "note": "Kiki pops up on the mound"
+    },
+    {
+     "type": "cu",
+     "subjects": [
+      "kiki"
+     ],
+     "line": 0
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "neema"
+     ],
+     "line": 0,
+     "after": 0.6,
+     "side": -30,
+     "note": "her head into the leaves"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "tembo",
+      "bibi_kobe"
+     ],
+     "line": 1,
+     "after": 0.8,
+     "note": "the quiet two-shot"
+    },
+    {
+     "type": "mcu",
+     "subjects": [
+      "bibi_kobe"
+     ],
+     "line": 2
+    },
+    {
+     "type": "mcu",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 3,
+     "side": 20
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "tembo",
+      "bibi_kobe"
+     ],
+     "line": 3,
+     "after": 0.4,
+     "side": -25,
+     "note": "she smiles"
+    }
+   ]
+  },
+  {
+   "id": "sc05",
+   "title": "Afternoon - the fork",
+   "tod": "afternoon",
+   "cue": "sc05",
+   "seconds": 26,
+   "lead": 0.5,
+   "layout": {
+    "acacias": [
+     [
+      -10.0,
+      14.0,
+      0.95
+     ],
+     [
+      12.0,
+      20.0,
+      0.85
+     ]
+    ],
+    "mounds": [
+     [
+      -4.2,
+      5.0,
+      0.7
+     ],
+     [
+      -6.0,
+      8.5,
+      0.8
+     ],
+     [
+      -7.4,
+      12.5,
+      0.9
+     ]
+    ],
+    "action": [
+     [
+      -1.0,
+      1.0,
+      4.5
+     ]
+    ],
+    "grass_density": 30.0
+   },
+   "ambience": {
+    "tod": "afternoon"
+   },
+   "cast": {
+    "bibi_kobe": {
+     "species": "tortoise",
+     "at": [
+      -2.6,
+      0.8
+     ],
+     "yaw": 20
+    },
+    "zuri": {
+     "species": "zebra",
+     "at": [
+      0.8,
+      1.0
+     ],
+     "yaw": -20,
+     "gait": "canter",
+     "path": [
+      {
+       "line": 1,
+       "dt": 0.3,
+       "at": [
+        0.8,
+        1.0
+       ]
+      },
+      {
+       "then": 0.6,
+       "at": [
+        1.6,
+        2.2
+       ]
+      },
+      {
+       "then": 1.6,
+       "at": [
+        5.0,
+        7.5
+       ]
+      },
+      {
+       "then": 1.4,
+       "at": [
+        7.0,
+        12.0
+       ]
+      }
+     ]
+    },
+    "tembo": {
+     "species": "elephant",
+     "at": [
+      -0.6,
+      -0.6
+     ],
+     "yaw": 10
+    },
+    "kiki": {
+     "species": "meerkat",
+     "at": [
+      -1.9,
+      -1.2
+     ],
+     "yaw": 5
+    },
+    "neema": {
+     "species": "giraffe",
+     "at": [
+      -3.6,
+      2.6
+     ],
+     "yaw": 15
+    }
+   },
+   "lines": [
+    {
+     "who": "bibi_kobe",
+     "text": "Follow the mounds.",
+     "expr": [
+      [
+       0,
+       "determined"
+      ]
+     ],
+     "at": 3.0
+    },
+    {
+     "who": "zuri",
+     "text": "That's the slow way. The grass is faster. Watch!",
+     "expr": [
+      [
+       0,
+       "proud"
+      ],
+      [
+       1.6,
+       "happy"
+      ]
+     ],
+     "gap": 0.4,
+     "to": "bibi_kobe"
+    },
+    {
+     "who": "tembo",
+     "text": "Zuri, wait!",
+     "expr": [
+      [
+       0,
+       "worried"
+      ]
+     ],
+     "gap": 3.6
+    },
+    {
+     "who": "kiki",
+     "text": "She's gone. Nobody panic.",
+     "expr": [
+      [
+       0,
+       "worried"
+      ]
+     ],
+     "gap": 0.6
+    },
+    {
+     "who": "kiki",
+     "text": "EVERYBODY PANIC!",
+     "expr": [
+      [
+       0,
+       "scared"
+      ]
+     ],
+     "gap": 0.6
+    }
+   ],
+   "reactions": [
+    {
+     "who": "bibi_kobe",
+     "line": 1,
+     "dt": 0.2,
+     "expr": "sad"
+    },
+    {
+     "who": "neema",
+     "line": 1,
+     "dt": 0.5,
+     "expr": "worried"
+    },
+    {
+     "who": "tembo",
+     "line": 4,
+     "dt": 0.1,
+     "expr": "scared"
+    }
+   ],
+   "shots": [
+    {
+     "type": "ews",
+     "subjects": [],
+     "t": 0,
+     "look": [
+      -1.0,
+      8.0,
+      1.2
+     ],
+     "frame_h": 7.0,
+     "note": "the mounds lead left; tall grass to the right"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "bibi_kobe"
+     ],
+     "line": 0
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "zuri"
+     ],
+     "line": 1
+    },
+    {
+     "type": "ws",
+     "subjects": [
+      "zuri"
+     ],
+     "line": 1,
+     "after": 0.4,
+     "note": "she canters into the tall grass and vanishes"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 2
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "kiki"
+     ],
+     "line": 3,
+     "side": 15
+    },
+    {
+     "type": "cu",
+     "subjects": [
+      "kiki"
+     ],
+     "line": 4
+    }
+   ]
+  },
+  {
+   "id": "sc06",
+   "title": "Late afternoon - stripes in the grass",
+   "tod": "afternoon",
+   "cue": "sc06",
+   "seconds": 36,
+   "lead": 1.0,
+   "layout": {
+    "acacias": [
+     [
+      -11.0,
+      15.0,
+      0.9
+     ],
+     [
+      13.0,
+      21.0,
+      0.85
+     ]
+    ],
+    "mounds": [],
+    "action": [
+     [
+      0.0,
+      1.0,
+      3.5
+     ],
+     [
+      3.5,
+      9.0,
+      1.6
+     ]
+    ],
+    "grass_density": 34.0
+   },
+   "ambience": {
+    "tod": "afternoon"
+   },
+   "cast": {
+    "tembo": {
+     "species": "elephant",
+     "at": [
+      -0.8,
+      0.4
+     ],
+     "yaw": -10,
+     "path": [
+      {
+       "line": 3,
+       "dt": 0.6,
+       "at": [
+        -0.8,
+        0.4
+       ]
+      },
+      {
+       "then": 5.0,
+       "at": [
+        2.0,
+        6.6
+       ]
+      }
+     ]
+    },
+    "neema": {
+     "species": "giraffe",
+     "at": [
+      1.4,
+      1.6
+     ],
+     "yaw": -15,
+     "path": [
+      {
+       "line": 3,
+       "dt": 0.6,
+       "at": [
+        1.4,
+        1.6
+       ]
+      },
+      {
+       "then": 5.0,
+       "at": [
+        4.8,
+        7.6
+       ]
+      }
+     ]
+    },
+    "kiki": {
+     "species": "meerkat",
+     "at": [
+      -2.2,
+      -0.6
+     ],
+     "yaw": 10,
+     "gait": "scurry",
+     "path": [
+      {
+       "line": 3,
+       "dt": 0.4,
+       "at": [
+        -2.2,
+        -0.6
+       ]
+      },
+      {
+       "then": 4.6,
+       "at": [
+        2.6,
+        7.4
+       ]
+      }
+     ]
+    },
+    "bibi_kobe": {
+     "species": "tortoise",
+     "at": [
+      -3.0,
+      1.0
+     ],
+     "yaw": 15,
+     "path": [
+      {
+       "line": 3,
+       "dt": 0.8,
+       "at": [
+        -3.0,
+        1.0
+       ]
+      },
+      {
+       "then": 5.0,
+       "at": [
+        -1.6,
+        3.6
+       ]
+      }
+     ]
+    },
+    "zuri": {
+     "species": "zebra",
+     "at": [
+      3.6,
+      9.4
+     ],
+     "yaw": 160
+    }
+   },
+   "lines": [
+    {
+     "who": "zuri",
+     "text": "Hellooo?",
+     "expr": [
+      [
+       0,
+       "scared"
+      ]
+     ],
+     "at": 2.6
+    },
+    {
+     "who": "tembo",
+     "text": "Neema, you're the tallest of all of us. Can you see her?",
+     "expr": [
+      [
+       0,
+       "worried"
+      ]
+     ],
+     "gap": 1.0,
+     "to": "neema"
+    },
+    {
+     "who": "neema",
+     "text": "There! Stripes!",
+     "expr": [
+      [
+       0,
+       "surprised"
+      ],
+      [
+       0.6,
+       "happy"
+      ]
+     ],
+     "gap": 3.8
+    },
+    {
+     "who": "kiki",
+     "text": "And I hear her. That way!",
+     "expr": [
+      [
+       0,
+       "determined"
+      ]
+     ],
+     "gap": 0.5
+    },
+    {
+     "who": "zuri",
+     "text": "I thought fastest was best. But fast doesn't help if you're going the wrong way.",
+     "expr": [
+      [
+       0,
+       "sad"
+      ]
+     ],
+     "gap": 6.0
+    },
+    {
+     "who": "zuri",
+     "text": "I'm sorry.",
+     "expr": [
+      [
+       0,
+       "sad"
+      ]
+     ],
+     "gap": 0.6,
+     "to": "bibi_kobe"
+    }
+   ],
+   "reactions": [
+    {
+     "who": "neema",
+     "line": 1,
+     "dt": 0.2,
+     "expr": "worried"
+    },
+    {
+     "who": "neema",
+     "line": 1,
+     "dt": 2.2,
+     "expr": "determined"
+    },
+    {
+     "who": "bibi_kobe",
+     "line": 5,
+     "dt": 0.3,
+     "expr": "happy"
+    },
+    {
+     "who": "tembo",
+     "line": 5,
+     "dt": 0.4,
+     "expr": "happy"
+    }
+   ],
+   "gestures": [
+    {
+     "who": "neema",
+     "kind": "head_duck",
+     "t": 0.0,
+     "dur": 9.0,
+     "amount": 0.45,
+     "note": "hunched, as always, until she stands all the way up"
+    },
+    {
+     "who": "kiki",
+     "kind": "look_at",
+     "line": 3,
+     "dt": -1.2,
+     "dur": 1.4,
+     "target": "zuri"
+    },
+    {
+     "who": "bibi_kobe",
+     "kind": "nod",
+     "line": 5,
+     "dt": 0.4,
+     "dur": 1.0
+    }
+   ],
+   "shots": [
+    {
+     "type": "ws",
+     "subjects": [
+      "tembo",
+      "neema",
+      "kiki",
+      "bibi_kobe"
+     ],
+     "t": 0,
+     "note": "at the grass edge; far away, Hellooo?"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 1
+    },
+    {
+     "type": "cu",
+     "subjects": [
+      "neema"
+     ],
+     "line": 1,
+     "after": 0.3,
+     "side": 20,
+     "note": "she hesitates, then stands all the way up"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "neema"
+     ],
+     "line": 1,
+     "after": 2.4,
+     "side": -10
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "kiki"
+     ],
+     "line": 3
+    },
+    {
+     "type": "ws",
+     "subjects": [
+      "tembo",
+      "neema",
+      "kiki",
+      "bibi_kobe"
+     ],
+     "line": 3,
+     "after": 0.5,
+     "note": "into the grass"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "zuri"
+     ],
+     "line": 4,
+     "note": "small and scared in the tall grass"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "zuri",
+      "bibi_kobe"
+     ],
+     "line": 5,
+     "side": 25
+    }
+   ]
+  },
+  {
+   "id": "sc07",
+   "title": "Sunset - lost together",
+   "tod": "sunset",
+   "cue": "sc07",
+   "seconds": 26,
+   "lead": 1.0,
+   "layout": {
+    "acacias": [
+     [
+      -12.0,
+      16.0,
+      0.9
+     ],
+     [
+      12.0,
+      22.0,
+      0.85
+     ]
+    ],
+    "mounds": [],
+    "action": [
+     [
+      0.0,
+      1.5,
+      3.4
+     ]
+    ],
+    "grass_density": 30.0
+   },
+   "ambience": {
+    "tod": "sunset"
+   },
+   "cast": {
+    "tembo": {
+     "species": "elephant",
+     "at": [
+      0.0,
+      1.0
+     ],
+     "yaw": 0
+    },
+    "bibi_kobe": {
+     "species": "tortoise",
+     "at": [
+      -1.6,
+      0.6
+     ],
+     "yaw": 40,
+     "path": [
+      {
+       "line": 0,
+       "dt": 0.4,
+       "at": [
+        -1.6,
+        0.6
+       ]
+      },
+      {
+       "then": 2.2,
+       "at": [
+        -1.0,
+        0.4
+       ]
+      }
+     ]
+    },
+    "neema": {
+     "species": "giraffe",
+     "at": [
+      2.4,
+      2.8
+     ],
+     "yaw": -20
+    },
+    "zuri": {
+     "species": "zebra",
+     "at": [
+      -2.6,
+      3.2
+     ],
+     "yaw": 30
+    },
+    "kiki": {
+     "species": "meerkat",
+     "at": [
+      1.4,
+      -0.2
+     ],
+     "yaw": -10
+    }
+   },
+   "lines": [
+    {
+     "who": "tembo",
+     "text": "Now we're all lost. I just wanted to help... maybe I'm too small for this.",
+     "expr": [
+      [
+       0,
+       "sad"
+      ]
+     ],
+     "at": 5.0
+    },
+    {
+     "who": "bibi_kobe",
+     "text": "You'd get lonely back here.",
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ],
+     "gap": 3.0,
+     "to": "tembo"
+    },
+    {
+     "who": "tembo",
+     "text": "Wait. We're not lost if we're *together*.",
+     "expr": [
+      [
+       0,
+       "surprised"
+      ],
+      [
+       0.7,
+       "determined"
+      ]
+     ],
+     "gap": 1.4
+    },
+    {
+     "who": "tembo",
+     "text": "Everybody: what do *you* notice?",
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ],
+     "gap": 0.5
+    }
+   ],
+   "reactions": [
+    {
+     "who": "neema",
+     "t": 2.0,
+     "expr": "sad"
+    },
+    {
+     "who": "kiki",
+     "t": 2.0,
+     "expr": "worried"
+    },
+    {
+     "who": "zuri",
+     "t": 2.0,
+     "expr": "sad"
+    },
+    {
+     "who": "tembo",
+     "line": 1,
+     "dt": 0.4,
+     "expr": "curious"
+    },
+    {
+     "who": "neema",
+     "line": 3,
+     "dt": 0.2,
+     "expr": "curious"
+    },
+    {
+     "who": "kiki",
+     "line": 3,
+     "dt": 0.2,
+     "expr": "curious"
+    },
+    {
+     "who": "zuri",
+     "line": 3,
+     "dt": 0.3,
+     "expr": "happy"
+    }
+   ],
+   "gestures": [
+    {
+     "who": "tembo",
+     "kind": "ears_droop",
+     "line": 0,
+     "dt": -2.0,
+     "dur": 6.0
+    },
+    {
+     "who": "tembo",
+     "kind": "head_duck",
+     "line": 0,
+     "dt": -1.5,
+     "dur": 4.5,
+     "amount": 0.4
+    },
+    {
+     "who": "tembo",
+     "kind": "look_at",
+     "line": 1,
+     "dt": -0.6,
+     "dur": 1.6,
+     "target": "bibi_kobe"
+    }
+   ],
+   "shots": [
+    {
+     "type": "ews",
+     "subjects": [],
+     "t": 0,
+     "look": [
+      0.0,
+      10.0,
+      3.0
+     ],
+     "frame_h": 9.0,
+     "note": "grass on every side; purple sky; the first star"
+    },
+    {
+     "type": "cu",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 0
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "bibi_kobe",
+      "tembo"
+     ],
+     "line": 0,
+     "after": 0.3,
+     "side": 30,
+     "note": "she nudges him"
+    },
+    {
+     "type": "mcu",
+     "subjects": [
+      "bibi_kobe"
+     ],
+     "line": 1
+    },
+    {
+     "type": "cu",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 2,
+     "side": -15,
+     "note": "lifting his head"
+    },
+    {
+     "type": "ws",
+     "subjects": [
+      "tembo",
+      "neema",
+      "zuri",
+      "kiki",
+      "bibi_kobe"
+     ],
+     "line": 3,
+     "after": 0.2
+    }
+   ]
+  },
+  {
+   "id": "sc08",
+   "title": "Night - what everyone notices",
+   "tod": "night",
+   "cue": "sc08",
+   "seconds": 30,
+   "lead": 1.0,
+   "layout": {
+    "acacias": [
+     [
+      -12.0,
+      16.0,
+      0.9
+     ],
+     [
+      14.0,
+      22.0,
+      0.85
+     ]
+    ],
+    "mounds": [],
+    "action": [
+     [
+      0.0,
+      1.5,
+      4.0
+     ]
+    ],
+    "grass_density": 22.0,
+    "props": [
+     {
+      "name": "baobab_l",
+      "shape": "cylinder",
+      "size": [
+       1.7,
+       1.7,
+       6.0
+      ],
+      "at": [
+       -1.4,
+       26.0,
+       2.82
+      ],
+      "rot": [
+       0,
+       13,
+       0
+      ],
+      "color": "#8A7464"
+     },
+     {
+      "name": "baobab_r",
+      "shape": "cylinder",
+      "size": [
+       1.7,
+       1.7,
+       6.0
+      ],
+      "at": [
+       1.4,
+       26.0,
+       2.82
+      ],
+      "rot": [
+       0,
+       -13,
+       0
+      ],
+      "color": "#8A7464"
+     }
+    ]
+   },
+   "ambience": {
+    "tod": "night"
+   },
+   "cast": {
+    "bibi_kobe": {
+     "species": "tortoise",
+     "at": [
+      -0.8,
+      0.4
+     ],
+     "yaw": 0,
+     "path": [
+      {
+       "line": 4,
+       "dt": 0.6,
+       "at": [
+        -0.8,
+        0.4
+       ]
+      },
+      {
+       "then": 6.0,
+       "at": [
+        -0.6,
+        2.4
+       ]
+      }
+     ]
+    },
+    "zuri": {
+     "species": "zebra",
+     "at": [
+      -2.2,
+      1.6
+     ],
+     "yaw": 20,
+     "path": [
+      {
+       "line": 4,
+       "dt": 0.6,
+       "at": [
+        -2.2,
+        1.6
+       ]
+      },
+      {
+       "then": 6.0,
+       "at": [
+        -1.8,
+        3.3
+       ]
+      }
+     ]
+    },
+    "kiki": {
+     "species": "meerkat",
+     "at": [
+      0.9,
+      -0.3
+     ],
+     "yaw": -10,
+     "path": [
+      {
+       "line": 4,
+       "dt": 0.6,
+       "at": [
+        0.9,
+        -0.3
+       ]
+      },
+      {
+       "then": 6.0,
+       "at": [
+        0.9,
+        1.7
+       ]
+      }
+     ]
+    },
+    "tembo": {
+     "species": "elephant",
+     "at": [
+      1.6,
+      1.8
+     ],
+     "yaw": -15,
+     "path": [
+      {
+       "line": 4,
+       "dt": 0.8,
+       "at": [
+        1.6,
+        1.8
+       ]
+      },
+      {
+       "then": 6.0,
+       "at": [
+        1.6,
+        3.8
+       ]
+      }
+     ]
+    },
+    "neema": {
+     "species": "giraffe",
+     "at": [
+      3.8,
+      3.4
+     ],
+     "yaw": -20,
+     "path": [
+      {
+       "line": 4,
+       "dt": 0.8,
+       "at": [
+        3.8,
+        3.4
+       ]
+      },
+      {
+       "then": 6.0,
+       "at": [
+        3.6,
+        5.4
+       ]
+      }
+     ]
+    }
+   },
+   "lines": [
+    {
+     "who": "bibi_kobe",
+     "text": "When you walk slowly, you learn to look up. The spring sleeps beneath the three bright stars.",
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ],
+     "at": 4.4
+    },
+    {
+     "who": "kiki",
+     "text": "I hear... water?",
+     "expr": [
+      [
+       0,
+       "curious"
+      ]
+     ],
+     "gap": 1.4
+    },
+    {
+     "who": "kiki",
+     "text": "What if it's just another rock?",
+     "expr": [
+      [
+       0,
+       "worried"
+      ]
+     ],
+     "gap": 0.4
+    },
+    {
+     "who": "tembo",
+     "text": "I believe you.",
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ],
+     "gap": 0.4,
+     "to": "kiki"
+    },
+    {
+     "who": "neema",
+     "text": "Two trees, bowing! Right under the stars!",
+     "expr": [
+      [
+       0,
+       "surprised"
+      ],
+      [
+       0.7,
+       "happy"
+      ]
+     ],
+     "gap": 0.8
+    },
+    {
+     "who": "zuri",
+     "text": "Bibi Kobe's speed. Everybody.",
+     "expr": [
+      [
+       0,
+       "proud"
+      ]
+     ],
+     "gap": 2.0
+    }
+   ],
+   "reactions": [
+    {
+     "who": "kiki",
+     "line": 3,
+     "dt": 0.2,
+     "expr": "proud"
+    },
+    {
+     "who": "tembo",
+     "line": 4,
+     "dt": 0.2,
+     "expr": "surprised"
+    },
+    {
+     "who": "bibi_kobe",
+     "line": 5,
+     "dt": 0.2,
+     "expr": "happy"
+    }
+   ],
+   "gestures": [
+    {
+     "who": "kiki",
+     "kind": "head_shake",
+     "line": 0,
+     "dt": 0.2,
+     "dur": 0.8,
+     "amount": 0.4,
+     "note": "her ears twitch"
+    },
+    {
+     "who": "tembo",
+     "kind": "nod",
+     "line": 3,
+     "dt": -0.6,
+     "dur": 0.8
+    }
+   ],
+   "shots": [
+    {
+     "type": "ews",
+     "subjects": [],
+     "t": 0,
+     "look": [
+      0.0,
+      14.0,
+      4.0
+     ],
+     "frame_h": 10.0,
+     "note": "stars fill the sky; the grass glows silver"
+    },
+    {
+     "type": "mcu",
+     "subjects": [
+      "bibi_kobe"
+     ],
+     "line": 0
+    },
+    {
+     "type": "cu",
+     "subjects": [
+      "kiki"
+     ],
+     "line": 1
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 3,
+     "side": -20
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "neema"
+     ],
+     "line": 4
+    },
+    {
+     "type": "ws",
+     "subjects": [
+      "tembo",
+      "neema",
+      "zuri",
+      "kiki",
+      "bibi_kobe"
+     ],
+     "line": 4,
+     "after": 0.6,
+     "side": 25,
+     "note": "they walk in a line toward the trees"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "zuri",
+      "bibi_kobe"
+     ],
+     "line": 5
+    }
+   ]
+  },
+  {
+   "id": "sc09",
+   "title": "Night - the singing spring",
+   "tod": "night",
+   "cue": "sc09",
+   "seconds": 40,
+   "lead": 1.0,
+   "layout": {
+    "water": [
+     0.3,
+     4.6,
+     0.55
+    ],
+    "acacias": [
+     [
+      -14.0,
+      18.0,
+      0.9
+     ]
+    ],
+    "mounds": [],
+    "action": [
+     [
+      0.0,
+      2.5,
+      4.5
+     ]
+    ],
+    "props": [
+     {
+      "name": "baobab_l",
+      "shape": "cylinder",
+      "size": [
+       1.7,
+       1.7,
+       5.5
+      ],
+      "at": [
+       -2.0,
+       7.0,
+       2.585
+      ],
+      "rot": [
+       0,
+       13,
+       0
+      ],
+      "color": "#8A7464"
+     },
+     {
+      "name": "baobab_r",
+      "shape": "cylinder",
+      "size": [
+       1.7,
+       1.7,
+       5.5
+      ],
+      "at": [
+       2.0,
+       7.0,
+       2.585
+      ],
+      "rot": [
+       0,
+       -13,
+       0
+      ],
+      "color": "#8A7464"
+     },
+     {
+      "name": "log",
+      "shape": "cylinder",
+      "size": [
+       0.5,
+       0.5,
+       2.6
+      ],
+      "at": [
+       0.3,
+       4.0,
+       0.25
+      ],
+      "rot": [
+       0,
+       90,
+       10
+      ],
+      "color": "#5E4630",
+      "moves": [
+       [
+        23.0,
+        [
+         0.3,
+         4.0,
+         0.25
+        ]
+       ],
+       [
+        25.0,
+        [
+         2.6,
+         5.0,
+         0.25
+        ]
+       ]
+      ]
+     }
+    ]
+   },
+   "ambience": {
+    "tod": "night",
+    "water": true
+   },
+   "cast": {
+    "tembo": {
+     "species": "elephant",
+     "at": [
+      0.2,
+      1.6
+     ],
+     "yaw": 0,
+     "path": [
+      [
+       0.4,
+       0.2,
+       1.6
+      ],
+      [
+       3.2,
+       0.3,
+       2.9
+      ],
+      [
+       5.0,
+       0.3,
+       2.9
+      ]
+     ]
+    },
+    "neema": {
+     "species": "giraffe",
+     "at": [
+      2.6,
+      2.4
+     ],
+     "yaw": -50
+    },
+    "zuri": {
+     "species": "zebra",
+     "at": [
+      -1.8,
+      2.4
+     ],
+     "yaw": 40,
+     "path": [
+      {
+       "line": 1,
+       "dt": 0.8,
+       "at": [
+        -1.8,
+        2.4
+       ]
+      },
+      {
+       "then": 2.2,
+       "at": [
+        -1.1,
+        2.9
+       ]
+      }
+     ]
+    },
+    "kiki": {
+     "species": "meerkat",
+     "at": [
+      1.3,
+      1.4
+     ],
+     "yaw": -20,
+     "gait": "scurry",
+     "path": [
+      {
+       "line": 1,
+       "dt": 3.0,
+       "at": [
+        1.3,
+        1.4
+       ]
+      },
+      {
+       "then": 1.2,
+       "at": [
+        1.0,
+        3.5
+       ]
+      }
+     ]
+    },
+    "bibi_kobe": {
+     "species": "tortoise",
+     "at": [
+      -0.8,
+      0.6
+     ],
+     "yaw": 10
+    }
+   },
+   "lines": [
+    {
+     "who": "tembo",
+     "text": "I can't... do it... alone.",
+     "expr": [
+      [
+       0,
+       "sad"
+      ]
+     ],
+     "at": 7.2
+    },
+    {
+     "who": "neema",
+     "text": "Then don't.",
+     "expr": [
+      [
+       0,
+       "determined"
+      ]
+     ],
+     "gap": 0.6,
+     "to": "tembo"
+    },
+    {
+     "who": "bibi_kobe",
+     "text": "One... two... PUSH!",
+     "expr": [
+      [
+       0,
+       "determined"
+      ],
+      [
+       1.8,
+       "happy"
+      ]
+     ],
+     "gap": 4.6
+    },
+    {
+     "who": "kiki",
+     "text": "...Still refreshing.",
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ],
+     "gap": 9.0
+    }
+   ],
+   "reactions": [
+    {
+     "who": "tembo",
+     "t": 4.0,
+     "expr": "determined"
+    },
+    {
+     "who": "tembo",
+     "line": 1,
+     "dt": 0.2,
+     "expr": "proud"
+    },
+    {
+     "who": "tembo",
+     "line": 2,
+     "dt": 0.4,
+     "expr": "surprised"
+    },
+    {
+     "who": "neema",
+     "line": 2,
+     "dt": 0.5,
+     "expr": "happy"
+    },
+    {
+     "who": "zuri",
+     "line": 2,
+     "dt": 0.5,
+     "expr": "happy"
+    },
+    {
+     "who": "kiki",
+     "line": 2,
+     "dt": 0.6,
+     "expr": "happy"
+    },
+    {
+     "who": "tembo",
+     "line": 2,
+     "dt": 1.4,
+     "expr": "happy"
+    }
+   ],
+   "sfx": [
+    {
+     "line": 2,
+     "dt": 0.3,
+     "kind": "splash"
+    },
+    {
+     "line": 2,
+     "dt": 3.4,
+     "kind": "slurp"
+    },
+    {
+     "line": 2,
+     "dt": 6.2,
+     "kind": "splash"
+    }
+   ],
+   "gestures": [
+    {
+     "who": "tembo",
+     "kind": "head_duck",
+     "t": 5.0,
+     "dur": 2.4,
+     "amount": 0.5,
+     "note": "he strains and slips"
+    },
+    {
+     "who": "neema",
+     "kind": "head_duck",
+     "line": 1,
+     "dt": 0.5,
+     "dur": 4.0,
+     "amount": 0.6,
+     "note": "hooks a branch from above"
+    },
+    {
+     "who": "kiki",
+     "kind": "head_duck",
+     "line": 1,
+     "dt": 4.4,
+     "dur": 1.6,
+     "amount": 0.8,
+     "note": "digs out the stone"
+    },
+    {
+     "who": "tembo",
+     "kind": "trunk_drink",
+     "line": 2,
+     "dt": 2.8,
+     "dur": 1.8,
+     "note": "this time it holds"
+    },
+    {
+     "who": "tembo",
+     "kind": "look_at",
+     "line": 2,
+     "dt": 4.6,
+     "dur": 1.2,
+     "target": "bibi_kobe",
+     "note": "offers the first drink to Bibi Kobe"
+    },
+    {
+     "who": "tembo",
+     "kind": "trunk_spray",
+     "line": 2,
+     "dt": 6.0,
+     "dur": 1.2,
+     "target": "kiki",
+     "note": "then he sprays everyone"
+    }
+   ],
+   "shots": [
+    {
+     "type": "ews",
+     "subjects": [],
+     "t": 0,
+     "look": [
+      0.3,
+      6.0,
+      2.0
+     ],
+     "frame_h": 6.5,
+     "note": "two baobabs lean together; a trickle choked by a log"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "tembo"
+     ],
+     "t": 3.6,
+     "side": 40,
+     "note": "he pushes the log alone"
+    },
+    {
+     "type": "cu",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 0
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "neema"
+     ],
+     "line": 1
+    },
+    {
+     "type": "ws",
+     "subjects": [
+      "neema",
+      "zuri",
+      "tembo"
+     ],
+     "line": 1,
+     "after": 0.5,
+     "note": "Neema hooks a branch; Zuri braces beside Tembo"
+    },
+    {
+     "type": "cu",
+     "subjects": [
+      "kiki"
+     ],
+     "line": 1,
+     "after": 3.6,
+     "note": "Kiki digs out the stone"
+    },
+    {
+     "type": "mcu",
+     "subjects": [
+      "bibi_kobe"
+     ],
+     "line": 2
+    },
+    {
+     "type": "ws",
+     "subjects": [],
+     "line": 2,
+     "after": 0.2,
+     "look": [
+      0.6,
+      4.6,
+      0.6
+     ],
+     "frame_h": 4.0,
+     "note": "the log rolls aside; water bubbles up"
+    },
+    {
+     "type": "cu",
+     "subjects": [
+      "tembo"
+     ],
+     "line": 2,
+     "after": 2.4,
+     "side": 30,
+     "note": "the trunk holds"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "tembo",
+      "bibi_kobe"
+     ],
+     "line": 2,
+     "after": 4.4
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "kiki"
+     ],
+     "line": 3
+    }
+   ]
+  },
+  {
+   "id": "sc10",
+   "title": "Dawn - home",
+   "tod": "dawn",
+   "cue": "sc10",
+   "seconds": 22,
+   "lead": 1.0,
+   "tail": 5.0,
+   "layout": {
+    "water": [
+     -6.0,
+     9.0,
+     1.4
+    ],
+    "acacias": [
+     [
+      -9.0,
+      13.0,
+      1.0
+     ],
+     [
+      10.0,
+      19.0,
+      0.85
+     ],
+     [
+      -18.0,
+      28.0,
+      0.9
+     ]
+    ],
+    "mounds": [
+     [
+      6.5,
+      6.0,
+      0.8
+     ]
+    ],
+    "action": [
+     [
+      0.0,
+      2.0,
+      9.0
+     ]
+    ]
+   },
+   "ambience": {
+    "tod": "dawn"
+   },
+   "cast": {
+    "tembo": {
+     "species": "elephant",
+     "at": [
+      -4.0,
+      1.4
+     ],
+     "yaw": 0,
+     "path": [
+      [
+       0.3,
+       -4.0,
+       1.4
+      ],
+      [
+       12.0,
+       3.2,
+       1.6
+      ],
+      [
+       16.0,
+       3.4,
+       1.7
+      ]
+     ]
+    },
+    "neema": {
+     "species": "giraffe",
+     "at": [
+      -5.8,
+      3.6
+     ],
+     "yaw": 0,
+     "path": [
+      [
+       0.3,
+       -5.8,
+       3.6
+      ],
+      [
+       16.0,
+       3.0,
+       4.4
+      ]
+     ]
+    },
+    "kiki": {
+     "species": "meerkat",
+     "at": [
+      -5.2,
+      2.2
+     ],
+     "yaw": 0,
+     "path": [
+      [
+       0.3,
+       -5.2,
+       2.2
+      ],
+      [
+       16.0,
+       2.6,
+       2.8
+      ]
+     ]
+    },
+    "zuri": {
+     "species": "zebra",
+     "at": [
+      -7.6,
+      0.6
+     ],
+     "yaw": 0,
+     "path": [
+      [
+       0.3,
+       -7.6,
+       0.6
+      ],
+      [
+       16.0,
+       -2.4,
+       0.4
+      ]
+     ]
+    },
+    "bibi_kobe": {
+     "species": "tortoise",
+     "at": [
+      -6.8,
+      -0.4
+     ],
+     "yaw": 0,
+     "path": [
+      [
+       0.3,
+       -6.8,
+       -0.4
+      ],
+      [
+       16.0,
+       -1.8,
+       -0.6
+      ]
+     ]
+    }
+   },
+   "lines": [
+    {
+     "who": "narrator",
+     "text": "Fast or slow, tall or small... it takes *all* of us.",
+     "expr": [
+      [
+       0,
+       "happy"
+      ]
+     ],
+     "at": 4.0
+    }
+   ],
+   "reactions": [
+    {
+     "who": "tembo",
+     "t": 0.5,
+     "expr": "happy"
+    },
+    {
+     "who": "neema",
+     "t": 0.5,
+     "expr": "happy"
+    },
+    {
+     "who": "zuri",
+     "t": 0.5,
+     "expr": "happy"
+    },
+    {
+     "who": "kiki",
+     "t": 0.5,
+     "expr": "happy"
+    },
+    {
+     "who": "bibi_kobe",
+     "t": 0.5,
+     "expr": "happy"
+    }
+   ],
+   "sfx": [
+    {
+     "t": 15.6,
+     "kind": "splash"
+    }
+   ],
+   "gestures": [
+    {
+     "who": "tembo",
+     "kind": "trunk_spray",
+     "t": 15.2,
+     "dur": 1.6,
+     "target": "neema",
+     "note": "a small rainbow into the dawn light, on purpose"
+    },
+    {
+     "who": "zuri",
+     "kind": "look_at",
+     "t": 6.0,
+     "dur": 3.0,
+     "target": "bibi_kobe"
+    }
+   ],
+   "shots": [
+    {
+     "type": "ews",
+     "subjects": [
+      "tembo",
+      "neema",
+      "zuri",
+      "kiki",
+      "bibi_kobe"
+     ],
+     "t": 0,
+     "note": "the friends walk home across the golden savannah"
+    },
+    {
+     "type": "ws",
+     "subjects": [
+      "zuri",
+      "bibi_kobe"
+     ],
+     "t": 9.0,
+     "side": 25,
+     "note": "Zuri walks slowly beside Bibi Kobe"
+    },
+    {
+     "type": "ms",
+     "subjects": [
+      "tembo"
+     ],
+     "t": 14.4,
+     "side": 35,
+     "note": "he sprays a rainbow, on purpose this time"
+    },
+    {
+     "type": "ews",
+     "subjects": [],
+     "t": 18.0,
+     "look": [
+      0.0,
+      12.0,
+      3.0
+     ],
+     "frame_h": 9.0,
+     "note": "the sky; END CARD"
+    }
+   ]
+  }
+ ]
 }
