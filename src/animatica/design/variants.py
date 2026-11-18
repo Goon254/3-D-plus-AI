@@ -114,11 +114,20 @@ def apply_morph(sp: Species, m: Morph, dark_ok: tuple[str, ...] = ()) -> Species
             mat = mats.get(key)
             if key in dark_ok or not mat or "base_color" not in mat:
                 continue
+            shade = _darken(coat, 0.45)
             if luminance(str(mat["base_color"])) < 0.02:  # a black block: a darker shade of the coat instead
-                mats[key] = {
+                mat = {**mat, "base_color": _mix(str(mat["base_color"]), shade, m.lift_dark)}
+            if any(luminance(str(mk["color"])) < 0.02 for mk in mat.get("marks") or []):
+                mat = {
                     **mat,
-                    "base_color": _mix(str(mat["base_color"]), _darken(coat, 0.45), m.lift_dark),
+                    "marks": [
+                        {**mk, "color": _mix(str(mk["color"]), shade, m.lift_dark)}
+                        if luminance(str(mk["color"])) < 0.02
+                        else mk
+                        for mk in mat["marks"]
+                    ],
                 }
+            mats[key] = mat
     return replace(
         sp,
         head_size=_r4(_s(sp.head_size, k)),

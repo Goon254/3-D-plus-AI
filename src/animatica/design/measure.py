@@ -117,7 +117,8 @@ def materials(sp: Species) -> dict[str, Any]:
     """Coat/part luminances, pattern contrast, and dark parts that may read as flat black blocks.
 
     ``dark_regions`` lists body-mesh regions (bone prefixes -> material) whose colour is near-black
-    (luminance < 0.02): a whole leg segment painted that dark reads as a black stick at thumbnail size.
+    (luminance < 0.02), or that carries a near-black ``marks`` entry: a whole leg segment painted that dark
+    reads as a black stick at thumbnail size.
     Small accents (nose, tail tip, nails) are not regions of the body mesh and are not listed.
     """
     coat = str(sp.coat["base_color"])
@@ -136,6 +137,11 @@ def materials(sp: Species) -> dict[str, Any]:
         m = sp.mats.get(key, {})
         if "base_color" in m and luminance(str(m["base_color"])) < 0.02:
             dark.append({"material": key, "bones": list(bones)})
+            continue
+        # a near-black mark painted over the region (the meerkat's paw shade) is a black block too
+        marks = [i for i, mk in enumerate(m.get("marks") or []) if luminance(str(mk["color"])) < 0.02]
+        if marks:
+            dark.append({"material": key, "bones": list(bones), "marks": marks})
     return {"luminance": lum, "pattern_contrast": contrast, "dark_regions": dark}
 
 

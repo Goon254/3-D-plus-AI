@@ -64,6 +64,25 @@ def test_meerkat_black_legs_are_flagged_and_the_lift_fixes_them():
     assert fixed.mats["tailtip"] == sp.mats["tailtip"] and fixed.mats["ear"] == sp.mats["ear"]
 
 
+def test_a_near_black_paw_mark_is_flagged_and_the_lift_fixes_it():
+    """A black mark over a leg region is a black boot too (review 11-17 15:36), not only a black base colour."""
+    brief = load_brief("kiki")
+    sp = SPECIES["meerkat"]
+    paw = sp.mats["paw"]
+    booted = replace(sp, mats={**sp.mats, "paw": {**paw, "marks": [{**paw["marks"][0], "color": "#0A0806"}]}})
+    r = score(brief, booted)
+    assert "materials:flat_black" in r.hard_failures
+    fixed = apply_morph(booted, Morph(lift_dark=0.7), brief.dark_ok)
+    assert "materials:flat_black" not in score(brief, fixed).hard_failures
+    assert fixed.mats["paw"]["base_color"] == paw["base_color"]  # only the mark is lifted
+
+
+def test_the_meerkat_paw_shade_sits_at_the_ground():
+    """The paw mark is painted at root z = -body_z; a change to body_z must move it too."""
+    sp = SPECIES["meerkat"]
+    assert sp.mats["paw"]["marks"][0]["at"][2] == pytest.approx(-sp.body_z)
+
+
 def test_morph_scales_the_head_and_keeps_the_trunk_on_the_face():
     sp = SPECIES["elephant"]
     big = apply_morph(sp, Morph(head=1.1, eye=1.1))

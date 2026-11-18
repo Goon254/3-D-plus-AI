@@ -108,6 +108,8 @@ IRIS = _m("#1E140D", 0.1, specular=0.7)
 GLINT = {"base_color": "#FFFFFF", "emission": "#FFFFFF", "emission_strength": 2.5, "roughness": 0.2}
 
 _ZEBRA_STRIPES = {"pattern": "stripes", "pattern_color": "#1A1818", "pattern_width": 0.46}
+# the meerkat's rest height; her paw shade is painted at the ground (root z = -body_z), so both use this
+_MEERKAT_BODY_Z = 0.118
 
 SPECIES: dict[str, Species] = {
     # About a year old: 1.1 m at the shoulder; big domed head (calves are head-heavy), barrel body,
@@ -320,7 +322,7 @@ SPECIES: dict[str, Species] = {
         name="meerkat",
         # length/depth 2.04: a meerkat, not a weasel tube (2.8) nor a hamster ball (1.6)
         # v4: a slimmer barrel on shorter, slightly bent legs (v3 read as a mongoose: bulky body, stilts)
-        body_z=0.118,
+        body_z=_MEERKAT_BODY_Z,
         torso=(0.086, 0.198, 0.09),
         torso_at=(0.0, 0.0, 0.0),
         torso_rot=4.0,
@@ -370,7 +372,12 @@ SPECIES: dict[str, Species] = {
                 fur=0.5,
                 fur_scale=500.0,
                 marks=[
-                    {"at": [0.0, 0.0, -0.118], "radii": [1.0, 1.0, 0.026], "color": "#6E4E2E", "soft": 0.6}
+                    {
+                        "at": [0.0, 0.0, -_MEERKAT_BODY_Z],
+                        "radii": [1.0, 1.0, 0.026],
+                        "color": "#6E4E2E",
+                        "soft": 0.6,
+                    }
                 ],
             ),
             "ear": _m("#3A281A", 0.8),
