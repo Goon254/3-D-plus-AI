@@ -205,3 +205,64 @@ def test_box_overlap_depth():
     assert box_overlap(sq, [(x + 1.2, y) for x, y in sq]) == 0.0
     diamond = [(1.6, 0.5), (2.1, 0.0), (2.6, 0.5), (2.1, 1.0)]  # beside the square's corner, not touching
     assert box_overlap(sq, diamond) == 0.0
+
+
+def test_violation_keys_survive_retiming_and_name_the_shot():
+    from animatica.production.continuity import Violation, violation_key
+
+    a = Violation("sc09", "facing_away", "kiki", 14.84, "shot 5 (ms): seen from behind (median 163 degrees)")
+    b = Violation("sc09", "facing_away", "kiki", 15.30, "shot 5 (ms): seen from behind (median 171 degrees)")
+    c = Violation("sc09", "facing_away", "kiki", 28.14, "shot 10 (ms): seen from behind (median 179 degrees)")
+    assert violation_key(a) == violation_key(b) != violation_key(c)
+    o1 = Violation("sc03", "actor_overlap", "tembo+zuri", 59.25, "bodies overlap (deepest 0.76 m)")
+    o2 = Violation("sc03", "actor_overlap", "tembo+zuri", 58.00, "bodies overlap (deepest 0.31 m)")
+    assert violation_key(o1) == violation_key(o2) == violation_key(o1.as_dict())
+
+
+def test_diff_reports_names_what_is_fixed_new_and_kept():
+    from animatica.production.continuity import Violation, continuity_report, diff_reports
+
+    ov = Violation("sc03", "actor_overlap", "tembo+zuri", 59.0, "bodies overlap (deepest 0.76 m)")
+    back = Violation("sc09", "facing_away", "kiki", 14.8, "shot 5 (ms): seen from behind")
+    tan = Violation("sc10", "staging_tangent", "zuri/bibi_kobe", 14.2, "shot 4 (ws): feet on the shell")
+    old = continuity_report([ov, back, back], film="savannah", cameras=True)
+    assert old["total"] == 3 and old["counts"] == {"actor_overlap": 1, "facing_away": 2}
+    new = continuity_report([back, tan], film="savannah", cameras=True)
+    d = diff_reports(old, new)
+    assert [v["kind"] for v in d["fixed"]] == ["actor_overlap", "facing_away"]  # one of the two backs fixed
+    assert [v["kind"] for v in d["new"]] == ["staging_tangent"]
+    assert [v["kind"] for v in d["kept"]] == ["facing_away"]
+    # a run that didn't check the cameras cannot have fixed a camera finding
+    plain = continuity_report([], film="savannah", cameras=False)
+    d = diff_reports(old, plain)
+    assert [v["kind"] for v in d["fixed"]] == ["actor_overlap"] and not d["new"] and not d["kept"]
+
+
+def test_continuity_check_writes_json_and_diffs_the_savannah_film(tmp_path):
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    script = root / "scripts" / "continuity_check.py"
+    out = tmp_path / "c.json"
+    work = tmp_path / "nowork"  # estimated line lengths: the same on every machine
+    r = subprocess.run(
+        [sys.executable, str(script), "--work", str(work), "--json", str(out)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    rep = json.loads(out.read_text(encoding="utf-8"))
+    assert rep["film"] == "savannah" and rep["cameras"] is False
+    assert rep["total"] == len(rep["violations"]) == sum(rep["counts"].values())
+    assert r.returncode == (1 if rep["total"] else 0)
+    assert f"{rep['total']} continuity violation(s)" in r.stdout
+    r = subprocess.run(
+        [sys.executable, str(script), "--work", str(work), "--diff", str(out)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert f"0 fixed, 0 new, {rep['total']} still open" in r.stdout

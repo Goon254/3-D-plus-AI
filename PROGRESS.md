@@ -58,6 +58,7 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 
 * **Watch the film and the trailer**, and listen: footsteps, calls, the creak/gush/song, the voices.
 * **Kiki and Zuri**: locked per your plan. Say if you want another design pass on the notes above.
+* **When you apply film notes** (laptop): first `python scripts/continuity_check.py --cameras --json output/continuity_before.json`, then `--cameras --diff output/continuity_before.json` after each scene fix to see what was fixed and what is new (cloud 11-19 15:36, DECISIONS #94; 20 open findings today).
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 

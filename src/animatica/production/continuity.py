@@ -25,6 +25,7 @@ Pure Python: ``scripts/continuity_check.py`` runs it over the whole film before 
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -44,6 +45,83 @@ class Violation:
 
     def __str__(self) -> str:
         return f"{self.scene} {self.t:6.2f}s {self.kind:14s} {self.who:10s} {self.detail}"
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "scene": self.scene,
+            "kind": self.kind,
+            "who": self.who,
+            "t": round(self.t, 2),
+            "detail": self.detail,
+            "key": violation_key(self),
+        }
+
+
+_SHOT = re.compile(r"\bshot (\d+)\b")
+_NUMBER = re.compile(r"[-+]?\d+(?:\.\d+)?")
+
+
+def violation_key(v: Violation | dict[str, Any]) -> str:
+    """A key that names the same problem from one run to the next, even when the timing moves.
+
+    Scene, kind and who, then the shot number when the finding is about a shot (a re-timed line moves the
+    shot's start and its measured percentages, not its index), else the detail with every number blanked
+    out (a mark moved by 5 cm changes the depth, not the problem).
+    """
+    if isinstance(v, Violation):
+        scene, kind, who, detail = v.scene, v.kind, v.who, v.detail
+    else:
+        scene, kind, who, detail = v["scene"], v["kind"], v["who"], v["detail"]
+    m = _SHOT.search(detail)
+    where = f"shot {m.group(1)}" if m else _NUMBER.sub("#", detail)
+    return f"{scene}|{kind}|{who}|{where}"
+
+
+def continuity_report(violations: list[Violation], **meta: Any) -> dict[str, Any]:
+    """The machine-readable report (``continuity_check.py --json``): counts per kind and every finding."""
+    counts: dict[str, int] = {}
+    for v in violations:
+        counts[v.kind] = counts.get(v.kind, 0) + 1
+    return {
+        **meta,
+        "total": len(violations),
+        "counts": dict(sorted(counts.items())),
+        "violations": [v.as_dict() for v in violations],
+    }
+
+
+CAMERA_KINDS = frozenset({"staging_tangent", "facing_away"})  # only measured with ``cameras`` on
+
+
+def diff_reports(old: dict[str, Any], new: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
+    """What changed between two reports: ``fixed`` (only in old), ``new`` (only in new), ``kept``.
+
+    Findings are matched by :func:`violation_key` (recomputed, so reports written before the key existed
+    still compare); a key found twice on one side is matched as many times as it appears on both. When
+    only one report measured the cameras, the camera findings are left out of the comparison: a run that
+    didn't look can't have fixed them. A finding about a shot is keyed by the shot's index, so inserting
+    or removing a shot earlier in a scene shows that scene's later shot findings as fixed + new.
+    """
+    skip = CAMERA_KINDS if bool(old.get("cameras")) != bool(new.get("cameras")) else frozenset()
+
+    def by_key(rep: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
+        out: dict[str, list[dict[str, Any]]] = {}
+        for d in rep.get("violations", []):
+            if d["kind"] not in skip:
+                out.setdefault(violation_key(d), []).append(d)
+        return out
+
+    a, b = by_key(old), by_key(new)
+    fixed: list[dict[str, Any]] = []
+    added: list[dict[str, Any]] = []
+    kept: list[dict[str, Any]] = []
+    for k in sorted(set(a) | set(b)):
+        olds, news = a.get(k, []), b.get(k, [])
+        n = min(len(olds), len(news))
+        kept += news[:n]
+        fixed += olds[n:]
+        added += news[n:]
+    return {"fixed": fixed, "new": added, "kept": kept}
 
 
 @dataclass

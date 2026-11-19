@@ -25,6 +25,8 @@ Scores: story 8, character design 7, motion 7, visuals 7, mix 7; voices and musi
 - [ ] **Kiki's sentinel reads as a kangaroo** (1:18): flat long hind feet and a propping tail. Design pass (Kiki is locked: the owner's call), together with the open "mongoose on all fours" item.
 - [ ] **Deliverables per CHALLENGE "Output"**: `examples/showcase/savannah/final.mp4` at 1280×720 (≤ 25 MB), poster, captions, `edit.mlt`, production log; the committed cut is 960×540 in `savannah-film/`.
   *Code done 11-19 09:36 (cloud, DECISIONS #92): `savannah_film.py --deliver` writes all five into `examples/showcase/savannah/` (README there) from the scene reports; tested end to end on synthetic scenes. Left: the laptop runs `--assemble`, `--trailer`, then `--deliver` (minutes, no render), commits the folder and drops `savannah-film/film_web.mp4`; the reviewer then checks the captions' reading-speed list in `production_log.md`.* — [review 11-19 09:36](reviews/2026-11-19T0936Z.md)
+- [x] **Diffable staging findings** (P2, from the 12:36 review): `continuity_check.py --json` / `--diff` so the laptop and the reviewer can see what a scene fix changed.
+  *Done 11-19 15:36 (cloud, DECISIONS #94): stable keys per finding, fixed / new / kept, camera kinds compared only when both runs used `--cameras`; `--film` for feature films. Laptop: save `--cameras --json output/continuity_before.json` before applying the owner's notes, then `--diff` it after each scene.* — [review 11-19 15:36](reviews/2026-11-19T1536Z.md)
 - [ ] Known, still open: SC 8 tortoise close-up near black (3:48); neighbours' legs crowd close-ups at the frame edge (2:30, 3:12).
 
 ## P0-DESIGN — DESIGN_STAGE.md (owner's top priority; film production paused)

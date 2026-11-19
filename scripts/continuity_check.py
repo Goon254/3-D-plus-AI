@@ -4,6 +4,9 @@ entrances (``animatica.production.continuity``). Pure Python, before anything re
     python scripts/continuity_check.py            # every scene; exit 1 on any violation
     python scripts/continuity_check.py --table    # also print who is on stage in each shot
     python scripts/continuity_check.py --cameras  # also staging tangents on approximate shot cameras
+    python scripts/continuity_check.py --cameras --json out.json --diff last.json
+                                                  # save the findings; print what is fixed / new since last.json
+    python scripts/continuity_check.py --film films/<name>   # a feature-mode film folder
 
 Line lengths come from the last render's ``report.json`` (``--work``), else an estimate from the word count,
 so the timing is the real one whenever the voices exist.
@@ -19,7 +22,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from animatica.production.continuity import actor_speeds, check_scene, check_story  # noqa: E402
+from animatica.production.continuity import (  # noqa: E402
+    actor_speeds,
+    check_scene,
+    check_story,
+    continuity_report,
+    diff_reports,
+)
 from animatica.production.scene import cut_list, load_scenes, schedule, split_long  # noqa: E402
 from animatica.production.staging import (  # noqa: E402
     approx_cameras,
@@ -49,8 +58,18 @@ def main() -> int:
         "--cameras", action="store_true", help="staging tangents and back views on approximate shot cameras"
     )
     ap.add_argument("--fps", type=int, default=24)
+    ap.add_argument(
+        "--film", default=str(FILM), help="the film folder (feature mode); default films/savannah"
+    )
+    ap.add_argument(
+        "--json", metavar="PATH", help="also write the findings as JSON (counts per kind, each key)"
+    )
+    ap.add_argument(
+        "--diff", metavar="PATH", help="an earlier --json report: print what is fixed and what is new"
+    )
     a = ap.parse_args()
-    scenes = load_scenes(FILM / "07_scenes.json")
+    film = Path(a.film)
+    scenes = load_scenes(film / "07_scenes.json")
     bad = check_story(list(scenes.values()))
     for spec in scenes.values():
         secs = schedule(spec, durations(spec, Path(a.work)), actor_speeds(spec))
@@ -71,6 +90,20 @@ def main() -> int:
     for v in bad:
         print(v)
     print(f"{len(bad)} continuity violation(s)")
+    rep = continuity_report(bad, film=film.name, cameras=a.cameras, fps=a.fps)
+    if a.json:
+        Path(a.json).parent.mkdir(parents=True, exist_ok=True)
+        Path(a.json).write_text(json.dumps(rep, indent=1) + "\n", encoding="utf-8")
+    if a.diff:
+        old = json.loads(Path(a.diff).read_text(encoding="utf-8"))
+        if old.get("cameras") != a.cameras:
+            print("note: only one of the two runs checked the cameras; camera findings are not compared")
+        d = diff_reports(old, rep)
+        for v in d["fixed"]:
+            print(f"- fixed {v['scene']} {v['kind']} {v['who']} {v['detail']}")
+        for v in d["new"]:
+            print(f"+ new   {v['scene']} {v['kind']} {v['who']} {v['detail']}")
+        print(f"since {a.diff}: {len(d['fixed'])} fixed, {len(d['new'])} new, {len(d['kept'])} still open")
     return 1 if bad else 0
 
 
