@@ -21,7 +21,12 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from animatica.production.continuity import actor_speeds, check_scene, check_story  # noqa: E402
 from animatica.production.scene import cut_list, load_scenes, schedule, split_long  # noqa: E402
-from animatica.production.staging import approx_cameras, poses_from_paths, staging_tangent  # noqa: E402
+from animatica.production.staging import (  # noqa: E402
+    approx_cameras,
+    facing_away,
+    poses_from_paths,
+    staging_tangent,
+)
 
 FILM = ROOT / "films" / "savannah"
 
@@ -40,7 +45,9 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--work", default=str(ROOT / "output" / "savannah-animatic"))
     ap.add_argument("--table", action="store_true")
-    ap.add_argument("--cameras", action="store_true", help="staging tangents on approximate shot cameras")
+    ap.add_argument(
+        "--cameras", action="store_true", help="staging tangents and back views on approximate shot cameras"
+    )
     ap.add_argument("--fps", type=int, default=24)
     a = ap.parse_args()
     scenes = load_scenes(FILM / "07_scenes.json")
@@ -52,7 +59,9 @@ def main() -> int:
         bad += v
         if a.cameras:
             poses = poses_from_paths(spec, secs, a.fps)
-            bad += staging_tangent(spec, approx_cameras(spec, shots, poses, a.fps), poses, a.fps)
+            cams = approx_cameras(spec, shots, poses, a.fps)
+            bad += staging_tangent(spec, cams, poses, a.fps)
+            bad += facing_away(spec, cams, poses, a.fps)
         if a.table:
             print(f"== {spec.id} {spec.title} ({secs:.1f}s)")
             for s0, s1, typ, subs, here in pres.shots:

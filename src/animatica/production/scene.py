@@ -97,6 +97,7 @@ class Shot:
     start: float = 0.0  # filled by cut_list()
     end: float = 0.0
     note: str = ""
+    from_behind: bool = False  # a deliberate back view (a story reason): ``staging.facing_away`` skips it
 
 
 @dataclass
@@ -298,6 +299,7 @@ def scene_from_dict(d: dict[str, Any]) -> SceneSpec:
             look=tuple(s["look"]) if s.get("look") else None,
             frame_h=s.get("frame_h"),
             note=s.get("note", ""),
+            from_behind=bool(s.get("from_behind", False)),
         )
         for s in d.get("shots", [])
     ]

@@ -521,6 +521,7 @@ def main() -> int:
                     "shot": i,
                     "type": sh.type,
                     "subjects": sh.subjects,
+                    "from_behind": sh.from_behind,
                     "start": sh.start,
                     "end": round(sh.end, 3),
                     "note": sh.note,
@@ -542,6 +543,8 @@ def main() -> int:
         # staging tangents on the real cameras: a farther animal's feet on a nearer one's back or shell
         roots = {c: [(p.root[0], p.root[1], p.yaw) for p in plans[c]] for c in spec.cast if c in plans}
         cont_issues += staging.staging_tangent(spec, shot_report, roots, fps)
+        # a close or medium shot's subject seen from behind (the SC 9 climax: Kiki's back as the spring sings)
+        cont_issues += staging.facing_away(spec, shot_report, roots, fps)
         for v in cont_issues:
             print(f"  CONTINUITY {v}")
         run(

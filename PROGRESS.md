@@ -98,6 +98,15 @@ real cameras.
 `edit.mlt` (opens in Shotcut / Kdenlive) and `production_log.md`. Nothing in the film changed. **Needs you / the
 laptop**: after `--assemble` and `--trailer`, run `--deliver` (minutes, no render) and commit the folder.
 
+### Cloud build 11-19 12:36 UTC
+
+[Review](docs/reviews/2026-11-19T1236Z.md), DECISIONS #93. **Back views in face shots are now checked**
+(`staging.facing_away`): a close-up or medium shot whose subject we see from behind. On the film it finds the
+climax (Kiki's back as the spring sings, SC 9) and four more (Tembo in SC 6, 8 and a close-up of the back of his
+head in SC 9; Zuri in SC 8); seven of the nine are plain back views on the committed film. A shot that should be
+from behind can say so (`"from_behind": true`). Nothing in the film changed; still no reply from you, so the
+next runs review only unless you or the laptop push. **Needs you**: unchanged (watch the film, give notes).
+
 ## 0. Design stage — owner's top priority since 2026-11-16 23:58 (DESIGN_STAGE.md)
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.

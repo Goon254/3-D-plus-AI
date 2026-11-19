@@ -47,6 +47,9 @@ TANGENT_TOL = 0.03  # frame heights between a far foot and a near top outline th
 REL_TOL = 0.15  # ... and at most this share of the nearer animal's height on the film (small in a wide)
 MIN_HEIGHT = 0.04  # a nearer animal under this share of the frame height is too small for a tangent to read
 DEPTH_GAP_M = 0.5  # the farther animal must be at least this much farther (else they stand side by side)
+BACK_DEG = 120.0  # the camera this far round from where the body faces: we see the back and rump, not a face
+BACK_SHARE = 0.5  # ... for at least this share of a shot's samples
+FACE_SHOTS = ("cu", "mcu", "ms")  # shots that exist to show a face (wides may follow a journey from behind)
 Pose = tuple[float, float, float]  # world x, y, yaw (degrees, rest faces -Y)
 
 
@@ -155,6 +158,74 @@ def staging_tangent(
     return out
 
 
+def view_angle(pose: Pose, cam_xy: tuple[float, float] | list[float]) -> float:
+    """Degrees between where the body faces (yaw, rest faces -Y) and the direction to the camera on the
+    ground: 0 = facing the lens, 90 = profile, 180 = seen straight from behind."""
+    a = math.radians(pose[2])
+    fx, fy = math.sin(a), -math.cos(a)
+    dx, dy = cam_xy[0] - pose[0], cam_xy[1] - pose[1]
+    d = math.hypot(dx, dy)
+    if d < 1e-6:
+        return 0.0
+    return math.degrees(math.acos(max(-1.0, min(1.0, (fx * dx + fy * dy) / d))))
+
+
+def facing_away(
+    spec: SceneSpec,
+    shots: list[dict[str, Any]],
+    poses: dict[str, list[Pose]],
+    fps: int,
+    back_deg: float = BACK_DEG,
+    share: float = BACK_SHARE,
+) -> list[Violation]:
+    """A close or medium shot (``FACE_SHOTS``) whose subject we see from behind for most of the shot (the
+    film review's SC 9 climax: Kiki's back while the spring sings). Judged per subject: the only subject, any
+    subject in a close-up, or a subject who speaks on screen in the shot (a silent listener with its back to
+    us in a two-shot is an over-the-shoulder, which is fine). The body's heading is used, not the head's: a
+    head turned 30-40 degrees toward the lens does not turn a rump into a face. ``from_behind`` on a shot
+    marks a deliberate back view and skips it. One violation per shot and subject, at the shot's middle."""
+    out: list[Violation] = []
+    for sh in shots:
+        if sh.get("type") not in FACE_SHOTS or sh.get("from_behind"):
+            continue
+        subs = [c for c in sh.get("subjects", []) if c in poses and c in spec.cast]
+        f0, f1 = 1 + int(sh["start"] * fps), max(1 + int(sh["start"] * fps), int(sh["end"] * fps))
+        for c in subs:
+            speaks = any(
+                ln.who == c and not ln.offscreen and ln.start < sh["end"] - 0.3 and ln.end > sh["start"] + 0.3
+                for ln in spec.lines
+            )
+            if not (len(subs) == 1 or sh["type"] in ("cu", "mcu") or speaks):
+                continue
+            angles = []
+            for f in range(f0, f1 + 1, max(1, fps // 4)):
+                if not on_stage(spec, c, (f - 1) / fps):
+                    continue
+                u = (f - f0) / max(1, f1 - f0)
+                loc = [
+                    a + (b - a) * u for a, b in zip(sh["location"], sh.get("end_location", sh["location"]))
+                ]
+                angles.append(view_angle(poses[c][min(len(poses[c]) - 1, f - 1)], loc[:2]))
+            if not angles:
+                continue
+            back = [x for x in angles if x >= back_deg]
+            if len(back) / len(angles) >= share:
+                med = sorted(angles)[len(angles) // 2]
+                why = "speaks" if speaks else ("close-up" if sh["type"] != "ms" else "the shot's subject")
+                out.append(
+                    Violation(
+                        spec.id,
+                        "facing_away",
+                        c,
+                        round((sh["start"] + sh["end"]) / 2, 2),
+                        f"shot {sh.get('shot', '?')} ({sh['type']}, {why}): seen from behind for "
+                        f"{100 * len(back) / len(angles):.0f} % of the shot (median {med:.0f} degrees from "
+                        f"the lens); swing the camera round or turn the actor, or mark the shot from_behind",
+                    )
+                )
+    return out
+
+
 def poses_from_paths(spec: SceneSpec, seconds: float, fps: int) -> dict[str, list[Pose]]:
     """Per actor, per frame: root ``(x, y, yaw)`` from the scheduled paths (the gait follows them)."""
     n = int(seconds * fps) + 1
@@ -237,6 +308,7 @@ def approx_cameras(
                 "shot": i,
                 "type": sh.type,
                 "subjects": sh.subjects,
+                "from_behind": sh.from_behind,
                 "start": sh.start,
                 "end": round(sh.end, 3),
                 "end_location": [round(v, 4) for v in end_loc],

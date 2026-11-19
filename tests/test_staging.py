@@ -125,3 +125,71 @@ def test_shot_move_pushes_in_and_orbits_alternately():
     assert math.dist(a, aim) == pytest.approx(0.95 * math.dist(loc, aim))
     assert a[0] == pytest.approx(-b[0]) and a[0] != 0.0  # opposite orbits on alternate shots
     assert math.dist(shot_move(loc, aim, "cu", 3.0, 0), aim) == pytest.approx(0.92 * math.dist(loc, aim))
+
+
+def _solo(yaw: float, shot_type: str = "ms", from_behind: bool = False, lines: list | None = None):
+    """Tembo at the origin facing ``yaw`` (rest faces -Y, toward ``_cam``), Neema beside him, one shot."""
+    from animatica.production.scene import scene_from_dict
+
+    d = _herd(
+        {
+            "tembo": {"species": "elephant", "at": [0.0, 0.0], "yaw": yaw},
+            "neema": {"species": "giraffe", "at": [2.0, 0.0], "yaw": 180},
+        }
+    )
+    d["lines"] = lines or []
+    spec = scene_from_dict(d)
+    for i, ln in enumerate(spec.lines):  # schedule() is not run: lay the lines out by hand
+        ln.start, ln.end = 0.2 + 2.0 * i, 1.8 + 2.0 * i
+    cam = {**_cam(1.0), "type": shot_type, "subjects": ["tembo"], "from_behind": from_behind}
+    return spec, cam
+
+
+def test_a_close_or_medium_shot_of_a_back_is_caught_and_a_face_or_profile_is_not():
+    from animatica.production.staging import facing_away, poses_from_paths, view_angle
+
+    assert view_angle((0.0, 0.0, 0.0), (0.0, -4.0)) == pytest.approx(0.0)  # rest faces -Y: the lens
+    assert view_angle((0.0, 0.0, 90.0), (0.0, -4.0)) == pytest.approx(90.0)
+    assert view_angle((0.0, 0.0, 180.0), (0.0, -4.0)) == pytest.approx(180.0)
+
+    def bad(yaw: float, **kw) -> list:
+        spec, cam = _solo(yaw, **kw)
+        return facing_away(spec, [cam], poses_from_paths(spec, 2.0, 24), 24)
+
+    assert [(v.kind, v.who) for v in bad(180)] == [("facing_away", "tembo")]
+    assert "100 %" in bad(180)[0].detail
+    assert bad(150) and bad(-130)  # a three-quarter back view either way round
+    assert bad(0) == [] and bad(90) == [] and bad(110) == []  # face, profile, a three-quarter front
+    assert bad(180, shot_type="ws") == []  # a wide may follow a journey from behind
+    assert len(bad(180, shot_type="cu")) == 1
+    assert bad(180, from_behind=True) == []  # a deliberate back view (a story reason)
+
+
+def test_a_speaker_with_its_back_to_us_is_caught_and_a_silent_listener_in_a_two_shot_is_not():
+    from animatica.production.staging import facing_away, poses_from_paths
+
+    spec, cam = _solo(180, lines=[{"who": "neema", "text": "Look at the sky!"}])
+    two = {**cam, "subjects": ["tembo", "neema"]}
+    # Tembo listens with his back to us (an over-the-shoulder); Neema faces away from the -Y camera too
+    # (yaw 180) and she speaks: only she is caught
+    assert [v.who for v in facing_away(spec, [two], poses_from_paths(spec, 2.0, 24), 24)] == ["neema"]
+    spec, cam = _solo(180, lines=[{"who": "tembo", "text": "Where is the water?"}])
+    two = {**cam, "subjects": ["tembo", "neema"]}
+    assert sorted(v.who for v in facing_away(spec, [two], poses_from_paths(spec, 2.0, 24), 24)) == ["tembo"]
+
+
+def test_the_film_finds_kiki_from_behind_in_the_sc9_climax():
+    """The 00:36 film review's climax note (4:36-4:48): Kiki is seen from behind as the spring sings."""
+    from pathlib import Path
+
+    from animatica.production.continuity import actor_speeds
+    from animatica.production.scene import cut_list, load_scenes, schedule, split_long
+    from animatica.production.staging import approx_cameras, facing_away, poses_from_paths
+
+    spec = load_scenes(Path(__file__).resolve().parents[1] / "films" / "savannah" / "07_scenes.json")["sc09"]
+    secs = schedule(spec, [0.6 + 0.36 * len(ln.text.split()) for ln in spec.lines], actor_speeds(spec))
+    shots = split_long(cut_list(spec, secs), secs)
+    poses = poses_from_paths(spec, secs, 24)
+    bad = facing_away(spec, approx_cameras(spec, shots, poses, 24), poses, 24)
+    kiki = [v for v in bad if v.who == "kiki"]
+    assert len(kiki) >= 3 and all(v.t > secs * 0.6 for v in kiki[1:])  # the run of climax shots near the end
