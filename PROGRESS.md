@@ -61,6 +61,16 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud review of the final film (11-19 00:36 UTC, reviewer only)
+
+[Review](docs/reviews/2026-11-19T0036Z.md): **7/10, not done yet**. It is a watchable five-minute film with a real
+story (8), and golden hour, the opening and the sunset are the best images so far. What holds it back: Zuri stands
+on Bibi Kobe's shell in the last scene (nothing checks for animals walking into each other); the climax shows Kiki
+from behind in a washed-out pale-green glow with a bright white log end; the far mountains read as pillows; Kiki's
+sentinel reads as a kangaroo; the web film peaks at +0.5 dBFS (loudness itself is right at −14 LUFS). Voices and
+music couldn't be heard from the cloud. Scores: story 8, design 7, motion 7, visuals 7, mix 7. Fixes are queued
+under P0-FILM for after you've watched it.
+
 ## 0. Design stage — owner's top priority since 2026-11-16 23:58 (DESIGN_STAGE.md)
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
