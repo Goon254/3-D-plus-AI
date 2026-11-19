@@ -12,6 +12,9 @@ module makes presence explicit and checks it:
 * **Lines.** A speaker must be on stage while speaking, unless the line is ``offscreen`` (heard, not seen); an
   off-screen line must not cut to its speaker.
 * **Acting.** Gestures and reactions by an actor who is off stage are mistakes.
+* **Nobody walks into anybody.** Two on-stage animals' body footprints (an oriented box per species, measured
+  on the base mesh, turned to the heading the gait would give) must not overlap (:func:`actor_overlap`; the
+  final film had Zuri's forelegs standing on Bibi Kobe's shell in SC 10).
 * **Off stage means out of sight.** While off stage an actor must be away from the set
   (``OFFSTAGE_M`` from every action circle), and, once the cameras exist, outside every frame
   (:func:`in_frame`, used by ``scripts/savannah_scene.py`` on the real camera positions).
@@ -138,6 +141,7 @@ def check_scene(spec: SceneSpec, shots: list[Shot], seconds: float) -> tuple[lis
                 )
             )
     out += inside_set(spec, seconds)
+    out += actor_overlap(spec, seconds)
     return out, pres
 
 
@@ -176,6 +180,145 @@ def inside_set(spec: SceneSpec, seconds: float, step: float = 0.25) -> list[Viol
                     )
                     break
             t += step
+    return out
+
+
+TOUCH_M = 0.03  # footprints may graze (a hoof beside a flank); deeper than this is one animal inside another
+
+
+@dataclass(frozen=True)
+class Footprint:
+    """A species' body footprint in its root frame (faces -Y, +X is its left): ``front`` (the nose, < 0) to
+    ``back`` (the rump, > 0), ``half_w`` to each side. Tails, ears and eyes don't count; neither does anything
+    above the back (a giraffe's head over a tortoise is a composition, not a collision)."""
+
+    front: float
+    back: float
+    half_w: float
+
+
+_FOOTPRINTS: dict[str, Footprint] = {}
+
+
+def footprint(species: str) -> Footprint:
+    """Measured on the built base mesh: the body's metaball elements (centre +- radius x size) and any
+    other body mesh (the tortoise's shell), up to the top of the torso."""
+    if species in _FOOTPRINTS:
+        return _FOOTPRINTS[species]
+    from animatica.creatures.build import build_creature
+    from animatica.creatures.species import SPECIES
+
+    sp = SPECIES[species]
+    ops, meta = build_creature("fp", sp, at=(0.0, 0.0), yaw=0.0)
+    top = sp.torso_at[2] + sp.torso[2] / 2  # root frame: the root sits at body_z
+    boxes: list[tuple[float, float, float]] = []  # (x, y, r) in the root frame
+    for o in ops:
+        if o["op"] == "create_metaball_mesh" and o["id"] == "fp_body":
+            for e in o["elements"]:
+                (x, y, z), r = e["co"], e["radius"]
+                sx, sy, sz = e.get("size", (1.0, 1.0, 1.0))
+                if z - r * sz <= top:
+                    boxes += [(abs(x) + r * sx, y - r * sy, 0.0), (abs(x) + r * sx, y + r * sy, 0.0)]
+        elif o["op"] == "create_mesh" and o["id"] == "fp_shell":
+            lx, ly, lz = o.get("location", (0.0, 0.0, 0.0))
+            boxes += [(abs(v[0] + lx), v[1] + ly, 0.0) for v in o["vertices"] if v[2] + lz <= top]
+    if not boxes:  # a body style without metaballs: the torso box
+        boxes = [(sp.torso[0] / 2, sp.torso_at[1] - sp.torso[1] / 2, 0.0)]
+        boxes.append((sp.torso[0] / 2, sp.torso_at[1] + sp.torso[1] / 2, 0.0))
+    fp = Footprint(
+        front=min(b[1] for b in boxes), back=max(b[1] for b in boxes), half_w=max(b[0] for b in boxes)
+    )
+    _FOOTPRINTS[species] = fp
+    return fp
+
+
+def _corners(fp: Footprint, xy: tuple[float, float], yaw: float) -> list[tuple[float, float]]:
+    a = math.radians(yaw)
+    c, s = math.cos(a), math.sin(a)
+    out = []
+    for lx, ly in (
+        (-fp.half_w, fp.front),
+        (fp.half_w, fp.front),
+        (fp.half_w, fp.back),
+        (-fp.half_w, fp.back),
+    ):
+        out.append((xy[0] + lx * c - ly * s, xy[1] + lx * s + ly * c))  # gait._rot: root frame -> world
+    return out
+
+
+def box_overlap(a: list[tuple[float, float]], b: list[tuple[float, float]]) -> float:
+    """How deep two convex quads overlap (separating axis theorem): 0 if they don't touch, else the
+    smallest push along any edge normal that would separate them (metres)."""
+    depth = math.inf
+    for poly in (a, b):
+        for i in range(len(poly)):
+            (x0, y0), (x1, y1) = poly[i], poly[(i + 1) % len(poly)]
+            nx, ny = y0 - y1, x1 - x0
+            n = math.hypot(nx, ny) or 1.0
+            nx, ny = nx / n, ny / n
+            pa = [p[0] * nx + p[1] * ny for p in a]
+            pb = [p[0] * nx + p[1] * ny for p in b]
+            d = min(max(pa), max(pb)) - max(min(pa), min(pb))
+            if d <= 0:
+                return 0.0
+            depth = min(depth, d)
+    return depth
+
+
+def headings(spec: SceneSpec, cid: str, seconds: float, step: float = SAMPLE_S) -> list[float]:
+    """The actor's yaw (degrees, rest faces -Y) every ``step`` s, the way the gait plan turns it: along the
+    path while moving, held while standing; before the first move it already faces the first move."""
+    a = spec.cast[cid]
+    n = int(seconds / step) + 1
+    if not a.path or len(a.path) < 2:
+        return [a.yaw] * n
+    (x0, y0), (x1, y1) = a.path[0][1:3], a.path[1][1:3]
+    last = math.degrees(math.atan2(x1 - x0, -(y1 - y0))) if (x0, y0) != (x1, y1) else a.yaw
+    out, dt = [], 0.05
+    for k in range(n):
+        t = k * step
+        p, q = position(spec, cid, max(0.0, t - dt)), position(spec, cid, t + dt)
+        dx, dy = q[0] - p[0], q[1] - p[1]
+        if math.hypot(dx, dy) / (2 * dt) > 0.02:
+            last = math.degrees(math.atan2(dx, -dy))
+        out.append(last)
+    return out
+
+
+def actor_overlap(spec: SceneSpec, seconds: float, step: float = SAMPLE_S) -> list[Violation]:
+    """Two on-stage animals whose body footprints overlap by more than ``TOUCH_M`` (one walks into, or
+    stands on, the other). A rider (``ride``) and the animal it rides are exempt. One violation per pair:
+    the first moment, with the deepest overlap seen."""
+    ids = [c for c, a in spec.cast.items() if not a.ride]
+    n = int(seconds / step) + 1
+    yaw = {c: headings(spec, c, seconds, step) for c in ids}
+    fps = {c: footprint(spec.cast[c].species) for c in ids}
+    out = []
+    for i, c1 in enumerate(ids):
+        for c2 in ids[i + 1 :]:
+            first, worst = None, 0.0
+            for k in range(n):
+                t = k * step
+                if not (on_stage(spec, c1, t) and on_stage(spec, c2, t)):
+                    continue
+                p1, p2 = position(spec, c1, t), position(spec, c2, t)
+                reach = max(-fps[c1].front, fps[c1].back) + max(-fps[c2].front, fps[c2].back) + 1.0
+                if math.hypot(p1[0] - p2[0], p1[1] - p2[1]) > reach:
+                    continue
+                d = box_overlap(_corners(fps[c1], p1, yaw[c1][k]), _corners(fps[c2], p2, yaw[c2][k]))
+                if d > TOUCH_M:
+                    first = t if first is None else first
+                    worst = max(worst, d)
+            if first is not None:
+                out.append(
+                    Violation(
+                        spec.id,
+                        "actor_overlap",
+                        f"{c1}+{c2}",
+                        first,
+                        f"bodies overlap (deepest {worst:.2f} m)",
+                    )
+                )
     return out
 
 

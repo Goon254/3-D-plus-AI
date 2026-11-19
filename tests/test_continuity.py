@@ -3,6 +3,8 @@ the start of SC 6. Presence is now explicit (enter / exit / story exits) and che
 
 import math
 
+import pytest
+
 from animatica.production.continuity import check_scene, check_story, in_frame
 from animatica.production.scene import cut_list, scene_from_dict, schedule
 
@@ -133,3 +135,73 @@ def test_an_animal_walking_into_a_termite_mound_is_caught():
     assert [v.kind for v in inside_set(spec, 6.0)] == ["inside_set"]
     d["cast"]["kiki"]["path"][-1] = [3.0, 0.0, 2.0]  # stops in front of it
     assert not inside_set(scene_from_dict(d), 6.0)
+
+
+def _herd(cast: dict) -> dict:
+    return {"id": "scx", "tod": "midday", "seconds": 8, "layout": {}, "cast": cast, "lines": [], "shots": []}
+
+
+def test_footprints_are_measured_on_the_base_meshes():
+    from animatica.production.continuity import footprint
+
+    tembo, kiki, bibi = footprint("elephant"), footprint("meerkat"), footprint("tortoise")
+    assert tembo.front < 0 < tembo.back and kiki.front < 0 < kiki.back  # nose toward -Y
+    assert tembo.back - tembo.front > 1.4 and tembo.half_w > 0.4  # a calf elephant, not a point
+    assert kiki.back - kiki.front < 0.5 and kiki.half_w < 0.12
+    assert footprint("giraffe").back - footprint("giraffe").front < 2.0  # the head up high doesn't count
+    assert 0.6 < bibi.back - bibi.front < 1.0  # the shell
+
+
+def test_animals_walking_into_each_other_are_caught():
+    """Final film 11-18: path centres came within 0.20 m (Tembo and Zuri, SC 3); nothing checked actors."""
+    from animatica.production.continuity import actor_overlap
+    from animatica.production.scene import scene_from_dict
+
+    cast = {
+        "tembo": {"species": "elephant", "at": [0.0, 0.0], "path": [[0.5, 0.0, 0.0], [6.0, 4.0, 0.0]]},
+        "zuri": {"species": "zebra", "at": [6.0, 0.2], "path": [[0.5, 6.0, 0.2], [6.0, 4.6, 0.2]]},
+    }
+    bad = actor_overlap(scene_from_dict(_herd(cast)), 8.0)
+    assert [(v.kind, v.who) for v in bad] == [("actor_overlap", "tembo+zuri")]
+    assert 4.0 < bad[0].t < 6.5  # they meet near the end of the walk
+    # the same walk a body-width apart, side by side, is fine
+    cast["zuri"]["path"] = [[0.5, 6.0, 1.3], [6.0, 4.6, 1.3]]
+    cast["zuri"]["at"] = [6.0, 1.3]
+    assert actor_overlap(scene_from_dict(_herd(cast)), 8.0) == []
+
+
+def test_heading_matters_and_a_rider_is_exempt():
+    from animatica.production.continuity import actor_overlap
+    from animatica.production.scene import scene_from_dict
+
+    # a zebra 0.9 m beside a tortoise clears it standing side on; turned to face it (walking at it) she
+    # stands on the shell
+    side = {
+        "zuri": {"species": "zebra", "at": [0.0, 0.9], "yaw": 90},
+        "bibi_kobe": {"species": "tortoise", "at": [0.0, 0.0], "yaw": 90},
+    }
+    assert actor_overlap(scene_from_dict(_herd(side)), 8.0) == []
+    side["zuri"]["path"] = [[0.0, 0.0, 2.5], [2.0, 0.0, 0.9]]
+    side["zuri"]["at"] = [0.0, 2.5]
+    assert [v.who for v in actor_overlap(scene_from_dict(_herd(side)), 8.0)] == ["zuri+bibi_kobe"]
+    # Kiki riding Neema shares her spot all scene: no violation
+    ride = {
+        "neema": {"species": "giraffe", "at": [0.0, 0.0], "path": [[0.0, 0.0, 0.0], [6.0, 4.0, 0.0]]},
+        "kiki": {
+            "species": "meerkat",
+            "at": [0.0, 0.0],
+            "path": [[0.0, 0.0, 0.0], [6.0, 4.0, 0.0]],
+            "ride": "neema",
+        },
+    }
+    assert actor_overlap(scene_from_dict(_herd(ride)), 8.0) == []
+
+
+def test_box_overlap_depth():
+    from animatica.production.continuity import box_overlap
+
+    sq = [(0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)]
+    assert box_overlap(sq, [(x + 0.8, y) for x, y in sq]) == pytest.approx(0.2)
+    assert box_overlap(sq, [(x + 1.2, y) for x, y in sq]) == 0.0
+    diamond = [(1.6, 0.5), (2.1, 0.0), (2.6, 0.5), (2.1, 1.0)]  # beside the square's corner, not touching
+    assert box_overlap(sq, diamond) == 0.0

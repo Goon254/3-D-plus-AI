@@ -30,6 +30,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from savannah_animatic import FONT, TITLE, esc, join_av  # noqa: E402
 
+from animatica.audio.mux import loudness, master  # noqa: E402
 from animatica.production.scene import load_scenes  # noqa: E402
 
 FILM = ROOT / "films" / "savannah"
@@ -109,44 +110,16 @@ def render(ids: list[str], force: bool) -> int:
 
 
 def loudnorm(src: Path, dst: Path) -> dict:
-    """Two-pass EBU R128 normalisation of ``src``'s audio to -14 LUFS (true peak -1 dB); the video is copied."""
-    target = f"I={LUFS}:TP=-1.0:LRA=11"
-    r = subprocess.run(
-        [
-            "ffmpeg",
-            "-hide_banner",
-            "-i",
-            str(src),
-            "-af",
-            f"loudnorm={target}:print_format=json",
-            "-f",
-            "null",
-            "-",
-        ],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    m = json.loads(r.stderr[r.stderr.rindex("{") : r.stderr.rindex("}") + 1])
-    ff(
-        "-i",
-        str(src),
-        "-c:v",
-        "copy",
-        "-af",
-        f"loudnorm={target}:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:"
-        f"measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true",
-        "-c:a",
-        "aac",
-        "-b:a",
-        "192k",
-        "-ar",
-        "48000",
-        "-movflags",
-        "+faststart",
-        str(dst),
-    )
-    return {"input_lufs": float(m["input_i"]), "target_lufs": LUFS}
+    """Two-pass EBU R128 normalisation of ``src``'s audio to -14 LUFS with a true-peak limiter, measured on the
+    encoded file (``animatica.audio.mux.master``: at or under -1 dBTP); the video is copied."""
+    got = master(src, dst, lufs=LUFS)
+    return {
+        "input_lufs": got["input_lufs"],
+        "target_lufs": LUFS,
+        "lufs": got.get("i"),
+        "true_peak_dbtp": got.get("tp"),
+        "limit_db": got["limit_db"],
+    }
 
 
 def cards(src: Path, dst: Path, secs: float, title_s: float = 5.0, end_s: float = 5.0) -> None:
@@ -180,8 +153,10 @@ def cards(src: Path, dst: Path, secs: float, title_s: float = 5.0, end_s: float 
     )
 
 
-def web_copy(src: Path, dst: Path, height: int = 540, audio_k: int = 128) -> float:
-    """A copy at most ``MAX_MB``: two-pass x264 at the bitrate that fits, scaled to ``height``."""
+def web_copy(src: Path, dst: Path, height: int = 540, audio_k: int = 192) -> float:
+    """A copy at most ``MAX_MB``: two-pass x264 at the bitrate that fits, scaled to ``height``. The mastered
+    audio is copied, not re-encoded (a second AAC pass added overs: the 11-18 web film peaked at +0.5 dBTP);
+    ``audio_k`` is its bitrate, kept out of the video budget."""
     dst.parent.mkdir(parents=True, exist_ok=True)
     secs = duration(src)
     total_k = MAX_MB * 8 * 1024 / secs
@@ -216,9 +191,7 @@ def web_copy(src: Path, dst: Path, height: int = 540, audio_k: int = 128) -> flo
         "-pass",
         "2",
         "-c:a",
-        "aac",
-        "-b:a",
-        f"{audio_k}k",
+        "copy",
         "-movflags",
         "+faststart",
         str(dst),
@@ -249,8 +222,10 @@ def assemble() -> dict:
     cards(joined, titled, sum(secs))
     film = OUT / "film.mp4"
     loud = loudnorm(titled, film)
-    mb = web_copy(film, SHOW / "savannah-film" / "film_web.mp4")
+    web = SHOW / "savannah-film" / "film_web.mp4"
+    mb = web_copy(film, web)
     rep = {"scenes": ids, "seconds": round(sum(secs), 2), "film": str(film), "web_mb": round(mb, 1), **loud}
+    rep["web_true_peak_dbtp"] = loudness(web).get("tp")
     (OUT / "film.json").write_text(json.dumps(rep, indent=1) + "\n", encoding="utf-8")
     return rep
 
@@ -325,8 +300,10 @@ def trailer() -> dict:
     full = OUT / "trailer.mp4"
     loud = loudnorm(joined, full)
     secs = duration(full)
-    mb = web_copy(full, SHOW / "savannah-trailer" / "trailer_web.mp4", height=720)
+    web = SHOW / "savannah-trailer" / "trailer_web.mp4"
+    mb = web_copy(full, web, height=720)
     rep = {"cuts": TRAILER, "seconds": round(secs, 2), "web_mb": round(mb, 1), **loud}
+    rep["web_true_peak_dbtp"] = loudness(web).get("tp")
     (OUT / "trailer.json").write_text(json.dumps(rep, indent=1) + "\n", encoding="utf-8")
     if not 60 <= secs <= 90:
         print(f"warning: trailer is {secs:.1f} s (want 60-90)")

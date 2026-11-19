@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -90,8 +92,6 @@ def probe(path: str | Path) -> dict:
         text=True,
         check=True,
     )
-    import json
-
     return json.loads(out.stdout)
 
 
@@ -240,3 +240,119 @@ def overlay_title(
         timeout=1800,
     )
     return Path(out)
+
+
+# ---- mastering: loudness and true peak (cloud review 11-19: the web film peaked at +0.5 dBTP)
+
+TP_CEILING_DB = -1.0  # delivery spec: true peak at or under -1 dBTP, measured on the ENCODED file
+LIMIT_DB = -2.0  # the limiter's ceiling: 1 dB of margin for the AAC encoder's inter-sample overs
+
+
+def true_peak_limiter(limit_db: float = LIMIT_DB, oversample: int = 4, rate: int = 48000) -> str:
+    """An ffmpeg filter chain that holds the true peak under ``limit_db``: a look-ahead limiter run at
+    ``oversample`` x the rate (so it sees inter-sample peaks), then back to ``rate``. Goes after loudnorm,
+    whose own TP target is not guaranteed (its linear mode falls back to dynamic, and AAC adds overs)."""
+    lin = 10 ** (limit_db / 20)
+    return (
+        f"aresample={rate * oversample},alimiter=limit={lin:.4f}:level=false:attack=1:release=80:latency=true,"
+        f"aresample={rate}"
+    )
+
+
+def parse_ebur128(stderr: str) -> dict[str, float]:
+    """The summary of ffmpeg's ``ebur128=peak=true`` filter: integrated loudness ``i`` (LUFS), loudness range
+    ``lra`` (LU) and true peak ``tp`` (dBTP)."""
+    s = stderr[stderr.rindex("Summary:") :]
+    out = {}
+    for key, pat in (
+        ("i", r"I:\s+(-?[\d.]+|-inf) LUFS"),
+        ("lra", r"LRA:\s+(-?[\d.]+) LU"),
+        ("tp", r"Peak:\s+(-?[\d.]+|-inf) dBFS"),
+    ):
+        m = re.search(pat, s)
+        if m:
+            out[key] = float(m.group(1))
+    return out
+
+
+def loudness(path: str | Path) -> dict[str, float]:
+    """Measure a file's audio as delivered (EBU R128 + true peak): ``{"i", "lra", "tp"}``."""
+    r = subprocess.run(
+        [
+            ffmpeg_bin(),
+            "-hide_banner",
+            "-nostats",
+            "-i",
+            str(path),
+            "-af",
+            "ebur128=peak=true",
+            "-f",
+            "null",
+            "-",
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return parse_ebur128(r.stderr)
+
+
+def master(
+    src: str | Path,
+    dst: str | Path,
+    lufs: float = -14.0,
+    out_args: tuple[str, ...] = ("-c:a", "aac", "-b:a", "192k", "-ar", "48000"),
+    ceiling_db: float = TP_CEILING_DB,
+    tries: int = 4,
+) -> dict[str, float]:
+    """Two-pass loudnorm to ``lufs``, then the true-peak limiter, encoded with ``out_args`` (any video stream
+    is copied), and **measured on the encoded file**: while its true peak is over ``ceiling_db`` the limiter
+    is lowered by the excess and the file is encoded again. Returns the final measurement plus the
+    ``limit_db`` used and the input's loudness."""
+    t = f"I={lufs}:TP={ceiling_db}:LRA=11"
+    r = subprocess.run(
+        [
+            ffmpeg_bin(),
+            "-hide_banner",
+            "-i",
+            str(src),
+            "-af",
+            f"loudnorm={t}:print_format=json",
+            "-f",
+            "null",
+            "-",
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    m = json.loads(r.stderr[r.stderr.rindex("{") : r.stderr.rindex("}") + 1])
+    norm = (
+        f"loudnorm={t}:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:"
+        f"measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true"
+    )
+    limit = LIMIT_DB
+    got: dict[str, float] = {}
+    for _ in range(tries):
+        subprocess.run(
+            [
+                ffmpeg_bin(),
+                "-v",
+                "error",
+                "-y",
+                "-i",
+                str(src),
+                "-c:v",
+                "copy",
+                "-af",
+                f"{norm},{true_peak_limiter(limit)}",
+            ]
+            + list(out_args)
+            + ["-movflags", "+faststart", str(dst)],
+            check=True,
+        )
+        got = loudness(dst)
+        if got.get("tp", 0.0) <= ceiling_db:
+            break
+        limit -= got["tp"] - ceiling_db + 0.3
+    return {**got, "limit_db": round(limit, 2), "input_lufs": float(m["input_i"])}
