@@ -220,6 +220,46 @@ def _mane_reach(sp: Species, crest: list[list[float]]) -> float:
     return max(0.0, 1.0 - gap / length)
 
 
+def dome_shoulder(vertices: list[list[float]] | list[tuple[float, float, float]], bins: int = 40) -> float:
+    """How high a shell's sides stay at full width, as a share of its height: cut the mesh into ``bins``
+    horizontal slices, take each slice's outline radius (top view, width scaled to the length so an oval counts
+    as round), and return the height of the highest slice still at >= 95 % of the widest. A ball is 0.65, a
+    half-sphere on a flat plate 0.30 (any dome scaled taller or flatter keeps its value)."""
+    xs = [v[0] for v in vertices]
+    ys = [v[1] for v in vertices]
+    zs = [v[2] for v in vertices]
+    z0, z1 = min(zs), max(zs)
+    length, width = max(ys) - min(ys), max(xs) - min(xs)
+    k = length / max(width, 1e-9)
+    ext = [0.0] * (bins + 1)
+    for x, y, z in zip(xs, ys, zs, strict=True):
+        b = round((z - z0) / max(z1 - z0, 1e-9) * bins)
+        ext[b] = max(ext[b], math.hypot(x * k, y))
+    widest = max(ext)
+    return max(i for i, e in enumerate(ext) if e >= 0.95 * widest) / bins
+
+
+def shell_shape(sp: Species) -> dict[str, float] | None:
+    """The carapace as built (``creatures.build`` -> ``creatures.shell.carapace``), measured on the mesh:
+    ``shoulder`` (:func:`dome_shoulder`: a dome curves in just above its rim, a ball or barrel keeps its full
+    width up its sides), ``height_length`` and ``width_length`` (the whole shell with the plastron). ``None``
+    without a shell. Bibi Kobe's shell read as a ball (cloud reviews 11-17 06:36 to 11-19) while every check
+    passed."""
+    if sp.shell is None:
+        return None
+    from animatica.creatures.build import build_creature  # a lazy import: build imports nothing from design
+
+    ops = build_creature("m", sp)[0]
+    shell = next(o for o in ops if str(o.get("id", "")).endswith("_shell"))
+    vs = shell["vertices"]
+    length = max(v[1] for v in vs) - min(v[1] for v in vs)
+    return {
+        "shoulder": round(dome_shoulder(vs), 3),
+        "height_length": round((max(v[2] for v in vs) - min(v[2] for v in vs)) / length, 3),
+        "width_length": round((max(v[0] for v in vs) - min(v[0] for v in vs)) / length, 3),
+    }
+
+
 def materials(sp: Species) -> dict[str, Any]:
     """Coat/part luminances, pattern contrast, and dark parts that may read as flat black blocks.
 

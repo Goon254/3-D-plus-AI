@@ -470,3 +470,32 @@ def test_eye_and_brow_outline_checks_pick_the_near_eye_and_the_worst_brow():
     assert not checks["face:eye_outline"].passed and checks["face:brow_outline"].passed
     # a render made before the check has no outline: not scored
     assert not any(c.id.endswith("_outline") for c in score(b, sp, {"floating_parts": 0}).checks)
+
+
+def test_a_ball_shell_is_a_soft_failure_and_a_dome_passes(monkeypatch):
+    """Bibi Kobe's shell read as a ball in every cloud review from 11-17 06:36 while every check passed."""
+    import math
+
+    from animatica.creatures import shell as shell_mod
+    from animatica.design.measure import dome_shoulder, shell_shape
+
+    def sphere(rows: int) -> list[list[float]]:  # rows = 60: a whole ball; 30: its top half on a flat plate
+        return [
+            [math.sin(t) * math.cos(p), math.sin(t) * math.sin(p), math.cos(t)]
+            for t in (i * math.pi / 60 for i in range(rows + 1))
+            for p in (j * math.pi / 30 for j in range(60))
+        ]
+
+    assert dome_shoulder(sphere(60)) == pytest.approx(0.65)
+    assert dome_shoulder(sphere(30)) == pytest.approx(0.3)
+    assert dome_shoulder([[x, y, 1.7 * z] for x, y, z in sphere(30)]) == pytest.approx(
+        0.3
+    )  # taller, same dome
+    assert shell_shape(SPECIES["zebra"]) is None
+
+    brief, t = load_brief("bibi_kobe"), SPECIES["tortoise"]
+    ball = {c.id: c for c in score(brief, t).checks}["shape:shell_dome"]
+    assert not ball.passed and not ball.hard and ball.value["shoulder"] > 0.5
+    monkeypatch.setattr(shell_mod, "DOME", 1.6)  # gentler sides, a rounder top
+    dome = {c.id: c for c in score(brief, replace(t, shell=((0.46, 0.58, 0.38), (0.0, 0.0, 0.07)))).checks}
+    assert dome["shape:shell_dome"].passed, dome["shape:shell_dome"].message

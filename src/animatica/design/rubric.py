@@ -33,7 +33,7 @@ from typing import Any
 from animatica.creatures.species import Species
 from animatica.design.brief import Brief
 from animatica.design.fingerprint import staleness
-from animatica.design.measure import features, hoof_shape, mane_shape, materials, proportions
+from animatica.design.measure import features, hoof_shape, mane_shape, materials, proportions, shell_shape
 from animatica.design.variants import Morph
 
 READY_SCORE = 9.0
@@ -48,6 +48,8 @@ EYE_OUTLINE_MAX = 0.08  # share of the near eye drawn outside the head's outline
 BROW_OUTLINE_MAX = 0.25  # share of a brow drawn outside the head's outline, any sheet view
 HOOF_TAPER_MAX = 0.85  # coronet width / sole width
 HOOF_WALL_MAX = 72.0  # front wall angle from the ground, degrees
+# shells (11-19): the full-width band of the sides; a ball 0.65, a half-dome 0.30, Bibi Kobe v3 0.53
+SHELL_SHOULDER_MAX = 0.4
 
 # metric -> morph field that changes it, and the exponent of the response (area metrics move as k^2)
 LEVERS: dict[str, tuple[str, float]] = {
@@ -174,8 +176,8 @@ def _design_checks(brief: Brief, sp: Species) -> list[Check]:
 
 
 def _part_shape_checks(sp: Species) -> list[Check]:
-    """Manes and hooves, measured on the meshes the build makes (:func:`~animatica.design.measure.mane_shape`,
-    :func:`~animatica.design.measure.hoof_shape`). Zuri v2's board mane and puck hooves were caught only by eye
+    """Manes, hooves and shells, measured on the meshes the build makes (:func:`~animatica.design.measure.mane_shape`,
+    :func:`~animatica.design.measure.hoof_shape`, :func:`~animatica.design.measure.shell_shape`). Zuri v2's board mane and puck hooves were caught only by eye
     (review 11-17 15:36); a fixed v3's saw-tooth crest too (review 11-18 03:36)."""
     out: list[Check] = []
     mane = mane_shape(sp)
@@ -252,6 +254,23 @@ def _part_shape_checks(sp: Species) -> list[Check]:
                 f"{hoof['wall_deg']:.0f} deg from the ground (max {HOOF_WALL_MAX:g})"
                 + ("" if ok else ": flat-walled pucks, not hooves"),
                 hoof,
+            )
+        )
+    shell = shell_shape(sp)
+    if shell is not None:
+        ok = shell["shoulder"] <= SHELL_SHOULDER_MAX
+        out.append(
+            Check(
+                "shape:shell_dome",
+                "shape",
+                ok,
+                False,
+                0.5,
+                0.5 * ok,
+                f"the shell keeps its full width up to {shell['shoulder']:.0%} of its height "
+                f"(max {SHELL_SHOULDER_MAX:.0%})"
+                + ("" if ok else ": a ball or barrel; a tortoise's dome curves in just above the rim"),
+                shell,
             )
         )
     return out

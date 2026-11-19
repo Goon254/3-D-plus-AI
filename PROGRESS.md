@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-19 18:36 UTC
+
+[Review](docs/reviews/2026-11-19T1836Z.md), DECISIONS #95. No reply from you yet, so no scene or design was touched. One eye-only catch became a check: **Bibi Kobe's ball-like shell is now measured** (`shape:shell_dome`, soft): her shell keeps its full width up half its height (0.53; a dome is ≤ 0.40), a number for the next design pass. Scores unchanged (film 7; Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9).
+
 ### Cloud review of the final film (11-19 00:36 UTC, reviewer only)
 
 [Review](docs/reviews/2026-11-19T0036Z.md): **7/10, not done yet**. It is a watchable five-minute film with a real
