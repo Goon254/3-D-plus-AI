@@ -45,7 +45,10 @@ MANE_STAND_MAX = 0.6  # crest height above the skin / the neck's depth there
 MANE_JAG_MAX = 0.2  # biggest crest step between neighbouring stations / the tallest crest
 MANE_REACH_MIN = 0.85  # share of withers -> poll the mane's crest must cover (a zebra's runs to the poll)
 EYE_OUTLINE_MAX = 0.08  # share of the near eye drawn outside the head's outline, any sheet view (Tembo: 0.02)
-BROW_OUTLINE_MAX = 0.25  # share of a brow drawn outside the head's outline, any sheet view
+BROW_OUTLINE_MAX = 0.25
+# largest pale patch closed all round by a striped/banded coat's marking in the front or back view, share of
+# the figure: Zuri's baseline bullseyes 2.6 % (chest) and 15 % (rump); her chevrons v2-v4 0-0.7 % (DECISIONS #96)
+STRIPE_RING_MAX = 0.015  # share of a brow drawn outside the head's outline, any sheet view
 HOOF_TAPER_MAX = 0.85  # coronet width / sole width
 HOOF_WALL_MAX = 72.0  # front wall angle from the ground, degrees
 # shells (11-19): the full-width band of the sides; a ball 0.65, a half-dome 0.30, Bibi Kobe v3 0.53
@@ -314,6 +317,26 @@ def _image_checks(brief: Brief, img: dict[str, Any]) -> list[Check]:
                 f"largest near-black blob {v:.0%} of the figure (max 12%)",
                 v,
                 None if ok else {"lift_dark": 0.7},
+            )
+        )
+    sr = img.get("stripe_rings")
+    if sr:
+        v = float(sr["largest"])
+        ok = v <= STRIPE_RING_MAX
+        out.append(
+            Check(
+                "materials:stripe_rings",
+                "materials",
+                ok,
+                True,
+                1.0,
+                float(ok),
+                f"largest closed stripe ring {v:.1%} of the figure ({sr.get('view') or 'front/back'} view; max "
+                f"{STRIPE_RING_MAX:.1%})"
+                + (
+                    "" if ok else ": a bullseye; wrap the stripes as chevrons (pattern_chevron, pattern_tilt)"
+                ),
+                v,
             )
         )
     ol = img.get("outline")

@@ -499,3 +499,63 @@ def test_a_ball_shell_is_a_soft_failure_and_a_dome_passes(monkeypatch):
     monkeypatch.setattr(shell_mod, "DOME", 1.6)  # gentler sides, a rounder top
     dome = {c.id: c for c in score(brief, replace(t, shell=((0.46, 0.58, 0.38), (0.0, 0.0, 0.07)))).checks}
     assert dome["shape:shell_dome"].passed, dome["shape:shell_dome"].message
+
+
+def _coat(kind: str, n: int = 240) -> tuple[np.ndarray, np.ndarray]:
+    """A pale oval figure with dark marking: concentric rings (a bullseye) or chevrons that run off its edge."""
+    yy, xx = np.mgrid[0:n, 0:n].astype(float)
+    cx = cy = n / 2
+    fig = ((xx - cx) / 90) ** 2 + ((yy - cy) / 110) ** 2 <= 1
+    if kind == "rings":
+        s = np.hypot(xx - cx, yy - cy)
+    else:
+        s = yy + 1.4 * np.abs(xx - cx)
+    dark = fig & (np.sin(s / 9.0) > 0.1)
+    rgb = np.full((n, n, 3), 240, np.uint8)
+    rgb[dark] = 25
+    rgb[~fig] = (222, 219, 212)
+    return rgb, fig
+
+
+def test_stripe_rings_find_a_bullseye_and_pass_chevrons():
+    from animatica.design.image_checks import fill_roundness, stripe_rings
+
+    rings = stripe_rings(*_coat("rings"))
+    assert rings["largest"] > 0.015 and rings["count"] >= 1  # the pale annulus between two dark rings
+    assert stripe_rings(*_coat("chevrons"))["largest"] == 0.0
+    # a thin strip shut in between features is closed but not a ring
+    strip = np.zeros((60, 60), bool)
+    strip[5:55, 28:32] = True
+    assert fill_roundness(strip) < 0.35
+    annulus = np.zeros((60, 60), bool)
+    yy, xx = np.mgrid[0:60, 0:60]
+    r = np.hypot(yy - 30, xx - 30)
+    annulus[(r > 18) & (r < 26)] = True
+    assert fill_roundness(annulus) > 0.7
+
+
+def test_zuris_baseline_bullseyes_fail_and_her_chevrons_pass():
+    """The owner's catch (cloud review 11-17 06:36): Zuri's baseline sheet rings her chest and rump; v2-v4's
+    chevrons close nothing. Measured on the committed sheets."""
+    from animatica.design.image_checks import sheet_views, stripe_rings
+    from animatica.design.rubric import STRIPE_RING_MAX
+
+    root = Path(__file__).resolve().parents[1] / "design"
+    base = sheet_views(root / "baseline" / "zuri_sheet.jpg")
+    assert stripe_rings(*base["front"])["largest"] > STRIPE_RING_MAX
+    assert stripe_rings(*base["back"])["largest"] > 5 * STRIPE_RING_MAX
+    for v in ("v2", "v3", "v4"):
+        views = sheet_views(root / "zuri" / v / "sheet.jpg")
+        assert all(stripe_rings(*views[t])["largest"] <= STRIPE_RING_MAX for t in ("front", "back")), v
+
+
+def test_the_stripe_ring_check_is_hard():
+    b = load_brief("zuri")
+    img = {"neck_notch": 0.4, "floating_parts": 0, "dark_blob": 0.02}
+    bad = score(b, SPECIES["zebra"], {**img, "stripe_rings": {"largest": 0.15, "view": "back"}}).as_dict()
+    good = score(b, SPECIES["zebra"], {**img, "stripe_rings": {"largest": 0.007, "view": "back"}}).as_dict()
+    c_bad = next(c for c in bad["checks"] if c["id"] == "materials:stripe_rings")
+    c_good = next(c for c in good["checks"] if c["id"] == "materials:stripe_rings")
+    assert c_bad["hard"] and not c_bad["passed"] and "bullseye" in c_bad["message"]
+    assert c_good["passed"]
+    assert not bad["ready"]

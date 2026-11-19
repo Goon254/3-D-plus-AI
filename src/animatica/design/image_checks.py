@@ -8,6 +8,10 @@
 * :func:`floating_parts` — silhouette pieces not connected to the main figure (a floating brow, ear or paw).
 * :func:`dark_blob` — the largest connected near-black area inside the figure in a colour view, as a fraction
   of the figure: the "flat black block" class (black legs, sunglasses patches).
+* :func:`stripe_rings` — in the front and back views of a striped or banded coat, the largest pale patch
+  closed all round by the marking colour, as a fraction of the figure: a bullseye (concentric rings on the
+  chest, rump or forehead, Zuri's baseline sheet: 2.6 % front, 15 % back). Chevron stripes that run off the
+  figure's edge close nothing (Zuri v2-v4: 0-0.7 %).
 """
 
 from __future__ import annotations
@@ -62,6 +66,148 @@ def components(mask: np.ndarray) -> list[int]:
         prev = cur
     roots = {find(i) for i in range(len(parent))}
     return sorted((size[r] for r in roots), reverse=True)
+
+
+def label(mask: np.ndarray) -> tuple[np.ndarray, int]:
+    """4-connected components of ``mask`` as a label image (0 = not in the mask, 1..n), run-based union-find."""
+    lab = np.zeros(mask.shape, np.int32)
+    parent: list[int] = [0]
+
+    def find(a: int) -> int:
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    prev: list[tuple[int, int, int]] = []
+    for y, row in enumerate(mask):
+        cur = []
+        for s, e in _runs(row):
+            i = len(parent)
+            parent.append(i)
+            for ps, pe, pi in prev:
+                if ps < e and pe > s:  # sharing a column: 4-connected
+                    a, b = find(i), find(pi)
+                    if a != b:
+                        parent[max(a, b)] = min(a, b)
+            lab[y, s:e] = i
+            cur.append((s, e, i))
+        prev = cur
+    roots = np.array([find(i) for i in range(len(parent))], np.int32)
+    uniq, dense = np.unique(roots, return_inverse=True)  # root 0 (the background) is uniq[0]: it stays 0
+    return dense.astype(np.int32)[lab], int(len(uniq) - 1)
+
+
+def otsu(values: np.ndarray) -> float:
+    """Otsu's threshold of 0..255 values: the split that best separates the two tones (coat and marking)."""
+    hist = np.bincount(np.clip(values, 0, 255).astype(np.int64).ravel(), minlength=256).astype(np.float64)
+    if hist.sum() == 0:
+        return 128.0
+    p = hist / hist.sum()
+    w = np.cumsum(p)
+    mu = np.cumsum(p * np.arange(256))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        between = (mu[-1] * w - mu) ** 2 / (w * (1 - w))
+    return float(np.nanargmax(np.nan_to_num(between, nan=-1.0)) + 0.5)
+
+
+def stripe_rings(
+    rgb: np.ndarray, fig: np.ndarray, min_frac: float = 0.003, min_round: float = 0.35
+) -> dict[str, Any]:
+    """Pale patches of a two-tone coat closed all round by the marking, in one front or back view.
+
+    ``rgb`` is the view (H x W x 3, 0..255), ``fig`` the figure mask. The coat splits into marking and ground
+    at Otsu's threshold on the figure; each 4-connected pale patch of at least ``min_frac`` of the figure whose
+    every neighbour (8-neighbourhood) is marking, never the backdrop or the image edge, is a closed ring's
+    centre or a ring between two rings. Returns the largest such patch (``largest``, share of the figure),
+    their count and the largest one's centre (pixels). Stripes that run off the figure's edge (chevrons,
+    leg bands) never close. Only patches that close round a centre count (:func:`fill_roundness` at least
+    ``min_round``): a thin strip shut in between a face stripe, an eye and the muzzle is not a ring.
+    """
+    rgb = np.asarray(rgb, dtype=np.float64)
+    fig = np.asarray(fig, dtype=bool)
+    area = int(fig.sum())
+    if not area:
+        return {"largest": 0.0, "count": 0, "at": None}
+    gray = rgb[..., :3] @ np.array([0.2126, 0.7152, 0.0722])
+    dark = fig & (gray < otsu(gray[fig]))
+    lab, n = label(fig & ~dark)
+    if not n:
+        return {"largest": 0.0, "count": 0, "at": None}
+    # a pale patch leaks when any 8-neighbour is neither marking nor the same patch: the backdrop or the edge
+    pad = np.pad(lab, 1, constant_values=-1)
+    padd = np.pad(dark, 1, constant_values=False)
+    leaks = np.zeros(n + 1, bool)
+    h, w = lab.shape
+    for dy in (-1, 0, 1):
+        for dx in (-1, 0, 1):
+            if dy == dx == 0:
+                continue
+            nb = pad[1 + dy : 1 + dy + h, 1 + dx : 1 + dx + w]
+            nbd = padd[1 + dy : 1 + dy + h, 1 + dx : 1 + dx + w]
+            bad = (lab > 0) & ~nbd & (nb != lab)
+            leaks[np.unique(lab[bad])] = True
+    sizes = np.bincount(lab.ravel(), minlength=n + 1)
+    closed = [i for i in range(1, n + 1) if not leaks[i] and sizes[i] >= min_frac * area]
+    rings = [i for i in closed if fill_roundness(lab == i) >= min_round]
+    if not rings:
+        return {"largest": 0.0, "count": 0, "at": None}
+    big = max(rings, key=lambda i: sizes[i])
+    ys, xs = np.nonzero(lab == big)
+    return {
+        "largest": round(float(sizes[big]) / area, 4),
+        "count": len(rings),
+        "at": [int(xs.mean()), int(ys.mean())],
+    }
+
+
+def fill_roundness(patch: np.ndarray) -> float:
+    """The patch with its holes filled, as a share of the circle on its longer bounding-box side: a disc ~0.8,
+    a ring round a dark centre the same, a thin strip between a stripe, an eye and the muzzle ~0.1."""
+    ys, xs = np.nonzero(patch)
+    if not len(ys):
+        return 0.0
+    sub = patch[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
+    lab, _ = label(np.pad(~sub, 1, constant_values=True))
+    filled = int(sub.sum()) + int((lab[1:-1, 1:-1] != lab[0, 0]).sum() - (lab[1:-1, 1:-1] == 0).sum())
+    d = max(sub.shape)
+    return filled / (np.pi * d * d / 4)
+
+
+def view_rgba(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
+    """A rendered view (RGBA PNG, transparent backdrop) as (rgb, figure mask)."""
+    im = np.asarray(Image.open(path).convert("RGBA"))
+    return im[..., :3], im[..., 3] > 127
+
+
+SHEET_BACKDROP = (222, 219, 212)
+SHEET_TOP = ("front", "side", "three_quarter", "back", "pose")
+
+
+def sheet_views(sheet: str | Path, tol: int = 14) -> dict[str, tuple[np.ndarray, np.ndarray]]:
+    """Cut the top row of a composed design sheet (``scripts/design_sheet.py`` ``compose``) back into views.
+
+    The layout is fixed: 12 px padding, a 46 px title band, square tiles in a row (front, side, three quarter,
+    back, then the signature pose when there is one), the second row and a 140 px panel below. The figure is
+    everything not joined to the tile's edge through backdrop-coloured pixels (the tile's label is masked).
+    For re-measuring committed sheets whose RGBA views were not kept.
+    """
+    im = np.asarray(Image.open(sheet).convert("RGB")).astype(np.int16)
+    h, w, _ = im.shape
+    pad, head = 12, 46
+    tile = (h - head - 2 * pad - 140) // 2
+    n = min(len(SHEET_TOP), round((w - pad) / (tile + pad)))
+    out = {}
+    for i, tag in enumerate(SHEET_TOP[:n]):
+        x = pad + i * (tile + pad)
+        rgb = im[head : head + tile, x : x + tile]
+        bd = np.abs(rgb - np.array(SHEET_BACKDROP)).max(axis=-1) < tol
+        bd[:22, : tile // 4] = True  # the tile's label
+        lab, _ = label(bd)
+        edge = np.unique(np.concatenate((lab[0], lab[-1], lab[:, 0], lab[:, -1])))
+        outside = np.isin(lab, edge[edge > 0])
+        out[tag] = (rgb.astype(np.uint8), ~outside)
+    return out
 
 
 def floating_parts(mask: np.ndarray, min_frac: float = 0.002) -> int:

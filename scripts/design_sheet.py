@@ -42,6 +42,8 @@ from animatica.design.image_checks import (  # noqa: E402
     floating_parts,
     load_mask,
     sheet_metrics,
+    stripe_rings,
+    view_rgba,
 )
 from animatica.design.measure import describe  # noqa: E402
 from animatica.design.rubric import score  # noqa: E402
@@ -330,6 +332,10 @@ def sheet_for(
     ol_path = out / "outline.json"
     if ol_path.exists():  # renders made before the outline check have none: the check is then not scored
         img["outline"] = json.loads(ol_path.read_text(encoding="utf-8"))
+    if sp.coat.get("pattern") in ("stripes", "bands"):  # bullseyes face the camera: chest, forehead, rump
+        rings = {tag: stripe_rings(*view_rgba(views[tag])) for tag in ("front", "back")}
+        worst = max(rings, key=lambda t: rings[t]["largest"])
+        img["stripe_rings"] = {"largest": rings[worst]["largest"], "view": worst, "at": rings[worst]["at"]}
     for expr in ("happy", "surprised"):
         img[f"expression_{expr}"] = expression_change(views["face_neutral"], views[f"face_{expr}"])
     pre = score(brief, sp, img, None).as_dict()
