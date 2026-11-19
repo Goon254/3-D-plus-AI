@@ -195,6 +195,7 @@ class Footprint:
     front: float
     back: float
     half_w: float
+    top: float = 0.0  # height of the back (or shell) above the ground: the body's top outline
 
 
 _FOOTPRINTS: dict[str, Footprint] = {}
@@ -211,22 +212,28 @@ def footprint(species: str) -> Footprint:
     sp = SPECIES[species]
     ops, meta = build_creature("fp", sp, at=(0.0, 0.0), yaw=0.0)
     top = sp.torso_at[2] + sp.torso[2] / 2  # root frame: the root sits at body_z
-    boxes: list[tuple[float, float, float]] = []  # (x, y, r) in the root frame
+    boxes: list[tuple[float, float, float]] = []  # (x, y, z top) in the root frame
+    shell_top = -math.inf
     for o in ops:
         if o["op"] == "create_metaball_mesh" and o["id"] == "fp_body":
             for e in o["elements"]:
                 (x, y, z), r = e["co"], e["radius"]
                 sx, sy, sz = e.get("size", (1.0, 1.0, 1.0))
                 if z - r * sz <= top:
-                    boxes += [(abs(x) + r * sx, y - r * sy, 0.0), (abs(x) + r * sx, y + r * sy, 0.0)]
+                    zt = min(z + r * sz, top)
+                    boxes += [(abs(x) + r * sx, y - r * sy, zt), (abs(x) + r * sx, y + r * sy, zt)]
         elif o["op"] == "create_mesh" and o["id"] == "fp_shell":
             lx, ly, lz = o.get("location", (0.0, 0.0, 0.0))
-            boxes += [(abs(v[0] + lx), v[1] + ly, 0.0) for v in o["vertices"] if v[2] + lz <= top]
+            boxes += [(abs(v[0] + lx), v[1] + ly, v[2] + lz) for v in o["vertices"] if v[2] + lz <= top]
+            shell_top = max(v[2] + lz for v in o["vertices"])  # the dome rises above the torso
     if not boxes:  # a body style without metaballs: the torso box
-        boxes = [(sp.torso[0] / 2, sp.torso_at[1] - sp.torso[1] / 2, 0.0)]
-        boxes.append((sp.torso[0] / 2, sp.torso_at[1] + sp.torso[1] / 2, 0.0))
+        boxes = [(sp.torso[0] / 2, sp.torso_at[1] - sp.torso[1] / 2, top)]
+        boxes.append((sp.torso[0] / 2, sp.torso_at[1] + sp.torso[1] / 2, top))
     fp = Footprint(
-        front=min(b[1] for b in boxes), back=max(b[1] for b in boxes), half_w=max(b[0] for b in boxes)
+        front=min(b[1] for b in boxes),
+        back=max(b[1] for b in boxes),
+        half_w=max(b[0] for b in boxes),
+        top=sp.body_z + max([b[2] for b in boxes] + [shell_top]),
     )
     _FOOTPRINTS[species] = fp
     return fp
@@ -348,6 +355,26 @@ def check_story(specs: list[SceneSpec]) -> list[Violation]:
                     out.append(Violation(spec.id, "story_exit", cid, 0.0, "leaves the group but has no exit"))
                 away.add(cid)
     return out
+
+
+def project(cam: dict[str, Any], point: tuple[float, float, float]) -> tuple[float, float, float] | None:
+    """``point`` on the camera's film: (x, y) in frame heights from the centre (+x right, +y up; the frame
+    spans y in [-0.5, 0.5] and x in [-ASPECT/2, ASPECT/2]) and its depth along the view (m); ``None`` behind
+    the camera."""
+    loc, aim = cam["location"], cam["aim"]
+    f = [aim[i] - loc[i] for i in range(3)]
+    fl = math.sqrt(sum(v * v for v in f)) or 1.0
+    f = [v / fl for v in f]
+    r = [f[1], -f[0], 0.0]  # right = forward x up(Z)
+    rl = math.hypot(r[0], r[1]) or 1.0
+    r = [r[0] / rl, r[1] / rl, 0.0]
+    u = [r[1] * f[2] - r[2] * f[1], r[2] * f[0] - r[0] * f[2], r[0] * f[1] - r[1] * f[0]]
+    d = [point[i] - loc[i] for i in range(3)]
+    z = sum(d[i] * f[i] for i in range(3))
+    if z <= 0.1:
+        return None
+    k = 1.0 / (2 * math.tan(vfov(cam["lens"]) / 2) * z)
+    return (sum(d[i] * r[i] for i in range(3)) * k, sum(d[i] * u[i] for i in range(3)) * k, z)
 
 
 def in_frame(cam: dict[str, Any], point: tuple[float, float, float], margin: float = 0.05) -> bool:

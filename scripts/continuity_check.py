@@ -3,6 +3,7 @@ entrances (``animatica.production.continuity``). Pure Python, before anything re
 
     python scripts/continuity_check.py            # every scene; exit 1 on any violation
     python scripts/continuity_check.py --table    # also print who is on stage in each shot
+    python scripts/continuity_check.py --cameras  # also staging tangents on approximate shot cameras
 
 Line lengths come from the last render's ``report.json`` (``--work``), else an estimate from the word count,
 so the timing is the real one whenever the voices exist.
@@ -20,6 +21,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from animatica.production.continuity import actor_speeds, check_scene, check_story  # noqa: E402
 from animatica.production.scene import cut_list, load_scenes, schedule, split_long  # noqa: E402
+from animatica.production.staging import approx_cameras, poses_from_paths, staging_tangent  # noqa: E402
 
 FILM = ROOT / "films" / "savannah"
 
@@ -38,6 +40,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--work", default=str(ROOT / "output" / "savannah-animatic"))
     ap.add_argument("--table", action="store_true")
+    ap.add_argument("--cameras", action="store_true", help="staging tangents on approximate shot cameras")
+    ap.add_argument("--fps", type=int, default=24)
     a = ap.parse_args()
     scenes = load_scenes(FILM / "07_scenes.json")
     bad = check_story(list(scenes.values()))
@@ -46,6 +50,9 @@ def main() -> int:
         shots = split_long(cut_list(spec, secs), secs)
         v, pres = check_scene(spec, shots, secs)
         bad += v
+        if a.cameras:
+            poses = poses_from_paths(spec, secs, a.fps)
+            bad += staging_tangent(spec, approx_cameras(spec, shots, poses, a.fps), poses, a.fps)
         if a.table:
             print(f"== {spec.id} {spec.title} ({secs:.1f}s)")
             for s0, s1, typ, subs, here in pres.shots:

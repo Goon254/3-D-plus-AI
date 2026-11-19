@@ -37,7 +37,7 @@ from animatica.creatures.gait import GAITS, Waypoint  # noqa: E402
 from animatica.creatures.gesture import Gesture, Rig, acting_layers, gaze_track, spray_droplets  # noqa: E402
 from animatica.creatures.perform import back_point, plan_for, ride_plan, walk_keys  # noqa: E402
 from animatica.creatures.species import SPECIES  # noqa: E402
-from animatica.production import acting, continuity, sound  # noqa: E402
+from animatica.production import acting, continuity, sound, staging  # noqa: E402
 from animatica.production.scene import (  # noqa: E402
     Occluder,
     Subject,
@@ -47,6 +47,7 @@ from animatica.production.scene import (  # noqa: E402
     load_scenes,
     schedule,
     set_subject,
+    shot_move,
     split_long,
     vfov,
 )
@@ -480,16 +481,7 @@ def main() -> int:
             # every shot moves: a slow push-in with a small orbit round the aim (longer shots orbit further),
             # alternating sides shot to shot, eased in and out, so no shot is a locked-off still
             loc, aim = cam["location"], cam["aim"]
-            dur = max(0.1, sh.end - sh.start)
-            push = 0.05 if sh.type in ("ws", "ews") else 0.08
-            orbit = math.radians(min(8.0, 1.2 + 1.1 * dur)) * (1 if i % 2 == 0 else -1)
-            rx, ry, rz = (loc[0] - aim[0], loc[1] - aim[1], loc[2] - aim[2])
-            ca, sa = math.cos(orbit), math.sin(orbit)
-            end_loc = [
-                aim[0] + (rx * ca - ry * sa) * (1 - push),
-                aim[1] + (rx * sa + ry * ca) * (1 - push),
-                aim[2] + rz * (1 - push),
-            ]
+            end_loc = shot_move(loc, aim, sh.type, sh.end - sh.start, i)
             dist = math.dist(loc, aim)
             frame_h_m = 2 * dist * math.tan(vfov(cam["lens"]) / 2)  # vfov is in radians
             moved = math.dist(loc, end_loc)
@@ -547,6 +539,9 @@ def main() -> int:
             if a_.enter or a_.exit
         }
         cont_issues += continuity.check_frames(spec, shot_report, where, fps)
+        # staging tangents on the real cameras: a farther animal's feet on a nearer one's back or shell
+        roots = {c: [(p.root[0], p.root[1], p.yaw) for p in plans[c]] for c in spec.cast if c in plans}
+        cont_issues += staging.staging_tangent(spec, shot_report, roots, fps)
         for v in cont_issues:
             print(f"  CONTINUITY {v}")
         run(

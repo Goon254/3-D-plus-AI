@@ -80,6 +80,16 @@ contact), and **the mix is limited and measured after encoding** (the +0.5 dBTP 
 AAC pass). **Needs you / the laptop**: `python scripts/savannah_film.py --assemble` and `--trailer` to re-master
 the committed copies (minutes, no render); the marks move after you've given film notes.
 
+### Cloud build 11-19 06:36 UTC
+
+[Review](docs/reviews/2026-11-19T0636Z.md), DECISIONS #91. **Staging tangents are now checked on the cameras**:
+a farther animal's feet drawn on a nearer one's back or shell (the "Zuri on the shell" at 5:06). The scene script
+checks its real cameras; `python scripts/continuity_check.py --cameras` checks the whole film in seconds on
+approximate cameras and finds the SC 10 case plus seven candidates (mostly Kiki or Bibi Kobe in front of a taller
+animal on a low camera: SC 4–9). Nothing in the film changed. **Needs you / the laptop**: unchanged from 03:36
+(watch the film and give notes; re-assemble for the true peak); the next scene build prints the tangents on the
+real cameras.
+
 ## 0. Design stage — owner's top priority since 2026-11-16 23:58 (DESIGN_STAGE.md)
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.

@@ -549,6 +549,21 @@ def facing(yaw: float) -> tuple[float, float]:
     return (math.sin(a), -math.cos(a))
 
 
+def shot_move(loc: V3 | list[float], aim: V3 | list[float], kind: str, dur: float, i: int) -> list[float]:
+    """Where shot ``i``'s camera ends: every shot moves, a slow push-in with a small orbit round the aim
+    (longer shots orbit further), alternating sides shot to shot, so no shot is a locked-off still."""
+    dur = max(0.1, dur)
+    push = 0.05 if kind in ("ws", "ews") else 0.08
+    orbit = math.radians(min(8.0, 1.2 + 1.1 * dur)) * (1 if i % 2 == 0 else -1)
+    rx, ry, rz = (loc[0] - aim[0], loc[1] - aim[1], loc[2] - aim[2])
+    ca, sa = math.cos(orbit), math.sin(orbit)
+    return [
+        aim[0] + (rx * ca - ry * sa) * (1 - push),
+        aim[1] + (rx * sa + ry * ca) * (1 - push),
+        aim[2] + rz * (1 - push),
+    ]
+
+
 @dataclass
 class Subject:
     head: V3  # world head centre (measured on the posed rig)
