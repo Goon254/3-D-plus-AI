@@ -1,5 +1,66 @@
 # PROGRESS — morning report (overnight build, 2026-11-15)
 
+## Day session 2026-11-18 (laptop, unattended): the owner's three-stage plan
+
+**What you approved, and when** (so the gates are written down): your message of 2026-11-18 morning set the day's
+plan. Stage 1 = fix your animatic notes; **Stage 2 was pre-approved once the Stage 1 review passed** (it passed,
+[review](docs/reviews/2026-11-18-animatic-v2.md)); Stage 2 item 9 told me to **lock all five designs**: Kiki v6 (v4
+body, v5 patches, as you asked) and Zuri v4 (soft brush mane) are locked with Tembo, Neema and Bibi Kobe v3. Phase 2
+stayed on hold.
+
+**Links**
+
+* Animatic v2 (Stage 1 fixes, 316.8 s, 105 shots): [`savannah-animatic/animatic_v2_web.mp4`](examples/showcase/savannah-animatic/animatic_v2_web.mp4),
+  [contact sheet](examples/showcase/savannah-animatic/animatic_v2_contact.jpg), [strict review](docs/reviews/2026-11-18-animatic-v2.md).
+* Final film (OptiX, 1280×720, −14 LUFS): [`savannah-film/film_web.mp4`](examples/showcase/savannah-film/film_web.mp4) ([contact sheet](examples/showcase/savannah-film/film_contact.jpg); 316.8 s, 22.8 MB web copy at 540p; measured −14.0 LUFS); full quality in `output/savannah/film.mp4` (200 MB, not committed)
+* Trailer: [`savannah-trailer/trailer_web.mp4`](examples/showcase/savannah-trailer/trailer_web.mp4) (70.6 s, 15 cuts on the lines, title card and the end card "Made with Animatica · open source", 23.1 MB at 720p); full quality in `output/savannah/trailer.mp4`
+
+**Stage 1 (your animatic notes), all done** (DECISIONS #73–#82):
+
+* Lip sync and acting from the dialogue: the mouth was already on the audio (median lag 0 ms); the real causes
+  were a 42 ms picture delay when scenes were joined (now 0), faces too small to read (talking shots are tightened),
+  and no acting. Now: head beats on stressed syllables, blinks at line starts and pauses, listeners blink and the
+  addressee nods, speakers turn toward the camera.
+* Continuity checker (`scripts/continuity_check.py`): who is on stage in every shot, lines, gestures, distance
+  from the action, the real camera frames, and (new) nobody inside a mound or tree. 0 violations. The zebra leaves
+  SC 5 and isn't in the tall-grass scene until she re-enters.
+* Paths: real destinations (exit:right, landmarks) and smooth curves; no more circles.
+* Opening: giraffes and zebras cross the far grass, birds, wind in the grass, a slow push-in; the white horizon
+  stripe is gone.
+* Sound (all synthesised, recorded in THIRD_PARTY.md): per-species footsteps placed by the camera, animal calls,
+  a real log creak, the gush and the spring's song; every line at least 12 dB over the music (SC 10: 13 dB).
+* Moonlit nights, the glowing spring.
+* All five Kokoro fallbacks re-voiced with Chatterbox (the off-screen "Hellooo?" is now "Hello? Anybody?";
+  Whisper heard the stretched spelling as a wrong word every time). The two dropped short shots are back.
+
+**Stage 2** (DECISIONS #79, #83, #84): Kiki v6 and Zuri's brush mane (both pass every motion check; designs
+locked); real baobab and log models, an irregular puddle with a mud bank, layered acacia tables; Kiki rides on
+Neema in SC 10 (with a shot of it). Feet: the hard no-sliding check from #69/#70 passes for all five. The final
+render and the trailer are made by `scripts/savannah_film.py` (resumes scene by scene).
+
+**Stage 3: `animatica feature "story"`** ([plan](docs/FEATURE_MODE.md), DECISIONS #80, #85–#87): a stage machine
+with your two gates (design, animatic) that resumes from the film folder; an offline story engine (premise and
+screenplay, validated against what the creature library can build); casting (distinct stock voices); a rule-based
+scene planner (continuity-checked) and cue sheet; the scene and animatic scripts take `--film`. Try:
+`animatica feature "a little meerkat and an old turtle look for the lost rain" --llm scripted`.
+
+**Still weak (honest)**
+
+* Night close-ups read but are murky (the moon rims from behind); SC 8's tortoise shot is the darkest.
+* Close-ups of Bibi Kobe and Kiki are often crowded by a neighbour's legs at the frame edge.
+* The cloud reviewer, looking at the sheets: Kiki v6 still reads as a mongoose on all fours (6/10), and her eyes
+  break the head's outline; Zuri's mane stops halfway up the neck and her body reads horse-like (7/10). Both were
+  locked by your plan; they are the first candidates for a v7/v5 if you want another pass.
+* Feature mode hasn't rendered a new film end to end yet (the GPU was busy with the savannah film).
+* Nobody has listened to today's mix with ears.
+
+### Needs you (day session)
+
+* **Watch the film and the trailer**, and listen: footsteps, calls, the creak/gush/song, the voices.
+* **Kiki and Zuri**: locked per your plan. Say if you want another design pass on the notes above.
+* An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
+* Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
+
 ## 0. Design stage — owner's top priority since 2026-11-16 23:58 (DESIGN_STAGE.md)
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.

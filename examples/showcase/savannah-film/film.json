@@ -1,0 +1,19 @@
+{
+ "scenes": [
+  "sc01",
+  "sc02",
+  "sc03",
+  "sc04",
+  "sc05",
+  "sc06",
+  "sc07",
+  "sc08",
+  "sc09",
+  "sc10"
+ ],
+ "seconds": 316.78,
+ "film": "C:\\dev\\3dai-final\\output\\savannah\\film.mp4",
+ "web_mb": 22.8,
+ "input_lufs": -14.52,
+ "target_lufs": -14.0
+}
