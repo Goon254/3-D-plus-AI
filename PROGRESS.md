@@ -71,6 +71,15 @@ sentinel reads as a kangaroo; the web film peaks at +0.5 dBFS (loudness itself i
 music couldn't be heard from the cloud. Scores: story 8, design 7, motion 7, visuals 7, mix 7. Fixes are queued
 under P0-FILM for after you've watched it.
 
+### Cloud build 11-19 03:36 UTC
+
+[Review](docs/reviews/2026-11-19T0336Z.md), DECISIONS #90. Two film fixes that are pure code (no scenes touched):
+**animals walking into each other are now checked** (`continuity_check.py` finds three on the film: Tembo and Zuri
+in SC 3, Tembo and Kiki in SC 6, Tembo and Bibi Kobe in SC 7; the SC 10 "Zuri on the shell" is a camera angle, not
+contact), and **the mix is limited and measured after encoding** (the +0.5 dBTP came from the web copy's second
+AAC pass). **Needs you / the laptop**: `python scripts/savannah_film.py --assemble` and `--trailer` to re-master
+the committed copies (minutes, no render); the marks move after you've given film notes.
+
 ## 0. Design stage — owner's top priority since 2026-11-16 23:58 (DESIGN_STAGE.md)
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
