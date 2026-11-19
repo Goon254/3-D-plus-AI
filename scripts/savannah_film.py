@@ -4,6 +4,7 @@
     python scripts/savannah_film.py --only sc03     # (re-)render some scenes, then assemble
     python scripts/savannah_film.py --assemble      # assemble what is rendered
     python scripts/savannah_film.py --trailer       # cut the trailer from the final scenes
+    python scripts/savannah_film.py --deliver       # CHALLENGE "Output": final.mp4, captions, edit, log, poster
 
 Each scene runs ``savannah_scene.py <scene> --quality final`` (Cycles on OptiX, 1280x720, 24 fps) in turn, one
 heavy process at a time; a scene whose ``report.json`` says ``final`` and whose MP4 exists is skipped, so a run
@@ -31,6 +32,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from savannah_animatic import FONT, TITLE, esc, join_av  # noqa: E402
 
 from animatica.audio.mux import loudness, master  # noqa: E402
+from animatica.production import deliverables as dlv  # noqa: E402
 from animatica.production.scene import load_scenes  # noqa: E402
 
 FILM = ROOT / "films" / "savannah"
@@ -310,13 +312,84 @@ def trailer() -> dict:
     return rep
 
 
+TAGLINE = "Fast or slow, tall or small, it takes all of us."
+
+
+def deliver(poster_at: float | None = None) -> dict:
+    """CHALLENGE-SAVANNAH "Output" in ``examples/showcase/savannah/``: ``final.mp4`` (1280x720, at most 25 MB,
+    the captions as a soft English track), ``captions.srt`` / ``.vtt``, ``edit.mlt`` (the scene renders, one
+    entry per shot; paths point at ``output/savannah/``, which isn't committed), ``production_log.md`` and
+    ``poster.jpg`` (from the full-quality film). Needs the final scenes and ``assemble()``'s film."""
+    ids = list(load_scenes(FILM / "07_scenes.json"))
+    missing = [s for s in ids if not is_final(s)]
+    film = OUT / "film.mp4"
+    if missing or not film.exists():
+        raise SystemExit(f"assemble the final film first (not final: {', '.join(missing) or 'film.mp4'})")
+    reports = [json.loads((OUT / sid / "report.json").read_text(encoding="utf-8")) for sid in ids]
+    dst = SHOW / "savannah"
+    dst.mkdir(parents=True, exist_ok=True)
+    cues = dlv.caption_cues(reports)
+    srt = dlv.write_srt(cues, dst / "captions.srt")
+    dlv.write_vtt(cues, dst / "captions.vtt")
+    rel = Path("..", "..", "..", "output", "savannah")
+    dlv.write_mlt(reports, [(rel / sid / f"{sid}.mp4").as_posix() for sid in ids], dst / "edit.mlt", TITLE)
+    t = dlv.poster_time(reports) if poster_at is None else poster_at
+    dlv.write_poster(film, t, dst / "poster.jpg", TITLE, TAGLINE)
+    work = OUT / "deliver"
+    work.mkdir(parents=True, exist_ok=True)
+    pic = work / "final_nosubs.mp4"
+    mb = web_copy(film, pic, height=720)
+    final = dst / "final.mp4"
+    ff(
+        "-i",
+        str(pic),
+        "-i",
+        str(srt),
+        "-map",
+        "0",
+        "-map",
+        "1",
+        "-c",
+        "copy",
+        "-c:s",
+        "mov_text",
+        "-metadata:s:s:0",
+        "language=eng",
+        "-movflags",
+        "+faststart",
+        str(final),
+    )
+    film_rep = (
+        json.loads((OUT / "film.json").read_text(encoding="utf-8")) if (OUT / "film.json").exists() else {}
+    )
+    film_rep["web_true_peak_dbtp"] = loudness(final).get("tp")
+    film_rep["web_mb"] = round(final.stat().st_size / 2**20, 1)
+    trl = OUT / "trailer.json"
+    trailer_rep = json.loads(trl.read_text(encoding="utf-8")) if trl.exists() else None
+    log = dlv.production_log(reports, TITLE, film_rep, trailer_rep, cues)
+    (dst / "production_log.md").write_text(log, encoding="utf-8")
+    return {
+        "final_mb": film_rep["web_mb"],
+        "picture_mb": round(mb, 1),
+        "poster_at": round(t, 2),
+        "cues": len(cues),
+        "caption_issues": len(dlv.caption_issues(cues)),
+        "web_true_peak_dbtp": film_rep["web_true_peak_dbtp"],
+    }
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default="")
     ap.add_argument("--assemble", action="store_true")
     ap.add_argument("--trailer", action="store_true")
     ap.add_argument("--force", action="store_true", help="re-render scenes that are already final")
+    ap.add_argument("--deliver", action="store_true", help="write examples/showcase/savannah/ from the film")
+    ap.add_argument("--poster-at", type=float, default=None, help="film time of the poster frame (s)")
     a = ap.parse_args()
+    if a.deliver:
+        print(json.dumps(deliver(a.poster_at), indent=1))
+        return 0
     if a.trailer:
         print(json.dumps(trailer(), indent=1))
         return 0

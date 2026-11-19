@@ -90,6 +90,14 @@ animal on a low camera: SC 4–9). Nothing in the film changed. **Needs you / th
 (watch the film and give notes; re-assemble for the true peak); the next scene build prints the tangents on the
 real cameras.
 
+### Cloud build 11-19 09:36 UTC
+
+[Review](docs/reviews/2026-11-19T0936Z.md), DECISIONS #92. **The film's hand-off files are code now**:
+`python scripts/savannah_film.py --deliver` writes CHALLENGE "Output" into `examples/showcase/savannah/`:
+`final.mp4` (1280×720, ≤ 25 MB, captions as a switchable track), `poster.jpg`, `captions.srt` / `.vtt`,
+`edit.mlt` (opens in Shotcut / Kdenlive) and `production_log.md`. Nothing in the film changed. **Needs you / the
+laptop**: after `--assemble` and `--trailer`, run `--deliver` (minutes, no render) and commit the folder.
+
 ## 0. Design stage — owner's top priority since 2026-11-16 23:58 (DESIGN_STAGE.md)
 
 Film production is **paused** until the owner approves the five design packets, then the animatic.
