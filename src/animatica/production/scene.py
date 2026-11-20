@@ -98,6 +98,7 @@ class Shot:
     end: float = 0.0
     note: str = ""
     from_behind: bool = False  # a deliberate back view (a story reason): ``staging.facing_away`` skips it
+    hold: bool = False  # a deliberate still beat (a story reason): ``pacing.dead_air`` doesn't count it
 
 
 @dataclass
@@ -300,6 +301,7 @@ def scene_from_dict(d: dict[str, Any]) -> SceneSpec:
             frame_h=s.get("frame_h"),
             note=s.get("note", ""),
             from_behind=bool(s.get("from_behind", False)),
+            hold=bool(s.get("hold", False)),
         )
         for s in d.get("shots", [])
     ]

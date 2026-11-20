@@ -4,7 +4,9 @@ entrances (``animatica.production.continuity``), and the set's models as built (
 
     python scripts/continuity_check.py            # every scene; exit 1 on any violation
     python scripts/continuity_check.py --table    # also print who is on stage in each shot
-    python scripts/continuity_check.py --cameras  # also staging tangents on approximate shot cameras
+    python scripts/continuity_check.py --cameras  # also staging tangents, back views and dead air (nothing
+                                                  # on screen moves but the camera for > 4.5 s, across cuts)
+                                                  # on approximate shot cameras
     python scripts/continuity_check.py --cameras --json out.json --diff last.json
                                                   # save the findings; print what is fixed / new since last.json
     python scripts/continuity_check.py --film films/<name>   # a feature-mode film folder
@@ -31,6 +33,7 @@ from animatica.production.continuity import (  # noqa: E402
     diff_reports,
     set_assets,
 )
+from animatica.production.pacing import dead_air  # noqa: E402
 from animatica.production.scene import cut_list, load_scenes, schedule, split_long  # noqa: E402
 from animatica.production.staging import (  # noqa: E402
     approx_cameras,
@@ -57,7 +60,9 @@ def main() -> int:
     ap.add_argument("--work", default=str(ROOT / "output" / "savannah-animatic"))
     ap.add_argument("--table", action="store_true")
     ap.add_argument(
-        "--cameras", action="store_true", help="staging tangents and back views on approximate shot cameras"
+        "--cameras",
+        action="store_true",
+        help="staging tangents, back views and dead air on approximate shot cameras",
     )
     ap.add_argument("--fps", type=int, default=24)
     ap.add_argument(
@@ -84,6 +89,7 @@ def main() -> int:
             cams = approx_cameras(spec, shots, poses, a.fps)
             bad += staging_tangent(spec, cams, poses, a.fps)
             bad += facing_away(spec, cams, poses, a.fps)
+            bad += dead_air(spec, cams, poses, a.fps, secs)
         if a.table:
             print(f"== {spec.id} {spec.title} ({secs:.1f}s)")
             for s0, s1, typ, subs, here in pres.shots:

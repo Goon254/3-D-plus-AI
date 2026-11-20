@@ -1,0 +1,100 @@
+{
+ "_about": "SC 1 as it stood on 2026-11-16 (before DECISIONS #75): 22 s of empty set under the narration, the owner's \"no animal movement\" note. Regression input for pacing.dead_air.",
+ "scenes": [
+  {
+   "id": "sc01",
+   "title": "Dawn - the old watering hole",
+   "tod": "dawn",
+   "cue": "sc01",
+   "seconds": 22,
+   "lead": 2.0,
+   "layout": {
+    "water": [
+     0.6,
+     6.0,
+     1.6
+    ],
+    "acacias": [
+     [
+      -5.5,
+      12.0,
+      1.1
+     ],
+     [
+      9.0,
+      20.0,
+      0.85
+     ],
+     [
+      -16.0,
+      30.0,
+      0.9
+     ]
+    ],
+    "mounds": [
+     [
+      6.5,
+      5.5,
+      0.9
+     ]
+    ],
+    "action": [
+     [
+      0.0,
+      3.0,
+      4.0
+     ]
+    ]
+   },
+   "ambience": {
+    "tod": "dawn",
+    "water": true
+   },
+   "cast": {},
+   "lines": [
+    {
+     "who": "narrator",
+     "text": "Far away, where the grass grows golden and the sky goes on forever, the rains were late."
+    },
+    {
+     "who": "narrator",
+     "text": "And the old watering hole was getting smaller... and smaller... and smaller.",
+     "gap": 1.2
+    }
+   ],
+   "sfx": [
+    {
+     "line": 1,
+     "dt": 0.8,
+     "kind": "drip"
+    }
+   ],
+   "shots": [
+    {
+     "type": "ews",
+     "subjects": [],
+     "t": 0,
+     "look": [
+      -2.0,
+      12.0,
+      3.0
+     ],
+     "frame_h": 9.0,
+     "note": "the sun lifts behind the acacia"
+    },
+    {
+     "type": "ws",
+     "subjects": [],
+     "line": 1,
+     "look": [
+      0.6,
+      6.0,
+      0.3
+     ],
+     "frame_h": 3.2,
+     "note": "the shrinking puddle"
+    }
+   ]
+  }
+ ]
+}

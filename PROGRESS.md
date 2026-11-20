@@ -58,9 +58,13 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 
 * **Watch the film and the trailer**, and listen: footsteps, calls, the creak/gush/song, the voices.
 * **Kiki and Zuri**: locked per your plan. Say if you want another design pass on the notes above.
-* **When you apply film notes** (laptop): first `python scripts/continuity_check.py --cameras --json output/continuity_before.json`, then `--cameras --diff output/continuity_before.json` after each scene fix to see what was fixed and what is new (cloud 11-19 15:36, DECISIONS #94; 20 open findings today).
+* **When you apply film notes** (laptop): first `python scripts/continuity_check.py --cameras --json output/continuity_before.json`, then `--cameras --diff output/continuity_before.json` after each scene fix to see what was fixed and what is new (cloud 11-19 15:36, DECISIONS #94; 23 open findings today, 3 of them `dead_air`, #100).
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
+
+### Cloud build 11-20 09:36 UTC
+
+[Review](docs/reviews/2026-11-20T0936Z.md), DECISIONS #100. No reply from you yet, so no scene, design or render was touched (one annotation: the end card's shot is marked `hold`, a deliberate still; it renders the same). Your first animatic note, "the first scene has no animal movement", is now a check that runs before anything renders: **`dead_air`** in `python scripts/continuity_check.py --cameras` finds any stretch over 4.5 s, across cuts, where nothing on screen moves but the camera. The old 22 s opening fails; today's passes. On the film it finds three, which I confirmed on animatic v2: the SC 9 climax (Kiki stands still with her back to the spring for ~12 s), a silent 7.5 s Kiki close-up at the end of SC 5, and the 5 s empty sunset wide that opens SC 7. They join your parked film notes. Every catch you and the reviews have made now has an automatic check.
 
 ### Cloud build 11-20 06:36 UTC
 

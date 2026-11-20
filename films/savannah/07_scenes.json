@@ -3613,7 +3613,8 @@
       3.0
      ],
      "frame_h": 9.0,
-     "note": "the sky; END CARD"
+     "note": "the sky; END CARD",
+     "hold": true
     }
    ]
   }
