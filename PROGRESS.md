@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-20 06:36 UTC
+
+[Review](docs/reviews/2026-11-20T0636Z.md), DECISIONS #99. No reply from you yet, so no scene or design was touched. Your "horizon stripe" note is now a check on rendered frames: `python scripts/frame_check.py <video or still>`, and the animatic measures every shot. The 11-16 still fails. **Honest finding: the film still has a toned-down version** (a pale tan band under the hills) in the SC 4–6 midday/afternoon wides (1:41–3:02); dawn, dusk and night are clean. It is parked with your other set notes until after the animatic. Left on the eye-only list: the static opening. Scores unchanged (film 7; Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9).
+
 ### Cloud build 11-20 03:36 UTC
 
 [Review](docs/reviews/2026-11-20T0336Z.md), DECISIONS #98. No reply from you yet, so no scene or design was touched. Your "broccoli acacias" note is now a check: **every acacia crown is measured as built** (`set_canopy`, in `continuity_check.py` and every scene build): the 11-16 cushion fails (no sky through it), the 11-17 clumps fail (round florets), the 11-18 layered tables in the film pass. Left on the eye-only list: the horizon stripe and the static opening. Scores unchanged (film 7; Tembo 9, Neema 8, Bibi 8, Kiki 6, Zuri 7, tooling 9).

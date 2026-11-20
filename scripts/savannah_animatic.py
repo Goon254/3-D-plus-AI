@@ -10,7 +10,9 @@ Each scene runs ``savannah_scene.py <scene> --quality animatic`` in turn (one he
 new angles (``production.scene.split_long``). Then the scenes are joined with the title over the opening and the
 end card over the last shot, a burn-in of scene / shot / note on every frame (it is an animatic), and a check that
 no shot holds still: a shot fails when it is longer than ``--max-static`` seconds and neither the camera nor its
-subjects move by 2 % of the frame. The report lands next to the film (``animatic.json``).
+subjects move by 2 % of the frame. Every shot's middle frame is also measured for a horizon stripe
+(``animatica.sets.frames``; soft: listed as ``horizon_stripes``, not an exit failure). The report lands next to
+the film (``animatic.json``).
 """
 
 from __future__ import annotations
@@ -27,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from animatica.production.scene import load_scenes, vfov  # noqa: E402
+from animatica.sets.frames import stripes_in_video  # noqa: E402
 
 FILM = ROOT / "films" / "savannah"
 FONT = "C\\:/Windows/Fonts/arial.ttf" if sys.platform == "win32" else "DejaVuSans"
@@ -253,6 +256,7 @@ def main() -> int:
         print(f"== {sid} done in {time.time() - t0:.0f}s", flush=True)
 
     parts, report = [], {"scenes": [], "static_shots": [], "max_static_seconds": a.max_static}
+    report["horizon_stripes"] = []
     for k, sid in enumerate(ids):
         rp = work / sid / "report.json"
         if not rp.exists():
@@ -273,6 +277,14 @@ def main() -> int:
         parts.append(burned)
         bad = static_shots(rep, a.max_static)
         report["static_shots"] += [{"scene": sid, **b} for b in bad]
+        report["horizon_stripes"] += [
+            {"scene": sid, **h}
+            for h in stripes_in_video(
+                work / sid / f"{sid}.mp4",
+                [(sh["start"] + sh["end"]) / 2 for sh in rep["shots"]],
+                [f"shot {sh['shot']} ({sh['type']})" for sh in rep["shots"]],
+            )
+        ]
         report["scenes"].append(
             {
                 "scene": sid,
@@ -295,6 +307,10 @@ def main() -> int:
     report["longest_shot"] = max(s["longest_shot"] for s in report["scenes"])
     (out.parent / "animatic.json").write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
     print(json.dumps({k: report[k] for k in ("seconds", "shots", "longest_shot", "static_shots")}))
+    for h in report["horizon_stripes"]:
+        print(
+            f"horizon stripe (soft): {h['scene']} {h['label']} at {h['row']:.0%} height, span {h['span']:.0%}"
+        )
     return 1 if report["static_shots"] else 0
 
 
