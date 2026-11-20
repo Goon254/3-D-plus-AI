@@ -1,5 +1,6 @@
 """Continuity check for the savannah film: who is on stage in every shot, against the story's exits and
-entrances (``animatica.production.continuity``). Pure Python, before anything renders.
+entrances (``animatica.production.continuity``), and the set's models as built (acacia crowns:
+``set_canopy``). Pure Python, before anything renders.
 
     python scripts/continuity_check.py            # every scene; exit 1 on any violation
     python scripts/continuity_check.py --table    # also print who is on stage in each shot
@@ -28,6 +29,7 @@ from animatica.production.continuity import (  # noqa: E402
     check_story,
     continuity_report,
     diff_reports,
+    set_assets,
 )
 from animatica.production.scene import cut_list, load_scenes, schedule, split_long  # noqa: E402
 from animatica.production.staging import (  # noqa: E402
@@ -76,6 +78,7 @@ def main() -> int:
         shots = split_long(cut_list(spec, secs), secs)
         v, pres = check_scene(spec, shots, secs)
         bad += v
+        bad += set_assets(spec)
         if a.cameras:
             poses = poses_from_paths(spec, secs, a.fps)
             cams = approx_cameras(spec, shots, poses, a.fps)

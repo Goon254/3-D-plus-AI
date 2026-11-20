@@ -186,6 +186,7 @@ def main() -> int:
         grass_density=float(lay.get("grass_density", 14.0)),
     )
     ops = savannah_set(layout, spec.tod)
+    cont_issues += continuity.set_assets(spec, layout.seed)  # acacia crowns as built (DECISIONS #98)
 
     def prop_time(
         k_,

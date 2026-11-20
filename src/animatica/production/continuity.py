@@ -261,6 +261,21 @@ def inside_set(spec: SceneSpec, seconds: float, step: float = 0.25) -> list[Viol
     return out
 
 
+def set_assets(spec: SceneSpec, seed: int | None = None) -> list[Violation]:
+    """Set models measured as built (``animatica.sets.measure``): every acacia in the scene's layout must have a
+    flat-table crown with sky through it, not a cushion or broccoli florets (the owner's set notes, 11-16/11-17).
+    ``seed`` is the set layout's seed (``Layout.seed``); the scene builds acacia ``i`` with ``seed + 11 i``."""
+    from animatica.sets.measure import acacia_shape, canopy_problems
+    from animatica.sets.savannah import Layout
+
+    base = Layout().seed if seed is None else seed
+    out = []
+    for i, (_, _, sc) in enumerate(spec.layout.get("acacias", [])):
+        for problem in canopy_problems(acacia_shape(sc, base + 11 * i)):
+            out.append(Violation(spec.id, "set_canopy", f"acacia_{i}", 0.0, problem))
+    return out
+
+
 TOUCH_M = 0.03  # footprints may graze (a hoof beside a flank); deeper than this is one animal inside another
 
 
