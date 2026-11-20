@@ -4,9 +4,10 @@ entrances (``animatica.production.continuity``), and the set's models as built (
 
     python scripts/continuity_check.py            # every scene; exit 1 on any violation
     python scripts/continuity_check.py --table    # also print who is on stage in each shot
-    python scripts/continuity_check.py --cameras  # also staging tangents, back views and dead air (nothing
+    python scripts/continuity_check.py --cameras  # also staging tangents, back views, dead air (nothing
                                                   # on screen moves but the camera for > 4.5 s, across cuts)
-                                                  # on approximate shot cameras
+                                                  # and crowding (a neighbour's headless legs or flank in a
+                                                  # face shot) on approximate shot cameras
     python scripts/continuity_check.py --cameras --json out.json --diff last.json
                                                   # save the findings; print what is fixed / new since last.json
     python scripts/continuity_check.py --film films/<name>   # a feature-mode film folder
@@ -33,6 +34,7 @@ from animatica.production.continuity import (  # noqa: E402
     diff_reports,
     set_assets,
 )
+from animatica.production.framing import crowding  # noqa: E402
 from animatica.production.pacing import dead_air, line_durations  # noqa: E402
 from animatica.production.scene import cut_list, load_scenes, schedule, split_long  # noqa: E402
 from animatica.production.staging import (  # noqa: E402
@@ -85,6 +87,7 @@ def main() -> int:
             bad += staging_tangent(spec, cams, poses, a.fps)
             bad += facing_away(spec, cams, poses, a.fps)
             bad += dead_air(spec, cams, poses, a.fps, secs)
+            bad += crowding(spec, cams, poses, a.fps)
         if a.table:
             print(f"== {spec.id} {spec.title} ({secs:.1f}s)")
             for s0, s1, typ, subs, here in pres.shots:

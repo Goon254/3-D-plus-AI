@@ -58,9 +58,13 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 
 * **Watch the film and the trailer**, and listen: footsteps, calls, the creak/gush/song, the voices.
 * **Kiki and Zuri**: locked per your plan. Say if you want another design pass on the notes above.
-* **When you apply film notes** (laptop): first `python scripts/continuity_check.py --cameras --json output/continuity_before.json`, then `--cameras --diff output/continuity_before.json` after each scene fix to see what was fixed and what is new (cloud 11-19 15:36, DECISIONS #94; 23 open findings today, 3 of them `dead_air`, #100).
+* **When you apply film notes** (laptop): first `python scripts/continuity_check.py --cameras --json output/continuity_before.json`, then `--cameras --diff output/continuity_before.json` after each scene fix to see what was fixed and what is new (cloud 11-19 15:36, DECISIONS #94; 49 open findings today: 3 `dead_air` (#100), 26 `crowding` (#103)).
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
+
+### Cloud build 11-20 18:36 UTC
+
+[Review](docs/reviews/2026-11-20T1836Z.md), DECISIONS #103. Still no reply from you, so nothing in the film or the designs changed. The last "known, still open" film note now has a check: **`crowding`** finds close and medium shots where a neighbour shows up only as legs or a flank, with its head out of the frame (the giraffe's legs behind Kiki at 2:30, the zebra legs at the edge of the tortoise close-ups). The film has a lot of it: 26 shots on the approximate cameras, 22 of them real when I looked; the herd stands too close in most face shots. It runs in `python scripts/continuity_check.py --cameras` and on the real cameras in every scene build; a shot can be marked `crowd_ok` when a foreground body is the point. With this, every note any review or you have made has an automatic check; the cloud sessions will only review from here until you reply.
 
 ### Cloud build 11-20 15:36 UTC
 

@@ -37,7 +37,7 @@ from animatica.creatures.gait import GAITS, Waypoint  # noqa: E402
 from animatica.creatures.gesture import Gesture, Rig, acting_layers, gaze_track, spray_droplets  # noqa: E402
 from animatica.creatures.perform import back_point, plan_for, ride_plan, walk_keys  # noqa: E402
 from animatica.creatures.species import SPECIES  # noqa: E402
-from animatica.production import acting, continuity, pacing, sound, staging  # noqa: E402
+from animatica.production import acting, continuity, framing, pacing, sound, staging  # noqa: E402
 from animatica.production.scene import (  # noqa: E402
     Occluder,
     Subject,
@@ -524,6 +524,7 @@ def main() -> int:
                     "subjects": sh.subjects,
                     "from_behind": sh.from_behind,
                     "hold": sh.hold,
+                    "crowd_ok": sh.crowd_ok,
                     "start": sh.start,
                     "end": round(sh.end, 3),
                     "note": sh.note,
@@ -549,6 +550,8 @@ def main() -> int:
         cont_issues += staging.facing_away(spec, shot_report, roots, fps)
         # dead air across the cuts on the real cameras: nothing on screen moving but the camera for > 4.5 s
         cont_issues += pacing.dead_air(spec, shot_report, roots, fps, seconds)
+        # a neighbour seen only as legs or a flank, its head out of shot, filling part of a face shot
+        cont_issues += framing.crowding(spec, shot_report, roots, fps)
         for v in cont_issues:
             print(f"  CONTINUITY {v}")
         run(

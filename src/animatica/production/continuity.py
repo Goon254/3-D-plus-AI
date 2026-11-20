@@ -90,7 +90,9 @@ def continuity_report(violations: list[Violation], **meta: Any) -> dict[str, Any
     }
 
 
-CAMERA_KINDS = frozenset({"staging_tangent", "facing_away", "dead_air"})  # only measured with ``cameras`` on
+CAMERA_KINDS = frozenset(
+    {"staging_tangent", "facing_away", "dead_air", "crowding"}
+)  # only measured with ``cameras`` on
 
 
 def diff_reports(old: dict[str, Any], new: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
