@@ -37,7 +37,7 @@ from animatica.creatures.gait import GAITS, Waypoint  # noqa: E402
 from animatica.creatures.gesture import Gesture, Rig, acting_layers, gaze_track, spray_droplets  # noqa: E402
 from animatica.creatures.perform import back_point, plan_for, ride_plan, walk_keys  # noqa: E402
 from animatica.creatures.species import SPECIES  # noqa: E402
-from animatica.production import acting, continuity, sound, staging  # noqa: E402
+from animatica.production import acting, continuity, pacing, sound, staging  # noqa: E402
 from animatica.production.scene import (  # noqa: E402
     Occluder,
     Subject,
@@ -547,6 +547,8 @@ def main() -> int:
         cont_issues += staging.staging_tangent(spec, shot_report, roots, fps)
         # a close or medium shot's subject seen from behind (the SC 9 climax: Kiki's back as the spring sings)
         cont_issues += staging.facing_away(spec, shot_report, roots, fps)
+        # dead air across the cuts on the real cameras: nothing on screen moving but the camera for > 4.5 s
+        cont_issues += pacing.dead_air(spec, shot_report, roots, fps, seconds)
         for v in cont_issues:
             print(f"  CONTINUITY {v}")
         run(

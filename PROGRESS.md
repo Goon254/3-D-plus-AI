@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-20 12:36 UTC
+
+[Review](docs/reviews/2026-11-20T1236Z.md), DECISIONS #101. Still no reply from you, so nothing in the film or the designs changed. The dead-air check now runs where you will see it: the animatic's own report (`animatic.json`) lists every stretch over 4.5 s where nothing on screen moves but the camera, per scene, on that scene's real cameras and voice timings, and the scene build prints it with the other continuity findings. On the laptop, `python scripts/savannah_animatic.py --assemble` (no render) adds it to the current animatic.
+
 ### Cloud build 11-20 09:36 UTC
 
 [Review](docs/reviews/2026-11-20T0936Z.md), DECISIONS #100. No reply from you yet, so no scene, design or render was touched (one annotation: the end card's shot is marked `hold`, a deliberate still; it renders the same). Your first animatic note, "the first scene has no animal movement", is now a check that runs before anything renders: **`dead_air`** in `python scripts/continuity_check.py --cameras` finds any stretch over 4.5 s, across cuts, where nothing on screen moves but the camera. The old 22 s opening fails; today's passes. On the film it finds three, which I confirmed on animatic v2: the SC 9 climax (Kiki stands still with her back to the spring for ~12 s), a silent 7.5 s Kiki close-up at the end of SC 5, and the 5 s empty sunset wide that opens SC 7. They join your parked film notes. Every catch you and the reviews have made now has an automatic check.

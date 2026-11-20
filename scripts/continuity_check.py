@@ -33,7 +33,7 @@ from animatica.production.continuity import (  # noqa: E402
     diff_reports,
     set_assets,
 )
-from animatica.production.pacing import dead_air  # noqa: E402
+from animatica.production.pacing import dead_air, line_durations  # noqa: E402
 from animatica.production.scene import cut_list, load_scenes, schedule, split_long  # noqa: E402
 from animatica.production.staging import (  # noqa: E402
     approx_cameras,
@@ -47,12 +47,7 @@ FILM = ROOT / "films" / "savannah"
 
 def durations(spec, work: Path) -> list[float]:
     rp = work / spec.id / "report.json"
-    if rp.exists():
-        rep = json.loads(rp.read_text(encoding="utf-8"))
-        got = {(ln["who"], ln["text"]): ln["end"] - ln["start"] for ln in rep.get("lines", [])}
-        if all((ln.who, ln.text) in got for ln in spec.lines):
-            return [got[(ln.who, ln.text)] for ln in spec.lines]
-    return [0.6 + 0.36 * len(ln.text.split()) for ln in spec.lines]
+    return line_durations(spec, json.loads(rp.read_text(encoding="utf-8")) if rp.exists() else None)
 
 
 def main() -> int:

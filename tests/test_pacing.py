@@ -104,3 +104,64 @@ def test_the_film_finds_the_climax_hold_on_kikis_back():
     bad = dead_air(spec, cams, poses, FPS, secs)
     assert len(bad) == 1 and "through shot" in bad[0].detail
     assert secs - bad[0].t > 10.0
+
+
+def _report(spec, secs, cams, stretch: float = 1.0):
+    """A scene report as ``savannah_scene.py`` writes it: the shot cameras and the voice takes' timings."""
+    return {
+        "seconds": secs,
+        "shots": [{**c, "hold": c.get("hold", False)} for c in cams],
+        "lines": [
+            {
+                "who": ln.who,
+                "text": ln.text,
+                "start": ln.start,
+                "end": ln.start + (ln.end - ln.start) * stretch,
+            }
+            for ln in spec.lines
+        ],
+    }
+
+
+def test_the_animatic_lists_dead_air_from_the_scene_reports_own_cameras():
+    """The animatic's report shows dead air per scene from each scene's real cameras (here the same cameras,
+    written as a scene report), not only ``continuity_check.py``'s approximate ones; soft rows, one per run."""
+    anim = _animatic()
+    film = ROOT / "films" / "savannah" / "07_scenes.json"
+    spec, secs, poses, cams = _scene(film, "sc09")
+    rep = _report(spec, secs, cams)
+    rows = anim.dead_air_rows(
+        load_scenes(film)["sc09"], rep
+    )  # a fresh, unscheduled spec, as the animatic has
+    assert len(rows) == 1 and rows[0]["scene"] == "sc09" and secs - rows[0]["t"] > 10.0
+    assert "through shot" in rows[0]["detail"]
+
+    spec, secs, poses, cams = _scene(film, "sc01")
+    assert anim.dead_air_rows(load_scenes(film)["sc01"], _report(spec, secs, cams)) == []
+    old = ROOT / "tests" / "data" / "sc01_2026-11-16.json"
+    spec, secs, poses, cams = _scene(old)
+    rows = anim.dead_air_rows(load_scenes(old)["sc01"], _report(spec, secs, cams))
+    assert len(rows) == 1 and rows[0]["t"] == 0.0
+
+
+def test_dead_air_in_a_report_uses_its_takes_and_needs_its_cameras():
+    """The line timings come from the report's voice takes (the laptop's real voices), and a report without
+    cameras (written before the shots carried them) gives nothing rather than guessing."""
+    from animatica.production.pacing import dead_air_in_report, line_durations
+
+    film = ROOT / "films" / "savannah" / "07_scenes.json"
+    spec, secs, poses, cams = _scene(film, "sc09")
+    rep = _report(spec, secs, cams, stretch=1.5)
+    fresh = load_scenes(film)["sc09"]
+    want = [(ln.end - ln.start) * 1.5 for ln in spec.lines]
+    assert all(abs(a - b) < 1e-9 for a, b in zip(line_durations(fresh, rep), want, strict=True))
+    estimate = [0.6 + 0.36 * len(ln.text.split()) for ln in fresh.lines]
+    partial = {**rep, "lines": rep["lines"][1:]}  # one take missing: fall back to the estimate for all
+    assert line_durations(fresh, partial) == estimate and line_durations(fresh, None) == estimate
+    dead_air_in_report(fresh, rep)
+    assert abs((fresh.lines[0].end - fresh.lines[0].start) - want[0]) < 1e-6  # scheduled with the takes
+    bare = {
+        **rep,
+        "shots": [{k: v for k, v in s.items() if k not in ("location", "aim")} for s in rep["shots"]],
+    }
+    assert dead_air_in_report(load_scenes(film)["sc09"], bare) == []

@@ -20,7 +20,11 @@ Grass sway, water shimmer and the light are ambience, not action. A run of sampl
 marked ``hold`` (a deliberate still beat, a story reason: DESIGN_STAGE §7) is not counted against a run.
 
 It runs on approximate cameras (``staging.approx_cameras``) in ``scripts/continuity_check.py --cameras``, before
-anything renders, so it can stop a static opening at the script stage, not at the owner's review.
+anything renders, so it can stop a static opening at the script stage, not at the owner's review. It runs again on
+the real cameras: ``scripts/savannah_scene.py`` checks each scene's shot cameras against its gait plans (printed
+as ``CONTINUITY … dead_air``), and ``scripts/savannah_animatic.py`` lists it per scene from the scene reports
+(``dead_air_in_report``: the report's cameras and line timings, the paths as scheduled), soft, next to the
+horizon stripes, so the animatic's own report shows it.
 """
 
 from __future__ import annotations
@@ -28,9 +32,9 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from animatica.production.continuity import Violation, in_frame, on_stage, project
-from animatica.production.scene import SceneSpec, vfov
-from animatica.production.staging import _meta, _subject
+from animatica.production.continuity import Violation, actor_speeds, in_frame, on_stage, project
+from animatica.production.scene import SceneSpec, schedule, vfov
+from animatica.production.staging import _meta, _subject, poses_from_paths
 
 MAX_DEAD_S = 4.5  # longest stretch with nothing moving on screen (DESIGN_STAGE §7: "~4 s")
 STEP_S = 0.25
@@ -207,3 +211,30 @@ def dead_air(
             )
         run = []
     return out
+
+
+def line_durations(spec: SceneSpec, rep: dict[str, Any] | None) -> list[float]:
+    """Each line's length: from a scene report's voice takes when it has every line (``lines[].start/end``),
+    else a word-count estimate (0.6 s + 0.36 s a word, what the cloud uses without the voices)."""
+    if rep:
+        got = {
+            (ln["who"], ln["text"]): ln["end"] - ln["start"] for ln in rep.get("lines", []) if "text" in ln
+        }
+        if all((ln.who, ln.text) in got for ln in spec.lines):
+            return [got[(ln.who, ln.text)] for ln in spec.lines]
+    return [0.6 + 0.36 * len(ln.text.split()) for ln in spec.lines]
+
+
+def dead_air_in_report(spec: SceneSpec, rep: dict[str, Any], fps: int = 24) -> list[Violation]:
+    """``dead_air`` on a rendered scene's own cameras: ``rep`` is ``savannah_scene.py``'s ``report.json``
+    (``shots`` with ``location`` / ``end_location`` / ``aim`` / ``lens`` / ``hold``, ``lines`` with the takes'
+    timings, ``seconds``). ``spec`` is scheduled here with the report's line timings, and the actors follow
+    their scheduled paths (the gait plans follow them; a stride's sway is below ``MOVE_FRAC``). A report
+    without cameras (an old one) gives nothing: re-run the scene's set-up to get them."""
+    shots = [s for s in rep.get("shots", []) if {"location", "aim", "lens"} <= set(s)]
+    if not shots:
+        return []
+    secs = schedule(spec, line_durations(spec, rep), actor_speeds(spec))
+    seconds = float(rep.get("seconds", secs))
+    poses = poses_from_paths(spec, max(secs, seconds), fps)
+    return dead_air(spec, shots, poses, fps, seconds)

@@ -11,8 +11,9 @@ new angles (``production.scene.split_long``). Then the scenes are joined with th
 end card over the last shot, a burn-in of scene / shot / note on every frame (it is an animatic), and a check that
 no shot holds still: a shot fails when it is longer than ``--max-static`` seconds and neither the camera nor its
 subjects move by 2 % of the frame. Every shot's middle frame is also measured for a horizon stripe
-(``animatica.sets.frames``; soft: listed as ``horizon_stripes``, not an exit failure). The report lands next to
-the film (``animatic.json``).
+(``animatica.sets.frames``; soft: listed as ``horizon_stripes``, not an exit failure), and every scene for dead
+air across its cuts on its own cameras (``production.pacing.dead_air_in_report``: nothing on screen moving but the
+camera for over 4.5 s; soft, listed as ``dead_air``). The report lands next to the film (``animatic.json``).
 """
 
 from __future__ import annotations
@@ -28,6 +29,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from animatica.production.pacing import dead_air_in_report  # noqa: E402
 from animatica.production.scene import load_scenes, vfov  # noqa: E402
 from animatica.sets.frames import stripes_in_video  # noqa: E402
 
@@ -117,6 +119,11 @@ def static_shots(rep: dict, max_static: float) -> list[dict]:
         if dur > max_static and not moving:
             bad.append({"shot": sh["shot"], "type": sh["type"], "seconds": round(dur, 2)})
     return bad
+
+
+def dead_air_rows(spec, rep: dict) -> list[dict]:
+    """The scene's dead-air stretches on its own cameras, as report rows (soft: the animatic still assembles)."""
+    return [{"scene": v.scene, "t": v.t, "detail": v.detail} for v in dead_air_in_report(spec, rep)]
 
 
 def join_av(parts: list[Path], seconds: list[float], work: Path, out: Path, crf: int = 21) -> None:
@@ -256,7 +263,7 @@ def main() -> int:
         print(f"== {sid} done in {time.time() - t0:.0f}s", flush=True)
 
     parts, report = [], {"scenes": [], "static_shots": [], "max_static_seconds": a.max_static}
-    report["horizon_stripes"] = []
+    report["horizon_stripes"], report["dead_air"] = [], []
     for k, sid in enumerate(ids):
         rp = work / sid / "report.json"
         if not rp.exists():
@@ -285,6 +292,7 @@ def main() -> int:
                 [f"shot {sh['shot']} ({sh['type']})" for sh in rep["shots"]],
             )
         ]
+        report["dead_air"] += dead_air_rows(scenes[sid], rep)
         report["scenes"].append(
             {
                 "scene": sid,
@@ -311,6 +319,8 @@ def main() -> int:
         print(
             f"horizon stripe (soft): {h['scene']} {h['label']} at {h['row']:.0%} height, span {h['span']:.0%}"
         )
+    for d in report["dead_air"]:
+        print(f"dead air (soft): {d['scene']} at {d['t']:.1f}s: {d['detail']}")
     return 1 if report["static_shots"] else 0
 
 
