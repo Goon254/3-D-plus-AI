@@ -45,19 +45,14 @@ from animatica.design.image_checks import (  # noqa: E402
     stripe_rings,
     view_rgba,
 )
-from animatica.design.measure import describe  # noqa: E402
+from animatica.design.measure import FACE_DIR, SHEET_VIEWS, describe  # noqa: E402
 from animatica.design.rubric import score  # noqa: E402
 from animatica.design.variants import Morph, apply_morph, morph_from_dict  # noqa: E402
 
 BACKDROP = (222, 219, 212)
 LENS = 85.0
-VIEWS = {  # camera direction from the subject (unit-ish), the animal faces -Y
-    "front": (0.0, -1.0, 0.12),
-    "side": (1.0, 0.0, 0.08),  # from the animal's left: head on the image's left
-    "three_quarter": (0.72, -0.72, 0.2),
-    "back": (0.0, 1.0, 0.15),
-}
-FACE_DIR = (0.5, -1.0, 0.1)  # the face close-up's camera direction
+VIEWS = SHEET_VIEWS  # camera direction from the subject (unit-ish), the animal faces -Y (design.measure)
+# FACE_DIR: the face close-up's camera direction (design.measure)
 FACE_TRACK = [(0.0, "neutral"), (0.6, "happy"), (1.6, "surprised")]
 FACE_FRAMES = {"neutral": 8, "happy": 35, "surprised": 59}
 

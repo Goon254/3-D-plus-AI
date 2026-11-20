@@ -501,6 +501,46 @@ def test_a_ball_shell_is_a_soft_failure_and_a_dome_passes(monkeypatch):
     assert dome["shape:shell_dome"].passed, dome["shape:shell_dome"].message
 
 
+def test_projected_area_sees_a_plate_face_on_and_edge_on():
+    from animatica.design.measure import projected_area
+
+    plate = np.array([[x, y, z] for x in (-0.01, 0.01) for y in (-0.5, 0.5) for z in (-0.5, 0.5)])
+    quads = [[0, 1, 3, 2], [4, 5, 7, 6], [0, 1, 5, 4], [2, 3, 7, 6], [0, 2, 6, 4], [1, 3, 7, 5]]
+    tris = np.array([[q[0], q[j], q[j + 1]] for q in quads for j in (1, 2)])
+    assert projected_area(plate, tris, (1.0, 0.0, 0.0), 0.005) == pytest.approx(1.0, rel=0.03)
+    assert projected_area(plate, tris, (0.0, 1.0, 0.0), 0.005) < 0.04  # edge-on: a fin
+    assert projected_area(plate, tris, (1.0, 1.0, 0.0), 0.005) == pytest.approx(0.72, rel=0.05)  # 45 deg
+
+
+def test_tembos_flat_baseline_ears_are_fins_from_three_quarters_and_the_cast_passes():
+    """Tembo's baseline disc ears stood edge-on like fins from the 3/4 and face cameras (review 11-17 06:36)."""
+    from animatica.design.measure import EAR_VIEWS, ear_edge, ear_views
+
+    el = SPECIES["elephant"]
+    flat = replace(el, ear_cup=0.0, ear=("disc", (0.05, 0.46, 0.62), el.ear[2], el.ear[3]))
+    base = ear_edge(flat)
+    assert base["share"] < 0.25 and base["view"] in ("three_quarter", "face") and base["ear"] == "L"
+    assert set(ear_views(flat)["R"]) == set(EAR_VIEWS)  # the back view is not judged
+    assert ear_edge(SPECIES["tortoise"]) is None
+    for name in ("elephant", "giraffe", "zebra", "meerkat"):
+        assert ear_edge(SPECIES[name])["share"] >= 0.3, name
+
+    brief = load_brief("tembo")
+    fin = {c.id: c for c in score(brief, flat).checks}["shape:ear_edge"]
+    assert not fin.passed and fin.hard and "fin" in fin.message
+    ok = {c.id: c for c in score(brief, el).checks}["shape:ear_edge"]
+    assert ok.passed, ok.message
+
+
+def test_design_sheet_cameras_are_the_measured_ones():
+    """The ear check measures through the sheet's own cameras: one definition, in ``design.measure``."""
+    from animatica.design import measure
+
+    src = (Path(__file__).parent.parent / "scripts" / "design_sheet.py").read_text()
+    assert "VIEWS = SHEET_VIEWS" in src and "FACE_DIR, SHEET_VIEWS" in src
+    assert set(measure.EAR_VIEWS) <= set(measure.SHEET_VIEWS) | {"face"}
+
+
 def _coat(kind: str, n: int = 240) -> tuple[np.ndarray, np.ndarray]:
     """A pale oval figure with dark marking: concentric rings (a bullseye) or chevrons that run off its edge."""
     yy, xx = np.mgrid[0:n, 0:n].astype(float)

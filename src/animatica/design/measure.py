@@ -260,6 +260,118 @@ def shell_shape(sp: Species) -> dict[str, float] | None:
     }
 
 
+# The design sheet's cameras (``scripts/design_sheet.py`` imports these): direction from the subject to the lens,
+# the animal facing -Y. ``face`` is the expression close-up's camera.
+SHEET_VIEWS: dict[str, tuple[float, float, float]] = {
+    "front": (0.0, -1.0, 0.12),
+    "side": (1.0, 0.0, 0.08),  # from the animal's left: head on the image's left
+    "three_quarter": (0.72, -0.72, 0.2),
+    "back": (0.0, 1.0, 0.15),
+}
+FACE_DIR = (0.5, -1.0, 0.1)
+# the views in which an ear must show its bowl, not its edge (from behind we see its back, which is fine edge-on)
+EAR_VIEWS = ("front", "side", "three_quarter", "face")
+
+
+def _uv_sphere(
+    size: list[float] | tuple[float, ...], seg: int = 24
+) -> tuple[list[list[float]], list[list[int]]]:
+    """A UV sphere scaled to ``size`` (the adapter's ``create_primitive`` ``uv_sphere`` with ``size``)."""
+    rings = seg // 2
+    vs = [
+        [
+            math.sin(math.pi * i / rings) * math.cos(2 * math.pi * k / seg) * size[0] / 2,
+            math.sin(math.pi * i / rings) * math.sin(2 * math.pi * k / seg) * size[1] / 2,
+            math.cos(math.pi * i / rings) * size[2] / 2,
+        ]
+        for i in range(rings + 1)
+        for k in range(seg)
+    ]
+    fs = [
+        [i * seg + k, (i + 1) * seg + k, (i + 1) * seg + (k + 1) % seg, i * seg + (k + 1) % seg]
+        for i in range(rings)
+        for k in range(seg)
+    ]
+    return vs, fs
+
+
+def _placed(op: dict[str, Any]) -> tuple[Any, Any]:
+    """An ear op's (vertices in the creature's frame, triangles), as numpy arrays."""
+    import numpy as np
+
+    from animatica.creatures.gesture import euler_to_mat
+
+    if op["op"] == "create_mesh":
+        vs, fs = op["vertices"], op["faces"]
+    else:
+        vs, fs = _uv_sphere(op["size"])
+    rot = np.array(euler_to_mat(op.get("rotation", (0.0, 0.0, 0.0))))
+    v = np.asarray(vs, float) @ rot.T + np.asarray(op.get("location", (0.0, 0.0, 0.0)), float)
+    tris = [[f[0], f[j], f[j + 1]] for f in fs for j in range(1, len(f) - 1)]
+    return v, np.asarray(tris, int)
+
+
+def projected_area(vertices: Any, tris: Any, direction: tuple[float, float, float], px: float) -> float:
+    """Area of a mesh's outline seen along ``direction`` (orthographic), rasterised at pixel size ``px``: what
+    a camera draws of it, holes and overlaps counted once."""
+    import numpy as np
+    from PIL import Image, ImageDraw
+
+    d = np.asarray(direction, float)
+    d /= np.linalg.norm(d)
+    up = np.array([0.0, 0.0, 1.0]) if abs(d[2]) < 0.99 else np.array([0.0, 1.0, 0.0])
+    u = np.cross(up, d)
+    u /= np.linalg.norm(u)
+    w = np.cross(d, u)
+    p = np.stack([vertices @ u, vertices @ w], 1)
+    p = (p - p.min(0)) / px + 1.0
+    size = np.ceil(p.max(0)).astype(int) + 2
+    img = Image.new("1", (int(size[0]), int(size[1])), 0)
+    draw = ImageDraw.Draw(img)
+    for t in tris:
+        draw.polygon([tuple(q) for q in p[t]], fill=1)
+    return float(np.count_nonzero(np.asarray(img))) * px * px
+
+
+def ear_views(sp: Species, res: int = 160) -> dict[str, dict[str, float]] | None:
+    """For each ear as built (``creatures.build``, rest pose), the area the sheet's cameras draw of it as a
+    share of its face-on area (seen along its thinnest principal axis): 1 = we see the whole bowl, ~ thickness /
+    width = a fin edge-on. ``None`` without ears. Tembo's baseline disc ears (a flattened sphere) stood edge-on
+    as a fin from the 3/4 and face cameras (cloud review 11-17 06:36) while every check passed."""
+    import numpy as np
+
+    if sp.ear[0] == "none":
+        return None
+    from animatica.creatures.build import build_creature  # a lazy import: build imports nothing from design
+
+    ops = build_creature("m", sp, yaw=0.0)[0]
+    dirs = {k: SHEET_VIEWS[k] for k in EAR_VIEWS if k in SHEET_VIEWS} | {"face": FACE_DIR}
+    out: dict[str, dict[str, float]] = {}
+    for op in ops:
+        oid = str(op.get("id", ""))
+        if "_ear_" not in oid or op["op"] not in ("create_mesh", "create_primitive"):
+            continue
+        v, tris = _placed(op)
+        px = float((v.max(0) - v.min(0)).max()) / res
+        # face-on: along the axis of least spread (the ear's thickness, through its bowl)
+        _, _, vt = np.linalg.svd(v - v.mean(0), full_matrices=False)
+        full = projected_area(v, tris, tuple(vt[2]), px)
+        out[oid.split("_ear_")[1]] = {
+            k: round(projected_area(v, tris, d, px) / full, 3) for k, d in dirs.items() if k in EAR_VIEWS
+        }
+    return out
+
+
+def ear_edge(sp: Species) -> dict[str, Any] | None:
+    """The thinnest any ear is drawn in a view that should show its bowl (:func:`ear_views`): ``share``, and
+    which ``ear`` and ``view``."""
+    ev = ear_views(sp)
+    if not ev:
+        return None
+    share, ear, view = min((s, e, k) for e, views in ev.items() for k, s in views.items())
+    return {"share": share, "ear": ear, "view": view, "views": ev}
+
+
 def materials(sp: Species) -> dict[str, Any]:
     """Coat/part luminances, pattern contrast, and dark parts that may read as flat black blocks.
 

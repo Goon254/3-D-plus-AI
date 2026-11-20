@@ -33,7 +33,15 @@ from typing import Any
 from animatica.creatures.species import Species
 from animatica.design.brief import Brief
 from animatica.design.fingerprint import staleness
-from animatica.design.measure import features, hoof_shape, mane_shape, materials, proportions, shell_shape
+from animatica.design.measure import (
+    ear_edge,
+    features,
+    hoof_shape,
+    mane_shape,
+    materials,
+    proportions,
+    shell_shape,
+)
 from animatica.design.variants import Morph
 
 READY_SCORE = 9.0
@@ -45,14 +53,18 @@ MANE_STAND_MAX = 0.6  # crest height above the skin / the neck's depth there
 MANE_JAG_MAX = 0.2  # biggest crest step between neighbouring stations / the tallest crest
 MANE_REACH_MIN = 0.85  # share of withers -> poll the mane's crest must cover (a zebra's runs to the poll)
 EYE_OUTLINE_MAX = 0.08  # share of the near eye drawn outside the head's outline, any sheet view (Tembo: 0.02)
-BROW_OUTLINE_MAX = 0.25
+BROW_OUTLINE_MAX = 0.25  # share of a brow drawn outside the head's outline, any sheet view
 # largest pale patch closed all round by a striped/banded coat's marking in the front or back view, share of
 # the figure: Zuri's baseline bullseyes 2.6 % (chest) and 15 % (rump); her chevrons v2-v4 0-0.7 % (DECISIONS #96)
-STRIPE_RING_MAX = 0.015  # share of a brow drawn outside the head's outline, any sheet view
+STRIPE_RING_MAX = 0.015
 HOOF_TAPER_MAX = 0.85  # coronet width / sole width
 HOOF_WALL_MAX = 72.0  # front wall angle from the ground, degrees
 # shells (11-19): the full-width band of the sides; a ball 0.65, a half-dome 0.30, Bibi Kobe v3 0.53
 SHELL_SHOULDER_MAX = 0.4
+# ears (11-20): the least of an ear the front / side / 3/4 / face cameras draw, as a share of its face-on area.
+# Tembo's baseline flat discs 0.19 (a fin from the 3/4 camera, review 11-17 06:36); the cast now 0.34-0.53; a
+# cupped ear seen exactly edge-on 0.23
+EAR_EDGE_MIN = 0.25
 
 # metric -> morph field that changes it, and the exponent of the response (area metrics move as k^2)
 LEVERS: dict[str, tuple[str, float]] = {
@@ -274,6 +286,27 @@ def _part_shape_checks(sp: Species) -> list[Check]:
                 f"(max {SHELL_SHOULDER_MAX:.0%})"
                 + ("" if ok else ": a ball or barrel; a tortoise's dome curves in just above the rim"),
                 shell,
+            )
+        )
+    ear = ear_edge(sp)
+    if ear is not None:
+        ok = ear["share"] >= EAR_EDGE_MIN
+        out.append(
+            Check(
+                "shape:ear_edge",
+                "shape",
+                ok,
+                True,
+                1.0,
+                float(ok),
+                f"the {ear['ear']} ear shows {ear['share']:.0%} of its face-on area in the {ear['view']} view "
+                f"(min {EAR_EDGE_MIN:.0%})"
+                + (
+                    ""
+                    if ok
+                    else ": edge-on like a fin; turn it to face the camera, or cup and thicken it (ear_cup)"
+                ),
+                {k: ear[k] for k in ("share", "ear", "view")},
             )
         )
     return out
