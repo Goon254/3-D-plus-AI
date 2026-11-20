@@ -10,6 +10,7 @@ entrances (``animatica.production.continuity``), and the set's models as built (
                                                   # face shot) on approximate shot cameras
     python scripts/continuity_check.py --cameras --json out.json --diff last.json
                                                   # save the findings; print what is fixed / new since last.json
+    python scripts/continuity_check.py --cameras --by-shot   # the same findings as a fix list per shot
     python scripts/continuity_check.py --film films/<name>   # a feature-mode film folder
 
 Line lengths come from the last render's ``report.json`` (``--work``), else an estimate from the word count,
@@ -33,6 +34,7 @@ from animatica.production.continuity import (  # noqa: E402
     continuity_report,
     diff_reports,
     set_assets,
+    worklist,
 )
 from animatica.production.framing import crowding  # noqa: E402
 from animatica.production.pacing import dead_air, line_durations  # noqa: E402
@@ -69,6 +71,11 @@ def main() -> int:
         "--json", metavar="PATH", help="also write the findings as JSON (counts per kind, each key)"
     )
     ap.add_argument(
+        "--by-shot",
+        action="store_true",
+        help="also print the findings as a fix list, one line per shot, most findings first in a scene",
+    )
+    ap.add_argument(
         "--diff", metavar="PATH", help="an earlier --json report: print what is fixed and what is new"
     )
     a = ap.parse_args()
@@ -97,6 +104,15 @@ def main() -> int:
     for v in bad:
         print(v)
     print(f"{len(bad)} continuity violation(s)")
+    if a.by_shot:
+        work = worklist(bad)
+        print(f"fix list: {len(bad)} finding(s) on {len(work)} shot(s) / scene(s)")
+        for e in work:
+            where = f"shot {e['shot']}" if e["shot"] is not None else "scene"
+            print(
+                f"  {e['scene']} {where:8s} {len(e['findings'])}x  {', '.join(e['kinds'])}"
+                f"  ({', '.join(e['who'])})"
+            )
     rep = continuity_report(bad, film=film.name, cameras=a.cameras, fps=a.fps)
     if a.json:
         Path(a.json).parent.mkdir(parents=True, exist_ok=True)

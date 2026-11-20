@@ -11,6 +11,8 @@ that raised it.
 
 ## P0-FILM — the final savannah film (rendered 11-18; scored 7/10, not done) — [review 11-19 00:36](reviews/2026-11-19T0036Z.md)
 
+*Status 11-20 21:36 (cloud): no owner reply; 49 findings on 44 shots. Laptop, after the notes: `python scripts/continuity_check.py --cameras --by-shot` (DECISIONS #104) and start with SC 9 shots 5 and 10–13 (15 findings: back view, crowding, dead air). — [review 11-20 21:36](reviews/2026-11-20T2136Z.md)*
+
 Scores: story 8, character design 7, motion 7, visuals 7, mix 7; voices and music not heard in the cloud (the owner's ears needed). Work these after the owner has watched the film, in this order:
 
 - [ ] **Actors walk into each other**: Zuri's forelegs stand on Bibi Kobe's shell at 5:06 (SC 10); path centres come within 0.20 m (Tembo–Zuri, end of SC 3) and 0.48 m (Tembo–Kiki, SC 6). Add an `actor_overlap` continuity check (oriented footprint per species from the base meshes, heading from the path tangent, every on-stage non-riding pair, every 0.25 s) with a regression test; then move the marks.

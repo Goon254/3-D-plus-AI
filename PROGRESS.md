@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-20 21:36 UTC
+
+[Review](docs/reviews/2026-11-20T2136Z.md), DECISIONS #104. Still no reply from you, so nothing in the film or the designs changed. Small helper for the fix pass: `python scripts/continuity_check.py --cameras --by-shot` lists the 49 staging findings per shot (44 shots); the climax (SC 9 shots 5, 10–13) holds 15 of them and is the first fix once you've given notes. **Needs you**: unchanged (watch the film and trailer, give notes).
+
 ### Cloud build 11-20 18:36 UTC
 
 [Review](docs/reviews/2026-11-20T1836Z.md), DECISIONS #103. Still no reply from you, so nothing in the film or the designs changed. The last "known, still open" film note now has a check: **`crowding`** finds close and medium shots where a neighbour shows up only as legs or a flank, with its head out of the frame (the giraffe's legs behind Kiki at 2:30, the zebra legs at the edge of the tortoise close-ups). The film has a lot of it: 26 shots on the approximate cameras, 22 of them real when I looked; the herd stands too close in most face shots. It runs in `python scripts/continuity_check.py --cameras` and on the real cameras in every scene build; a shot can be marked `crowd_ok` when a foreground body is the point. With this, every note any review or you have made has an automatic check; the cloud sessions will only review from here until you reply.

@@ -90,6 +90,43 @@ def continuity_report(violations: list[Violation], **meta: Any) -> dict[str, Any
     }
 
 
+def worklist(violations: list[Violation]) -> list[dict[str, Any]]:
+    """The findings regrouped as a fix list, one entry per shot (``continuity_check.py --by-shot``).
+
+    One camera move or one re-blocked mark often clears several findings at once (the climax's back view,
+    its crowding flank and its dead air are the same four shots), so the laptop works shot by shot, not
+    kind by kind. A finding naming ``shot N`` belongs to that shot; one naming ``shot N ... through shot M``
+    (dead air) to every shot of the span; anything else (an overlap, a story or set finding) to its
+    scene as a whole (``shot`` None). Entries are ordered by scene, then shot, scene-wide entries first;
+    each lists its kinds (sorted, unique) and its findings in input order.
+    """
+    groups: dict[tuple[str, int | None], list[Violation]] = {}
+    for v in violations:
+        nums = [int(n) for n in _SHOT.findall(v.detail)]
+        if " through shot " in v.detail and len(nums) >= 2:
+            shots: list[int | None] = list(range(nums[0], nums[1] + 1))
+        elif nums:
+            shots = [nums[0]]
+        else:
+            shots = [None]
+        for n in shots:
+            groups.setdefault((v.scene, n), []).append(v)
+
+    def order(k: tuple[str, int | None]) -> tuple[str, int]:
+        return (k[0], -1 if k[1] is None else k[1])
+
+    return [
+        {
+            "scene": scene,
+            "shot": shot,
+            "kinds": sorted({v.kind for v in vs}),
+            "who": sorted({w for v in vs for w in re.split(r"[/+]", v.who) if w and w != "scene"}),
+            "findings": vs,
+        }
+        for (scene, shot), vs in sorted(groups.items(), key=lambda kv: order(kv[0]))
+    ]
+
+
 CAMERA_KINDS = frozenset(
     {"staging_tangent", "facing_away", "dead_air", "crowding"}
 )  # only measured with ``cameras`` on

@@ -266,3 +266,23 @@ def test_continuity_check_writes_json_and_diffs_the_savannah_film(tmp_path):
         check=False,
     )
     assert f"0 fixed, 0 new, {rep['total']} still open" in r.stdout
+
+
+def test_worklist_groups_findings_by_shot_and_spreads_dead_air_over_its_span():
+    from animatica.production.continuity import Violation, worklist
+
+    back = Violation("sc09", "facing_away", "kiki", 28.1, "shot 10 (ms, speaks): seen from behind")
+    crowd = Violation("sc09", "crowding", "tembo", 28.1, "shot 10 (ms of kiki): tembo's body fills 27 %")
+    air = Violation("sc09", "dead_air", "scene", 28.2, "shot 10 (ms) through shot 12 (ms): nothing moves")
+    lap = Violation("sc09", "actor_overlap", "tembo+zuri", 3.0, "footprints overlap 0.76 m deep")
+    tan = Violation("sc08", "staging_tangent", "zuri/bibi_kobe", 9.0, "shot 7 (ws): feet on the shell")
+    work = worklist([back, crowd, air, lap, tan])
+    where = [(e["scene"], e["shot"]) for e in work]
+    assert where == [("sc08", 7), ("sc09", None), ("sc09", 10), ("sc09", 11), ("sc09", 12)]
+    ten = work[2]
+    assert ten["kinds"] == ["crowding", "dead_air", "facing_away"]
+    assert ten["who"] == ["kiki", "tembo"]  # "scene" is not an actor
+    assert ten["findings"] == [back, crowd, air]
+    assert work[1]["who"] == ["tembo", "zuri"] and work[0]["who"] == ["bibi_kobe", "zuri"]
+    assert [e["findings"] for e in work[3:]] == [[air], [air]]
+    assert worklist([]) == []
