@@ -4,9 +4,17 @@
     python scripts/frame_check.py animatic.mp4 --every 1 --json out.json
     python scripts/frame_check.py examples/showcase/savannah-set-tests/set_midday.jpg   # stills too
 
-Today: ``horizon_stripe`` (the owner's 11-16 note: a pale featureless band laid across the frame where the ground
+``horizon_stripe`` (the owner's 11-16 note: a pale featureless band laid across the frame where the ground
 meets the hills). Prints each frame with a stripe, joined into time ranges; exit 1 if any. With
 the per-scene seconds of an ``animatic.json`` (``--animatic``), each range is named by scene. Needs ffmpeg for videos.
+
+``--faces`` (with ``--animatic``): also every close or medium shot's subject whose head is near black on the
+frame (``animatica.production.exposure``; the SC 8 tortoise close-up at 3:48). The cameras are each scene's
+``report.json`` ones in ``--work`` when it has them, else approximate (cloud: timings from a word count, scaled
+to the scene's length, so a head box can miss by a second's movement; printed as "approx").
+
+    python scripts/frame_check.py examples/showcase/savannah-film/film_web.mp4 --faces \
+        --animatic examples/showcase/savannah-animatic/animatic.json
 """
 
 from __future__ import annotations
@@ -20,6 +28,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from animatica.production.exposure import DARK_MEDIAN, dark_faces, scene_cameras  # noqa: E402
+from animatica.production.scene import load_scenes  # noqa: E402
 from animatica.sets.frames import horizon_stripe, stripes_in_video  # noqa: E402
 
 STILLS = {".png", ".jpg", ".jpeg", ".webp"}
@@ -62,7 +72,14 @@ def main() -> int:
     ap.add_argument("--animatic", help="an animatic.json with per-scene seconds, to name scenes")
     ap.add_argument("--offset", type=float, default=0.0, help="seconds before the first scene (title card)")
     ap.add_argument("--json", help="write the findings here")
+    ap.add_argument(
+        "--faces", action="store_true", help="dark faces in close/medium shots (needs --animatic)"
+    )
+    ap.add_argument("--work", default=str(ROOT / "output" / "savannah-animatic"), help="scene reports")
+    ap.add_argument("--film", default=str(ROOT / "films" / "savannah"), help="the film folder")
     a = ap.parse_args()
+    if a.faces and not a.animatic:
+        ap.error("--faces needs --animatic (the per-scene seconds)")
     bounds: list[tuple[str, float, float]] = []
     if a.animatic:
         t = a.offset
@@ -93,9 +110,40 @@ def main() -> int:
                     f"  {int(m0)}:{s0:04.1f}-{int(m1)}:{s1:04.1f}{where}: {r_['frames']} frame(s), "
                     f"span up to {r_['span']:.0%}"
                 )
+    faces: dict[str, list] = {}
+    if a.faces:
+        for m in map(Path, a.media):
+            if m.suffix.lower() in STILLS:
+                continue
+            faces[str(m)] = face_rows(m, Path(a.animatic), Path(a.film), Path(a.work), a.offset)
+            print(f"{m}: {len(faces[str(m)])} dark face(s) in close or medium shots")
+            for r_ in faces[str(m)]:
+                mm, ss = divmod(r_["video_t"], 60)
+                print(
+                    f"  {int(mm)}:{ss:04.1f} {r_['scene']} shot {r_['shot']} ({r_['type']}{', approx' if r_['approx'] else ''})"
+                    f": {r_['who']}'s head median {r_['median']:.3f} (dark < {DARK_MEDIAN})"
+                )
     if a.json:
-        Path(a.json).write_text(json.dumps({"horizon_stripe": report}, indent=1) + "\n", encoding="utf-8")
-    return 1 if any(report.values()) else 0
+        out = {"horizon_stripe": report, **({"dark_faces": faces} if a.faces else {})}
+        Path(a.json).write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
+    return 1 if any(report.values()) or any(faces.values()) else 0
+
+
+def face_rows(video: Path, animatic: Path, film: Path, work: Path, offset: float) -> list[dict]:
+    """``exposure.dark_faces`` over a whole film or animatic, scene by scene from the animatic's seconds."""
+    scenes = load_scenes(film / "07_scenes.json")
+    rows, t = [], offset
+    for s in json.loads(animatic.read_text(encoding="utf-8"))["scenes"]:
+        spec = scenes[s["scene"]]
+        rp = work / s["scene"] / "report.json"
+        rep = json.loads(rp.read_text(encoding="utf-8")) if rp.exists() else None
+        shots, poses, secs, approx = scene_cameras(spec, rep)
+        scale = s["seconds"] / secs if approx else 1.0
+        rows += [
+            {**r_, "approx": approx} for r_ in dark_faces(spec, shots, poses, video, offset=t, scale=scale)
+        ]
+        t += s["seconds"]
+    return rows
 
 
 if __name__ == "__main__":

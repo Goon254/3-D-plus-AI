@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-20 15:36 UTC
+
+[Review](docs/reviews/2026-11-20T1536Z.md), DECISIONS #102. Still no reply from you, so nothing in the film or the designs changed. The dark tortoise close-up the reviews kept noting (SC 8, 3:48) is now measured: **`dark_faces`** finds any close or medium shot whose subject's head renders near black, by drawing the head's box through the shot's camera on the frame. On the final film it finds exactly that shot (two cuts of it, 3:50 and 3:54); every other face, dusk and night included, passes with a margin. It is in the animatic's own report (`dark_faces` in `animatic.json`) and in `python scripts/frame_check.py <film> --faces --animatic examples/showcase/savannah-animatic/animatic.json`.
+
 ### Cloud build 11-20 12:36 UTC
 
 [Review](docs/reviews/2026-11-20T1236Z.md), DECISIONS #101. Still no reply from you, so nothing in the film or the designs changed. The dead-air check now runs where you will see it: the animatic's own report (`animatic.json`) lists every stretch over 4.5 s where nothing on screen moves but the camera, per scene, on that scene's real cameras and voice timings, and the scene build prints it with the other continuity findings. On the laptop, `python scripts/savannah_animatic.py --assemble` (no render) adds it to the current animatic.

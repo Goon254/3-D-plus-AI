@@ -1,0 +1,49 @@
+{
+ "_about": "Head boxes (x0, y0, x1, y1, fractions of the frame, y down) of face shots in the final film (examples/showcase/savannah-film/film_web.mp4), from approximate cameras; checked by eye (DECISIONS #102).",
+ "frames": {
+  "film_sc07_dusk_tortoise_mcu.jpg": {
+   "film_t": 214.33,
+   "who": "bibi_kobe",
+   "box": [
+    0.399,
+    0.3203,
+    0.6011,
+    0.6797
+   ],
+   "dark": false
+  },
+  "film_sc08_dark_tortoise_mcu.jpg": {
+   "film_t": 230.73,
+   "who": "bibi_kobe",
+   "box": [
+    0.399,
+    0.3203,
+    0.6012,
+    0.6797
+   ],
+   "dark": true
+  },
+  "film_sc08_night_meerkat_cu.jpg": {
+   "film_t": 237.97,
+   "who": "kiki",
+   "box": [
+    0.3547,
+    0.2416,
+    0.6453,
+    0.7584
+   ],
+   "dark": false
+  },
+  "film_sc09_night_tortoise_mcu.jpg": {
+   "film_t": 271.66,
+   "who": "bibi_kobe",
+   "box": [
+    0.3993,
+    0.3205,
+    0.6013,
+    0.6795
+   ],
+   "dark": false
+  }
+ }
+}

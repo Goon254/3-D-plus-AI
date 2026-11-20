@@ -13,7 +13,9 @@ no shot holds still: a shot fails when it is longer than ``--max-static`` second
 subjects move by 2 % of the frame. Every shot's middle frame is also measured for a horizon stripe
 (``animatica.sets.frames``; soft: listed as ``horizon_stripes``, not an exit failure), and every scene for dead
 air across its cuts on its own cameras (``production.pacing.dead_air_in_report``: nothing on screen moving but the
-camera for over 4.5 s; soft, listed as ``dead_air``). The report lands next to the film (``animatic.json``).
+camera for over 4.5 s; soft, listed as ``dead_air``), and every close or medium shot's subject for a head that
+renders near black (``production.exposure.dark_faces_in_report``; soft, listed as ``dark_faces``). The report
+lands next to the film (``animatic.json``).
 """
 
 from __future__ import annotations
@@ -29,6 +31,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from animatica.production.exposure import dark_faces_in_report  # noqa: E402
 from animatica.production.pacing import dead_air_in_report  # noqa: E402
 from animatica.production.scene import load_scenes, vfov  # noqa: E402
 from animatica.sets.frames import stripes_in_video  # noqa: E402
@@ -263,7 +266,7 @@ def main() -> int:
         print(f"== {sid} done in {time.time() - t0:.0f}s", flush=True)
 
     parts, report = [], {"scenes": [], "static_shots": [], "max_static_seconds": a.max_static}
-    report["horizon_stripes"], report["dead_air"] = [], []
+    report["horizon_stripes"], report["dead_air"], report["dark_faces"] = [], [], []
     for k, sid in enumerate(ids):
         rp = work / sid / "report.json"
         if not rp.exists():
@@ -293,6 +296,7 @@ def main() -> int:
             )
         ]
         report["dead_air"] += dead_air_rows(scenes[sid], rep)
+        report["dark_faces"] += dark_faces_in_report(scenes[sid], rep, work / sid / f"{sid}.mp4")
         report["scenes"].append(
             {
                 "scene": sid,
@@ -321,6 +325,11 @@ def main() -> int:
         )
     for d in report["dead_air"]:
         print(f"dead air (soft): {d['scene']} at {d['t']:.1f}s: {d['detail']}")
+    for d in report["dark_faces"]:
+        print(
+            f"dark face (soft): {d['scene']} shot {d['shot']} ({d['type']}) at {d['t']:.1f}s: "
+            f"{d['who']}'s head median {d['median']:.3f}"
+        )
     return 1 if report["static_shots"] else 0
 
 
