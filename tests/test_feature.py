@@ -1,11 +1,12 @@
 """Feature mode (docs/FEATURE_MODE.md): the story engine and the stage machine with its owner gates."""
 
 import json
+from pathlib import Path
 
 import pytest
 
 from animatica.core.llm import ScriptedProvider
-from animatica.feature import approve, next_stage, run, slug, status
+from animatica.feature import NEXT_STEP, animatic_path, approve, film_path, next_stage, run, slug, status
 from animatica.feature.story import species_in, validate_premise, validate_screenplay, write_story
 
 IDEA = "a shy tortoise and a fast horse race to the river before sunset"
@@ -116,3 +117,23 @@ def test_the_cue_sheet_gives_every_scene_a_cue_the_composer_reads(tmp_path):
     assert cues[0].sections[0].mood == "wonder" and cues[-1].sections[-1].mood == "triumph"
     for c in cues:  # every cue arranges
         assert composer.arrange(c).bars > 0
+
+
+def test_a_feature_films_animatic_lands_where_its_gate_looks(tmp_path, monkeypatch):
+    """The animatic hint names the script; the script's defaults for a feature film write the file the
+    animatic gate checks, and never the savannah's showcase copy."""
+    import importlib
+
+    root = Path(__file__).resolve().parents[1]
+    monkeypatch.syspath_prepend(str(root / "scripts"))
+    sa = importlib.import_module("savannah_animatic")
+    film = tmp_path / "films" / "kiki-and-the-lost-rain"
+    film.mkdir(parents=True)
+    work, out = sa.default_paths(film, None, None)
+    assert Path(out) == animatic_path(film.resolve()) and Path(work) == Path(out).parent
+    assert "showcase" not in out
+    work, out = sa.default_paths(sa.FILM, None, None)  # the savannah keeps its showcase paths
+    assert Path(out).parts[-3:] == ("showcase", "savannah-animatic", "animatic.mp4")
+    assert sa.default_paths(film, "w", "o.mp4") == ("w", "o.mp4")
+    nxt = NEXT_STEP["animatic"].format(film=film, animatic=animatic_path(film), out=film_path(film).parent)
+    assert "savannah_animatic.py --film" in nxt and str(animatic_path(film)) in nxt

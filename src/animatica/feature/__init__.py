@@ -6,10 +6,10 @@ import json
 import re
 from pathlib import Path
 
-from .stages import approve, next_stage, status
+from .stages import animatic_path, approve, film_path, next_stage, status
 from .story import write_story
 
-__all__ = ["approve", "next_stage", "run", "slug", "status", "write_story"]
+__all__ = ["animatic_path", "approve", "film_path", "next_stage", "run", "slug", "status", "write_story"]
 
 NEXT_STEP = {
     "story": "the story engine runs on the next `animatica feature` call",
@@ -17,8 +17,10 @@ NEXT_STEP = {
     "the packets; then `animatica feature --film {film} --approve design`",
     "voices": "casting runs on the next `animatica feature` call",
     "scenes": "the scene planner runs on the next `animatica feature` call (after the design gate)",
-    "animatic": "render the animatic and review it; then `animatica feature --film {film} --approve animatic`",
-    "production": "render the final scenes (resumable) and mix the film",
+    "animatic": "render the animatic (`python scripts/savannah_animatic.py --film {film}`, writes {animatic}) and "
+    "review it; then `animatica feature --film {film} --approve animatic`",
+    "production": "render the final scenes (`python scripts/savannah_scene.py <scene> --film {film} --quality final "
+    "--out {out}` for each scene in 07_scenes.json; `savannah_film.py` doesn't take `--film` yet) and mix the film",
 }
 
 
@@ -79,5 +81,12 @@ def run(film: Path, idea: str | None, llm) -> list[str]:  # noqa: ANN001 - core.
             f"  {s.name:<11} {s.state}{'' if s.done else '  (' + s.missing + ')' if s.missing else ''}"
         )
     nxt = next_stage(film)
-    log.append("next: " + (NEXT_STEP[nxt.name].format(film=film) if nxt else "the film is finished"))
+    log.append(
+        "next: "
+        + (
+            NEXT_STEP[nxt.name].format(film=film, animatic=animatic_path(film), out=film_path(film).parent)
+            if nxt
+            else "the film is finished"
+        )
+    )
     return log

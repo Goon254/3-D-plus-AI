@@ -223,21 +223,39 @@ def join_av(parts: list[Path], seconds: list[float], work: Path, out: Path, crf:
     )
 
 
+def default_paths(film: Path, work: str | None, out: str | None) -> tuple[str, str]:
+    """The savannah keeps its showcase paths; a feature film's animatic lands where its gate looks for it
+    (``feature.stages.animatic_path``), so ``animatica feature`` sees it and the savannah's isn't overwritten."""
+    if film.resolve() == FILM.resolve():
+        dw, do = ROOT / "output" / "savannah-animatic", ROOT / "examples" / "showcase" / "savannah-animatic"
+        return work or str(dw), out or str(do / "animatic.mp4")
+    from animatica.feature.stages import animatic_path
+
+    ap = animatic_path(film.resolve())
+    return work or str(ap.parent), out or str(ap)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", help="comma-separated scene ids to (re)render")
     ap.add_argument("--assemble", action="store_true", help="assemble the rendered scenes only")
-    ap.add_argument("--work", default=str(ROOT / "output" / "savannah-animatic"))
+    ap.add_argument(
+        "--work",
+        help="scene renders; default output/savannah-animatic, or output/<film>-animatic for a feature film",
+    )
     ap.add_argument(
         "--film", default=str(FILM), help="the film folder (feature mode); default films/savannah"
     )
     ap.add_argument(
-        "--out", default=str(ROOT / "examples" / "showcase" / "savannah-animatic" / "animatic.mp4")
+        "--out",
+        help="default examples/showcase/savannah-animatic/animatic.mp4, or for a feature film the path its "
+        "animatic gate checks (output/<film>-animatic/animatic.mp4)",
     )
     ap.add_argument("--max-static", type=float, default=4.5)
     a = ap.parse_args()
-    work = Path(a.work)
     film = Path(a.film)
+    a.work, a.out = default_paths(film, a.work, a.out)
+    work = Path(a.work)
     global TITLE
     if (film / "01_premise.json").exists():  # a feature-mode film: its own title
         TITLE = json.loads((film / "01_premise.json").read_text(encoding="utf-8"))["title"]

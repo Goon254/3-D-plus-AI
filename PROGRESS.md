@@ -331,7 +331,7 @@ animatica film "A lonely robot sits in a junkyard at dusk until a flower blooms.
 animatica revise output/hello-little-one "make the robot blue and slow down shot 2" --quality preview
 animatica game "a 2D platformer where a robot collects flowers" && godot --path output/game-*/godot
 animatica-mcp                        # MCP server (stdio) for Claude Desktop / Claude Code
-pytest -q                            # 160 tests (Blender/Godot/MCP tests skip if those are missing)
+pytest -q                            # 351 tests (Blender/Godot/MCP tests skip if those are missing)
 ```
 
 Each film writes `output/<project>/final.mp4` (video + audio + captions), `scene.blend`, `edit.mlt`,

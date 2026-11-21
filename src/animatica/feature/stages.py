@@ -74,13 +74,25 @@ def _file(name: str) -> Callable[[Path], tuple[bool, str]]:
     return lambda film: ((film / name).exists(), name)
 
 
+def animatic_path(film: Path) -> Path:
+    """Where a film's animatic lands; ``scripts/savannah_animatic.py --film`` writes it here by default."""
+    film = Path(film)
+    return film.parents[1] / "output" / f"{film.name}-animatic" / "animatic.mp4"
+
+
+def film_path(film: Path) -> Path:
+    """Where a film's final cut lands."""
+    film = Path(film)
+    return film.parents[1] / "output" / film.name / "film.mp4"
+
+
 def _animatic(film: Path) -> tuple[bool, str]:
-    p = film.parents[1] / "output" / f"{film.name}-animatic" / "animatic.mp4"
+    p = animatic_path(film)
     return p.exists(), str(p)
 
 
 def _production(film: Path) -> tuple[bool, str]:
-    p = film.parents[1] / "output" / film.name / "film.mp4"
+    p = film_path(film)
     return p.exists(), str(p)
 
 
