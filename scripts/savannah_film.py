@@ -5,6 +5,7 @@
     python scripts/savannah_film.py --assemble      # assemble what is rendered
     python scripts/savannah_film.py --trailer       # cut the trailer from the final scenes
     python scripts/savannah_film.py --deliver       # CHALLENGE "Output": final.mp4, captions, edit, log, poster
+    python scripts/savannah_film.py --film films/<slug> [--assemble | --deliver]   # a feature-mode film
 
 Each scene runs ``savannah_scene.py <scene> --quality final`` (Cycles on OptiX, 1280x720, 24 fps) in turn, one
 heavy process at a time; a scene whose ``report.json`` says ``final`` and whose MP4 exists is skipped, so a run
@@ -14,12 +15,18 @@ shot, and normalises the whole mix to -14 LUFS (two-pass loudnorm). Full quality
 ``output/savannah/film.mp4``; a web copy at most 25 MB (two-pass bitrate) to
 ``examples/showcase/savannah-film/``. The trailer is the cut list ``TRAILER`` (scene, start, seconds) between
 a title card and the end card "Made with Animatica · open source", also at most 25 MB.
+
+``--film films/<slug>`` (feature mode, DECISIONS #106) does the same for a film the planner wrote: the scenes and
+the title come from the film folder, everything lands in ``output/<slug>/`` (``film.mp4`` where the production
+gate looks, ``feature.stages.film_path``; the web copy and the deliverables beside it, nothing in the showcase),
+and ``--trailer`` needs a cut list in ``<film>/trailer.json`` (``[[scene, start, seconds], ...]``).
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -32,12 +39,16 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from savannah_animatic import FONT, TITLE, esc, join_av  # noqa: E402
 
 from animatica.audio.mux import loudness, master  # noqa: E402
+from animatica.feature.stages import film_path  # noqa: E402
 from animatica.production import deliverables as dlv  # noqa: E402
 from animatica.production.scene import load_scenes  # noqa: E402
 
 FILM = ROOT / "films" / "savannah"
 OUT = ROOT / "output" / "savannah"
 SHOW = ROOT / "examples" / "showcase"
+WEB_FILM = SHOW / "savannah-film" / "film_web.mp4"
+WEB_TRAILER = SHOW / "savannah-trailer" / "trailer_web.mp4"
+DELIVER = SHOW / "savannah"
 END = "Made with Animatica · open source"
 MAX_MB = 24.0  # web copies stay under the 25 MB repo limit with a margin
 LUFS = -14.0
@@ -102,6 +113,8 @@ def render(ids: list[str], force: bool) -> int:
                 "final",
                 "--out",
                 str(OUT),
+                "--film",
+                str(FILM),
             ]
         )
         if r.returncode:
@@ -224,7 +237,7 @@ def assemble() -> dict:
     cards(joined, titled, sum(secs))
     film = OUT / "film.mp4"
     loud = loudnorm(titled, film)
-    web = SHOW / "savannah-film" / "film_web.mp4"
+    web = WEB_FILM
     mb = web_copy(film, web)
     rep = {"scenes": ids, "seconds": round(sum(secs), 2), "film": str(film), "web_mb": round(mb, 1), **loud}
     rep["web_true_peak_dbtp"] = loudness(web).get("tp")
@@ -233,6 +246,10 @@ def assemble() -> dict:
 
 
 def trailer() -> dict:
+    if not TRAILER:
+        raise SystemExit(
+            f"no trailer cut list for this film: write {FILM / 'trailer.json'} ([[scene, start, s], ...])"
+        )
     work = OUT / "trailer"
     work.mkdir(parents=True, exist_ok=True)
     clips = []
@@ -302,7 +319,7 @@ def trailer() -> dict:
     full = OUT / "trailer.mp4"
     loud = loudnorm(joined, full)
     secs = duration(full)
-    web = SHOW / "savannah-trailer" / "trailer_web.mp4"
+    web = WEB_TRAILER
     mb = web_copy(full, web, height=720)
     rep = {"cuts": TRAILER, "seconds": round(secs, 2), "web_mb": round(mb, 1), **loud}
     rep["web_true_peak_dbtp"] = loudness(web).get("tp")
@@ -313,6 +330,31 @@ def trailer() -> dict:
 
 
 TAGLINE = "Fast or slow, tall or small, it takes all of us."
+
+
+def use_film(film: Path) -> None:
+    """Point every path, the title, the tagline and the trailer's cut list at ``film``. The savannah keeps its
+    showcase paths; any other film writes only under ``output/<slug>/``."""
+    global FILM, OUT, WEB_FILM, WEB_TRAILER, DELIVER, TITLE, TAGLINE, TRAILER
+    film = Path(film).resolve()
+    if film == (ROOT / "films" / "savannah").resolve():
+        return
+    FILM = film
+    OUT = film_path(film).parent
+    WEB_FILM = OUT / "film_web.mp4"
+    WEB_TRAILER = OUT / "trailer_web.mp4"
+    DELIVER = OUT / "deliver"
+    prem = film / "01_premise.json"
+    p = json.loads(prem.read_text(encoding="utf-8")) if prem.exists() else {}
+    TITLE = p.get("title", film.name.replace("-", " ").title())
+    theme = p.get("tagline") or p.get("theme") or ""
+    TAGLINE = (theme[:1].upper() + theme[1:]).rstrip(".") + "." if theme else ""
+    cuts = film / "trailer.json"
+    TRAILER = (
+        [(str(c[0]), float(c[1]), float(c[2])) for c in json.loads(cuts.read_text(encoding="utf-8"))]
+        if cuts.exists()
+        else []
+    )
 
 
 def deliver(poster_at: float | None = None) -> dict:
@@ -326,12 +368,12 @@ def deliver(poster_at: float | None = None) -> dict:
     if missing or not film.exists():
         raise SystemExit(f"assemble the final film first (not final: {', '.join(missing) or 'film.mp4'})")
     reports = [json.loads((OUT / sid / "report.json").read_text(encoding="utf-8")) for sid in ids]
-    dst = SHOW / "savannah"
+    dst = DELIVER
     dst.mkdir(parents=True, exist_ok=True)
     cues = dlv.caption_cues(reports)
     srt = dlv.write_srt(cues, dst / "captions.srt")
     dlv.write_vtt(cues, dst / "captions.vtt")
-    rel = Path("..", "..", "..", "output", "savannah")
+    rel = Path(os.path.relpath(OUT, dst))
     dlv.write_mlt(reports, [(rel / sid / f"{sid}.mp4").as_posix() for sid in ids], dst / "edit.mlt", TITLE)
     t = dlv.poster_time(reports) if poster_at is None else poster_at
     dlv.write_poster(film, t, dst / "poster.jpg", TITLE, TAGLINE)
@@ -386,7 +428,11 @@ def main() -> int:
     ap.add_argument("--force", action="store_true", help="re-render scenes that are already final")
     ap.add_argument("--deliver", action="store_true", help="write examples/showcase/savannah/ from the film")
     ap.add_argument("--poster-at", type=float, default=None, help="film time of the poster frame (s)")
+    ap.add_argument(
+        "--film", default=str(FILM), help="the film folder (feature mode); default films/savannah"
+    )
     a = ap.parse_args()
+    use_film(Path(a.film))
     if a.deliver:
         print(json.dumps(deliver(a.poster_at), indent=1))
         return 0

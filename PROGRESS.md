@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-21 18:36 UTC
+
+[Review](docs/reviews/2026-11-21T1836Z.md), DECISIONS #106. Still no reply from you, so nothing in the film or the designs changed. Feature mode's last stage now has its command: `python scripts/savannah_film.py --film films/<slug>` renders every scene not yet final (resumable), mixes the film to −14 LUFS into `output/<slug>/film.mp4` (where the production gate looks), and `--deliver` writes captions, edit, log and poster beside it; the savannah's paths are unchanged. **Needs you**: unchanged (watch the film and trailer, give notes).
+
 ### Cloud build 11-20 21:36 UTC
 
 [Review](docs/reviews/2026-11-20T2136Z.md), DECISIONS #104. Still no reply from you, so nothing in the film or the designs changed. Small helper for the fix pass: `python scripts/continuity_check.py --cameras --by-shot` lists the 49 staging findings per shot (44 shots); the climax (SC 9 shots 5, 10–13) holds 15 of them and is the first fix once you've given notes. **Needs you**: unchanged (watch the film and trailer, give notes).

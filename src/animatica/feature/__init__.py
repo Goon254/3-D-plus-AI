@@ -19,8 +19,8 @@ NEXT_STEP = {
     "scenes": "the scene planner runs on the next `animatica feature` call (after the design gate)",
     "animatic": "render the animatic (`python scripts/savannah_animatic.py --film {film}`, writes {animatic}) and "
     "review it; then `animatica feature --film {film} --approve animatic`",
-    "production": "render the final scenes (`python scripts/savannah_scene.py <scene> --film {film} --quality final "
-    "--out {out}` for each scene in 07_scenes.json; `savannah_film.py` doesn't take `--film` yet) and mix the film",
+    "production": "render and mix the film (`python scripts/savannah_film.py --film {film}`: every scene not yet "
+    "final, resumable, then the -14 LUFS film in {out}); `--deliver` adds captions, edit, log and poster",
 }
 
 

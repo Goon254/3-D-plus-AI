@@ -79,4 +79,7 @@ Later (not in the first pieces): a `feature.critique` pass that scores the draft
    (default `films/savannah`), and the animatic's title comes from the film's premise. The planner also writes
    the score's `05_cue_sheet.json` (wonder at the opening, the time of day's mood after, triumph at the end).
    Not yet run end to end on a new film: that needs the GPU, which was busy with the savannah final render.
-7. Production stage: the final render loop with per-scene resume, mix, web copy.
+7. ~~Production stage~~ **done** (DECISIONS #106): `savannah_film.py --film <folder>` renders every scene not yet
+   final (per-scene resume), joins and mixes the film to -14 LUFS at `output/<slug>/film.mp4` (the production
+   gate's path), makes a web copy beside it, and `--deliver` writes captions, edit, log and poster into
+   `output/<slug>/deliver/`. A trailer needs a cut list in `<folder>/trailer.json`. Not yet run on a GPU.

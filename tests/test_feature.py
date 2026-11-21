@@ -137,3 +137,83 @@ def test_a_feature_films_animatic_lands_where_its_gate_looks(tmp_path, monkeypat
     assert sa.default_paths(film, "w", "o.mp4") == ("w", "o.mp4")
     nxt = NEXT_STEP["animatic"].format(film=film, animatic=animatic_path(film), out=film_path(film).parent)
     assert "savannah_animatic.py --film" in nxt and str(animatic_path(film)) in nxt
+
+
+def _scene_clip(path: Path, secs: float, hz: int) -> None:
+    import subprocess
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        ["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"testsrc2=s=1280x720:r=24:d={secs}"]
+        + ["-f", "lavfi", "-i", f"sine=frequency={hz}:sample_rate=48000:duration={secs}", "-ac", "2"]
+        + ["-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p", "-c:a", "aac", str(path)],
+        check=True,
+    )
+
+
+def test_a_feature_film_is_mixed_and_delivered_where_its_production_gate_looks(tmp_path, monkeypatch):
+    """``savannah_film.py --film``: scenes, title and tagline from the film folder; the film lands at
+    ``film_path`` (the production gate passes), web copy and deliverables beside it, nothing in the showcase;
+    no trailer without a cut list. Synthetic scene renders (no Blender)."""
+    import importlib
+    import shutil
+
+    if not shutil.which("ffmpeg"):
+        pytest.skip("needs ffmpeg")
+    root = Path(__file__).resolve().parents[1]
+    monkeypatch.syspath_prepend(str(root / "scripts"))
+    film = tmp_path / "films" / "kiki-and-the-lost-rain"
+    film.mkdir(parents=True)
+    (film / "01_premise.json").write_text(
+        json.dumps({"title": "Kiki and the Lost Rain", "theme": "everyone's gift counts"}), encoding="utf-8"
+    )
+    sf = importlib.reload(importlib.import_module("savannah_film"))
+    try:
+        showcase = (sf.WEB_FILM, sf.WEB_TRAILER, sf.DELIVER)
+        sf.use_film(root / "films" / "savannah")  # the savannah keeps its showcase paths and cut list
+        assert (sf.WEB_FILM, sf.WEB_TRAILER, sf.DELIVER) == showcase and len(sf.TRAILER) == 15
+        nxt = NEXT_STEP["production"].format(
+            film=film, animatic=animatic_path(film), out=film_path(film).parent
+        )
+        assert "savannah_film.py --film" in nxt and str(film_path(film).parent) in nxt
+        sf.use_film(film)
+        assert sf.OUT == film_path(film.resolve()).parent and sf.TITLE == "Kiki and the Lost Rain"
+        assert sf.TAGLINE == "Everyone's gift counts."
+        for p in (sf.WEB_FILM, sf.WEB_TRAILER, sf.DELIVER):
+            assert tmp_path in p.parents and p not in showcase
+        ids = ["sc01", "sc02"]
+        monkeypatch.setattr(sf, "load_scenes", lambda _p: dict.fromkeys(ids))
+        for k, sid in enumerate(ids):
+            _scene_clip(sf.OUT / sid / f"{sid}.mp4", 6.0, 330 + 110 * k)
+            rep = {
+                "scene": sid,
+                "title": f"Day - scene {k + 1}",
+                "quality": "final",
+                "seconds": 6.0,
+                "shots": [{"shot": 0, "type": "ms", "subjects": ["kiki", "tembo"], "start": 0.0, "end": 6.0}],
+                "lines": [{"who": "kiki", "start": 1.0, "end": 2.5, "text": "Where is the rain?"}],
+                "continuity": [],
+                "warnings": [],
+            }
+            (sf.OUT / sid / "report.json").write_text(json.dumps(rep), encoding="utf-8")
+        rep = sf.assemble()
+        assert Path(rep["film"]) == film_path(film.resolve()) and sf.WEB_FILM.exists()
+        assert next(st for st in status(film) if st.name == "production").ready  # the gate sees the film
+        got = sf.deliver()
+        assert got["cues"] == 2
+        for name in (
+            "final.mp4",
+            "captions.srt",
+            "captions.vtt",
+            "edit.mlt",
+            "production_log.md",
+            "poster.jpg",
+        ):
+            assert (sf.DELIVER / name).exists(), name
+        assert "Kiki and the Lost Rain" in (sf.DELIVER / "production_log.md").read_text(encoding="utf-8")
+        edit = (sf.DELIVER / "edit.mlt").read_text(encoding="utf-8")
+        assert "sc01/sc01.mp4" in edit and (sf.DELIVER / "../sc01/sc01.mp4").resolve().exists()
+        with pytest.raises(SystemExit, match="trailer.json"):
+            sf.trailer()
+    finally:
+        importlib.reload(sf)
