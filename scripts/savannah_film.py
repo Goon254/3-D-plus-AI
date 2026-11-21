@@ -19,7 +19,8 @@ a title card and the end card "Made with Animatica · open source", also at most
 ``--film films/<slug>`` (feature mode, DECISIONS #106) does the same for a film the planner wrote: the scenes and
 the title come from the film folder, everything lands in ``output/<slug>/`` (``film.mp4`` where the production
 gate looks, ``feature.stages.film_path``; the web copy and the deliverables beside it, nothing in the showcase),
-and ``--trailer`` needs a cut list in ``<film>/trailer.json`` (``[[scene, start, seconds], ...]``).
+and ``--trailer`` cuts ``<film>/trailer.json`` (``[[scene, start, seconds], ...]``) or, without one, a list picked
+from the final scenes' lines (``production.trailer``, DECISIONS #107; written to ``trailer_cuts.json`` to edit).
 """
 
 from __future__ import annotations
@@ -42,6 +43,7 @@ from animatica.audio.mux import loudness, master  # noqa: E402
 from animatica.feature.stages import film_path  # noqa: E402
 from animatica.production import deliverables as dlv  # noqa: E402
 from animatica.production.scene import load_scenes  # noqa: E402
+from animatica.production.trailer import trailer_cuts  # noqa: E402
 
 FILM = ROOT / "films" / "savannah"
 OUT = ROOT / "output" / "savannah"
@@ -245,11 +247,27 @@ def assemble() -> dict:
     return rep
 
 
-def trailer() -> dict:
-    if not TRAILER:
+def auto_cuts() -> list[tuple[str, float, float]]:
+    """No hand-made cut list: pick one from the final scenes' reports (``production.trailer``, DECISIONS #107)
+    and write it to ``OUT/trailer_cuts.json``, to copy to ``<film>/trailer.json`` and edit by hand."""
+    ids = list(load_scenes(FILM / "07_scenes.json"))
+    missing = [s for s in ids if not is_final(s)]
+    if missing:
         raise SystemExit(
-            f"no trailer cut list for this film: write {FILM / 'trailer.json'} ([[scene, start, s], ...])"
+            f"no trailer cut list for this film ({FILM / 'trailer.json'}) and not every scene is final "
+            f"({', '.join(missing)}): render the scenes first, or write the cut list ([[scene, start, s], ...])"
         )
+    reports = [json.loads((OUT / sid / "report.json").read_text(encoding="utf-8")) for sid in ids]
+    cuts = trailer_cuts(reports)
+    if not cuts:
+        raise SystemExit(f"no spoken line to cut a trailer on: write {FILM / 'trailer.json'} by hand")
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / "trailer_cuts.json").write_text(json.dumps(cuts, indent=1) + "\n", encoding="utf-8")
+    return [(str(c[0]), float(c[1]), float(c[2])) for c in cuts]
+
+
+def trailer() -> dict:
+    cuts, source = (TRAILER, "hand") if TRAILER else (auto_cuts(), "auto")
     work = OUT / "trailer"
     work.mkdir(parents=True, exist_ok=True)
     clips = []
@@ -281,7 +299,7 @@ def trailer() -> dict:
             str(path),
         )
     clips.append((title_card, card_s))
-    for k, (sid, start, secs) in enumerate(TRAILER):
+    for k, (sid, start, secs) in enumerate(cuts):
         src = OUT / sid / f"{sid}.mp4"
         dst = work / f"cut_{k:02d}.mp4"
         fade = f"afade=t=in:d=0.25,afade=t=out:st={secs - 0.35:.2f}:d=0.35"
@@ -321,7 +339,7 @@ def trailer() -> dict:
     secs = duration(full)
     web = WEB_TRAILER
     mb = web_copy(full, web, height=720)
-    rep = {"cuts": TRAILER, "seconds": round(secs, 2), "web_mb": round(mb, 1), **loud}
+    rep = {"cuts": cuts, "cuts_from": source, "seconds": round(secs, 2), "web_mb": round(mb, 1), **loud}
     rep["web_true_peak_dbtp"] = loudness(web).get("tp")
     (OUT / "trailer.json").write_text(json.dumps(rep, indent=1) + "\n", encoding="utf-8")
     if not 60 <= secs <= 90:

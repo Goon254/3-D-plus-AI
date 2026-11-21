@@ -154,7 +154,7 @@ def _scene_clip(path: Path, secs: float, hz: int) -> None:
 def test_a_feature_film_is_mixed_and_delivered_where_its_production_gate_looks(tmp_path, monkeypatch):
     """``savannah_film.py --film``: scenes, title and tagline from the film folder; the film lands at
     ``film_path`` (the production gate passes), web copy and deliverables beside it, nothing in the showcase;
-    no trailer without a cut list. Synthetic scene renders (no Blender)."""
+    without a cut list the trailer is cut on the scenes' lines. Synthetic scene renders (no Blender)."""
     import importlib
     import shutil
 
@@ -213,7 +213,12 @@ def test_a_feature_film_is_mixed_and_delivered_where_its_production_gate_looks(t
         assert "Kiki and the Lost Rain" in (sf.DELIVER / "production_log.md").read_text(encoding="utf-8")
         edit = (sf.DELIVER / "edit.mlt").read_text(encoding="utf-8")
         assert "sc01/sc01.mp4" in edit and (sf.DELIVER / "../sc01/sc01.mp4").resolve().exists()
+        trl = sf.trailer()  # no cut list: picked from the scenes' lines, written out to edit
+        assert trl["cuts_from"] == "auto" and [c[0] for c in trl["cuts"]] == ids
+        assert (sf.OUT / "trailer_cuts.json").exists() and sf.WEB_TRAILER.exists()
+        assert tmp_path in sf.WEB_TRAILER.parents
+        (sf.OUT / "sc02" / "report.json").unlink()
         with pytest.raises(SystemExit, match="trailer.json"):
-            sf.trailer()
+            sf.trailer()  # a scene not final: render first or write the list
     finally:
         importlib.reload(sf)
