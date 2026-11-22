@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-22 21:36 UTC
+
+[Review](docs/reviews/2026-11-22T2136Z.md), DECISIONS #115. Still no reply from you, so nothing in the film or the approved designs changed. I worked on the "far brow floats beside the head" note that every design fails. Brows bent round the skull didn't help (two got worse) and are not committed. The real cause: in a 3/4 view the far eye peeks past the cheek and the brow sits on it. For Tembo, Kiki and Bibi Kobe that reads fine. For Neema and Zuri, whose eyes sit on the sides of narrow heads, the far brow really does hang in the air. The check now measures only what is drawn against the background (not the brow sitting on the eye) and points at those two. **Needs you**: unchanged (watch the film and trailer, give notes; Kiki's question from 12:36; Zuri v5 or v4; Bibi v4 or v3), plus: may a proposal move Neema's and Zuri's eyes a little forward and up? That changes their faces.
+
 ### Cloud build 11-22 18:36 UTC
 
 [Review](docs/reviews/2026-11-22T1836Z.md), DECISIONS #114. Still no reply from you, so nothing in the film or the approved designs changed. New: a **Bibi Kobe v4 proposal** beside the locked v3 ([compare](design/proposals/bibi_kobe-v4/compare.jpg), [sheet](design/proposals/bibi_kobe-v4/sheet.jpg)): only her shell changes, from a beehive with straight sides to a round dome that slopes in above the rim (no outward skirt), a little lower (0.57 × its length, as the species notes say). She still reads "tortoise 90" blind, like v3. **Needs you**: unchanged (watch the film and trailer, give notes; Kiki's question from 12:36; Zuri v5 or v4), plus: take Bibi v4's shell or keep v3's.

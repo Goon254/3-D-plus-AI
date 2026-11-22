@@ -33,7 +33,7 @@ from animatica.creatures.build import build_creature  # noqa: E402
 from animatica.creatures.face import BROW_COLOR, face_keys, face_ops, refresh_rest  # noqa: E402
 from animatica.creatures.gait import GAITS, Waypoint  # noqa: E402
 from animatica.creatures.perform import walk_keys  # noqa: E402
-from animatica.creatures.qa import outline_probe, outline_summary  # noqa: E402
+from animatica.creatures.qa import backdrop_summary, outline_probe, outline_summary  # noqa: E402
 from animatica.creatures.species import SPECIES, Species  # noqa: E402
 from animatica.design.brief import Brief, all_briefs, load_brief  # noqa: E402
 from animatica.design.critic import critique_for  # noqa: E402
@@ -178,6 +178,17 @@ def render_views(
         ol_views = {k: v for k, v in VIEWS.items() if k != "back"} | {"face": FACE_DIR}
         q = _run(eng, "outline", [outline_probe(meta, brows, ol_views, FACE_FRAMES["neutral"])])
         outline = outline_summary(q["inspect"], list(ol_views), list(meta.eyes), brows)
+        # the brows against the head, eyes and lids: what is drawn against the backdrop (#115)
+        q = _run(
+            eng, "backdrop", [outline_probe(meta, brows, ol_views, FACE_FRAMES["neutral"], backdrop=True)]
+        )
+        bg = backdrop_summary(q["inspect"], list(ol_views), brows)
+        for name, v in bg["views"].items():
+            outline["views"][name]["brow_backdrop"] = v
+        outline["brow_backdrop"], outline["brow_backdrop_view"] = (
+            bg["brow_backdrop"],
+            bg["brow_backdrop_view"],
+        )
         for tag, direction in VIEWS.items():
             _cam(eng, tag, aim, direction, r)
             paths[tag] = _render(eng, tag, FACE_FRAMES["neutral"], out)
@@ -202,7 +213,15 @@ def render_views(
             )
             pose = outline_summary(q["inspect"], ["pose"], list(meta.eyes), brows)
             outline["views"]["pose"] = pose["views"]["pose"]
-            for k in ("eye", "brow"):
+            q = _run(
+                eng,
+                "backdrop_pose",
+                [outline_probe(meta, brows, {"pose": VIEWS["side"]}, FACE_FRAMES["neutral"], backdrop=True)],
+            )
+            pbg = backdrop_summary(q["inspect"], ["pose"], brows)
+            pose["brow_backdrop"] = pbg["brow_backdrop"]
+            outline["views"]["pose"]["brow_backdrop"] = pbg["brow_backdrop"]
+            for k in ("eye", "brow", "brow_backdrop"):
                 if pose[k] > outline[k]:
                     outline[k], outline[f"{k}_view"] = pose[k], "pose"
             paths["pose"] = _render(eng, "pose", FACE_FRAMES["neutral"], out)

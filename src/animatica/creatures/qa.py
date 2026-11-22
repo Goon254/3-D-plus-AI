@@ -148,20 +148,42 @@ def rig_checks(
 
 
 def outline_probe(
-    meta: CreatureMeta, brows: list[str], views: dict[str, tuple[float, float, float]], frame: int = 1
+    meta: CreatureMeta,
+    brows: list[str],
+    views: dict[str, tuple[float, float, float]],
+    frame: int = 1,
+    backdrop: bool = False,
 ) -> dict[str, Any]:
     """An ``inspect`` op measuring, from each of ``views`` (name -> direction toward the camera), the share of each
-    eye and brow that lies outside the head surface's outline."""
+    eye and brow that lies outside the head surface's outline.
+
+    ``backdrop``: the brows only, against the head *and* the eyes and lids: the share drawn against the backdrop.
+    In a 3/4 view the far eye peeks past the far cheek (a drawing convention the eye measure allows), and its brow
+    sits on it: outside the head's outline, but drawn on the eye, not floating in the air (DECISIONS #115)."""
     surf = meta.head_surface or f"{meta.cid}_body"
+    surfaces = [surf]
+    targets = list(meta.eyes) + list(brows)
+    if backdrop:
+        surfaces += list(meta.eyes) + [lid for lid in meta.lids if lid.endswith("_up")]
+        targets = list(brows)
     return {
         "op": "inspect",
         "subjects": [meta.root],
         "frames": [frame],
         "outline": [
-            {"target": t, "surfaces": [surf], "views": [list(v) for v in views.values()]}
-            for t in list(meta.eyes) + list(brows)
+            {"target": t, "surfaces": surfaces, "views": [list(v) for v in views.values()]} for t in targets
         ],
     }
+
+
+def backdrop_summary(report: dict[str, Any], views: list[str], brows: list[str]) -> dict[str, Any]:
+    """From a ``backdrop`` probe: per view the worst brow's share drawn against the backdrop, and the worst view."""
+    fr = next(iter(report["frames"].values()))["outline"]
+    per = {
+        name: max((fr[t]["views"][i] for t in brows if t in fr), default=0.0) for i, name in enumerate(views)
+    }
+    worst = max(per, key=lambda k: per[k]) if per else ""
+    return {"views": per, "brow_backdrop": round(per.get(worst, 0.0), 3), "brow_backdrop_view": worst}
 
 
 def outline_summary(

@@ -378,7 +378,16 @@ def _image_checks(brief: Brief, img: dict[str, Any]) -> list[Check]:
             ("eye", EYE_OUTLINE_MAX, "the eye bulges out of the head (googly)"),
             ("brow", BROW_OUTLINE_MAX, "the brow floats as a dash beside the head"),
         ):
-            v = float(ol[part])
+            # brows: what is drawn against the backdrop (outside the head, eyes and lids) when it was measured;
+            # a far brow resting on the far eye that peeks past the cheek is drawn on the eye, not in the air (#115)
+            key = "brow_backdrop" if part == "brow" and "brow_backdrop" in ol else part
+            v = float(ol[key])
+            where = (
+                "drawn against the backdrop (outside the head, eyes and lids; "
+                if key == "brow_backdrop"
+                else "outside the head's outline ("
+            )
+            msg = f"{part} {v:.0%} {where}{ol.get(f'{key}_view') or 'any'} view; max {limit:.0%})"
             ok = v <= limit
             out.append(
                 Check(
@@ -388,8 +397,7 @@ def _image_checks(brief: Brief, img: dict[str, Any]) -> list[Check]:
                     False,
                     0.5,
                     0.5 if ok else 0.5 * max(0.0, 1.0 - (v - limit) / max(limit, 1e-6)),
-                    f"{part} {v:.0%} outside the head's outline ({ol.get(f'{part}_view') or 'any'} view; max {limit:.0%})"
-                    + ("" if ok else f": {what}"),
+                    msg + ("" if ok else f": {what}"),
                     v,
                 )
             )

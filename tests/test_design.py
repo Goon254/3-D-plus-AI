@@ -472,6 +472,41 @@ def test_eye_and_brow_outline_checks_pick_the_near_eye_and_the_worst_brow():
     assert not any(c.id.endswith("_outline") for c in score(b, sp, {"floating_parts": 0}).checks)
 
 
+def test_a_brow_resting_on_the_far_eye_is_not_drawn_against_the_backdrop():
+    """DECISIONS #115: the brow check scores what is drawn against the backdrop (outside the head, eyes and
+    upper lids) when the sheet measured it; a far brow on the far eye peeking past the cheek is on the eye."""
+    from animatica.creatures.build import CreatureMeta
+    from animatica.creatures.qa import backdrop_summary, outline_probe
+    from animatica.design.rubric import BROW_OUTLINE_MAX
+
+    meta = CreatureMeta("t", "elephant", "t_root", "t_rig", 1.0, 0.0, 0.8, {}, {}, [], [])
+    meta.head_surface, meta.eyes = "t_head", ["t_eye_L", "t_eye_R"]
+    meta.lids = ["t_lid_L_up", "t_lid_L_lo", "t_lid_R_up", "t_lid_R_lo"]
+    views = {"front": (0.0, -1.0, 0.0), "three_quarter": (0.7, -0.7, 0.1)}
+    plain = outline_probe(meta, ["t_brow_L", "t_brow_R"], views)
+    assert len(plain["outline"]) == 4 and plain["outline"][0]["surfaces"] == ["t_head"]
+    bg = outline_probe(meta, ["t_brow_L", "t_brow_R"], views, backdrop=True)
+    assert [p["target"] for p in bg["outline"]] == ["t_brow_L", "t_brow_R"]
+    assert bg["outline"][0]["surfaces"] == ["t_head", "t_eye_L", "t_eye_R", "t_lid_L_up", "t_lid_R_up"]
+    rep = {
+        "frames": {"8": {"outline": {"t_brow_L": {"views": [0.0, 0.1]}, "t_brow_R": {"views": [0.0, 0.2]}}}}
+    }
+    summ = backdrop_summary(rep, list(views), ["t_brow_L", "t_brow_R"])
+    assert summ == {
+        "views": {"front": 0.0, "three_quarter": 0.2},
+        "brow_backdrop": 0.2,
+        "brow_backdrop_view": "three_quarter",
+    }
+    b, sp = load_brief("tembo"), SPECIES["elephant"]
+    # 90 % outside the head's outline, but only 20 % against the backdrop: passes, and says which it measured
+    ol = {"eye": 0.0, "eye_view": "", "brow": 0.9, "brow_view": "three_quarter", **summ}
+    check = {c.id: c for c in score(b, sp, {"outline": ol}).checks}["face:brow_outline"]
+    assert check.passed and check.value == 0.2 and "backdrop" in check.message
+    ol["brow_backdrop"] = BROW_OUTLINE_MAX + 0.2
+    check = {c.id: c for c in score(b, sp, {"outline": ol}).checks}["face:brow_outline"]
+    assert not check.passed and not check.hard and "floats" in check.message
+
+
 def test_a_ball_shell_is_a_soft_failure_and_a_dome_passes(monkeypatch):
     """Bibi Kobe's shell read as a ball in every cloud review from 11-17 06:36 while every check passed."""
     import math
