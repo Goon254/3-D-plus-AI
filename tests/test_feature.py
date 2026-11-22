@@ -26,6 +26,19 @@ def test_the_offline_story_engine_writes_a_valid_premise_and_screenplay():
     assert write_story(IDEA, ScriptedProvider()) == (prem, play)  # same idea, same story
 
 
+def test_the_offline_screenplay_reads_as_speech():
+    prem, play = write_story("a little meerkat and an old turtle look for the lost rain", ScriptedProvider())
+    assert prem["title"] == "Kiki and the Lost Rain"  # one "the", not "the the"
+    lines = {ln["text"] for sc in play["scenes"] for ln in sc["lines"]}
+    assert "I'll find the lost rain. By myself!" in lines  # the idea's article is kept
+    assert "I can help. I remember the old way." in lines  # a gift said as speech, not a list
+    assert not any("My " in t for t in lines)
+    narr = [ln["text"] for sc in play["scenes"] for ln in sc["lines"] if ln["who"] == "narrator"]
+    assert not any(" us" in t or " we " in f" {t.lower()} " for t in narr)  # the narrator isn't one of them
+    prem, play = write_story("an elephant and a giraffe go to find water", ScriptedProvider())
+    assert any(ln["text"] == "I'll find water. By myself!" for ln in play["scenes"][0]["lines"])
+
+
 def test_validation_catches_what_production_cant_make():
     prem, play = write_story(IDEA, ScriptedProvider())
     bad = json.loads(json.dumps(prem))

@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-22 03:36 UTC
+
+[Review](docs/reviews/2026-11-22T0336Z.md), DECISIONS #109. Still no reply from you, so nothing in the film or the designs changed. Running feature mode from a fresh clone showed the offline screenplay (used without an LLM key) wrote lines nobody would say ("I'll find lost rain.", "I can help. My patience and memory!", "I'll find find water."); they now read as speech, with a test. **Needs you**: unchanged (watch the film and trailer, give notes).
+
 ### Cloud build 11-22 00:36 UTC
 
 [Review](docs/reviews/2026-11-22T0036Z.md), DECISIONS #108. Still no reply from you, so nothing in the film or the designs changed. The automatic trailer for feature films now keeps the story's big moments: the screenplay marks 2–4 lines as `"key": true` (the hero's vow, the low point, the climax) and each gets a cut that ends on it, and a shot marked `"trailer": true` gets a short picture-only cut (the spring bursting). **Needs you**: unchanged (watch the film and trailer, give notes).

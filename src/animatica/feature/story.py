@@ -41,6 +41,14 @@ TRAITS = {
     "meerkat": ("small, quick and nervous", "worries about every danger", "digging and keeping watch"),
     "tortoise": ("slow, old and wise", "too slow to keep up", "patience and memory"),
 }
+# what each body plan says when its gift is needed (spoken lines: "My patience and memory!" is not speech)
+GIFT_LINES = {
+    "elephant": "I can help. I'm strong!",
+    "giraffe": "I can help. I can see far!",
+    "zebra": "I can help. I'm fast!",
+    "meerkat": "I can help. I'll keep watch!",
+    "tortoise": "I can help. I remember the old way.",
+}
 SYSTEM = (
     "You are the story engine of a children's animated short-film studio (ages 4-9). Answer with JSON only."
 )
@@ -67,10 +75,18 @@ def species_in(idea: str) -> tuple[list[str], dict[str, str]]:
 
 
 def _goal(idea: str) -> str:
+    """The thing the friends look for, as a noun phrase that reads in a sentence: the idea's own article is
+    kept ("look for the lost rain" -> "the lost rain", "go to find water" -> "water")."""
     m = re.search(
-        r"\b(?:to|find|reach|for)\s+(?:the\s+)?([a-z ]{3,40}?)(?:[.,!]|$| and\b| before\b)", idea.lower()
+        r"\b(?:to|find|reach|for)\s+(?!(?:find|reach|look|get|go|search)\b)((?:(?:the|a|an)\s+)?[a-z ]{3,40}?)(?:[.,!]|$| and\b| before\b)",
+        idea.lower(),
     )
-    return (m.group(1).strip() if m else "the water").rstrip()
+    return re.sub(r"\s+", " ", m.group(1)).strip() if m else "the water"
+
+
+def _title_goal(goal: str) -> str:
+    """The goal for a title, after "the": "the lost rain" -> "Lost Rain"."""
+    return re.sub(r"^(?:the|a|an)\s+", "", goal).title()
 
 
 @scripted("feature.premise")
@@ -104,7 +120,7 @@ def scripted_premise(payload: dict[str, Any]) -> dict[str, Any]:
         )
     hero = cast[0]
     return {
-        "title": f"{hero['name']} and the {goal.title()}",
+        "title": f"{hero['name']} and the {_title_goal(goal)}",
         "logline": f"{hero['name']} the {hero['species']} sets out for {goal}, and learns it takes all of them.",
         "theme": "everyone's gift counts",
         "idea": idea,
@@ -136,7 +152,7 @@ def scripted_screenplay(payload: dict[str, Any]) -> dict[str, Any]:
             "lines": [
                 {
                     "who": "narrator",
-                    "text": f"Far away, the friends woke up and needed {goal}.",
+                    "text": f"One morning, far away, the friends needed {goal}.",
                     "mood": "neutral",
                 },
                 {
@@ -173,7 +189,7 @@ def scripted_screenplay(payload: dict[str, Any]) -> dict[str, Any]:
             "intent": "lost; every gift needed",
             "beats": [3],
             "lines": [{"who": hero["id"], "text": "I don't know the way.", "mood": "worried", "key": True}]
-            + [{"who": c["id"], "text": f"I can help. My {c['gift']}!", "mood": "determined"} for c in rest],
+            + [{"who": c["id"], "text": GIFT_LINES[c["species"]], "mood": "determined"} for c in rest],
         },
         {
             "id": "sc05",
@@ -182,7 +198,7 @@ def scripted_screenplay(payload: dict[str, Any]) -> dict[str, Any]:
             "beats": [4],
             "lines": [
                 {"who": hero["id"], "text": "We did it. All of us.", "mood": "happy"},
-                {"who": "narrator", "text": "It takes all of us.", "mood": "happy"},
+                {"who": "narrator", "text": "It took all of them. Every gift counted.", "mood": "happy"},
             ],
         },
     ]
