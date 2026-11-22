@@ -1,0 +1,98 @@
+{
+ "score": 9.72,
+ "ready": false,
+ "hard_failures": [],
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.2379,
+  "top_dip": 0.0,
+  "throat": 0.2379,
+  "lift": 0.3508,
+  "dark_blob": 0.0288,
+  "outline": {
+   "views": {
+    "front": {
+     "eye": 0.12,
+     "brow": 0.0
+    },
+    "side": {
+     "eye": 0.0,
+     "brow": 0.0
+    },
+    "three_quarter": {
+     "eye": 0.0,
+     "brow": 0.588
+    },
+    "face": {
+     "eye": 0.0,
+     "brow": 0.36
+    }
+   },
+   "eye": 0.12,
+   "eye_view": "front",
+   "brow": 0.588,
+   "brow_view": "three_quarter"
+  },
+  "stripe_rings": {
+   "largest": 0.0,
+   "view": "front",
+   "at": null
+  },
+  "expression_happy": 0.0401,
+  "expression_surprised": 0.0449
+ },
+ "design": {
+  "species": "zebra",
+  "proportions": {
+   "head_body": 0.5978,
+   "eye_head": 0.4267,
+   "eye_spacing": 0.864,
+   "neck_head": 0.944,
+   "elongation": 1.614,
+   "belly_gap": 0.9737,
+   "leg_thickness": 0.1106,
+   "ear_head": 0.0545,
+   "neck_length": 0.7111,
+   "snout": 0.3
+  },
+  "features": [
+   "ears",
+   "mane",
+   "muzzle",
+   "pattern:stripes",
+   "tail_tuft"
+  ],
+  "materials": {
+   "luminance": {
+    "coat": 0.872,
+    "legs": 0.872,
+    "neck": 0.872,
+    "hoof": 0.0148,
+    "tuft": 0.0072,
+    "muzzle": 0.0361,
+    "mane": 0.872
+   },
+   "pattern_contrast": {
+    "coat": 15.53,
+    "legs": 15.53,
+    "neck": 15.53,
+    "mane": 15.53
+   },
+   "dark_regions": []
+  }
+ },
+ "changed": [
+  "ear",
+  "fore_foot",
+  "head_at",
+  "head_size",
+  "hind_foot",
+  "hip",
+  "mane",
+  "neck",
+  "shoulder",
+  "tail",
+  "torso"
+ ],
+ "rig_stress": "not run (cloud: run scripts/rig_stress_test.py on the proposal before approval)"
+}

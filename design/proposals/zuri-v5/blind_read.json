@@ -1,0 +1,23 @@
+{
+  "reader": "sub-agent, no context (cloud 11-22 15:36, proposal images only); a second fresh reader gave the same silhouette answer (zebra 60, horse / donkey) and thumbnail zebra 92",
+  "silhouette": {
+    "image": "silhouette.png",
+    "sha256": "eee8fe169d567fbcba09a0c9d7da03cf2cff4e2b9c682def7c8e7caa65a2cfe1",
+    "animal": "zebra",
+    "confidence": 60.0,
+    "alternatives": [
+      "horse",
+      "donkey"
+    ]
+  },
+  "thumbnail": {
+    "image": "thumb96.png",
+    "sha256": "a1c4627304d2edcfd262e2d00b8db253ce57f1d9ff89f2000b47bcc3541ca5e4",
+    "animal": "zebra",
+    "confidence": 95.0,
+    "alternatives": [
+      "okapi",
+      "horse"
+    ]
+  }
+}

@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-22 15:36 UTC
+
+[Review](docs/reviews/2026-11-22T1536Z.md), DECISIONS #113. Still no reply from you, so nothing in the film or the approved designs changed. New: a **Zuri v5 proposal** beside the locked v4 ([compare](design/proposals/zuri-v5/compare.jpg), [sheet](design/proposals/zuri-v5/sheet.jpg)): her brush mane now runs all the way to the poll between the ears, a little taller; a shorter barrel, a slightly bigger head and ears. Your v4 stripes and colours are kept. Read blind, her silhouette is "zebra 60" for two fresh readers, where v4 got "zebra 55" and once "horse 75" today; so it's better, still not a sure read (the legs and body are a horse's). **Needs you**: unchanged (watch the film and trailer, give notes; Kiki's question from 12:36), plus: take Zuri v5, keep v4, or let a v6 make her stockier (shorter legs, which changes framing in every shot).
+
 ### Cloud build 11-22 12:36 UTC
 
 [Review](docs/reviews/2026-11-22T1236Z.md), DECISIONS #112. Still no reply from you, so nothing in the film or the approved designs changed. New: a **design proposal** is a next version of a locked character built beside it (`design/proposals/`, `python scripts/design_proposal.py <folder> --compare`), never over it, and offered to you only if a blind reader reads it better. The first, Kiki v7 (head higher, shorter body, visible back bands; your v4 legs and v5 patches kept), looked a little better to me but read no better blind (silhouette 45 vs 70, thumbnail 60 vs 60), so it is not offered. **Needs you**: unchanged (watch the film and trailer, give notes), plus one question: Kiki's weak read lives in things you chose on 11-18 (the light v5 eye patches, the sentinel's long tail on the ground). Say if a Kiki proposal may change those.

@@ -1,0 +1,88 @@
+{
+ "character": "zuri",
+ "version": "v5",
+ "base": "v4",
+ "why": [
+  "Blind read 11-22 (DECISIONS #111): silhouette 'zebra 50, horse / donkey'; thumbnail 'zebra 95'.",
+  "Reviews 11-18 18:36 on: the mane stops halfway up the neck as a square-cut slab (shape:mane_reach 0.76 < 0.85), and the body reads horse-like.",
+  "Kept from the owner's 11-18 choice: v4's soft brush mane, the chevron stripes, the coat colours."
+ ],
+ "overrides": {
+  "neck": {
+   "tip": [
+    0.0,
+    -0.7,
+    0.62
+   ]
+  },
+  "head_at": [
+   0.0,
+   -0.83,
+   0.61
+  ],
+  "head_size": [
+   0.25,
+   0.55,
+   0.3
+  ],
+  "torso": [
+   0.47,
+   0.92,
+   0.57
+  ],
+  "shoulder": [
+   0.12,
+   -0.31,
+   -0.06
+  ],
+  "hip": [
+   0.13,
+   0.31,
+   -0.02
+  ],
+  "fore_foot": [
+   0.12,
+   -0.32
+  ],
+  "hind_foot": [
+   0.13,
+   0.32
+  ],
+  "tail": {
+   "base": [
+    0.0,
+    0.47,
+    0.14
+   ],
+   "tip": [
+    0.0,
+    0.6,
+    -0.3
+   ]
+  },
+  "mane": [
+   0.15,
+   0.065,
+   14
+  ],
+  "ear": [
+   "leaf",
+   [
+    0.1,
+    0.045,
+    0.2
+   ],
+   [
+    0.07,
+    0.12,
+    0.085
+   ],
+   [
+    -10.0,
+    0.0,
+    16.0
+   ]
+  ]
+ },
+ "status": "offered to the owner: the silhouette reads zebra a little better (2 fresh readers: zebra 60, 60) than v4's (3 readers: zebra 50, zebra 55, and one 'horse 75'); thumbnail zebra 95 / 92 as v4's 95. Still a weak read (< 75): the body and legs are a horse's; the mane is now the zebra cue. Needs a rig stress test before approval."
+}
