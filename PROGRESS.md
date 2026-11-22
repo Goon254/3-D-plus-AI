@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-22 06:36 UTC
+
+[Review](docs/reviews/2026-11-22T0636Z.md), DECISIONS #110. Still no reply from you, so nothing in the film or the designs changed. Blender now runs in the cloud sessions again (all Blender tests pass here), and I re-rendered all five locked characters from main: they still match what you approved (four to the pixel; Bibi Kobe's feet differ by 1–2 px between cloud and laptop). Until now only the design *parameters* were locked; `python scripts/design_lock_check.py` now checks the pictures too, so later code changes can't quietly alter an approved character. **Needs you**: unchanged (watch the film and trailer, give notes).
+
 ### Cloud build 11-22 03:36 UTC
 
 [Review](docs/reviews/2026-11-22T0336Z.md), DECISIONS #109. Still no reply from you, so nothing in the film or the designs changed. Running feature mode from a fresh clone showed the offline screenplay (used without an LLM key) wrote lines nobody would say ("I'll find lost rain.", "I can help. My patience and memory!", "I'll find find water."); they now read as speech, with a test. **Needs you**: unchanged (watch the film and trailer, give notes).

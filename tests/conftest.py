@@ -10,7 +10,13 @@ sys.path.insert(0, str(ROOT / "src"))
 
 os.environ.setdefault("ANIMATICA_LINE_CACHE", str(Path(__import__("tempfile").mkdtemp()) / "lines"))
 
-HAS_BPY = importlib.util.find_spec("bpy") is not None or bool(os.environ.get("ANIMATICA_BLENDER_BIN"))
+# The engine also accepts a separate interpreter with bpy (ANIMATICA_BLENDER_PYTHON, docs/SETUP.md), e.g. a
+# Python 3.13 venv beside a core on another version; honour it here too or every Blender test skips.
+HAS_BPY = (
+    importlib.util.find_spec("bpy") is not None
+    or bool(os.environ.get("ANIMATICA_BLENDER_BIN"))
+    or bool(os.environ.get("ANIMATICA_BLENDER_PYTHON"))
+)
 
 
 def pytest_collection_modifyitems(config, items):

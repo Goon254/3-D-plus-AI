@@ -15,7 +15,9 @@ pip install -e ".[dev]"         # animatica core + pytest + ruff
 * `pip install bpy` **worked first try** (≈400 MB wheel). No apt Blender or tarball needed.
 * The core never imports `bpy`; it starts `python -m animatica_blender.server --stdio` in a child process
   (GPL adapter). To use a Blender binary instead set `ANIMATICA_BLENDER_BIN=/path/to/blender`.
-* To use a different interpreter for the adapter set `ANIMATICA_BLENDER_PYTHON`.
+* To use a different interpreter for the adapter set `ANIMATICA_BLENDER_PYTHON` (the tests honour it too). Cloud
+  sessions: `uv venv -p 3.13 <dir> && uv pip install --python <dir>/bin/python bpy==5.3.0` (~1 min), then
+  `export ANIMATICA_BLENDER_PYTHON=<dir>/bin/python`: all Blender tests and the design-sheet scripts run (CPU).
 * Headless rendering: Workbench ~0.1–0.2 s/frame at 480×270; Cycles CPU (16 spp, OIDN denoise,
   adaptive sampling, persistent data, reduced bounces) ≈ 9 s/frame at 960×540 on 2 vCPU.
   EEVEE works but software GL (llvmpipe) made the first frame take 75 s, so we don't use it without a GPU.
