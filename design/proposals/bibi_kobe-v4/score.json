@@ -1,0 +1,75 @@
+{
+ "score": 9.7,
+ "ready": false,
+ "hard_failures": [],
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.0,
+  "top_dip": 0.0,
+  "throat": 0.0,
+  "lift": -0.3481,
+  "dark_blob": 0.0051,
+  "outline": {
+   "views": {
+    "front": {
+     "eye": 0.0,
+     "brow": 0.0
+    },
+    "side": {
+     "eye": 0.0,
+     "brow": 0.0
+    },
+    "three_quarter": {
+     "eye": 0.0,
+     "brow": 0.842
+    },
+    "face": {
+     "eye": 0.0,
+     "brow": 0.947
+    }
+   },
+   "eye": 0.0,
+   "eye_view": "",
+   "brow": 0.947,
+   "brow_view": "face"
+  },
+  "expression_happy": 0.055,
+  "expression_surprised": 0.0634
+ },
+ "design": {
+  "species": "tortoise",
+  "proportions": {
+   "head_body": 0.2155,
+   "eye_head": 0.4872,
+   "eye_spacing": 0.7556,
+   "neck_head": 1.0256,
+   "elongation": 2.3,
+   "belly_gap": 0.4,
+   "leg_thickness": 0.1278,
+   "ear_head": 0.0,
+   "neck_length": 0.6042,
+   "snout": 0.0
+  },
+  "features": [
+   "pattern:scales",
+   "pattern:scutes",
+   "shell"
+  ],
+  "materials": {
+   "luminance": {
+    "coat": 0.3756,
+    "shell": 0.5685,
+    "nail": 0.0511
+   },
+   "pattern_contrast": {
+    "coat": 2.11,
+    "shell": 5.16
+   },
+   "dark_regions": []
+  }
+ },
+ "changed": [
+  "shell_profile"
+ ],
+ "rig_stress": "not run (cloud: run scripts/rig_stress_test.py on the proposal before approval)"
+}

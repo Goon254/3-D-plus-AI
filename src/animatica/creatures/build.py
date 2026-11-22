@@ -12,6 +12,7 @@ import math
 from dataclasses import dataclass, field, replace
 from typing import Any
 
+from . import shell as shell_mod
 from .ear import cupped_ear
 from .eyes import EMBED_DEPTH, IRIS_AT, eye_frame, lid_mesh, look_rotation
 from .gait import FootSpot
@@ -797,8 +798,22 @@ def build_creature(
             # a domed carapace with a flared rim, raised scutes and painted leopard marks (creatures.shell); the
             # baseline UV sphere read as a ball with panel lines
             ssize, sat = sp.shell
+            dome, flare, apex, depth, crown = sp.shell_profile or (
+                shell_mod.DOME,
+                shell_mod.FLARE,
+                0.72,
+                0.42,
+                2.0,
+            )
             sv, sf, sc = carapace(
-                ssize[0] / 2 * 1.06, ssize[1] / 2 * 1.04, ssize[2] * 0.72, -ssize[2] * 0.26, -ssize[2] * 0.42
+                ssize[0] / 2 * 1.06,
+                ssize[1] / 2 * 1.04,
+                ssize[2] * apex,
+                -ssize[2] * 0.26,
+                -ssize[2] * depth,
+                dome=dome,
+                flare=flare,
+                crown=crown,
             )
             meshes.append(
                 (

@@ -78,3 +78,29 @@ def test_compare_board_is_drawn(tmp_path):
     out = compare_board(ROOT / "design" / "kiki" / "v6", prop, "kiki: v6 vs v7")
     assert out.exists() and out.stat().st_size > 1000
     assert json.loads((PROPOSALS / "kiki-v7" / "score.json").read_text())["rig_stress"].startswith("not run")
+
+
+def test_a_shell_profile_domes_the_shell_and_leaves_the_locked_one_untouched():
+    """Bibi Kobe's shell read as a ball (shape:shell_dome 0.53, max 0.40; DECISIONS #95). ``shell_profile``
+    (#114) shapes the carapace per species; unset, it builds v3's mesh exactly and is left out of the species
+    fingerprint, so the locked design and its stress report stay valid."""
+    from dataclasses import replace
+
+    from animatica.creatures.build import build_creature
+    from animatica.design.fingerprint import species_hash, species_snapshot
+    from animatica.design.measure import shell_shape
+
+    sp = SPECIES["tortoise"]
+    assert sp.shell_profile is None and "shell_profile" not in species_snapshot(sp)
+    v3 = (0.85, -0.02, 0.72, 0.42, 2.0)  # the defaults spelt out: the same mesh
+    same = replace(sp, shell_profile=v3)
+    shell = [o for o in build_creature("m", sp)[0] if str(o.get("id", "")).endswith("_shell")][0]
+    shell2 = [o for o in build_creature("m", same)[0] if str(o.get("id", "")).endswith("_shell")][0]
+    assert shell["vertices"] == shell2["vertices"]
+    assert species_hash(same) != species_hash(sp)  # set, it counts like any parameter
+    locked = shell_shape(sp)
+    doc = load_proposal(PROPOSALS / "bibi_kobe-v4")
+    dome = shell_shape(proposal_species(doc, SPECIES))
+    assert locked["shoulder"] > 0.4  # the ball fails the soft check
+    assert dome["shoulder"] <= 0.4  # the proposal is a dome
+    assert 0.54 <= dome["height_length"] <= 0.62  # near the species notes' 0.58

@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-22 18:36 UTC
+
+[Review](docs/reviews/2026-11-22T1836Z.md), DECISIONS #114. Still no reply from you, so nothing in the film or the approved designs changed. New: a **Bibi Kobe v4 proposal** beside the locked v3 ([compare](design/proposals/bibi_kobe-v4/compare.jpg), [sheet](design/proposals/bibi_kobe-v4/sheet.jpg)): only her shell changes, from a beehive with straight sides to a round dome that slopes in above the rim (no outward skirt), a little lower (0.57 × its length, as the species notes say). She still reads "tortoise 90" blind, like v3. **Needs you**: unchanged (watch the film and trailer, give notes; Kiki's question from 12:36; Zuri v5 or v4), plus: take Bibi v4's shell or keep v3's.
+
 ### Cloud build 11-22 15:36 UTC
 
 [Review](docs/reviews/2026-11-22T1536Z.md), DECISIONS #113. Still no reply from you, so nothing in the film or the approved designs changed. New: a **Zuri v5 proposal** beside the locked v4 ([compare](design/proposals/zuri-v5/compare.jpg), [sheet](design/proposals/zuri-v5/sheet.jpg)): her brush mane now runs all the way to the poll between the ears, a little taller; a shorter barrel, a slightly bigger head and ears. Your v4 stripes and colours are kept. Read blind, her silhouette is "zebra 60" for two fresh readers, where v4 got "zebra 55" and once "horse 75" today; so it's better, still not a sure read (the legs and body are a horse's). **Needs you**: unchanged (watch the film and trailer, give notes; Kiki's question from 12:36), plus: take Zuri v5, keep v4, or let a v6 make her stockier (shorter legs, which changes framing in every shot).

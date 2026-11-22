@@ -1,0 +1,23 @@
+{
+  "reader": "sub-agent, no context (cloud 11-22 18:36, proposal images only); a second fresh reader gave the same answers (tortoise 90 / 92). Control, a fresh reader on v3: tortoise 90 / 92",
+  "silhouette": {
+    "image": "silhouette.png",
+    "sha256": "ae46772ad72b470a897d65419cbf3eec6f15aaf38c8c5a186d911e933d5c3150",
+    "animal": "tortoise",
+    "confidence": 90.0,
+    "alternatives": [
+      "turtle",
+      "armadillo"
+    ]
+  },
+  "thumbnail": {
+    "image": "thumb96.png",
+    "sha256": "acadceeb050c94a6861a6c062019cd15ed5e84df355dd4b6f28c10549f9584a7",
+    "animal": "tortoise",
+    "confidence": 92.0,
+    "alternatives": [
+      "turtle",
+      "terrapin"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+ "character": "bibi_kobe",
+ "version": "v4",
+ "base": "v3",
+ "why": [
+  "Reviews 11-17 06:36 to 11-19 18:36: the shell reads as a ball / beehive: the sides stay at full width up half its height (shape:shell_dome 0.53, max 0.40) and it stands 0.67 x its length high (species notes 0.58).",
+  "Owner, 11-17: v2's outward-flared rim hung like a skirt, so the rim stays level (flare 0), never flared out.",
+  "Kept from v3: the scute layout and leopard marks, the head, face, legs and colours.",
+  "Profile: the top's height at radius r is (1 - r^2.6)^1.0 (DECISIONS #114): a full round crown whose sides slope in above a level rim. v3's cos^0.85 kept full width up half the height; a steeper cos^1.5 alone drew a cone (tried first, rejected by eye)."
+ ],
+ "overrides": {
+  "shell_profile": [
+   2.0,
+   0.0,
+   0.66,
+   0.36,
+   2.6
+  ]
+ },
+ "status": "offered to the owner: the shell is a dome (shape:shell_dome 0.53 -> 0.28, max 0.40; height 0.67 -> 0.57 x its length, species notes 0.58) and the read stays clear (2 fresh readers: tortoise 90 / thumbnail 92, as the v3 control). Only the shell changes. Needs a rig stress test before approval (laptop)."
+}

@@ -43,9 +43,18 @@ def _digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()[:16]
 
 
+# fields added after the stress reports were fingerprinted: left out while at their default (None), so a report
+# that measured the same design stays fresh; once set they count like any other parameter
+ADDED_AT_DEFAULT = ("shell_profile",)
+
+
 def species_snapshot(sp: Species) -> dict[str, Any]:
     """The species parameters as plain JSON (as ``approved.json`` stores them)."""
-    return json.loads(json.dumps(asdict(sp), default=str))
+    snap = json.loads(json.dumps(asdict(sp), default=str))
+    for k in ADDED_AT_DEFAULT:
+        if snap.get(k) is None:
+            snap.pop(k, None)
+    return snap
 
 
 def species_hash(sp: Species) -> str:

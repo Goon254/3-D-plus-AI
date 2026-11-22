@@ -71,6 +71,10 @@ class Species:
     regions: tuple[tuple[tuple[str, ...], str], ...] = ()  # (bone prefixes, material key) on the body mesh
     nails: int = 0  # toenails/claws on each skin-grown foot
     shell: tuple[V3, V3] | None = None  # (size, centre) of a tortoise carapace
+    # the carapace's profile (creatures.shell.carapace): (dome exponent, rim flare, apex height, plastron depth,
+    # crown exponent), heights as shares of the shell's size z; None = Bibi Kobe v3's (0.85, -0.02, 0.72, 0.42,
+    # 2.0). Added 11-22 for a domed-shell proposal (DECISIONS #114); left out of the species fingerprint while None.
+    shell_profile: tuple[float, float, float, float, float] | None = None
     default_pose: str = "stand"  # "sentinel": the meerkat stands up when it stops
     # legs ("F" fore, "H" hind) whose feet stay level while planted instead of rocking with the shin (#69)
     level_feet: str = "FH"

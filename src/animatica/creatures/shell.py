@@ -90,9 +90,16 @@ def carapace(
     under_z: float,
     rings: int = 200,  # fine enough that no colour edge is narrower than two vertices (v2's 110 x 256 stair-stepped)
     seg: int = 480,
+    dome: float = DOME,
+    flare: float = FLARE,
+    crown: float = 2.0,
 ) -> tuple[list[list[float]], list[list[int]], list[list[float]]]:
     """(vertices, faces, colours) of a closed carapace + plastron. ``rim_z`` is the rim height and ``under_z``
-    the plastron's, both relative to the shell's location; the apex is at ``rim_z + height``."""
+    the plastron's, both relative to the shell's location; the apex is at ``rim_z + height``. ``dome`` and
+    ``flare`` default to the module's values (Bibi Kobe v3); a species can set its own (``Species.shell_profile``).
+    The top's height at radius ``r`` (0..1) is ``(1 - r ** crown) ** (dome / 2)``: ``crown`` 2 is v3's
+    ``cos ** dome`` profile; a larger ``crown`` keeps the top full and round while ``dome`` > 1 slopes the sides
+    in above the rim (a dome, not a cone or a beehive)."""
     cs = scute_centres()
     verts: list[list[float]] = []
     cols: list[list[float]] = []
@@ -116,12 +123,12 @@ def carapace(
         s = j / rings
         r = math.sin(s * math.pi / 2)
         if s > 0.86:
-            r += FLARE * ((s - 0.86) / 0.14) ** 2
+            r += flare * ((s - 0.86) / 0.14) ** 2
         profile.append((s, r, None))
     # the lip, then the underside tucking in to the plastron: (radius, share of the depth to under_z)
     under = [
-        (1.0 + FLARE + 0.01, 0.02),
-        (1.0 + FLARE * 0.6, 0.12),
+        (1.0 + flare + 0.01, 0.02),
+        (1.0 + flare * 0.6, 0.12),
         (0.92, 0.45),
         (0.75, 0.8),
         (0.5, 0.95),
@@ -132,7 +139,11 @@ def carapace(
         for k in range(seg):
             th = 2 * math.pi * k / seg
             if t is None:
-                z = rim_z + height * max(0.0, math.cos(s * math.pi / 2)) ** DOME + lift(th) * s**3
+                if crown == 2.0:  # v3's expression, kept exactly so the locked mesh is byte-identical
+                    prof = max(0.0, math.cos(s * math.pi / 2)) ** dome
+                else:
+                    prof = max(0.0, 1 - math.sin(s * math.pi / 2) ** crown) ** (dome / 2)
+                z = rim_z + height * prof + lift(th) * s**3
                 col, relief = mark_colour(s * math.sin(th), s * math.cos(th), cs)
                 rr = r * (1 + RAISE * relief * min(1.0, s * 3))  # no relief squeezed into the apex
                 z = rim_z + (z - rim_z) * (1 + RAISE * relief * (1 - s) * 0.8)
