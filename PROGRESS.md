@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-22 12:36 UTC
+
+[Review](docs/reviews/2026-11-22T1236Z.md), DECISIONS #112. Still no reply from you, so nothing in the film or the approved designs changed. New: a **design proposal** is a next version of a locked character built beside it (`design/proposals/`, `python scripts/design_proposal.py <folder> --compare`), never over it, and offered to you only if a blind reader reads it better. The first, Kiki v7 (head higher, shorter body, visible back bands; your v4 legs and v5 patches kept), looked a little better to me but read no better blind (silhouette 45 vs 70, thumbnail 60 vs 60), so it is not offered. **Needs you**: unchanged (watch the film and trailer, give notes), plus one question: Kiki's weak read lives in things you chose on 11-18 (the light v5 eye patches, the sentinel's long tail on the ground). Say if a Kiki proposal may change those.
+
 ### Cloud build 11-22 09:36 UTC
 
 [Review](docs/reviews/2026-11-22T0936Z.md), DECISIONS #111. Still no reply from you, so nothing in the film or the designs changed. The species read now has a **blind reader**: a helper that had never seen the briefs named each locked character from its black silhouette, then its 96 px thumbnail. Tembo, Neema and Bibi Kobe read clearly (85–95 %). **Zuri's silhouette** was only "zebra, 50 %, or a horse/donkey" (the stripes save her thumbnail), and **Kiki** was "meerkat" but unsure both times (70 % standing, 60 % on all fours: "mongoose / weasel"). That matches the reviewers' notes on those two. `python scripts/blind_read.py` prints the table; a re-render voids a read.

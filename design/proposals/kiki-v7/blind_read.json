@@ -1,0 +1,23 @@
+{
+  "reader": "sub-agent, no context (11-22 12:36, proposal images only)",
+  "silhouette": {
+    "image": "silhouette.png",
+    "sha256": "971ec02da640e44f6a6d1abb87df5dcecc34252973881075ed4cdf8083a62df5",
+    "animal": "meerkat",
+    "confidence": 45.0,
+    "alternatives": [
+      "lizard",
+      "otter"
+    ]
+  },
+  "thumbnail": {
+    "image": "thumb96.png",
+    "sha256": "9f0332656d8b44cc2db47cc424b90a87544edd1546c4bcd0601ae218c22851ee",
+    "animal": "meerkat",
+    "confidence": 60.0,
+    "alternatives": [
+      "mongoose",
+      "weasel"
+    ]
+  }
+}

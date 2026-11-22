@@ -1,0 +1,98 @@
+{
+ "score": 9.77,
+ "ready": false,
+ "hard_failures": [],
+ "image_metrics": {
+  "floating_parts": 0,
+  "neck_notch": 0.1551,
+  "top_dip": 0.0112,
+  "throat": 0.1011,
+  "lift": 0.5169,
+  "dark_blob": 0.0104,
+  "outline": {
+   "views": {
+    "front": {
+     "eye": 0.038,
+     "brow": 0.0
+    },
+    "side": {
+     "eye": 0.0,
+     "brow": 0.061
+    },
+    "three_quarter": {
+     "eye": 0.0,
+     "brow": 0.939
+    },
+    "face": {
+     "eye": 0.0,
+     "brow": 0.649
+    },
+    "pose": {
+     "eye": 0.0,
+     "brow": 0.0
+    }
+   },
+   "eye": 0.038,
+   "eye_view": "front",
+   "brow": 0.939,
+   "brow_view": "three_quarter"
+  },
+  "expression_happy": 0.0445,
+  "expression_surprised": 0.0629
+ },
+ "design": {
+  "species": "meerkat",
+  "proportions": {
+   "head_body": 0.5158,
+   "eye_head": 0.4085,
+   "eye_spacing": 0.64,
+   "neck_head": 0.4789,
+   "elongation": 2.1111,
+   "belly_gap": 0.8111,
+   "leg_thickness": 0.142,
+   "ear_head": 0.0573,
+   "neck_length": 0.5773,
+   "snout": 0.5102
+  },
+  "features": [
+   "ears",
+   "eye_patch",
+   "muzzle",
+   "nose",
+   "pattern:bands",
+   "sentinel",
+   "tail_tuft"
+  ],
+  "materials": {
+   "luminance": {
+    "coat": 0.2879,
+    "back": 0.2634,
+    "paw": 0.2879,
+    "ear": 0.0249,
+    "muzzle": 0.3228,
+    "nose": 0.0089,
+    "tailtip": 0.0085
+   },
+   "pattern_contrast": {
+    "back": 1.21
+   },
+   "dark_regions": [
+    {
+     "material": "tailtip",
+     "bones": [
+      "tail_3"
+     ]
+    }
+   ]
+  }
+ },
+ "changed": [
+  "head_at",
+  "head_size",
+  "mats",
+  "neck",
+  "tail",
+  "torso"
+ ],
+ "rig_stress": "not run (cloud: run scripts/rig_stress_test.py on the proposal before approval)"
+}

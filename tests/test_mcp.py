@@ -2,7 +2,9 @@
 
 import asyncio
 import json
+import os
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -68,7 +70,13 @@ def test_mcp_stdio_server_starts(tmp_path):
     params = StdioServerParameters(
         command=sys.executable,
         args=["-m", "animatica.mcp.server"],
-        env={"ANIMATICA_MCP_WORKDIR": str(tmp_path), "PATH": "/usr/bin:/bin:/usr/local/bin"},
+        env={
+            "ANIMATICA_MCP_WORKDIR": str(tmp_path),
+            "PATH": "/usr/bin:/bin:/usr/local/bin",
+            # a fresh clone runs the tests without `pip install -e .`; the Blender venv (#110) passes through
+            "PYTHONPATH": str(Path(__file__).resolve().parents[1] / "src"),
+            **{k: os.environ[k] for k in ("ANIMATICA_BLENDER_PYTHON",) if k in os.environ},
+        },
     )
 
     async def go():

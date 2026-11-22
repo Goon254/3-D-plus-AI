@@ -1,0 +1,43 @@
+{
+ "character": "kiki",
+ "version": "v7",
+ "base": "v6",
+ "why": [
+  "Blind read 11-22 (DECISIONS #111): thumbnail 'meerkat 60, mongoose / weasel'; silhouette 'meerkat 70, prairie dog / otter'.",
+  "Reviewers since 11-18: on all fours a long uniform-tan tube with a cone snout and a thin tail; the head is carried low like a mongoose's.",
+  "Kept from the owner's 11-18 choice: v4's slim legs and coat colour, v5's soft light eye patches (no raccoon rings)."
+ ],
+ "overrides": {
+  "torso": [
+   0.088,
+   0.19,
+   0.09
+  ],
+  "neck": {
+   "tip": [
+    0.0,
+    -0.136,
+    0.07
+   ]
+  },
+  "head_at": [
+   0.0,
+   -0.176,
+   0.086
+  ],
+  "head_size": [
+   0.075,
+   0.098,
+   0.071
+  ],
+  "tail": {
+   "r0": 0.019
+  },
+  "mats": {
+   "back": {
+    "pattern_color": "#9E774A"
+   }
+  }
+ },
+ "status": "not offered: the blind read did not improve (v6: silhouette meerkat 70, thumbnail 60; v7: 45, 60)"
+}
