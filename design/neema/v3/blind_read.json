@@ -1,0 +1,23 @@
+{
+  "reader": "sub-agent, no context (cloud 2026-11-22 09:36)",
+  "silhouette": {
+    "image": "silhouette.png",
+    "sha256": "406507a04a883269e1e0ff20a4e6bbc210a46833cc7eb1e3de541c280c9f9429",
+    "animal": "giraffe",
+    "confidence": 92.0,
+    "alternatives": [
+      "llama",
+      "okapi"
+    ]
+  },
+  "thumbnail": {
+    "image": "thumb96.png",
+    "sha256": "33ddb855a47592366281b11f9ed1f15a9a29f2a677963480376756ea8a4a1ffc",
+    "animal": "giraffe",
+    "confidence": 95.0,
+    "alternatives": [
+      "okapi",
+      "llama"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "reader": "sub-agent, no context (cloud 2026-11-22 09:36)",
+  "silhouette": {
+    "image": "silhouette.png",
+    "sha256": "d6f2757c82aa39590be9b1224b2f6d99453d0a302ab47b6e0c9409c06f27484c",
+    "animal": "tortoise",
+    "confidence": 85.0,
+    "alternatives": [
+      "turtle",
+      "armadillo"
+    ]
+  },
+  "thumbnail": {
+    "image": "thumb96.png",
+    "sha256": "6ab80c95f50335ab59bfc0fb1241970da5f53b30fcaca91ec71a85598e27bbdb",
+    "animal": "tortoise",
+    "confidence": 93.0,
+    "alternatives": [
+      "turtle",
+      "box turtle"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "reader": "sub-agent, no context (cloud 2026-11-22 09:36)",
+  "silhouette": {
+    "image": "silhouette.png",
+    "sha256": "3ed8d3f002ed836e706b0cf358f21a23f69293de63157cd425dc41b9c2c7b4be",
+    "animal": "elephant",
+    "confidence": 85.0,
+    "alternatives": [
+      "mammoth",
+      "rhino"
+    ]
+  },
+  "thumbnail": {
+    "image": "thumb96.png",
+    "sha256": "812d7a8730e3e8b633d32cc3a6f54cae840db2d525d44847e191289a2b29ae19",
+    "animal": "elephant",
+    "confidence": 90.0,
+    "alternatives": [
+      "mammoth",
+      "hippo"
+    ]
+  }
+}

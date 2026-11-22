@@ -1,0 +1,23 @@
+{
+  "reader": "sub-agent, no context (cloud 2026-11-22 09:36)",
+  "silhouette": {
+    "image": "silhouette.png",
+    "sha256": "34116fbc916f73b6caf99da5a01ca01ce9def3379989e78224afe4416ad7c2f8",
+    "animal": "meerkat",
+    "confidence": 70.0,
+    "alternatives": [
+      "prairie dog",
+      "otter"
+    ]
+  },
+  "thumbnail": {
+    "image": "thumb96.png",
+    "sha256": "8d891c2e925fa2f8e70a3c0053921264afe131aa6e0097db517e439271a54b19",
+    "animal": "meerkat",
+    "confidence": 60.0,
+    "alternatives": [
+      "mongoose",
+      "weasel"
+    ]
+  }
+}

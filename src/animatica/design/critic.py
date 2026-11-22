@@ -129,3 +129,68 @@ def critique_for(
     if sheet.exists():
         return load_recorded(sheet_dir / "critique.json", sheet)
     return None
+
+
+# --- Blind reads (REVIEW_QUEUE "Blind species read for recorded critiques") ---------------------------------
+#
+# A reviewer who knows the brief reads "meerkat" into a shape a stranger calls "mongoose". Until a live vision
+# key exists, a reader with no context (a fresh sub-agent, a person who hasn't seen the brief) names the animal
+# from ``silhouette.png`` alone, then from ``thumb96.png`` alone, with a confidence and what else it could be.
+# The answers are recorded next to the images with both files' SHA-256, so a re-render voids them.
+
+BLIND_FILE = "blind_read.json"
+BLIND_VIEWS = {"silhouette": "silhouette.png", "thumbnail": "thumb96.png"}
+BLIND_CLEAR = 75  # a first-instinct confidence (0-100) below this is a weak read, not a clear one
+
+
+def record_blind_read(sheet_dir: str | Path, reader: str, **views: dict[str, Any]) -> dict[str, Any]:
+    """Record a blind reader's answers, e.g. ``silhouette={"animal": "zebra", "confidence": 50,
+    "alternatives": ["horse"]}``, for the images in ``sheet_dir`` as they are now."""
+    d = Path(sheet_dir)
+    if set(views) != set(BLIND_VIEWS):
+        raise ValueError(f"a blind read needs exactly {sorted(BLIND_VIEWS)}")
+    out: dict[str, Any] = {"reader": reader}
+    for view, fname in BLIND_VIEWS.items():
+        a = views[view]
+        conf = float(a["confidence"])
+        if not 0 <= conf <= 100:
+            raise ValueError(f"{view}: confidence {conf} is not 0-100")
+        out[view] = {
+            "image": fname,
+            "sha256": sha256(d / fname),
+            "animal": str(a["animal"]),
+            "confidence": conf,
+            "alternatives": [str(x) for x in a.get("alternatives", [])],
+        }
+    (d / BLIND_FILE).write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+    return out
+
+
+def load_blind_read(sheet_dir: str | Path) -> dict[str, Any] | None:
+    """The recorded blind read, only if both images are still exactly the ones that were read."""
+    d = Path(sheet_dir)
+    p = d / BLIND_FILE
+    if not p.exists():
+        return None
+    r = json.loads(p.read_text(encoding="utf-8"))
+    for view, fname in BLIND_VIEWS.items():
+        if view not in r or not (d / fname).exists() or r[view].get("sha256") != sha256(d / fname):
+            return None
+    return r
+
+
+def blind_verdict(brief: Brief, read: dict[str, Any]) -> dict[str, str]:
+    """Per view: ``clear`` (named unprompted, confidence ≥ BLIND_CLEAR), ``weak`` (named, but unsure) or
+    ``misread`` (another animal, or a known confusion first). The alternatives are reported, not judged:
+    the reader was asked what else it could be."""
+    out = {}
+    for view in BLIND_VIEWS:
+        a = read[view]
+        ok, _why = reads_as(brief, a["animal"])
+        if not ok:
+            out[view] = "misread"
+        elif a["confidence"] < BLIND_CLEAR:
+            out[view] = "weak"
+        else:
+            out[view] = "clear"
+    return out

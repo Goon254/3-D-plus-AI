@@ -1,0 +1,23 @@
+{
+  "reader": "sub-agent, no context (cloud 2026-11-22 09:36)",
+  "silhouette": {
+    "image": "silhouette.png",
+    "sha256": "dab12477d9cd430cc79c04bc75fcea238b48e934cebdc1ac9b702bc31a99d5b9",
+    "animal": "zebra",
+    "confidence": 50.0,
+    "alternatives": [
+      "horse",
+      "donkey"
+    ]
+  },
+  "thumbnail": {
+    "image": "thumb96.png",
+    "sha256": "3cef372b070c2c9ee9ee1210132a8807dff6345de78674fc0ad4ff476ddad2d9",
+    "animal": "zebra",
+    "confidence": 95.0,
+    "alternatives": [
+      "horse",
+      "okapi"
+    ]
+  }
+}
