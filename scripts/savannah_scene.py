@@ -525,6 +525,7 @@ def main() -> int:
                     "from_behind": sh.from_behind,
                     "hold": sh.hold,
                     "crowd_ok": sh.crowd_ok,
+                    "trailer": sh.trailer,
                     "start": sh.start,
                     "end": round(sh.end, 3),
                     "note": sh.note,
@@ -668,6 +669,7 @@ def main() -> int:
                 "start": ln.start,
                 "end": ln.end,
                 "text": ln.text,
+                **({"key": True} if ln.key else {}),
                 **{k: v[k] for k in ("engine", "heard", "wer", "tries", "fallback") if k in v},
             }
             for ln, v in zip(spec.lines, voice_info, strict=True)

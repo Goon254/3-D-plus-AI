@@ -85,6 +85,8 @@ def plan_scene(sc: dict[str, Any], premise: dict[str, Any], k: int) -> dict[str,
             "text": ln["text"],
             "expr": [[0, ln.get("mood", "neutral")]],
         }
+        if ln.get("key"):
+            item["key"] = True  # a story beat: the automatic trailer keeps it (DECISIONS #108)
         item["at" if i == 0 else "gap"] = 3.5 if i == 0 else (0.6 if ln["who"] != prev else 0.4)
         if ln["who"] in species and prev in species and prev != ln["who"]:
             item["to"] = prev

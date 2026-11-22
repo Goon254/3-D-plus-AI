@@ -23,6 +23,8 @@ SPECIES_WORDS: dict[str, tuple[str, ...]] = {
     "tortoise": ("tortoise", "turtle", "terrapin", "snail"),
 }
 TIMES = ("dawn", "midday", "afternoon", "sunset", "night")
+MAX_KEYS = 4  # "key": true lines (the want, the low point, the climax): the automatic trailer keeps them
+KEY_RULE = 'mark the 2-4 lines that carry the story (the hero\'s want or vow, the low point, the climax) with "key": true'
 MOODS = ("neutral", "happy", "sad", "excited", "worried", "determined", "scared", "surprised")
 
 NAMES = {
@@ -137,7 +139,12 @@ def scripted_screenplay(payload: dict[str, Any]) -> dict[str, Any]:
                     "text": f"Far away, the friends woke up and needed {goal}.",
                     "mood": "neutral",
                 },
-                {"who": hero["id"], "text": f"I'll find {goal}. By myself!", "mood": "determined"},
+                {
+                    "who": hero["id"],
+                    "text": f"I'll find {goal}. By myself!",
+                    "mood": "determined",
+                    "key": True,  # the want
+                },
             ],
         },
         {
@@ -165,7 +172,7 @@ def scripted_screenplay(payload: dict[str, Any]) -> dict[str, Any]:
             "tod": "night",
             "intent": "lost; every gift needed",
             "beats": [3],
-            "lines": [{"who": hero["id"], "text": "I don't know the way.", "mood": "worried"}]
+            "lines": [{"who": hero["id"], "text": "I don't know the way.", "mood": "worried", "key": True}]
             + [{"who": c["id"], "text": f"I can help. My {c['gift']}!", "mood": "determined"} for c in rest],
         },
         {
@@ -222,7 +229,12 @@ def validate_screenplay(s: dict[str, Any], premise: dict[str, Any]) -> list[str]
                 errs.append(f"screenplay {sc.get('id')}: lines must be 1-25 words (kids' film)")
             if ln.get("mood", "neutral") not in MOODS:
                 errs.append(f"screenplay {sc.get('id')}: mood {ln.get('mood')!r}")
+            if "key" in ln and not isinstance(ln["key"], bool):
+                errs.append(f"screenplay {sc.get('id')}: key must be true or false")
             spoken.add(ln.get("who"))
+    keys = sum(bool(ln.get("key")) for sc in scenes for ln in sc.get("lines", []))
+    if keys > MAX_KEYS:
+        errs.append(f"screenplay: {keys} key lines; mark only the {MAX_KEYS} biggest story beats")
     silent = sorted(who - spoken - {"narrator"})
     if silent:
         errs.append("screenplay: no lines for " + ", ".join(silent))
@@ -233,7 +245,7 @@ def write_story(idea: str, llm: Provider) -> tuple[dict[str, Any], dict[str, Any
     """Premise then screenplay; each is validated and asked for once more with the errors if it fails."""
     from ..creatures.species import SPECIES
 
-    rules = {"species": sorted(SPECIES), "times": list(TIMES), "moods": list(MOODS)}
+    rules = {"species": sorted(SPECIES), "times": list(TIMES), "moods": list(MOODS), "key": KEY_RULE}
     prem = llm.complete_json("feature.premise", SYSTEM, {"idea": idea, "rules": rules})
     errs = validate_premise(prem)
     if errs:

@@ -54,6 +54,7 @@ class Line:
     gap: float = 0.45
     to: str = ""  # the addressee: the speaker turns partly toward them (eyeline)
     offscreen: bool = False  # heard, not seen (the speaker is off stage, e.g. lost in the grass)
+    key: bool = False  # a story beat (the vow, the climax): the automatic trailer always has it
     start: float = 0.0  # filled by schedule()
     end: float = 0.0
 
@@ -100,6 +101,7 @@ class Shot:
     from_behind: bool = False  # a deliberate back view (a story reason): ``staging.facing_away`` skips it
     hold: bool = False  # a deliberate still beat (a story reason): ``pacing.dead_air`` doesn't count it
     crowd_ok: bool = False  # a foreground body is the point (a story reason): ``framing.crowding`` skips it
+    trailer: bool = False  # a picture moment (the spring bursting): the auto trailer cuts to it
 
 
 @dataclass
@@ -287,6 +289,7 @@ def scene_from_dict(d: dict[str, Any]) -> SceneSpec:
             gap=float(ln.get("gap", 0.45)),
             to=ln.get("to", ""),
             offscreen=bool(ln.get("offscreen", False)),
+            key=bool(ln.get("key", False)),
         )
         for ln in d.get("lines", [])
     ]
@@ -304,6 +307,7 @@ def scene_from_dict(d: dict[str, Any]) -> SceneSpec:
             from_behind=bool(s.get("from_behind", False)),
             hold=bool(s.get("hold", False)),
             crowd_ok=bool(s.get("crowd_ok", False)),
+            trailer=bool(s.get("trailer", False)),
         )
         for s in d.get("shots", [])
     ]

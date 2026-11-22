@@ -311,6 +311,7 @@ def approx_cameras(
                 "from_behind": sh.from_behind,
                 "hold": sh.hold,
                 "crowd_ok": sh.crowd_ok,
+                "trailer": sh.trailer,
                 "start": sh.start,
                 "end": round(sh.end, 3),
                 "end_location": [round(v, 4) for v in end_loc],
