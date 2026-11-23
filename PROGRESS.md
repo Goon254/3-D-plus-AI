@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-23 06:36 UTC
+
+[Review](docs/reviews/2026-11-23T0636Z.md). Still no reply from you, so nothing in the film or the approved designs changed (all five still match their approved pictures; 374 tests pass). A second try at reading the reference photos' licences on Wikimedia Commons failed from the cloud again, so none are recorded; the laptop should search Commons directly. I trimmed the review queue's status line. **Needs you**: unchanged (watch the film and trailer, give notes; Kiki's question from 12:36; Zuri v5 or v4; Bibi v4 or v3; may Neema's and Zuri's resting brows sit a little lower?).
+
 ### Cloud build 11-23 03:36 UTC
 
 [Review](docs/reviews/2026-11-23T0336Z.md), DECISIONS #117. Still no reply from you, so nothing in the film or the approved designs changed (all five still match their approved pictures). I tidied the review queue (three old design items checked and closed). One design-stage gap closed in code: the character briefs still have no reference photos, and the check on them would have let through a non-commercial photo or a share-alike photo copied into the repo. It now enforces the licence rule. I added no photos, because this cloud session couldn't open Wikimedia Commons to read their licences. The candidates are listed in the queue for the laptop to check. **Needs you**: unchanged (watch the film and trailer, give notes; Kiki's question from 12:36; Zuri v5 or v4; Bibi v4 or v3; may Neema's and Zuri's resting brows sit a little lower?).
