@@ -662,3 +662,59 @@ def test_a_rider_sits_on_the_mounts_back_and_turns_with_it():
     assert p.yaw == 90.0 and abs(p.root[2] - (giraffe.body_z + 0.04 + seat[2] + kiki.body_z)) < 1e-9
     assert abs(p.root[0] - (2.0 - seat[1])) < 1e-9  # at yaw 90 the mount's forward (-Y) is world +X
     assert all(f[2] > giraffe.body_z for f in p.feet.values()) and all(p.stance.values())
+
+
+def test_sentinel_pose_is_a_species_field_with_the_locked_values_as_default():
+    """Cloud 11-23 15:36 (DECISIONS #119): Kiki's read lives in her sentinel stance, which was module constants, so a
+    design proposal could not try another one. ``Species.sentinel_pose`` carries it (defaults = the locked
+    meerkat's constants, so every locked design poses as before) and the pose reads it through the meta."""
+    from dataclasses import replace
+
+    from animatica.creatures.build import build_creature
+    from animatica.creatures.gait import GAITS, Waypoint
+    from animatica.creatures.perform import (
+        SENTINEL_HEAD_UP,
+        SENTINEL_NECK_UP,
+        SENTINEL_PITCH,
+        SENTINEL_TAIL,
+        sentinel_bends,
+        walk_keys,
+    )
+    from animatica.creatures.species import SPECIES
+
+    locked = SPECIES["meerkat"]
+    assert locked.sentinel_pose == (SENTINEL_PITCH, SENTINEL_NECK_UP, SENTINEL_HEAD_UP, SENTINEL_TAIL)
+    _ops, meta = build_creature("k", locked)
+    assert tuple(meta.sentinel_pose) == locked.sentinel_pose
+    pts = [Waypoint(0.0, 0.0, 0.0), Waypoint(1.0, 0.0, 0.0)]  # a standing take: she rises into the sentinel
+    keys0, plan0 = walk_keys(meta, GAITS["meerkat"]["walk"], pts, 24, 1, seed=1, yaw0=0.0)
+
+    tried = replace(locked, sentinel_pose=(88.0, 80.0, 32.0, 78.0))
+    _ops, meta2 = build_creature("k", tried)
+    keys1, plan1 = walk_keys(meta2, GAITS["meerkat"]["walk"], pts, 24, 1, seed=1, yaw0=0.0)
+    assert min(p.pitch for p in plan1) == pytest.approx(min(p.pitch for p in plan0) - 6.0, abs=0.01)
+    n0, h0 = sentinel_bends(meta)
+    n1, h1 = sentinel_bends(meta2)
+    assert (n1 + h1) - (n0 + h0) == pytest.approx((88 - 32) - (82 - 12))  # total forward bend of neck + head
+
+    def tail0(keys: list) -> float:
+        k = next(o for o in keys if o.get("property") == f"bone:{meta.tail_bones[0]}.rotation")
+        return k["keys"][-1][1][0]
+
+    assert tail0(keys1) - tail0(keys0) == pytest.approx(6.0, abs=0.01)
+    # the other species never stand up, whatever the field says
+    assert all(sp.sentinel_pose == locked.sentinel_pose for sp in SPECIES.values())
+
+
+def test_the_sentinel_pose_at_its_default_keeps_the_stress_reports_fresh():
+    """#119: the new field is left out of the species fingerprint while at the stance every design had before it
+    existed, so the stress reports on main stay about the same design; a changed stance counts."""
+    from dataclasses import replace
+
+    from animatica.creatures.species import SPECIES
+    from animatica.design.fingerprint import ADDED_AT_DEFAULT, species_hash, species_snapshot
+
+    sp = SPECIES["meerkat"]
+    assert list(sp.sentinel_pose) == ADDED_AT_DEFAULT["sentinel_pose"]
+    assert "sentinel_pose" not in species_snapshot(sp)
+    assert species_hash(replace(sp, sentinel_pose=(88.0, 80.0, 26.0, 78.0))) != species_hash(sp)

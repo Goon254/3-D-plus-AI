@@ -43,17 +43,18 @@ def _digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()[:16]
 
 
-# fields added after the stress reports were fingerprinted: left out while at their default (None), so a report
-# that measured the same design stays fresh; once set they count like any other parameter
-ADDED_AT_DEFAULT = ("shell_profile",)
+# fields added after the stress reports were fingerprinted: left out while at their default, so a report that
+# measured the same design stays fresh; once changed they count like any other parameter. ``sentinel_pose``'s
+# default is the stance every design had before it was a field (``creatures.perform.SENTINEL_*``, DECISIONS #119)
+ADDED_AT_DEFAULT: dict[str, Any] = {"shell_profile": None, "sentinel_pose": [82.0, 69.0, 12.0, 72.0]}
 
 
 def species_snapshot(sp: Species) -> dict[str, Any]:
     """The species parameters as plain JSON (as ``approved.json`` stores them)."""
     snap = json.loads(json.dumps(asdict(sp), default=str))
-    for k in ADDED_AT_DEFAULT:
-        if snap.get(k) is None:
-            snap.pop(k, None)
+    for k, default in ADDED_AT_DEFAULT.items():
+        if k in snap and snap[k] == default:
+            snap.pop(k)
     return snap
 
 

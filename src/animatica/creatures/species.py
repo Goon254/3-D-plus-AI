@@ -76,6 +76,9 @@ class Species:
     # 2.0). Added 11-22 for a domed-shell proposal (DECISIONS #114); left out of the species fingerprint while None.
     shell_profile: tuple[float, float, float, float, float] | None = None
     default_pose: str = "stand"  # "sentinel": the meerkat stands up when it stops
+    # the sentinel pose, degrees: (body pitch from horizontal, neck rise, head nose-up, tail swing down to the
+    # ground). Defaults are the locked meerkat's (creatures.perform.SENTINEL_*); a proposal may override it
+    sentinel_pose: tuple[float, float, float, float] = (82.0, 69.0, 12.0, 72.0)
     # legs ("F" fore, "H" hind) whose feet stay level while planted instead of rocking with the shin (#69)
     level_feet: str = "FH"
     # a soft dark patch painted on the skin around and behind each eye: (colour, strength)

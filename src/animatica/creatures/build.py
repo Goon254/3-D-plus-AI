@@ -120,6 +120,8 @@ class CreatureMeta:
     length: float = 0.0  # nose-to-tail length (camera framing)
     # rest direction (head -> tail) of every bone in body space: acting layers rotate about body axes
     bone_dirs: dict[str, tuple[float, float, float]] = field(default_factory=dict)
+    # (pitch, neck rise, head nose-up, tail) of the sentinel pose (``Species.sentinel_pose``)
+    sentinel_pose: tuple[float, float, float, float] = (82.0, 69.0, 12.0, 72.0)
 
 
 LID_COLOR = {  # the skin around the eye: a touch darker than the coat (the zebra's and meerkat's are dark)
@@ -915,5 +917,6 @@ def build_creature(
         joints=joints,
         length=max(sp.tail.tip[1], sp.torso[1] / 2) - nose,
         bone_dirs={b["name"]: tuple(t - h for h, t in zip(b["head"], b["tail"])) for b in bones},
+        sentinel_pose=tuple(sp.sentinel_pose),
     )
     return ops, meta

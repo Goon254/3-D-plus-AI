@@ -29,6 +29,8 @@ SENTINEL_PITCH = 82.0  # degrees the meerkat's body rises from horizontal when i
 SENTINEL_NECK_UP = 69.0
 SENTINEL_HEAD_UP = 12.0
 SENTINEL_TAIL = 72.0  # the tail swings back down to the ground: the third leg of the tripod
+# These are the locked meerkat's values and the defaults of ``Species.sentinel_pose``, which the pose reads (via
+# ``CreatureMeta.sentinel_pose``) so a design proposal can try another stance without touching a locked design.
 
 
 def _smooth(u: float) -> float:
@@ -38,13 +40,14 @@ def _smooth(u: float) -> float:
 
 def sentinel_bends(meta: CreatureMeta) -> tuple[float, float]:
     """(neck, head) forward bends in degrees for the full sentinel pose, from the neck's rest angle."""
+    pitch, neck_up, head_up, _tail = meta.sentinel_pose
     dirs = [meta.bone_dirs[b] for b in meta.neck_bones if b in meta.bone_dirs]
     if not dirs:
-        return SENTINEL_PITCH - SENTINEL_HEAD_UP, 0.0
+        return pitch - head_up, 0.0
     dy, dz = sum(d[1] for d in dirs), sum(d[2] for d in dirs)
     rest = math.degrees(math.atan2(dz, -dy))  # neck rise above the body's horizontal, on all fours
-    neck = rest + SENTINEL_PITCH - SENTINEL_NECK_UP
-    return neck, SENTINEL_PITCH - SENTINEL_HEAD_UP - neck
+    neck = rest + pitch - neck_up
+    return neck, pitch - head_up - neck
 
 
 def apply_sentinel(meta: CreatureMeta, plan: list[LocoFrame], fps: int) -> None:
@@ -66,6 +69,7 @@ def apply_sentinel(meta: CreatureMeta, plan: list[LocoFrame], fps: int) -> None:
         if moving[k]:
             nxt = k
         until[k] = 0 if moving[k] else (nxt - k if nxt is not None else big)
+    sentinel_pitch = meta.sentinel_pose[0]
     hips = [j for leg, j in meta.joints.items() if leg[1] == "H"]
     fronts = {leg: j for leg, j in meta.joints.items() if leg[1] == "F"}
     hy = sum(j[1] for j in hips) / len(hips)
@@ -76,14 +80,14 @@ def apply_sentinel(meta: CreatureMeta, plan: list[LocoFrame], fps: int) -> None:
         b = min(rise, drop)
         if b <= 0:
             continue
-        th = math.radians(-SENTINEL_PITCH * b)  # negative pitch = front up
+        th = math.radians(-sentinel_pitch * b)  # negative pitch = front up
         # pivot around the hips: local offset H - Rx(th) H, then into the world by the heading
         oy = hy - (hy * math.cos(th) - hz * math.sin(th))
         oz = hz - (hy * math.sin(th) + hz * math.cos(th))
         ya = math.radians(p.yaw)
         wx, wy = -oy * math.sin(ya), oy * math.cos(ya)
         root = (p.root[0] + wx, p.root[1] + wy, p.root[2] + oz)
-        pitch = p.pitch - SENTINEL_PITCH * b
+        pitch = p.pitch - sentinel_pitch * b
         a = math.radians(pitch)
         for leg, (jx, jy, jz, chain) in fronts.items():
             # paws tucked close in front of the chest, a little below the shoulder (body space: +y is down
@@ -221,7 +225,7 @@ def walk_keys(
             return [
                 3 * math.sin(2 * math.pi * p.phase - 0.8 * k)
                 + 2.0 * min(1.0, p.speed)
-                + (SENTINEL_TAIL if k == 0 else 4.0) * p.sentinel,
+                + (meta.sentinel_pose[3] if k == 0 else 4.0) * p.sentinel,
                 0.0,
                 amp * math.sin(2 * math.pi * t / 2.3 - 0.7 * k) * (1.0 - 0.8 * p.sentinel),
             ]
@@ -234,7 +238,7 @@ def walk_keys(
     if sp.default_pose == "sentinel":
         for leg in meta.ik_targets:
             if leg[1] == "H" and "H" in sp.level_feet:
-                bone(f"leg_{leg}_lo_foot", lambda p, t: [SENTINEL_PITCH * p.sentinel, 0.0, 0.0])
+                bone(f"leg_{leg}_lo_foot", lambda p, t: [meta.sentinel_pose[0] * p.sentinel, 0.0, 0.0])
     # trunk: a pendulum that lags the step, curling a little at the tip
     for k, name in enumerate(meta.trunk_bones):
         bone(

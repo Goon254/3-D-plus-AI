@@ -1,0 +1,23 @@
+{
+ "reader": "sub-agent, no context (cloud 11-23 15:36, proposal images only); a second fresh reader gave the same answers (meerkat 80 / 55; alternatives prairie dog, mongoose / puppy, mongoose). Control, a fresh reader on v6 the same hour: meerkat 75 / 70 (mongoose, prairie dog / mongoose, weasel)",
+ "silhouette": {
+  "image": "silhouette.png",
+  "sha256": "cdd3d15ab9ecb5fa290a64f089f669544786492e2fa0451e4af1f9d13a7c62b8",
+  "animal": "meerkat",
+  "confidence": 80.0,
+  "alternatives": [
+   "prairie dog",
+   "mongoose"
+  ]
+ },
+ "thumbnail": {
+  "image": "thumb96.png",
+  "sha256": "b5ff52df059826a836306e8b9475f8a1761b9e7260922a1f39dfe9587f122657",
+  "animal": "meerkat",
+  "confidence": 55.0,
+  "alternatives": [
+   "mongoose",
+   "dog (puppy)"
+  ]
+ }
+}

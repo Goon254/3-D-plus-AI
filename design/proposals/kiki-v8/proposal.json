@@ -1,0 +1,43 @@
+{
+ "character": "kiki",
+ "version": "v8",
+ "base": "v6",
+ "why": [
+  "11-22 12:36 review: Kiki's read is not inside the owner's 11-18 choices (v7 tried head, body length and tail base: silhouette meerkat 70 -> 45, thumbnail 60 -> 60). What is left is what he chose: the mask, the sentinel's tail and the hind feet.",
+  "This proposal reopens exactly those three, to put a concrete picture beside his 'Kiki: sentinel tail / mask' question: a darker eye mask (between v4's near-black rings and v5's soft brown, still a crescent, not a raccoon ring); a straighter, taller sentinel (body 88 deg instead of 82, neck 80 instead of 69, nose 26 deg up instead of 12: alert and scanning, not crouched forward like an otter) with the tail a steeper, shorter brace; smaller, rounder hind paws.",
+  "Everything else is v6: v4's body and legs, v5's patch shape, the coat."
+ ],
+ "overrides": {
+  "eye_patch": [
+   "#2C1C11",
+   1.0
+  ],
+  "patch_soft": 0.34,
+  "patch_shape": [
+   1.08,
+   1.0,
+   0.95
+  ],
+  "tail": {
+   "tip": [
+    0.0,
+    0.232,
+    -0.046
+   ],
+   "r0": 0.019,
+   "r1": 0.0036
+  },
+  "foot": [
+   "paw",
+   0.0105,
+   0.009
+  ],
+  "sentinel_pose": [
+   88.0,
+   80.0,
+   26.0,
+   78.0
+  ]
+ },
+ "status": "not offered as a replacement; shown as the picture for the owner's open Kiki question. Silhouette (the sentinel) meerkat 80 / 80 from two fresh readers vs v6's 75 today (70 on 11-22), with no lizard / kangaroo / otter alternatives; thumbnail (all fours) meerkat 55 / 55 vs v6's 70 today (60 on 11-22): the all-fours read did not improve."
+}

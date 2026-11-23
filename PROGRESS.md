@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-23 15:36 UTC
+
+[Review](docs/reviews/2026-11-23T1536Z.md), DECISIONS #119. Still no reply from you, so nothing in the film or the approved designs changed (all five still match their approved pictures; 378 tests pass). Your open Kiki question (darker mask? a different sentinel tail and feet?) now has a picture: a **Kiki v8 proposal** beside the locked v6 ([compare](design/proposals/kiki-v8/compare.jpg), [sheet](design/proposals/kiki-v8/sheet.jpg)) with a darker crescent mask, a straighter, taller sentinel with her nose a little up, a shorter tail brace and smaller hind paws. Two readers who had never seen her named the sentinel silhouette "meerkat" at 80 % (v6: 75 %, with lizard / otter guesses before), her first clear read; on all fours she still reads as half mongoose (55 %), so the body is the rest of the problem. It is not offered as a replacement, only as an answer to look at. **Needs you**: unchanged (watch the film and trailer, give notes; Kiki: does v8's mask and stance go the right way?; Zuri v5 or v4; Bibi v4 or v3; may Neema's and Zuri's resting brows sit a little lower?).
+
 ### Cloud build 11-23 06:36 UTC
 
 [Review](docs/reviews/2026-11-23T0636Z.md). Still no reply from you, so nothing in the film or the approved designs changed (all five still match their approved pictures; 374 tests pass). A second try at reading the reference photos' licences on Wikimedia Commons failed from the cloud again, so none are recorded; the laptop should search Commons directly. I trimmed the review queue's status line. **Needs you**: unchanged (watch the film and trailer, give notes; Kiki's question from 12:36; Zuri v5 or v4; Bibi v4 or v3; may Neema's and Zuri's resting brows sit a little lower?).
