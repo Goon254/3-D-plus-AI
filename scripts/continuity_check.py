@@ -7,7 +7,8 @@ entrances (``animatica.production.continuity``), and the set's models as built (
     python scripts/continuity_check.py --cameras  # also staging tangents, back views, dead air (nothing
                                                   # on screen moves but the camera for > 4.5 s, across cuts)
                                                   # and crowding (a neighbour's headless legs or flank in a
-                                                  # face shot) on approximate shot cameras
+                                                  # face shot) and cropped heads (a face shot's subject
+                                                  # carried out of the frame) on approximate shot cameras
     python scripts/continuity_check.py --cameras --json out.json --diff last.json
                                                   # save the findings; print what is fixed / new since last.json
     python scripts/continuity_check.py --cameras --by-shot   # the same findings as a fix list per shot
@@ -36,7 +37,7 @@ from animatica.production.continuity import (  # noqa: E402
     set_assets,
     worklist,
 )
-from animatica.production.framing import crowding  # noqa: E402
+from animatica.production.framing import crowding, head_cropped  # noqa: E402
 from animatica.production.pacing import dead_air, line_durations  # noqa: E402
 from animatica.production.scene import cut_list, load_scenes, schedule, split_long  # noqa: E402
 from animatica.production.staging import (  # noqa: E402
@@ -95,6 +96,7 @@ def main() -> int:
             bad += facing_away(spec, cams, poses, a.fps)
             bad += dead_air(spec, cams, poses, a.fps, secs)
             bad += crowding(spec, cams, poses, a.fps)
+            bad += head_cropped(spec, cams, poses, a.fps)
         if a.table:
             print(f"== {spec.id} {spec.title} ({secs:.1f}s)")
             for s0, s1, typ, subs, here in pres.shots:

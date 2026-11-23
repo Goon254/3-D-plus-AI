@@ -410,6 +410,9 @@ def main() -> int:
             f0, f1 = 1 + int(sh.start * fps), 1 + min(n - 1, int(sh.end * fps))
             samples_f = sorted({f0, (f0 + f1) // 2, max(f0, f1 - 1)})
             subs: list[Subject] = []
+            heads_m: dict[
+                str, list[list[float]]
+            ] = {}  # measured heads over the shot (``framing.head_cropped``)
             if sh.subjects:
                 bones = [f"{metas[c].rig}:head" for c in sh.subjects]
                 d = run(
@@ -424,6 +427,16 @@ def main() -> int:
                         }
                     ],
                 )["inspect"]["frames"]
+                heads_m = {
+                    c: [
+                        [
+                            round((f - 1) / fps, 3),
+                            *(round(v, 4) for v in d[str(f)]["bone_tails"][f"{metas[c].rig}:head"]),
+                        ]
+                        for f in samples_f
+                    ]
+                    for c in sh.subjects
+                }
                 use = samples_f if sh.type in ("ws", "ews") else [samples_f[len(samples_f) // 2]]
                 # a single talking in a medium shot: if the face would be small in the frame (an upright
                 # meerkat, a giraffe's head 3 m up, a tortoise), go in to a medium close-up so the mouth reads
@@ -533,6 +546,7 @@ def main() -> int:
                     "camera_move_frac": round(moved / max(frame_h_m, 1e-6), 3),
                     "subject_move_frac": round(sub_move / max(frame_h_m, 1e-6), 3),
                     "end_location": [round(v, 4) for v in end_loc],
+                    "heads": heads_m,
                     **cam,
                 }
             )
@@ -553,6 +567,9 @@ def main() -> int:
         cont_issues += pacing.dead_air(spec, shot_report, roots, fps, seconds)
         # a neighbour seen only as legs or a flank, its head out of shot, filling part of a face shot
         cont_issues += framing.crowding(spec, shot_report, roots, fps)
+        # a face shot's subject carried out of the frame by a gesture, its walk or the push (the heads measured
+        # above on the posed rigs at each shot's start, middle and end)
+        cont_issues += framing.head_cropped(spec, shot_report, roots, fps)
         for v in cont_issues:
             print(f"  CONTINUITY {v}")
         run(

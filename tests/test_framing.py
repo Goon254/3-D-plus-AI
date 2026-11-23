@@ -113,3 +113,55 @@ def test_the_film_finds_the_leg_columns_the_reviews_named_and_not_the_slivers():
             found.add((sid, int(v.detail.split()[1]), v.who))
     assert {("sc06", 11, "neema"), ("sc06", 12, "neema"), ("sc07", 5, "tembo"), ("sc08", 2, "zuri")} <= found
     assert not any(sid == "sc07" and shot == 2 for sid, shot, _ in found)
+
+
+def test_a_head_carried_out_of_a_face_shot_is_cropped_and_a_framed_one_is_not():
+    """The final film at 0:33 (SC 2, review 11-23 12:36): Tembo's eye cut by the top edge as the trunk lifts
+    at the end of the profile medium; the camera was framed on the head at the shot's middle."""
+    from animatica.production.framing import head_cropped
+
+    spec, poses = _kiki_and_neema(5.0, 5.0)
+    head = poses["kiki"][0]
+    from animatica.production.staging import _subject
+
+    h = _subject(spec, "kiki", head).head
+    framed = _shot(z=h[2])
+    framed["aim"] = list(h)
+    assert head_cropped(spec, [framed], poses, 24) == []  # rest pose, centred
+    # measured on the posed rig: the head rises 0.4 m at the shot's end (a sentinel stretch, a trunk lift)
+    lifted = {**framed, "heads": {"kiki": [[0.0, *h], [1.0, *h], [1.95, h[0], h[1], h[2] + 0.4]]}}
+    bad = head_cropped(spec, [lifted], poses, 24)
+    assert [(v.kind, v.who, v.t) for v in bad] == [("head_cropped", "kiki", 1.95)]
+    assert "top edge" in bad[0].detail
+    assert head_cropped(spec, [{**lifted, "from_behind": True}], poses, 24) == []
+    assert head_cropped(spec, [{**lifted, "type": "ws"}], poses, 24) == []  # wides are not face shots
+    # the camera pushes in until the head overfills the frame (the last sample is a quarter second in from the
+    # end: 1.75 s)
+    pushed = {**framed, "end": 43 / 24, "end_location": [h[0], h[1] - 0.11, h[2]]}
+    bad = head_cropped(spec, [pushed], poses, 24)
+    assert [v.who for v in bad] == ["kiki"] and "edge" in bad[0].detail
+
+
+def test_the_film_finds_the_subjects_the_shots_lose():
+    """Calibrated by eye on the final film (cloud review 11-23 12:36): SC 4 shot 1 (Zuri walks out of the top
+    of her medium, 1:46), shot 3 (Kiki's head out at the right, a headless body by the mound, 1:50), shot 8
+    (Bibi Kobe's MCU is all shell, 2:05), SC 6 shots 11-12 (the Zuri / Bibi Kobe two-shot without the
+    tortoise, 3:13-3:17), SC 9 shot 9 (Bibi Kobe's medium filled by Tembo, 4:37). Nothing in SC 1-3."""
+    from animatica.production.continuity import actor_speeds
+    from animatica.production.framing import head_cropped
+    from animatica.production.scene import cut_list, load_scenes, schedule, split_long
+    from animatica.production.staging import approx_cameras, poses_from_paths
+
+    scenes = load_scenes(ROOT / "films" / "savannah" / "07_scenes.json")
+    found = set()
+    for sid in ("sc01", "sc02", "sc03", "sc04", "sc06", "sc09"):
+        spec = scenes[sid]
+        secs = schedule(spec, [0.6 + 0.36 * len(ln.text.split()) for ln in spec.lines], actor_speeds(spec))
+        shots = split_long(cut_list(spec, secs), secs)
+        poses = poses_from_paths(spec, secs, 24)
+        for v in head_cropped(spec, approx_cameras(spec, shots, poses, 24), poses, 24):
+            found.add((sid, int(v.detail.split()[1]), v.who))
+    want = {("sc04", 1, "zuri"), ("sc04", 3, "kiki"), ("sc04", 8, "bibi_kobe"), ("sc06", 11, "bibi_kobe"),
+            ("sc06", 12, "bibi_kobe"), ("sc09", 9, "bibi_kobe")}  # fmt: skip
+    assert want <= found
+    assert not any(sid in ("sc01", "sc02", "sc03") for sid, _, _ in found)

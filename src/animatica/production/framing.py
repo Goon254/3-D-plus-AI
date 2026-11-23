@@ -22,6 +22,9 @@ approximate cameras; slivers that only touch the edge (a tail tip, a hoof in a c
 It runs with the other camera checks: ``scripts/continuity_check.py --cameras`` (approximate cameras, the
 whole film in seconds) and ``scripts/savannah_scene.py`` on the real cameras it built. A shot can opt out
 with ``crowd_ok`` when a body in the foreground is the point (a story reason).
+
+:func:`head_cropped` is the face shot's other framing failure: its own subject's head carried out of the frame
+(by a gesture, its walk or the camera's push) after the camera was framed on the head at the shot's middle.
 """
 
 from __future__ import annotations
@@ -36,6 +39,7 @@ from animatica.production.staging import FACE_SHOTS, Pose, _rot, _subject
 
 CROWD_AREA = 0.06  # a headless neighbour owning this share of the frame is clutter (calibrated on the film)
 CROWD_SHARE = 0.5  # ... for at least this share of the shot (while it is on stage)
+HEAD_KEEP = 0.75  # a subject's head box less than this much inside a face shot's frame is cropped
 HEAD_INSIDE = 0.5  # a head box less than this much inside the frame is out of the shot
 GRID = (64, 36)  # cells across and down the frame for the painter's pass
 Box = tuple[float, float, float, float]  # x0, y0, x1, y1 as fractions of the frame width / height, y down
@@ -158,4 +162,79 @@ def crowding(
                     f"shot with its face, or mark the shot crowd_ok",
                 )
             )
+    return out
+
+
+def _heads(sh: dict[str, Any], spec: SceneSpec, poses: dict[str, list[Pose]] | None, c: str, fps: int):
+    """The subject's head over the shot as ``(t, (x, y, z), size)``: the shot report's measured ``heads``
+    (``{id: [[t, x, y, z], ...]}``, posed rigs: a trunk lift or a raised head is in them) when present, else
+    the rest-pose head over the scheduled path every quarter second (only the camera's push shows then)."""
+    from animatica.creatures.species import SPECIES
+
+    size = max(SPECIES[spec.cast[c].species].head_size)
+    measured = (sh.get("heads") or {}).get(c)
+    if measured:
+        return [(float(h[0]), (float(h[1]), float(h[2]), float(h[3])), size) for h in measured]
+    if poses is None or c not in poses:
+        return []
+    f0 = 1 + int(sh["start"] * fps)
+    f1 = max(f0, int(sh["end"] * fps))
+    out = []
+    for f in range(f0, f1 + 1, max(1, fps // 4)):
+        sub = _subject(spec, c, poses[c][min(len(poses[c]) - 1, f - 1)])
+        out.append(((f - 1) / fps, sub.head, sub.head_size))
+    return out
+
+
+def head_cropped(
+    spec: SceneSpec,
+    shots: list[dict[str, Any]],
+    poses: dict[str, list[Pose]] | None,
+    fps: int,
+    keep: float = HEAD_KEEP,
+) -> list[Violation]:
+    """A face shot (``FACE_SHOTS``) whose subject's head leaves the frame: the review of the final film saw
+    Tembo's eye cut by the top edge at 0:33 (SC 2, the profile medium, as the trunk lifts to spray). Face
+    shots are framed on the head at the shot's middle; a gesture or the camera's push-in can then carry the
+    head out. Each subject's head box (as ``crowding`` draws it) is checked on the camera at that moment
+    (the push interpolated, as ``pacing``); under ``keep`` of it inside the frame is a finding, one per shot
+    and subject, at the worst moment. ``from_behind`` shots are skipped. On the real cameras the scene
+    script passes the heads it measured on the posed rigs (``heads`` in the shot report); without them the
+    rest-pose heads over ``poses`` are used."""
+    out: list[Violation] = []
+    for sh in shots:
+        if (
+            sh.get("type") not in FACE_SHOTS
+            or sh.get("from_behind")
+            or not {"location", "aim", "lens"} <= set(sh)
+        ):
+            continue
+        for c in sh.get("subjects", []):
+            if c not in spec.cast:
+                continue
+            worst: tuple[float, float, str] | None = None  # (share inside, t, edge)
+            for t, head, size in _heads(sh, spec, poses, c, fps):
+                if not on_stage(spec, c, t):
+                    continue
+                hb = head_box(_cam_at(sh, t), head, size)
+                if hb is None:
+                    continue
+                share = inside(hb[0])
+                if worst is None or share < worst[0]:
+                    x0, y0, x1, y1 = hb[0]
+                    cut = {"top": -y0, "bottom": y1 - 1.0, "left": -x0, "right": x1 - 1.0}
+                    worst = (share, t, max(cut, key=lambda k: cut[k]))
+            if worst is not None and worst[0] < keep:
+                out.append(
+                    Violation(
+                        spec.id,
+                        "head_cropped",
+                        c,
+                        round(worst[1], 2),
+                        f"shot {sh.get('shot', '?')} ({sh['type']}): only {100 * worst[0]:.0f} % of {c}'s "
+                        f"head is in the frame (out by the {worst[2]} edge); frame on the head through the "
+                        f"whole shot (a gesture, the subject's walk or the camera's push carries it out): "
+                        f"widen the lens, shorten the push or cut sooner",
+                    )
+                )
     return out
