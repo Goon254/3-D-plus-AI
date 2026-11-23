@@ -58,7 +58,7 @@
   },
   "mouth_gap_range": [
    0.059,
-   0.09
+   0.089
   ],
   "foot_slide_source": "skin",
   "foot_slide": {
@@ -83,7 +83,7 @@
   "sentinel_paws": {
    "lift": 1.857,
    "reach": 0.515,
-   "chin": 1.222,
+   "chin": 1.177,
    "drop": 1.401,
    "spread": 0.0,
    "frames": 185
@@ -182,7 +182,7 @@
    "passed": true,
    "hard": false,
    "message": "mouth off the skin by 9% of its size",
-   "value": 0.08994974874371858
+   "value": 0.08944723618090451
   },
   {
    "id": "foot_slide",
@@ -216,11 +216,11 @@
    "id": "sentinel_paws",
    "passed": true,
    "hard": true,
-   "message": "in the sentinel the fore paws ride 1.86 legs off the ground (want >= 1.0), 0.51 legs from the torso's axis (<= 0.65), 1.22-1.40 legs under the head (0.4-1.55), level within 0.00 (<= 0.15) over 185 frames",
+   "message": "in the sentinel the fore paws ride 1.86 legs off the ground (want >= 1.0), 0.51 legs from the torso's axis (<= 0.65), 1.18-1.40 legs under the head (0.4-1.55), level within 0.00 (<= 0.15) over 185 frames",
    "value": {
     "lift": 1.857,
     "reach": 0.515,
-    "chin": 1.222,
+    "chin": 1.177,
     "drop": 1.401,
     "spread": 0.0,
     "frames": 185
@@ -229,7 +229,7 @@
  ],
  "fingerprint": {
   "species": "da2a45ec334acdb4",
-  "rig_code": "5d4b3e209c67b29d"
+  "rig_code": "b046b6b6a03382d4"
  },
  "passed": true
 }

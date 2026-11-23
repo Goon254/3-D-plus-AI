@@ -157,6 +157,10 @@ class Rig:
     neck: list[str]
     trunk: list[str] = field(default_factory=list)
     ears: list[str] = field(default_factory=list)  # L then R
+    # degrees the head tips nose-down while it talks, scaled by the sentinel blend: a sentinel stance carried
+    # nose-up past the scanning angle levels its face to the listener to speak (0 for every locked design;
+    # ``perform.acting_rig`` sets it from ``CreatureMeta.sentinel_pose``)
+    speak_level: float = 0.0
 
 
 def _add(layers: dict[str, list[Mat]], bone: str, k: int, m: Mat) -> None:
@@ -271,6 +275,8 @@ def acting_layers(
                             - 0.35 * math.exp(-(((du - 0.17) / 0.09) ** 2))
                         )
                 turn(5.5 * a * beat * e, side, head_share=0.85)
+                if rig.speak_level:
+                    turn(rig.speak_level * p.sentinel * e, side, head_share=1.0)
                 turn(2.5 * a * math.sin(2 * math.pi * (t - g.start) / 2.6) * e, up, head_share=0.7)
                 turn(
                     3.0 * a * math.sin(2 * math.pi * (t - g.start) / 3.4 + 1.0) * e,

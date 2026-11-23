@@ -149,7 +149,7 @@
    "passed": true,
    "hard": false,
    "message": "mouth off the skin by -1% of its size",
-   "value": -0.005429978532643011
+   "value": -0.005429292929292929
   },
   {
    "id": "foot_slide",
@@ -175,7 +175,7 @@
  ],
  "fingerprint": {
   "species": "39837902333995a5",
-  "rig_code": "5d4b3e209c67b29d"
+  "rig_code": "b046b6b6a03382d4"
  },
  "passed": true
 }

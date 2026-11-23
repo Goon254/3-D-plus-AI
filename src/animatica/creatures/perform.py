@@ -14,7 +14,7 @@ from typing import Any
 
 from .build import CreatureMeta
 from .gait import GaitSpec, LocoFrame, Waypoint, plan_locomotion
-from .gesture import Mat, euler_to_mat, mat_mul, mat_to_euler
+from .gesture import Mat, Rig, euler_to_mat, mat_mul, mat_to_euler
 
 
 def _k(frame: int, v: Any) -> list[Any]:
@@ -47,6 +47,16 @@ def sentinel_bends(meta: CreatureMeta) -> tuple[float, float]:
     rest = math.degrees(math.atan2(dz, -dy))  # neck rise above the body's horizontal, on all fours
     neck = rest + pitch - neck_up
     return neck, pitch - head_up - neck
+
+
+def acting_rig(species: str, meta: CreatureMeta) -> Rig:
+    """What the acting layers need from a built creature. A sentinel carried nose-up past the locked scanning
+    angle (``SENTINEL_HEAD_UP``) levels its head by the difference while it talks, so a taller stance does not
+    deliver its lines to the sky (Kiki v8 proposal, cloud review 11-23 18:36); every locked design gets 0."""
+    level = 0.0
+    if meta.default_pose == "sentinel":
+        level = max(0.0, float(meta.sentinel_pose[2]) - SENTINEL_HEAD_UP)
+    return Rig(species, meta.bone_dirs, meta.neck_bones, meta.trunk_bones, meta.ear_bones, speak_level=level)
 
 
 def apply_sentinel(meta: CreatureMeta, plan: list[LocoFrame], fps: int) -> None:

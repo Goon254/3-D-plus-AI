@@ -63,12 +63,13 @@ from animatica.creatures.gait import (  # noqa: E402
     planted_travel,
     sentinel_paws,
 )
-from animatica.creatures.gesture import Gesture, Rig, acting_layers  # noqa: E402
-from animatica.creatures.perform import plan_for, walk_keys  # noqa: E402
+from animatica.creatures.gesture import Gesture, acting_layers  # noqa: E402
+from animatica.creatures.perform import acting_rig, plan_for, walk_keys  # noqa: E402
 from animatica.creatures.qa import part_seating, rig_checks, rig_probe  # noqa: E402
 from animatica.creatures.species import CAST, SPECIES  # noqa: E402
 from animatica.design.fingerprint import fingerprint  # noqa: E402
 from animatica.design.proposal import load_proposal, proposal_species, stress_summary  # noqa: E402
+from animatica.production.acting import speech_accents  # noqa: E402
 
 FPS = 24
 SLIDE_MAX = 0.04  # share of the leg length a planted foot may drift
@@ -270,7 +271,13 @@ def run(
     for g in ch["gestures"]:
         if g.kind == "nod":
             g.start = ch["line_start"] + dur + 0.15
-    rig = Rig(species, meta.bone_dirs, meta.neck_bones, meta.trunk_bones, meta.ear_bones)
+    # the line is acted as in the film (production.acting.dialogue_beats): head beats on the stressed syllables
+    # and a slow tilt and sway, so the stress test sees the eyes, lids and brows ride a speaking head
+    x, sr = tts.read_wav(wav)
+    accents = [(ch["line_start"] + ta, w) for ta, w in speech_accents(x, sr)]
+    if accents:
+        ch["gestures"].append(Gesture(species, "talk", ch["line_start"] - 0.1, dur + 0.5, accents=accents))
+    rig = acting_rig(species, meta)
     overlay = acting_layers(rig, plan, gaze_curve(ch["turns"], n), ch["gestures"], FPS)
     keys, plan = walk_keys(meta, gait, pts, FPS, 1, seed=7, yaw0=90.0, plan=plan, overlay=overlay)
     size = max(meta.length, meta.head_height)

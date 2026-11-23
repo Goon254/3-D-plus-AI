@@ -34,8 +34,8 @@ from animatica.core.engine import BlenderSession  # noqa: E402
 from animatica.creatures.build import build_creature  # noqa: E402
 from animatica.creatures.face import BROW_COLOR, face_keys, face_ops, refresh_rest  # noqa: E402
 from animatica.creatures.gait import GAITS, Waypoint  # noqa: E402
-from animatica.creatures.gesture import Gesture, Rig, acting_layers, gaze_track, spray_droplets  # noqa: E402
-from animatica.creatures.perform import back_point, plan_for, ride_plan, walk_keys  # noqa: E402
+from animatica.creatures.gesture import Gesture, acting_layers, gaze_track, spray_droplets  # noqa: E402
+from animatica.creatures.perform import acting_rig, back_point, plan_for, ride_plan, walk_keys  # noqa: E402
 from animatica.creatures.species import SPECIES  # noqa: E402
 from animatica.production import acting, continuity, framing, pacing, sound, staging  # noqa: E402
 from animatica.production.scene import (  # noqa: E402
@@ -351,7 +351,7 @@ def main() -> int:
             gaze = (
                 gaze_track(cid, plans, spec.lines, gestures, fps, lens=(0.0, -1.0)) if spec.eyelines else None
             )
-            rig = Rig(actor.species, meta.bone_dirs, meta.neck_bones, meta.trunk_bones, meta.ear_bones)
+            rig = acting_rig(actor.species, meta)
             mine = [g for g in gestures if g.who == cid]
             overlay = acting_layers(rig, plans[cid], gaze, mine, fps, targets=plans)
             keys, _ = walk_keys(
