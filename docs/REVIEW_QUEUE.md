@@ -11,7 +11,7 @@ that raised it.
 
 ## P0-FILM — the final savannah film (rendered 11-18; scored 7/10, not done) — [review 11-19 00:36](reviews/2026-11-19T0036Z.md)
 
-*Status 11-23 06:36 (cloud): still no owner reply (no laptop commit since 11-18); main green (374 passed with Blender), the design lock holds for all five; nothing in the film or the approved designs changed. Earlier per-run statuses were trimmed from this line (they had grown to 19 entries); each run's status is in its review file under `docs/reviews/`. — [review 11-23 06:36](reviews/2026-11-23T0636Z.md)*
+*Status 11-23 09:36 (cloud): still no owner reply (no laptop commit since 11-18); main green (374 passed with Blender), the design lock holds for all five; nothing in the film or the approved designs changed. Each run's status is in its review file under `docs/reviews/`. — [review 11-23 09:36](reviews/2026-11-23T0936Z.md)*
 
 Scores: story 8, character design 7, motion 7, visuals 7, mix 7; voices and music not heard in the cloud (the owner's ears needed). Work these after the owner has watched the film, in this order:
 
@@ -182,7 +182,7 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
   tube: taper them and add a dark coronet into the pastern); a filly's proportions (bigger head, shorter legs, rounder
   barrel) to lose the pony silhouette; lighter upper lids; the mouth below the muzzle (happy 2.4 %). Zuri 6. —
   [review 11-17 15:36](reviews/2026-11-17T1536Z.md)*
-- [ ] **Bibi Kobe's shell** is a near-perfect ball with panel lines: a domed carapace with raised, slightly
+- [x] **Bibi Kobe's shell** is a near-perfect ball with panel lines: a domed carapace with raised, slightly
   pyramidal scutes and a flared rim. Spots read as holes, so use leopard-tortoise radiating marks. The pale plastron
   disc still shows.
   *Laptop GPU 11-17 (DECISIONS #57, `design/bibi_kobe/v2/`): the carapace is a mesh with a high dome, raised scutes and a flared rim ✔;
@@ -193,13 +193,15 @@ or shader work first. — [review 11-17 06:36](reviews/2026-11-17T0636Z.md)
   marginal ring hangs like a vertical skirt instead of flaring; the head is tiny next to the shell (`head` 1.15–1.25);
   the lips are a dark sausage proud of the face; the hind legs look like blobs from behind; surprised is 2.1 %. Bibi 7.
   — [review 11-17 15:36](reviews/2026-11-17T1536Z.md)*
-- [ ] **Tembo's ears** are flat discs that look like fins when seen edge-on from 3/4: give them thickness, a cupped
+  *Closed 11-23 09:36 (cloud): superseded. The owner approved and locked Bibi Kobe v3 (#65); the rays render smooth on the v3 sheet and thumbnail; the one open shape note (a ball / beehive from front and back) is measured (`shape:shell_dome`, #95) and tracked in "Bibi Kobe's shell reads as a barrel/ball" with the v4 proposal (#114). — [review 11-23 09:36](reviews/2026-11-23T0936Z.md)*
+- [x] **Tembo's ears** are flat discs that look like fins when seen edge-on from 3/4: give them thickness, a cupped
   shape and a rolled top edge. His neutral upper lids sit low (he looks sleepy).
   *Laptop GPU 11-17 (DECISIONS #58, `design/tembo/v2/`): cupped, thick ear meshes with a rolled top edge ✔; eyes rest open (`lid_bias`) ✔.
   Rubric 9.84, ready. Needs reviewer verification.*
   *Verified 11-17 18:36 (cloud): the ears read as cupped ears from 3/4 ✔; the eyes rest open ✔. Open (face notes, not
   blockers): the inner brow ends tilt up, so neutral reads worried and surprised looks like neutral; the eye bulges past
   the head line in the side view. Tembo 8. — [review 11-17 18:36](reviews/2026-11-17T1836Z.md)*
+  *Verified 11-23 09:36 (cloud): `shape:ear_edge` (hard, #97) measures the locked v3 ears at 0.336 face-on in the worst sheet view (3/4; min 0.25), test green; Tembo v3 is owner-approved and locked (#65). The face notes (brow tilt, eye against the outline) are tracked in "Brows hang outside the head". — [review 11-23 09:36](reviews/2026-11-23T0936Z.md)*
 - [x] **Expressions don't read** at sheet size: happy changes only 1.8–3.5 % of the face close-up (the soft check
   wants 3 %). Make the smile wider, lift the cheeks and lower lids, widen surprised eyes more.
   *11-17 12:36 (DECISIONS #54): lower-lid `cheek` key ("smiling eyes"), higher brows, a wider smile. Happy is now 3.2–5.1 %
