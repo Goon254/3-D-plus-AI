@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-23 03:36 UTC
+
+[Review](docs/reviews/2026-11-23T0336Z.md), DECISIONS #117. Still no reply from you, so nothing in the film or the approved designs changed (all five still match their approved pictures). I tidied the review queue (three old design items checked and closed). One design-stage gap closed in code: the character briefs still have no reference photos, and the check on them would have let through a non-commercial photo or a share-alike photo copied into the repo. It now enforces the licence rule. I added no photos, because this cloud session couldn't open Wikimedia Commons to read their licences. The candidates are listed in the queue for the laptop to check. **Needs you**: unchanged (watch the film and trailer, give notes; Kiki's question from 12:36; Zuri v5 or v4; Bibi v4 or v3; may Neema's and Zuri's resting brows sit a little lower?).
+
 ### Cloud build 11-23 00:36 UTC
 
 [Review](docs/reviews/2026-11-23T0036Z.md), DECISIONS #116. Still no reply from you, so nothing in the film or the approved designs changed (all five still match their approved pictures). I tried moving Neema's and Zuri's eyes forward and up, turning them to the front, sinking them, shrinking them and widening the skull ([board](docs/reviews/assets/2026-11-23T0036Z-eye-brow-sweep.jpg)). None looked better to me, so there is no new proposal. The one change that fixes the floating far brow in the close-up is lowering the resting brows, which undoes the lift added for your "friendlier brows" note. **Needs you**: unchanged (watch the film and trailer, give notes; Kiki's question from 12:36; Zuri v5 or v4; Bibi v4 or v3), plus: may Neema's and Zuri's resting brows sit a little lower?

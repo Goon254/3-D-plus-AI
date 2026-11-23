@@ -38,6 +38,40 @@ def test_brief_rejects_unknown_metrics_inverted_ranges_and_unlicensed_references
         Brief.from_dict({**base, "references": [{"url": "https://example.org/a.jpg"}]})
 
 
+def test_reference_licences_follow_the_design_stage_rule():
+    """DESIGN_STAGE §2: free licences only; CC BY / BY-SA are linked with their author, and only CC0 / public
+    domain may be copied into the repo, attributed."""
+    from animatica.design.brief import licence_kind
+
+    base = load_brief("kiki").raw
+    url = "https://commons.wikimedia.org/wiki/File:Meerkat.jpg"
+
+    def brief(**ref):
+        return Brief.from_dict({**base, "references": [{"url": url, **ref}]})
+
+    assert [
+        licence_kind(s) for s in ("CC0 1.0", "Public domain", "PD-self", "CC BY 4.0", "CC BY-SA 3.0")
+    ] == [
+        "copyable",
+        "copyable",
+        "copyable",
+        "linkable",
+        "linkable",
+    ]
+    for bad in ("CC BY-NC 4.0", "CC BY-NC-SA 2.0", "CC BY-ND 4.0", "All rights reserved", "GFDL"):
+        assert licence_kind(bad) is None, bad
+        with pytest.raises(BriefError, match="non-free"):
+            brief(license=bad, author="A")
+    with pytest.raises(BriefError, match="needs its author"):
+        brief(license="CC BY-SA 4.0")
+    assert brief(license="CC BY-SA 4.0", author="A. Photographer").references
+    with pytest.raises(BriefError, match="never copy"):
+        brief(license="CC BY 4.0", author="A", local="design/kiki/refs/a.jpg")
+    with pytest.raises(BriefError, match="attributed"):
+        brief(license="CC0 1.0", local="design/kiki/refs/a.jpg")
+    assert brief(license="CC0 1.0", source="Wikimedia Commons", local="design/kiki/refs/a.jpg").references
+
+
 def test_measurements_match_the_designs():
     p = proportions(SPECIES["elephant"])
     assert 0.7 < p["head_body"] < 0.9  # a calf: big head

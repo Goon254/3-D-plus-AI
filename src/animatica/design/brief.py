@@ -36,6 +36,41 @@ class BriefError(ValueError):
     pass
 
 
+# Reference images (DESIGN_STAGE.md §2): free licences only. A link may be CC0, public domain, CC BY or
+# CC BY-SA (with the author, which those licences require); a copy inside the repo (``local``) only CC0 or
+# public domain, and attributed. NC / ND and unknown licences are refused (docs/research licence traps).
+_COPYABLE = ("cc0", "public domain", "pd")
+_LINKABLE = ("cc by ", "cc by-sa ")
+
+
+def licence_kind(licence: str) -> str | None:
+    """``"copyable"`` (CC0 / public domain), ``"linkable"`` (CC BY / CC BY-SA, any version) or ``None``."""
+    s = " ".join(licence.lower().replace("_", " ").split())
+    if s in _COPYABLE or s.startswith(("cc0 ", "public domain ", "pd-")):
+        return "copyable"
+    if any(s.startswith(p) for p in _LINKABLE) and not any(t in s for t in ("-nc", " nc", "-nd", " nd")):
+        return "linkable"
+    return None
+
+
+def check_reference(character: str, ref: dict[str, Any]) -> None:
+    """Raise :class:`BriefError` unless ``ref`` is a reference a design brief may carry."""
+    if not ref.get("url") or not ref.get("license"):
+        raise BriefError(f"{character}: every reference needs a url and a license")
+    kind = licence_kind(str(ref["license"]))
+    if kind is None:
+        raise BriefError(f"{character}: reference {ref['url']} has a non-free licence {ref['license']!r}")
+    if kind == "linkable" and not ref.get("author"):
+        raise BriefError(f"{character}: reference {ref['url']} is {ref['license']}, which needs its author")
+    if ref.get("local"):
+        if kind != "copyable":
+            raise BriefError(
+                f"{character}: reference {ref['url']} is {ref['license']}: link it, never copy it into the repo"
+            )
+        if not (ref.get("author") or ref.get("source")):
+            raise BriefError(f"{character}: a copied reference must be attributed (author or source)")
+
+
 @dataclass(frozen=True)
 class Brief:
     character: str
@@ -65,8 +100,7 @@ class Brief:
                 raise BriefError(f"{d['character']}: range for {m} is inverted ({lo} > {hi})")
             ranges[m] = (lo, hi)
         for ref in d.get("references", []):
-            if not ref.get("url") or not ref.get("license"):
-                raise BriefError(f"{d['character']}: every reference needs a url and a license")
+            check_reference(d["character"], ref)
         sil = d.get("silhouette", {})
         names = tuple(n.lower() for n in d["read_as"].get("names", []))
         if not names:
