@@ -29,7 +29,12 @@ from PIL import Image, ImageDraw  # noqa: E402
 from animatica.creatures.species import SPECIES  # noqa: E402
 from animatica.design.brief import load_brief  # noqa: E402
 from animatica.design.critic import blind_verdict, load_blind_read  # noqa: E402
-from animatica.design.proposal import changed_fields, load_proposal, proposal_species  # noqa: E402
+from animatica.design.proposal import (  # noqa: E402
+    changed_fields,
+    load_proposal,
+    proposal_species,
+    stress_summary,
+)
 from animatica.design.variants import Morph  # noqa: E402
 
 PROPOSALS = ROOT / "design" / "proposals"
@@ -69,6 +74,9 @@ def render(prop_dir: Path, res: int, samples: int, device: str) -> dict:
     doc = load_proposal(prop_dir)
     brief = load_brief(doc["character"])
     sp = proposal_species(doc, SPECIES)
+    # the proposal's own stress report (rig_stress_test.py --proposal), never the locked design's
+    stress_path = prop_dir / "rig_stress.json"
+    stress = json.loads(stress_path.read_text(encoding="utf-8")) if stress_path.exists() else None
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
         res_doc = sheet_for(
@@ -80,7 +88,8 @@ def render(prop_dir: Path, res: int, samples: int, device: str) -> dict:
             device,
             label=f"{doc['character']} {doc['version']} (proposal on {doc['base']})",
             species=sp,
-            with_stress=False,
+            with_stress=stress is not None,
+            stress_path=stress_path,
         )
         for name in ("silhouette.png", "thumb96.png"):
             shutil.copy(work / name, prop_dir / name)
@@ -90,7 +99,11 @@ def render(prop_dir: Path, res: int, samples: int, device: str) -> dict:
         k: res_doc[k] for k in ("score", "ready", "hard_failures", "image_metrics", "design") if k in res_doc
     }
     keep["changed"] = sorted(changed_fields(locked, sp))
-    keep["rig_stress"] = "not run (cloud: run scripts/rig_stress_test.py on the proposal before approval)"
+    keep["rig_stress"] = (
+        stress_summary(stress, sp)
+        if stress
+        else "not run: python scripts/rig_stress_test.py --proposal <this folder> --no-render (CPU, ~1 min)"
+    )
     (prop_dir / "score.json").write_text(json.dumps(keep, indent=1) + "\n", encoding="utf-8")
     return keep
 

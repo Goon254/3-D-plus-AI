@@ -1,0 +1,181 @@
+{
+ "character": "bibi_kobe",
+ "species": "tortoise",
+ "frames": 383,
+ "seconds": 15.96,
+ "timeline": {
+  "walk": 0.8,
+  "turn": 3.6,
+  "stop": 7.6,
+  "expressions": 8.0,
+  "line": 11.9,
+  "line_end": 14.31
+ },
+ "expressions": [
+  "neutral",
+  "happy",
+  "sad",
+  "surprised",
+  "worried",
+  "determined",
+  "curious",
+  "scared",
+  "proud",
+  "neutral",
+  "happy"
+ ],
+ "line": "When you walk slowly, you learn to look up.",
+ "lipsync": "rhubarb",
+ "turn_degrees": 18,
+ "sit_stand": "bow and rise (no sit pose)",
+ "summary": {
+  "eye_embed": {
+   "tortoise_eye_L": [
+    0.648,
+    0.648
+   ],
+   "tortoise_eye_R": [
+    0.648,
+    0.648
+   ]
+  },
+  "skin_gap": {
+   "tortoise_lid_L_up": -0.187,
+   "tortoise_lid_L_lo": -0.635,
+   "tortoise_lid_R_up": -0.187,
+   "tortoise_lid_R_lo": -0.635,
+   "tortoise_brow_L": 0.057,
+   "tortoise_brow_R": 0.057,
+   "tortoise_mouth": -0.007
+  },
+  "swim_p95_mm": {
+   "tortoise_body": 0.0
+  },
+  "mouth_gap_range": [
+   -0.052,
+   -0.005
+  ],
+  "foot_slide_source": "skin",
+  "foot_slide": {
+   "drift": 0.00098,
+   "leg": "RH",
+   "frame": 42,
+   "pairs": 1443
+  },
+  "foot_slide_bone": {
+   "drift": 0.0,
+   "leg": "LH",
+   "frame": 2,
+   "pairs": 1443
+  },
+  "foot_plant": {
+   "travel": 0.00316,
+   "leg": "RH",
+   "start": 84,
+   "end": 132,
+   "phases": 12
+  },
+  "worst_gap": {
+   "tortoise_lid_L_up": {
+    "gap": -0.187,
+    "frame": 229,
+    "expression": "surprised"
+   },
+   "tortoise_lid_L_lo": {
+    "gap": -0.635,
+    "frame": 352,
+    "expression": "happy"
+   },
+   "tortoise_lid_R_up": {
+    "gap": -0.187,
+    "frame": 229,
+    "expression": "surprised"
+   },
+   "tortoise_lid_R_lo": {
+    "gap": -0.635,
+    "frame": 352,
+    "expression": "happy"
+   },
+   "tortoise_brow_L": {
+    "gap": 0.057,
+    "frame": 250,
+    "expression": "determined"
+   },
+   "tortoise_brow_R": {
+    "gap": 0.057,
+    "frame": 250,
+    "expression": "determined"
+   }
+  }
+ },
+ "checks": [
+  {
+   "id": "eye_socket",
+   "passed": true,
+   "hard": true,
+   "message": "eye socket: ok",
+   "value": null
+  },
+  {
+   "id": "brow_float",
+   "passed": true,
+   "hard": false,
+   "message": "brow float: ok",
+   "value": null
+  },
+  {
+   "id": "lid_float",
+   "passed": true,
+   "hard": false,
+   "message": "lid float: ok",
+   "value": null
+  },
+  {
+   "id": "part_float",
+   "passed": true,
+   "hard": true,
+   "message": "part float: ok",
+   "value": null
+  },
+  {
+   "id": "texture_swim",
+   "passed": true,
+   "hard": true,
+   "message": "texture swim: ok",
+   "value": null
+  },
+  {
+   "id": "mouth_float",
+   "passed": true,
+   "hard": false,
+   "message": "mouth off the skin by -1% of its size",
+   "value": -0.005429978532643011
+  },
+  {
+   "id": "foot_slide",
+   "passed": true,
+   "hard": true,
+   "message": "worst planted-foot drift (skin) 1.0 mm per frame (RH at frame 42; limit 6 mm) over 1443 planted foot-frame pairs",
+   "value": 0.001
+  },
+  {
+   "id": "foot_plant",
+   "passed": true,
+   "hard": true,
+   "message": "a planted sole (skin) strays up to 3.2 mm within one stance (RH, frames 84-132; limit 25 mm, half the foot's radius) over 12 stance phases",
+   "value": 0.0032
+  },
+  {
+   "id": "ground",
+   "passed": true,
+   "hard": true,
+   "message": "feet sink up to 0.0 mm below their rest height (limit 4 mm)",
+   "value": 0.0
+  }
+ ],
+ "fingerprint": {
+  "species": "39837902333995a5",
+  "rig_code": "5d4b3e209c67b29d"
+ },
+ "passed": true
+}

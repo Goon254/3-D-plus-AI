@@ -71,5 +71,12 @@
  "changed": [
   "shell_profile"
  ],
- "rig_stress": "not run (cloud: run scripts/rig_stress_test.py on the proposal before approval)"
+ "rig_stress": {
+  "passed": true,
+  "fresh": true,
+  "failed": [],
+  "soft_failed": [],
+  "checks": 9,
+  "record": "rig_stress.json"
+ }
 }

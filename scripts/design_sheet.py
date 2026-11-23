@@ -327,12 +327,14 @@ def sheet_for(
     rescore: bool = False,
     species: Species | None = None,
     with_stress: bool = True,
+    stress_path: Path | None = None,
 ) -> dict[str, Any]:
     """Render and score one sheet. ``rescore`` reuses the views already in ``out/views`` (no rendering): the
     composed sheet is then byte-identical, so a critique recorded for it (``critique.json``) is picked up.
     Cycles noise differs run to run, so a fresh render never matches a recorded critique's hash.
     ``species`` replaces the locked parameters (a design proposal, ``animatica.design.proposal``); ``with_stress=False``
-    leaves the locked design's rig stress report out of the score (it measured another design)."""
+    leaves the locked design's rig stress report out of the score (it measured another design); ``stress_path``
+    reads another report instead (a proposal's own, ``rig_stress_test.py --proposal``)."""
     sp = apply_morph(species or SPECIES[brief.species], morph, brief.dark_ok)
     if rescore:
         views = {p.stem: p for p in sorted((out / "views").glob("*.png"))}
@@ -361,7 +363,7 @@ def sheet_for(
     crit = critique_for(brief, out)
     # the rig stress test's checks (scripts/rig_stress_test.py, copied to design/<char>/rig_stress.json) join the
     # final score; the sheet itself is composed without them, so a recorded critique's hash still matches
-    stress_path = ROOT / "design" / brief.character / "rig_stress.json"
+    stress_path = stress_path or ROOT / "design" / brief.character / "rig_stress.json"
     stress = (
         json.loads(stress_path.read_text(encoding="utf-8")) if with_stress and stress_path.exists() else None
     )

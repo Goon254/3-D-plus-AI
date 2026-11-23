@@ -718,3 +718,25 @@ def test_the_sentinel_pose_at_its_default_keeps_the_stress_reports_fresh():
     assert list(sp.sentinel_pose) == ADDED_AT_DEFAULT["sentinel_pose"]
     assert "sentinel_pose" not in species_snapshot(sp)
     assert species_hash(replace(sp, sentinel_pose=(88.0, 80.0, 26.0, 78.0))) != species_hash(sp)
+
+
+def test_the_performance_reads_the_pose_from_the_meta_so_a_proposal_performs_as_itself():
+    """Cloud 11-23 18:36 (DECISIONS #120): ``perform`` looked up ``default_pose`` and ``level_feet`` in the locked
+    ``SPECIES`` table by name, so a proposal that changed either would be stress-tested as the locked design.
+    Both now travel in ``CreatureMeta`` like ``sentinel_pose``."""
+    from dataclasses import replace
+
+    from animatica.creatures.build import build_creature
+    from animatica.creatures.gait import GAITS, Waypoint
+    from animatica.creatures.perform import plan_for
+    from animatica.creatures.species import SPECIES
+
+    pts = [Waypoint(0.0, 0.0, 0.0), Waypoint(1.0, 0.0, 0.0)]
+    for name, sp in SPECIES.items():
+        _ops, meta = build_creature("k", sp)
+        assert (meta.default_pose, meta.level_feet) == (sp.default_pose, sp.level_feet), name
+    locked = SPECIES["meerkat"]
+    _ops, meta = build_creature("k", locked)
+    assert max(p.sentinel for p in plan_for(meta, GAITS["meerkat"]["walk"], pts)) > 0.9
+    _ops, meta2 = build_creature("k", replace(locked, default_pose="stand"))
+    assert max(p.sentinel for p in plan_for(meta2, GAITS["meerkat"]["walk"], pts)) == 0.0

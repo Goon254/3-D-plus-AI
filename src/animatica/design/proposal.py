@@ -102,3 +102,21 @@ def changed_fields(sp: Species, proposed: Species) -> dict[str, tuple[Any, Any]]
         for f in fields(Species)
         if getattr(sp, f.name) != getattr(proposed, f.name)
     }
+
+
+def stress_summary(report: dict[str, Any], proposed: Species) -> dict[str, Any]:
+    """What a proposal's ``score.json`` says about its rig stress test (``scripts/rig_stress_test.py
+    --proposal``): passed or not, the hard and soft checks that failed, and whether the report measured *these*
+    parameters (a report about another version of the proposal must not count; DECISIONS #68)."""
+    from animatica.design.fingerprint import staleness
+
+    st = staleness(report, proposed)
+    checks = report.get("checks", [])
+    return {
+        "passed": bool(report.get("passed")) and st["species_ok"],
+        "fresh": st["species_ok"],
+        "failed": sorted(c["id"] for c in checks if c.get("hard", True) and not c["passed"]),
+        "soft_failed": sorted(c["id"] for c in checks if not c.get("hard", True) and not c["passed"]),
+        "checks": len(checks),
+        "record": "rig_stress.json",
+    }

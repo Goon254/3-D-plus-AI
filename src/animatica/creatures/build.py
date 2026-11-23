@@ -122,6 +122,10 @@ class CreatureMeta:
     bone_dirs: dict[str, tuple[float, float, float]] = field(default_factory=dict)
     # (pitch, neck rise, head nose-up, tail) of the sentinel pose (``Species.sentinel_pose``)
     sentinel_pose: tuple[float, float, float, float] = (82.0, 69.0, 12.0, 72.0)
+    # ``Species.default_pose`` / ``level_feet``: the performance reads them from here, not from the locked
+    # ``SPECIES`` table, so a design proposal (``animatica.design.proposal``) performs as itself
+    default_pose: str = "stand"
+    level_feet: str = "FH"
 
 
 LID_COLOR = {  # the skin around the eye: a touch darker than the coat (the zebra's and meerkat's are dark)
@@ -918,5 +922,7 @@ def build_creature(
         length=max(sp.tail.tip[1], sp.torso[1] / 2) - nose,
         bone_dirs={b["name"]: tuple(t - h for h, t in zip(b["head"], b["tail"])) for b in bones},
         sentinel_pose=tuple(sp.sentinel_pose),
+        default_pose=sp.default_pose,
+        level_feet=sp.level_feet,
     )
     return ops, meta

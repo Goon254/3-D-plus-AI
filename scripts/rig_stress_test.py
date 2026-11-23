@@ -2,6 +2,11 @@
 
     python scripts/rig_stress_test.py kiki            # -> output/rig-stress/kiki/{report.json, motion.mp4}
     python scripts/rig_stress_test.py --all --no-render
+    python scripts/rig_stress_test.py --proposal design/proposals/kiki-v8 --no-render   # -> <proposal>/rig_stress.json
+
+``--proposal`` stress-tests a design proposal (``animatica.design.proposal``) instead of the locked design: the same
+take on the proposal's species parameters, its report written into the proposal folder (the locked design's record
+in ``design/<char>/`` is not touched), so a proposal reaches the owner with its motion checks (DESIGN_STAGE §5).
 
 The take (13-17 s at 24 fps): standing (the meerkat in her sentinel), a walk, a turn of up to 90 degrees, a stop (the
 meerkat drops to all fours to walk and rises again when she stops: her sit/stand; the other rigs have no sit pose,
@@ -63,6 +68,7 @@ from animatica.creatures.perform import plan_for, walk_keys  # noqa: E402
 from animatica.creatures.qa import part_seating, rig_checks, rig_probe  # noqa: E402
 from animatica.creatures.species import CAST, SPECIES  # noqa: E402
 from animatica.design.fingerprint import fingerprint  # noqa: E402
+from animatica.design.proposal import load_proposal, proposal_species, stress_summary  # noqa: E402
 
 FPS = 24
 SLIDE_MAX = 0.04  # share of the leg length a planted foot may drift
@@ -83,7 +89,7 @@ def _smooth(u: float) -> float:
     return u * u * (3 - 2 * u)
 
 
-def choreography(meta: Any, species: str) -> dict[str, Any]:
+def choreography(meta: Any, species: str, sp: Any | None = None) -> dict[str, Any]:
     """Waypoints, gaze, gestures, expression track and the line's timing for the take."""
     gait = GAITS[species]["walk"]
     v = gait.nominal_speed(meta.leg)
@@ -113,7 +119,7 @@ def choreography(meta: Any, species: str) -> dict[str, Any]:
     # head turns during the expression run: left, then right
     turns = [(t_expr + 0.2, 1.0, 35.0), (t_expr + 1.6, 1.0, -35.0)]
     gestures = [Gesture(species, "nod", 0.0, 0.9)]  # placed after the line once its length is known
-    if SPECIES[species].default_pose != "sentinel":  # no sit pose on these rigs: a bow and back up
+    if (sp or SPECIES[species]).default_pose != "sentinel":  # no sit pose on these rigs: a bow and back up
         gestures.append(Gesture(species, "head_duck", t_stop - 0.2, 1.4, amount=0.6))
     return {
         "points": pts,
@@ -240,15 +246,21 @@ def run(
     res: tuple[int, int],
     samples: int,
     stills: list[int] | None = None,
+    sp: Any | None = None,
+    record: Path | None = None,
 ) -> dict[str, Any]:
+    """The take for ``character``; ``sp`` replaces the locked species (a proposal), ``record`` is where the
+    design record goes (default ``design/<char>/rig_stress.json``)."""
     species = CAST[character]
-    sp = SPECIES[species]
+    sp = sp or SPECIES[species]
+    if sp.name != species:
+        raise ValueError(f"{character} is a {species}, the parameters are a {sp.name}")
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
     ops, meta = build_creature(species, sp, at=(0.0, 0.0), yaw=90.0)
     fops, face = face_ops(species, sp, meta.root, meta.rig, BROW_COLOR[species])
-    ch = choreography(meta, species)
+    ch = choreography(meta, species, sp)
     wav, cues, dur, lip_engine = voice_line(species, out)
     t_end = ch["line_start"] + dur + 1.6
     pts = ch["points"] + [Waypoint(t_end, ch["points"][-1].x, ch["points"][-1].y)]
@@ -538,7 +550,7 @@ def run(
     report["passed"] = all(c["passed"] for c in checks if c["hard"])
     (out / "report.json").write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
     # the design record: the rubric reads it on the next sheet score (scripts/design_sheet.py)
-    record = ROOT / "design" / character / "rig_stress.json"
+    record = record or ROOT / "design" / character / "rig_stress.json"
     record.write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
     if render:
         mp4 = out / "motion.mp4"
@@ -571,20 +583,48 @@ def main() -> int:
     ap.add_argument("--res", default="960x540")
     ap.add_argument("--samples", type=int, default=16)
     ap.add_argument("--stills", default="", help="comma-separated frames to render as Workbench previews")
+    ap.add_argument(
+        "--proposal",
+        action="append",
+        default=[],
+        help="a design proposal folder (repeatable): stress-test it instead of the locked design",
+    )
     a = ap.parse_args()
-    names = list(CAST) if a.all else a.characters
-    if not names:
-        ap.error("name a character or pass --all")
+    # (label, character, species parameters or None for the locked design, design record or None)
+    jobs: list[tuple[str, str, Any, Path | None]] = [
+        (c, c, None, None) for c in (list(CAST) if a.all else a.characters)
+    ]
+    for d in a.proposal:
+        prop_dir = Path(d).resolve()
+        doc = load_proposal(prop_dir)
+        jobs.append(
+            (
+                f"{doc['character']}-{doc['version']}",
+                doc["character"],
+                proposal_species(doc, SPECIES),
+                prop_dir / "rig_stress.json",
+            )
+        )
+    if not jobs:
+        ap.error("name a character, pass --all or --proposal")
     w, h = (int(v) for v in a.res.split("x"))
     ok = True
-    for ch in names:
+    for label, ch, sp, record in jobs:
         stills = [int(f) for f in a.stills.split(",") if f.strip()]
-        rep = run(ch, Path(a.out) / ch, not a.no_render, (w, h), a.samples, stills)
+        rep = run(ch, Path(a.out) / label, not a.no_render, (w, h), a.samples, stills, sp, record)
         ok &= rep["passed"]
+        if (
+            sp is not None
+        ):  # the proposal's score.json says what its motion test found (rendering it rescores)
+            score_path = record.parent / "score.json"
+            if score_path.exists():
+                doc = json.loads(score_path.read_text(encoding="utf-8"))
+                doc["rig_stress"] = stress_summary(rep, sp)
+                score_path.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8")
         print(
             json.dumps(
                 {
-                    "character": ch,
+                    "character": label,
                     "passed": rep["passed"],
                     "checks": {c["id"]: c["passed"] for c in rep["checks"]},
                 }

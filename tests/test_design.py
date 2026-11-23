@@ -668,3 +668,39 @@ def test_the_stripe_ring_check_is_hard():
     assert c_bad["hard"] and not c_bad["passed"] and "bullseye" in c_bad["message"]
     assert c_good["passed"]
     assert not bad["ready"]
+
+
+def test_proposals_carry_their_own_rig_stress_report():
+    """Cloud 11-23 18:36 (DECISIONS #120): DESIGN_STAGE §5 says every design runs the rig stress test before it
+    reaches the owner, but ``rig_stress_test.py`` took no proposal, so Bibi Kobe v4 and Zuri v5 were offered
+    untested. ``--proposal`` writes the report into the proposal folder (never over the locked record) and the
+    proposal's ``score.json`` summarises it; the summary only counts a report about *these* parameters."""
+    import json
+    from dataclasses import replace
+
+    from animatica.creatures.species import SPECIES
+    from animatica.design.proposal import load_proposal, proposal_species, stress_summary
+
+    root = Path(__file__).resolve().parents[1] / "design" / "proposals"
+    offered = {"bibi_kobe-v4", "zuri-v5"}
+    for d in sorted(p.parent for p in root.glob("*/proposal.json")):
+        rep_path = d / "rig_stress.json"
+        if d.name in offered:
+            assert rep_path.exists(), f"{d.name} is offered to the owner without a rig stress test"
+        if not rep_path.exists():
+            continue
+        rep = json.loads(rep_path.read_text("utf-8"))
+        sp = proposal_species(load_proposal(d), SPECIES)
+        summary = stress_summary(rep, sp)
+        assert summary["fresh"], f"{d.name}: rig_stress.json measured other parameters; re-run --proposal"
+        assert json.loads((d / "score.json").read_text("utf-8"))["rig_stress"] == summary
+        # a report about the locked design (or any other parameters) does not count for the proposal
+        locked = SPECIES[sp.name]
+        bigger_eyes = replace(sp, eye=(*sp.eye[:3], sp.eye[3] * 1.1))
+        assert stress_summary(rep, bigger_eyes)["passed"] is False
+        locked_rep = d.parents[1] / load_proposal(d)["character"] / "rig_stress.json"
+        assert (
+            rep["fingerprint"]["species"]
+            != json.loads(locked_rep.read_text("utf-8"))["fingerprint"]["species"]
+        )
+        assert not stress_summary(json.loads(locked_rep.read_text("utf-8")), sp)["fresh"], locked.name

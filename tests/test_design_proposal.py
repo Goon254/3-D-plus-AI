@@ -77,7 +77,9 @@ def test_compare_board_is_drawn(tmp_path):
         (prop / f).write_bytes((PROPOSALS / "kiki-v7" / f).read_bytes())
     out = compare_board(ROOT / "design" / "kiki" / "v6", prop, "kiki: v6 vs v7")
     assert out.exists() and out.stat().st_size > 1000
-    assert json.loads((PROPOSALS / "kiki-v7" / "score.json").read_text())["rig_stress"].startswith("not run")
+    # the proposal's own stress test (rig_stress_test.py --proposal, #120), never the locked design's report
+    stress = json.loads((PROPOSALS / "kiki-v7" / "score.json").read_text())["rig_stress"]
+    assert stress["record"] == "rig_stress.json" and stress["fresh"]
 
 
 def test_a_shell_profile_domes_the_shell_and_leaves_the_locked_one_untouched():

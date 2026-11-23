@@ -15,7 +15,6 @@ from typing import Any
 from .build import CreatureMeta
 from .gait import GaitSpec, LocoFrame, Waypoint, plan_locomotion
 from .gesture import Mat, euler_to_mat, mat_mul, mat_to_euler
-from .species import SPECIES
 
 
 def _k(frame: int, v: Any) -> list[Any]:
@@ -111,7 +110,7 @@ def plan_for(
     plan = plan_locomotion(
         points, gait, meta.feet, meta.leg, meta.body_z, meta.foot_z, fps, joints=meta.joints, yaw0=yaw0
     )
-    if SPECIES[meta.species].default_pose == "sentinel":
+    if meta.default_pose == "sentinel":
         apply_sentinel(meta, plan, fps)
     return plan
 
@@ -234,10 +233,9 @@ def walk_keys(
     # heel pivot: a level hind paw keeps its rest orientation in body space, so when the body pitches up into
     # the sentinel the paw would tip toes-up with it. Counter-rotate it by the sentinel pitch so the sole stays
     # flat on the ground in the world (plantigrade, as a standing meerkat stands) while the shin rises over it
-    sp = SPECIES[meta.species]
-    if sp.default_pose == "sentinel":
+    if meta.default_pose == "sentinel":
         for leg in meta.ik_targets:
-            if leg[1] == "H" and "H" in sp.level_feet:
+            if leg[1] == "H" and "H" in meta.level_feet:
                 bone(f"leg_{leg}_lo_foot", lambda p, t: [meta.sentinel_pose[0] * p.sentinel, 0.0, 0.0])
     # trunk: a pendulum that lags the step, curling a little at the tip
     for k, name in enumerate(meta.trunk_bones):
