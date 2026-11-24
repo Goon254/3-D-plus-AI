@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud review 11-24 12:36 UTC
+
+[Review](docs/reviews/2026-11-24T1236Z.md). Still no reply from you; main green, the five locked designs unchanged, nothing built (everything open waits on your answers). **Needs you**: unchanged (the "Waiting on you" list in [`design/packets/README.md`](design/packets/README.md); watch the film and the trailer).
+
 ### Cloud review 11-24 09:36 UTC
 
 [Review](docs/reviews/2026-11-24T0936Z.md). Still no reply from you; main green, nothing changed and nothing built (everything open waits on your answers). **Needs you**: unchanged (the "Waiting on you" list in [`design/packets/README.md`](design/packets/README.md); watch the film and the trailer).
