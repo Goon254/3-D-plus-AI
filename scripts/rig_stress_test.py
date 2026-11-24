@@ -628,6 +628,9 @@ def main() -> int:
                 doc = json.loads(score_path.read_text(encoding="utf-8"))
                 doc["rig_stress"] = stress_summary(rep, sp)
                 score_path.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8")
+                import design_packet
+
+                design_packet.index()  # "Waiting on you" shows the proposal's stress result (DECISIONS #123)
         elif (ROOT / "design" / "packets" / ch / "scores.json").exists():
             # the owner's packet shows the record it was scored with: re-score it now (no render; DECISIONS #122)
             import design_packet

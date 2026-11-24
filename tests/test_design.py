@@ -392,6 +392,9 @@ def test_the_packet_index_is_written_from_the_packets_and_matches_main(tmp_path)
         (tmp / "design" / "packets" / p.parent.name).mkdir(parents=True, exist_ok=True)
         shutil.copy(p, tmp / "design" / "packets" / p.parent.name / "scores.json")
     shutil.copy(root / "design" / "packets" / "notes.json", tmp / "design" / "packets" / "notes.json")
+    for p in (root / "design" / "proposals").glob("*/*.json"):
+        (tmp / "design" / "proposals" / p.parent.name).mkdir(parents=True, exist_ok=True)
+        shutil.copy(p, tmp / "design" / "proposals" / p.parent.name / p.name)
     text = mod.index(tmp)
     assert text.replace("\r\n", "\n") == committed.replace("\r\n", "\n"), (
         "run scripts/design_packet.py --index"
@@ -399,6 +402,68 @@ def test_the_packet_index_is_written_from_the_packets_and_matches_main(tmp_path)
     for char in ("kiki", "zuri", "tembo"):
         sc = json.loads((root / "design" / "packets" / char / "scores.json").read_text(encoding="utf-8"))
         assert f"({char}/README.md) | {sc['version']} |" in text
+
+
+def test_the_packet_index_asks_the_owner_about_every_proposal_waiting_on_him(tmp_path):
+    """The index's "Asks of you" said "nothing" for all five while Bibi Kobe v4 and Zuri v5 were offered and Kiki v8
+    shown (cloud review 11-24 03:36): the asks were hand-written. An offered or shown proposal must now appear in its
+    character's row and in "Waiting on you" with its rig stress result; a dropped one must not (DECISIONS #123)."""
+    import importlib.util
+
+    root = Path(__file__).resolve().parents[1]
+    spec = importlib.util.spec_from_file_location("design_packet", root / "scripts" / "design_packet.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    def put(rel, doc):
+        p = tmp_path / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps(doc), encoding="utf-8")
+
+    sc = {
+        "version": "v3",
+        "score": 9.7,
+        "ready": True,
+        "hard_failures": [],
+        "failed_checks": [],
+        "motion_checks": [{"id": "motion:x", "passed": True}],
+    }
+    for c in ("ann", "bob"):
+        put(f"design/packets/{c}/scores.json", sc)
+        put(f"design/{c}/approved.json", {"version": "v3"})
+    put("design/packets/notes.json", {"ann": {"name": "Ann", "ask": "nothing: locked"}, "_questions": ["Q?"]})
+    put(
+        "design/proposals/ann-v4/proposal.json",
+        {"character": "ann", "version": "v4", "status": "offered to the owner"},
+    )
+    put(
+        "design/proposals/ann-v4/score.json",
+        {
+            "score": 9.6,
+            "rig_stress": {"passed": False, "fresh": True, "failed": ["motion:foot_plant"], "checks": 9},
+        },
+    )
+    put(
+        "design/proposals/bob-v4/proposal.json",
+        {"character": "bob", "version": "v4", "status": "not offered: worse"},
+    )
+    put(
+        "design/proposals/bob-v5/proposal.json",
+        {"character": "bob", "version": "v5", "status": "not offered as a replacement; shown as a picture"},
+    )
+    put("design/proposals/bob-v6/proposal.json", {"character": "bob", "version": "v6", "status": "offered"})
+    put("design/proposals/bob-v6/score.json", {"score": 9.5, "rig_stress": "not run: python scripts/..."})
+    text = mod.index(tmp_path)
+    assert "**bob v6**" in text and "rig stress **not run yet**" in text
+    waiting = text.split("## Waiting on you", 1)[1].split("| Character", 1)[0]
+    assert "**Ann v4**" in waiting and "rig stress 8 / 9 NOT passed" in waiting
+    assert "**bob v5**" in waiting and "shown for your yes / no" in waiting
+    assert "bob-v4" not in text
+    assert "* Q?" in waiting
+    ann = next(line for line in text.splitlines() if line.startswith("| [Ann]"))
+    assert "**your call**: [v4](../proposals/ann-v4/) or keep v3?" in ann and "nothing" not in ann
+    bob = next(line for line in text.splitlines() if line.startswith("| [bob]"))
+    assert "[v5](../proposals/bob-v5/)" in bob
 
 
 def test_every_packet_shows_its_designs_current_scores():

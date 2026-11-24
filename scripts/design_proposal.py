@@ -105,6 +105,10 @@ def render(prop_dir: Path, res: int, samples: int, device: str) -> dict:
         else "not run: python scripts/rig_stress_test.py --proposal <this folder> --no-render (CPU, ~1 min)"
     )
     (prop_dir / "score.json").write_text(json.dumps(keep, indent=1) + "\n", encoding="utf-8")
+    if prop_dir.resolve().parent == PROPOSALS.resolve():
+        import design_packet
+
+        design_packet.index()  # the owner's "Waiting on you" list reads this score (DECISIONS #123)
     return keep
 
 

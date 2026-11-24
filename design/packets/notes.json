@@ -53,6 +53,11 @@
    "Re-sheeted 11-18 with the hoof mesh every hoofed species now gets (the locked parameters are unchanged). Still open from the cloud review: pole legs with no knee.",
    "Motion clip: cut from the 11-17 take, before the feet fix (#69/#70); the rig stress record and the checks above are from the current rig, where every planted sole stays under half the foot's radius. The laptop's re-rendered take replaces the clip on the next `design_packet.py` run there."
   ],
-  "runners": "Runner-up 1 is a smaller head with bigger eyes and ears; runner-up 2 is a slightly bigger head, smaller ears, longer legs and a lighter coat. The loop scored them 9.96 and 9.91 without a species read."
- }
+  "runners": "Runner-up 1 is a smaller head with bigger eyes and ears; runner-up 2 is a slightly bigger head, smaller ears, longer legs and a lighter coat. The loop scored them 9.96 and 9.91 without a species read.",
+  "ask": "locked v3; the resting-brow question under Waiting on you"
+ },
+ "_questions": [
+  "**Neema's and Zuri's resting brows** (all five fail the soft `face:brow_outline`: the far brow is drawn against the backdrop in 3/4): lowering the resting brows fixes it at face size (Neema `brow_bias` 0.3 → 0.0: face view 0.53 → 0.10; Zuri −0.2: 0.38 → 0.25) but undoes your 11-17 \"friendlier brows\" lift. Lower them, or keep them? ([board](../../docs/reviews/assets/2026-11-23T0036Z-eye-brow-sweep.jpg), DECISIONS #116)",
+  "**Should the full-body 3/4 view count in the brow check?** There the head is ~45 px tall and a brow ~5 px long, so 25 % is 1–2 px; no design change moved it (DECISIONS #116)."
+ ]
 }

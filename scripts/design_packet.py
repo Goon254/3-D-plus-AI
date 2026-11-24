@@ -234,7 +234,8 @@ One folder per character: `sheet.jpg`, a 10-second `motion.mp4` with the charact
 design loop's two runner-ups, and a one-page `README.md`. Built by `scripts/design_packet.py --all` from the
 current design (`design/<char>/v*`), its rig stress report (`design/<char>/rig_stress.json`) and the loop log
 (`design/<char>/loop/`); the notes are in `notes.json`. This index is written from the packets' `scores.json` and
-`design/<char>/approved.json` (`design_packet.py --index` rebuilds it alone), so it can't fall behind them.
+`design/<char>/approved.json`, and "Waiting on you" from the proposals in `design/proposals/` and the open
+questions in `notes.json` (`design_packet.py --index` rebuilds it alone), so it can't fall behind them.
 """
 
 INDEX_FOOT = """
@@ -245,12 +246,98 @@ its species parameters (`design/<char>/approved.json`); production may not chang
 """
 
 
+def _pending_kind(status: str) -> str | None:
+    """'offered' / 'shown' for a proposal the owner is asked about, None for one that was dropped."""
+    s = status.strip().lower()
+    if s.startswith("offered"):
+        return "offered"
+    if "shown" in s:
+        return "shown"
+    return None
+
+
+def pending_proposals(root: Path | None = None) -> dict[str, list[dict[str, Any]]]:
+    """Proposals waiting on the owner, per character, read from ``design/proposals/*/`` (DECISIONS #123).
+
+    The index said "nothing" in its "Asks of you" column for all five while three proposals waited on him
+    (cloud review 11-24 03:36): the asks were hand-written notes, the proposals' status lived elsewhere."""
+    base = root or ROOT
+    out: dict[str, list[dict[str, Any]]] = {}
+    for pj in sorted((base / "design" / "proposals").glob("*/proposal.json")):
+        doc = json.loads(pj.read_text(encoding="utf-8"))
+        kind = _pending_kind(doc.get("status", ""))
+        if kind is None:
+            continue
+        folder = pj.parent
+        entry: dict[str, Any] = {"folder": folder.name, "version": doc["version"], "kind": kind}
+        sp = folder / "score.json"
+        if sp.exists():
+            sc = json.loads(sp.read_text(encoding="utf-8"))
+            entry["score"] = sc.get("score")
+            rs = sc.get("rig_stress")
+            if isinstance(rs, str):  # "not run: ..." until rig_stress_test.py --proposal has measured it
+                entry["stress"], entry["stress_passed"] = "not run", False
+            elif rs:
+                entry["stress"] = f"{rs['checks'] - len(rs.get('failed', []))} / {rs['checks']}"
+                entry["stress_passed"] = bool(rs.get("passed")) and bool(rs.get("fresh", True))
+        br = folder / "blind_read.json"
+        if br.exists():
+            b = json.loads(br.read_text(encoding="utf-8"))
+            entry["blind"] = " / ".join(
+                f"{b[k]['animal']} {b[k]['confidence']:g}" for k in ("silhouette", "thumbnail") if k in b
+            )
+        out.setdefault(doc["character"], []).append(entry)
+    return out
+
+
+def _ask_cell(props: list[dict[str, Any]], current: str, fallback: str) -> str:
+    """The index's "Asks of you" cell: every proposal waiting on the owner, else the note's ask."""
+    if not props:
+        return fallback
+    asks = []
+    for p in props:
+        link = f"[{p['version']}](../proposals/{p['folder']}/)"
+        if p["kind"] == "offered":
+            asks.append(f"**your call**: {link} or keep {current}?")
+        else:
+            asks.append(f"**your yes / no**: {link} shows a fix on {current} (not a replacement)")
+    return "; ".join(asks)
+
+
+def waiting_section(
+    pending: dict[str, list[dict[str, Any]]], questions: list[str], names: dict[str, str]
+) -> str:
+    """The "Waiting on you" list the index opens with: proposals first, then open questions from notes.json."""
+    items = []
+    for char in sorted(pending):
+        for p in pending[char]:
+            what = "offered as the next version" if p["kind"] == "offered" else "shown for your yes / no"
+            facts = [f"rubric {p['score']}"] if p.get("score") is not None else []
+            if p.get("blind"):
+                facts.append(f"blind read {p['blind']} (silhouette / thumbnail)")
+            if p.get("stress") == "not run":
+                facts.append("rig stress **not run yet**")
+            elif p.get("stress"):
+                ok = "passed" if p.get("stress_passed") else "NOT passed"
+                facts.append(f"rig stress {p['stress']} {ok}")
+            items.append(
+                f"* **{names.get(char, char)} {p['version']}** ([proposal](../proposals/{p['folder']}/)): {what}; "
+                + "; ".join(facts)
+                + "."
+            )
+    items += [f"* {q}" for q in questions]
+    if not items:
+        return ""
+    return "## Waiting on you\n\n" + "\n".join(items) + "\n"
+
+
 def index(root: Path | None = None) -> str:
     """The packets' index README, from each packet's ``scores.json``, the approvals and ``notes.json``."""
     base = root or ROOT
     packets = base / "design" / "packets"
     npath = packets / "notes.json"
     notes = json.loads(npath.read_text(encoding="utf-8")) if npath.exists() else {}
+    pending = pending_proposals(base)
     rows = [
         "| Character | Design | Owner | Rubric | Ready | Rig stress | Asks of you |",
         "|---|---|---|---|---|---|---|",
@@ -275,12 +362,18 @@ def index(root: Path | None = None) -> str:
             ]
             ready = "no: " + ", ".join(f"`{w}`" for w in why) if why else "no"
         mc = sc["motion_checks"]
-        ask = n.get("ask") or ("nothing: locked" if mine else "approve or give notes")
+        ask = _ask_cell(
+            pending.get(char, []),
+            sc["version"],
+            n.get("ask") or ("nothing: locked" if mine else "approve or give notes"),
+        )
         rows.append(
             f"| [{n.get('name', char)}]({char}/README.md) | {sc['version']} | {owner} | {sc['score']} | {ready} "
             f"| {sum(c['passed'] for c in mc)} / {len(mc)} | {ask} |"
         )
-    text = INDEX_HEAD + "\n" + "\n".join(rows) + "\n" + INDEX_FOOT
+    names = {c: v.get("name", c) for c, v in notes.items() if isinstance(v, dict)}
+    waiting = waiting_section(pending, notes.get("_questions", []), names)
+    text = INDEX_HEAD + "\n" + (waiting + "\n" if waiting else "") + "\n".join(rows) + "\n" + INDEX_FOOT
     (packets / "README.md").write_text(text, encoding="utf-8")
     return text
 
