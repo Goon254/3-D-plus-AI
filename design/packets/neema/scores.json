@@ -2,18 +2,27 @@
  "character": "neema",
  "species": "giraffe",
  "version": "v3",
- "score": 9.61,
+ "score": 9.9,
  "ready": true,
+ "rendered_score": 9.61,
  "hard_failures": [],
  "pending": [],
- "failed_checks": [
-  {
-   "id": "motion:foot_plant",
-   "hard": false,
-   "message": "a planted sole (skin) strays up to 46.2 mm within one stance (LH, frames 76-92; limit 38 mm, half the foot's radius) over 19 stance phases"
-  }
+ "unscored": [
+  "face:eye_outline",
+  "face:brow_outline"
  ],
+ "failed_checks": [],
  "motion_checks": [
+  {
+   "id": "motion:fresh",
+   "passed": true,
+   "message": "the rig stress report measured these species parameters"
+  },
+  {
+   "id": "motion:fresh_code",
+   "passed": true,
+   "message": "the rig code is the one the stress test ran"
+  },
   {
    "id": "motion:eye_socket",
    "passed": true,
@@ -47,12 +56,12 @@
   {
    "id": "motion:foot_slide",
    "passed": true,
-   "message": "worst planted-foot drift (skin) 8.6 mm per frame (RF at frame 76; limit 61 mm) over 1119 planted foot-frame pairs"
+   "message": "worst planted-foot drift (skin) 4.6 mm per frame (LF at frame 88; limit 61 mm) over 1117 planted foot-frame pairs"
   },
   {
    "id": "motion:foot_plant",
-   "passed": false,
-   "message": "a planted sole (skin) strays up to 46.2 mm within one stance (LH, frames 76-92; limit 38 mm, half the foot's radius) over 19 stance phases"
+   "passed": true,
+   "message": "a planted sole (skin) strays up to 22.4 mm within one stance (RF, frames 92-109; limit 38 mm, half the foot's radius) over 19 stance phases"
   },
   {
    "id": "motion:ground",

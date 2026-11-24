@@ -628,6 +628,14 @@ def main() -> int:
                 doc = json.loads(score_path.read_text(encoding="utf-8"))
                 doc["rig_stress"] = stress_summary(rep, sp)
                 score_path.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8")
+        elif (ROOT / "design" / "packets" / ch / "scores.json").exists():
+            # the owner's packet shows the record it was scored with: re-score it now (no render; DECISIONS #122)
+            import design_packet
+
+            notes_path = ROOT / "design" / "packets" / "notes.json"
+            notes = json.loads(notes_path.read_text(encoding="utf-8")) if notes_path.exists() else {}
+            design_packet.refresh(ch, notes)
+            design_packet.index()
         print(
             json.dumps(
                 {

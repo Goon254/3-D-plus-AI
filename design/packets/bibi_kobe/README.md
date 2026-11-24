@@ -4,11 +4,11 @@ Approved and locked at v3 (owner review 11-17): the skirt-like rim flare is redu
 
 | | |
 |---|---|
-| Rubric | **9.53** / 10, ready |
+| Rubric | **9.72** / 10, ready (re-scored with today's rubric and rig stress record; 9.53 when rendered) |
 | Silhouette reads as | tortoise |
 | 96 px thumbnail reads as | leopard tortoise |
 | Appeal (critic) | 8 |
-| Rig stress test | 8 / 9 checks pass |
+| Rig stress test | 11 / 11 checks pass |
 
 ## Files
 
@@ -20,13 +20,16 @@ Approved and locked at v3 (owner review 11-17): the skirt-like rim flare is redu
 
 ## Failed checks
 
-* `motion:foot_plant`: a planted sole (skin) strays up to 49.7 mm within one stance (LH, frames 113-383; limit 25 mm, half the foot's radius) over 12 stance phases
+* `shape:shell_dome`: the shell keeps its full width up to 52% of its height (max 40%): a ball or barrel; a tortoise's dome curves in just above the rim
+
+Not scored (added to the rubric after this sheet was rendered; a re-render scores them): `face:eye_outline`, `face:brow_outline`. Not counted as passed; the eye and brow outlines were measured on later renders (DECISIONS #89, #115): open in docs/REVIEW_QUEUE.md.
 
 ## Still open
 
 * Locked: changes now need your sign-off (design/bibi_kobe/approved.json).
+* The shell still reads rounder than a dome (`shape:shell_dome`, soft, above). A proposal fixes it without touching the rest: design/proposals/bibi_kobe-v4/ (dome 0.28, blind read tortoise 90 / 92; passes every motion check). Your call: v4 or keep v3.
 * Motion: she still can't turn on the spot, and has no sit pose.
-* Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes.
+* Motion clip: cut from the 11-17 take, before the feet fix (#69/#70); the rig stress record and the checks above are from the current rig, where every planted sole stays under half the foot's radius. The laptop's re-rendered take replaces the clip on the next `design_packet.py` run there.
 
 ## Runner-ups
 

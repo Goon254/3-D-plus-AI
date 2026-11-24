@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-24 00:36 UTC
+
+[Review](docs/reviews/2026-11-24T0036Z.md), DECISIONS #122. Still no reply from you, so nothing in the film or the approved designs changed. The design packets, the first page you'd open ([`design/packets/README.md`](design/packets/README.md)), were out of date. Tembo, Neema and Bibi Kobe still showed a foot-sliding failure that the rig fixed on 11-18. Kiki's and Zuri's pages described their older versions. The packets are now re-scored from the current motion tests (all pass) and today's checks, and a test keeps them current. Kiki's and Zuri's pages now point at the proposals waiting for you. The 10-second clips in three of the packets are still the 11-17 ones; the laptop replaces them when it re-renders. **Needs you**: unchanged (watch the film and trailer, give notes; Kiki: does v8's mask and stance go the right way?; Zuri v5 or v4; Bibi v4 or v3; may Neema's and Zuri's resting brows sit a little lower?).
+
 ### Cloud build 11-23 21:36 UTC
 
 [Review](docs/reviews/2026-11-23T2136Z.md), DECISIONS #121. Still no reply from you, so nothing in the film or the approved designs changed. The note from 18:36 (Kiki v8 talks to the sky) is fixed: the motion test never acted the line the way the film does, so it now does, and a meerkat whose stance is carried nose-up past the approved 12° lowers her head while she speaks. Her face now comes to the listener ([stills](docs/reviews/assets/2026-11-23T2136Z-kiki-v8-talks-level.jpg)). All five approved designs and all four proposals still pass every motion check, with the same numbers. **Needs you**: unchanged (watch the film and trailer, give notes; Kiki: does v8's mask and stance go the right way?; Zuri v5 or v4; Bibi v4 or v3; may Neema's and Zuri's resting brows sit a little lower?).

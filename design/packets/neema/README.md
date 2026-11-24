@@ -4,11 +4,11 @@ Approved and locked at v3 (owner review 11-17): friendlier brows (smaller, tilte
 
 | | |
 |---|---|
-| Rubric | **9.61** / 10, ready |
+| Rubric | **9.9** / 10, ready (re-scored with today's rubric and rig stress record; 9.61 when rendered) |
 | Silhouette reads as | giraffe |
 | 96 px thumbnail reads as | giraffe |
 | Appeal (critic) | 8 |
-| Rig stress test | 8 / 9 checks pass |
+| Rig stress test | 11 / 11 checks pass |
 
 ## Files
 
@@ -20,13 +20,15 @@ Approved and locked at v3 (owner review 11-17): friendlier brows (smaller, tilte
 
 ## Failed checks
 
-* `motion:foot_plant`: a planted sole (skin) strays up to 46.2 mm within one stance (LH, frames 76-92; limit 38 mm, half the foot's radius) over 19 stance phases
+* none
+
+Not scored (added to the rubric after this sheet was rendered; a re-render scores them): `face:eye_outline`, `face:brow_outline`. Not counted as passed; the eye and brow outlines were measured on later renders (DECISIONS #89, #115): open in docs/REVIEW_QUEUE.md.
 
 ## Still open
 
 * Locked: changes now need your sign-off (design/neema/approved.json).
 * Re-sheeted 11-18 with the hoof mesh every hoofed species now gets (the locked parameters are unchanged). Still open from the cloud review: pole legs with no knee.
-* Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes.
+* Motion clip: cut from the 11-17 take, before the feet fix (#69/#70); the rig stress record and the checks above are from the current rig, where every planted sole stays under half the foot's radius. The laptop's re-rendered take replaces the clip on the next `design_packet.py` run there.
 
 ## Runner-ups
 

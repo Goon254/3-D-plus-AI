@@ -1,6 +1,6 @@
 # Kiki (meerkat), design v6
 
-v5 (owner review 11-17): soft, lighter brown eye patches instead of raccoon rings; faint darker back bands; on all fours a lower, longer body with hunched shoulders (Species.hunch). Expressions now change the face: happy has smiling (lower-lid) eyes and a raised mouth, surprised has wide eyes, shrunk pupils and lifted brows.
+Locked at v6 by your 11-18 plan: v4's shorter, higher-shouldered body on all fours with v5's soft brown eye patches. The sentinel stands straight, fore paws tucked high on the chest, the tail as a tripod. Expressions change the face: happy has smiling (lower-lid) eyes and a raised mouth, surprised has wide eyes, shrunk pupils and lifted brows.
 
 | | |
 |---|---|
@@ -22,15 +22,16 @@ v5 (owner review 11-17): soft, lighter brown eye patches instead of raccoon ring
 
 * none
 
+Not scored (added to the rubric after this sheet was rendered; a re-render scores them): `face:eye_outline`, `face:brow_outline`. Not counted as passed; the eye and brow outlines were measured on later renders (DECISIONS #89, #115): open in docs/REVIEW_QUEUE.md.
+
 ## Still open
 
-* Your call needed: the cloud reviewer (11-18) reads the lower, longer, hunched body on all fours as a weasel/mongoose from the side and prefers v4's shorter, higher-shouldered body. v5 follows your note; say which way.
-* Appeal 7: the critic still wants more charm in the face before 'ready'.
-* The patches are deliberately soft; at 96 px they read as shading round the eyes rather than a mask.
-* Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes.
+* Locked: changes now need your sign-off (design/kiki/approved.json).
+* Species read, by a reader with no context (cloud 11-22): meerkat 70 from the silhouette (prairie dog, otter next) and 60 from the 96 px thumbnail (mongoose, weasel next). A weak read; no critique is recorded for this sheet, so the rubric says 'not ready' (pending the species read).
+* On all fours she still reads as a mongoose. A picture for your call: design/proposals/kiki-v8/ (a darker crescent mask, a straighter, taller sentinel that levels its head to talk; the all-fours body unchanged). It passes every motion check. Say yes / no to the mask and the stance.
 
 ## Runner-ups
 
-Both runner-ups are small head/eye/ear morphs from the re-run loop, scored 10.0 without a species read, so they aren't comparable with the current design's score.
+Both runner-ups are small head/eye/ear morphs from the loop, scored 10.0 without a species read, so they aren't comparable with the current design's score.
 
 Approve, or reply with notes.

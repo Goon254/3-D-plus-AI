@@ -4,9 +4,14 @@
  "version": "v6",
  "score": 10.0,
  "ready": false,
+ "rendered_score": 10.0,
  "hard_failures": [],
  "pending": [
   "species read"
+ ],
+ "unscored": [
+  "face:eye_outline",
+  "face:brow_outline"
  ],
  "failed_checks": [],
  "motion_checks": [

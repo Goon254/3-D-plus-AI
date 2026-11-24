@@ -4,11 +4,11 @@ Approved and locked at v3 (owner review 11-17): softer resting brows (they no lo
 
 | | |
 |---|---|
-| Rubric | **9.58** / 10, ready |
+| Rubric | **9.89** / 10, ready (re-scored with today's rubric and rig stress record; 9.58 when rendered) |
 | Silhouette reads as | elephant calf |
 | 96 px thumbnail reads as | baby elephant |
 | Appeal (critic) | 8 |
-| Rig stress test | 8 / 9 checks pass |
+| Rig stress test | 11 / 11 checks pass |
 
 ## Files
 
@@ -20,15 +20,17 @@ Approved and locked at v3 (owner review 11-17): softer resting brows (they no lo
 
 ## Failed checks
 
-* `motion:foot_plant`: a planted sole (skin) strays up to 76.7 mm within one stance (LH, frames 122-139; limit 60 mm, half the foot's radius) over 26 stance phases
+* none
+
+Not scored (added to the rubric after this sheet was rendered; a re-render scores them): `face:eye_outline`, `face:brow_outline`. Not counted as passed; the eye and brow outlines were measured on later renders (DECISIONS #89, #115): open in docs/REVIEW_QUEUE.md.
 
 ## Still open
 
 * Locked: changes now need your sign-off (design/tembo/approved.json).
-* Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes.
+* Motion clip: cut from the 11-17 take, before the feet fix (#69/#70); the rig stress record and the checks above are from the current rig, where every planted sole stays under half the foot's radius. The laptop's re-rendered take replaces the clip on the next `design_packet.py` run there.
 
 ## Runner-ups
 
-Both runner-ups are small head and eye morphs, scored 10.0 by the loop without a species read. The current design is ready on the rubric (9.84, with the recorded critique).
+Both runner-ups are small head and eye morphs, scored 10.0 by the loop without a species read, so they aren't comparable with the current design's score.
 
 Approve, or reply with notes.

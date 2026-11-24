@@ -2,18 +2,33 @@
  "character": "bibi_kobe",
  "species": "tortoise",
  "version": "v3",
- "score": 9.53,
+ "score": 9.72,
  "ready": true,
+ "rendered_score": 9.53,
  "hard_failures": [],
  "pending": [],
+ "unscored": [
+  "face:eye_outline",
+  "face:brow_outline"
+ ],
  "failed_checks": [
   {
-   "id": "motion:foot_plant",
+   "id": "shape:shell_dome",
    "hard": false,
-   "message": "a planted sole (skin) strays up to 49.7 mm within one stance (LH, frames 113-383; limit 25 mm, half the foot's radius) over 12 stance phases"
+   "message": "the shell keeps its full width up to 52% of its height (max 40%): a ball or barrel; a tortoise's dome curves in just above the rim"
   }
  ],
  "motion_checks": [
+  {
+   "id": "motion:fresh",
+   "passed": true,
+   "message": "the rig stress report measured these species parameters"
+  },
+  {
+   "id": "motion:fresh_code",
+   "passed": true,
+   "message": "the rig code is the one the stress test ran"
+  },
   {
    "id": "motion:eye_socket",
    "passed": true,
@@ -47,12 +62,12 @@
   {
    "id": "motion:foot_slide",
    "passed": true,
-   "message": "worst planted-foot drift (skin) 5.0 mm per frame (RH at frame 103; limit 6 mm) over 1443 planted foot-frame pairs"
+   "message": "worst planted-foot drift (skin) 1.0 mm per frame (RH at frame 42; limit 6 mm) over 1443 planted foot-frame pairs"
   },
   {
    "id": "motion:foot_plant",
-   "passed": false,
-   "message": "a planted sole (skin) strays up to 49.7 mm within one stance (LH, frames 113-383; limit 25 mm, half the foot's radius) over 12 stance phases"
+   "passed": true,
+   "message": "a planted sole (skin) strays up to 3.2 mm within one stance (RH, frames 84-132; limit 25 mm, half the foot's radius) over 12 stance phases"
   },
   {
    "id": "motion:ground",

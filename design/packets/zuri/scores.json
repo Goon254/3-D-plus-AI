@@ -2,13 +2,25 @@
  "character": "zuri",
  "species": "zebra",
  "version": "v4",
- "score": 10.0,
+ "score": 9.86,
  "ready": false,
+ "rendered_score": 10.0,
  "hard_failures": [],
  "pending": [
   "species read"
  ],
- "failed_checks": [],
+ "unscored": [
+  "face:eye_outline",
+  "face:brow_outline",
+  "materials:stripe_rings"
+ ],
+ "failed_checks": [
+  {
+   "id": "shape:mane_reach",
+   "hard": false,
+   "message": "the mane runs 76% of the way from the withers to the poll (min 85%): it stops short of the head"
+  }
+ ],
  "motion_checks": [
   {
    "id": "motion:fresh",

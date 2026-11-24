@@ -13,6 +13,13 @@ Each packet holds what the owner approves from:
 * ``README.md``: the one-page note: what changed, what the checks say, what is still open.
 
 Inputs must already exist: run the stress test first, then ``design_sheet.py --rescore`` on the current version.
+
+    python scripts/design_packet.py --refresh
+
+re-scores every packet without rendering anything and rewrites its ``scores.json``, ``README.md`` and the index:
+the sheet's stored image metrics and recorded critique (``design/<char>/<version>/score.json``) with today's rubric
+and the current rig stress record. Run it after ``rig_stress_test.py``: the packets the owner reads showed a
+``foot_plant`` failure for five days after the rig fixed it (cloud review 11-24 00:36, DECISIONS #122).
 """
 
 from __future__ import annotations
@@ -31,7 +38,10 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from PIL import Image  # noqa: E402
 
+from animatica.creatures.species import SPECIES  # noqa: E402
 from animatica.design.brief import all_briefs, load_brief  # noqa: E402
+from animatica.design.rubric import score as rubric_score  # noqa: E402
+from animatica.design.variants import apply_morph, morph_from_dict  # noqa: E402
 
 CLIP = 10.0  # seconds
 
@@ -49,15 +59,60 @@ def clip(src: Path, dst: Path, start: float) -> None:
     )
 
 
-def packet(char: str, notes: dict[str, Any]) -> dict[str, Any]:
+# image checks added to the rubric after a sheet was rendered: its stored metrics hold no input for them, so a
+# re-score without rendering cannot score them (they are listed as such, never counted as passed)
+LATE_IMAGE_CHECKS = {
+    "outline": ("face:eye_outline", "face:brow_outline"),
+    "stripe_rings": ("materials:stripe_rings",),
+}
+LATE_NOTES = {
+    "face:eye_outline": "the eye and brow outlines were measured on later renders (DECISIONS #89, #115): open in"
+    " docs/REVIEW_QUEUE.md",
+    "face:brow_outline": "the eye and brow outlines were measured on later renders (DECISIONS #89, #115): open in"
+    " docs/REVIEW_QUEUE.md",
+    "materials:stripe_rings": "the stripe rings were measured on a later render (DECISIONS #96)",
+}
+
+
+def current_score(char: str, root: Path | None = None) -> dict[str, Any]:
+    """The current design's rubric result, re-scored without rendering: the image metrics and the recorded critique
+    stored with the sheet (``design/<char>/<version>/score.json``), today's rubric (checks on the built meshes run
+    again) and the current rig stress record (``design/<char>/rig_stress.json``). ``unscored`` lists the image checks
+    the stored render has no metrics for."""
+    base = root or ROOT
     brief = load_brief(char)
+    vs = [p for p in (base / "design" / char).glob("v*") if re.fullmatch(r"v\d+", p.name)]
+    ver = max(vs, key=lambda p: int(p.name[1:]))
+    sheet = json.loads((ver / "score.json").read_text(encoding="utf-8"))
+    stress = json.loads((base / "design" / char / "rig_stress.json").read_text(encoding="utf-8"))
+    sp = apply_morph(SPECIES[brief.species], morph_from_dict(sheet["morph"]), brief.dark_ok)
+    img = sheet["image_metrics"]
+    result = rubric_score(brief, sp, img, sheet.get("critique"), stress).as_dict()
+    striped = sp.coat.get("pattern") in ("stripes", "bands")
+    unscored = [
+        cid
+        for key, ids in LATE_IMAGE_CHECKS.items()
+        if key not in img and (key != "stripe_rings" or striped)
+        for cid in ids
+    ]
+    return {
+        "version": ver.name,
+        "image_metrics": img,
+        "critique": sheet.get("critique"),
+        "stress": stress,
+        "unscored": unscored,
+        "rendered_score": sheet["score"],
+        **result,
+    }
+
+
+def packet(char: str, notes: dict[str, Any]) -> dict[str, Any]:
     ver = current_version(char)
     out = ROOT / "design" / "packets" / char
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
     shutil.copy(ver / "sheet.jpg", out / "sheet.jpg")
-    score = json.loads((ver / "score.json").read_text(encoding="utf-8"))
     stress = json.loads((ROOT / "design" / char / "rig_stress.json").read_text(encoding="utf-8"))
     # the clip ends a beat after the line and runs back 10 s: the turn's end, the stop, the expressions, the line
     end = min(stress["seconds"], stress["timeline"]["line_end"] + 1.2)
@@ -67,15 +122,34 @@ def packet(char: str, notes: dict[str, Any]) -> dict[str, Any]:
     for i, r in enumerate(loop["runner_ups"][:2], 1):
         Image.open(ROOT / r["sheet"]).convert("RGB").save(out / f"runner_up_{i}.jpg", quality=85)
         runners.append({"file": f"runner_up_{i}.jpg", "score": r["score"], "morph": r["morph"]})
+    return write_packet(char, notes, runners, round(max(0.0, end - CLIP), 2))
+
+
+def refresh(char: str, notes: dict[str, Any]) -> dict[str, Any]:
+    """Re-score an existing packet (``current_score``) and rewrite its ``scores.json`` and ``README.md``; the
+    sheet, the motion clip and the runner-ups are kept as they are."""
+    old = json.loads((ROOT / "design" / "packets" / char / "scores.json").read_text(encoding="utf-8"))
+    return write_packet(char, notes, old["runner_ups"], old["motion_test"]["clip_start_s"])
+
+
+def write_packet(
+    char: str, notes: dict[str, Any], runners: list[dict[str, Any]], clip_start: float
+) -> dict[str, Any]:
+    brief = load_brief(char)
+    out = ROOT / "design" / "packets" / char
+    score = current_score(char)
+    stress = score["stress"]
     failed = [c for c in score["checks"] if not c["passed"]]
     scores = {
         "character": char,
         "species": brief.species,
-        "version": ver.name,
+        "version": score["version"],
         "score": score["score"],
         "ready": score["ready"],
+        "rendered_score": score["rendered_score"],
         "hard_failures": score["hard_failures"],
         "pending": score["pending"],
+        "unscored": score["unscored"],
         "failed_checks": [{"id": c["id"], "hard": c["hard"], "message": c["message"]} for c in failed],
         "motion_checks": [
             {"id": c["id"], "passed": c["passed"], "message": c["message"]}
@@ -91,7 +165,7 @@ def packet(char: str, notes: dict[str, Any]) -> dict[str, Any]:
         "motion_test": {
             "file": "motion.mp4",
             "from_take": f"output/rig-stress/{char}/motion.mp4",
-            "clip_start_s": round(max(0.0, end - CLIP), 2),
+            "clip_start_s": clip_start,
             "line": stress["line"],
             "turn_degrees": stress.get("turn_degrees"),
             "sit_stand": stress["sit_stand"],
@@ -106,13 +180,19 @@ def packet(char: str, notes: dict[str, Any]) -> dict[str, Any]:
         return ", ".join(f"{k} × {v:g}" for k, v in d.items()) or "the base design"
 
     lines = [
-        f"# {n.get('name', char)} ({brief.species}), design {ver.name}",
+        f"# {n.get('name', char)} ({brief.species}), design {score['version']}",
         "",
         n.get("summary", ""),
         "",
         "| | |",
         "|---|---|",
-        f"| Rubric | **{score['score']}** / 10, {'ready' if score['ready'] else 'not ready'} |",
+        f"| Rubric | **{score['score']}** / 10, {'ready' if score['ready'] else 'not ready'}"
+        + (
+            f" (re-scored with today's rubric and rig stress record; {score['rendered_score']} when rendered)"
+            if score["score"] != score["rendered_score"]
+            else ""
+        )
+        + " |",
         f"| Silhouette reads as | {crit['silhouette_species'] or '—'} |",
         f"| 96 px thumbnail reads as | {crit['thumbnail_species'] or '—'} |",
         f"| Appeal (critic) | {crit['appeal'] if crit['appeal'] is not None else '—'} |",
@@ -133,6 +213,15 @@ def packet(char: str, notes: dict[str, Any]) -> dict[str, Any]:
         "",
     ]
     lines += [f"* `{c['id']}`{' (hard)' if c['hard'] else ''}: {c['message']}" for c in failed] or ["* none"]
+    if score["unscored"]:
+        lines += [
+            "",
+            "Not scored (added to the rubric after this sheet was rendered; a re-render scores them): "
+            + ", ".join(f"`{c}`" for c in score["unscored"])
+            + ". Not counted as passed; "
+            + "; ".join(dict.fromkeys(LATE_NOTES[c] for c in score["unscored"]))
+            + ".",
+        ]
     lines += ["", "## Still open", ""] + ([f"* {x}" for x in n.get("open", [])] or ["* nothing known"])
     lines += ["", "## Runner-ups", "", n.get("runners", ""), "", "Approve, or reply with notes."]
     (out / "README.md").write_text("\n".join(x for x in lines) + "\n", encoding="utf-8")
@@ -201,17 +290,25 @@ def main() -> int:
     ap.add_argument("characters", nargs="*")
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--index", action="store_true", help="only rebuild design/packets/README.md")
+    ap.add_argument(
+        "--refresh", action="store_true", help="re-score every packet (no render) and rewrite its pages"
+    )
     ap.add_argument("--notes", default=str(ROOT / "design" / "packets" / "notes.json"))
     a = ap.parse_args()
     if a.index:
         index()
         return 0
-    names = list(all_briefs()) if a.all else a.characters
+    notes = json.loads(Path(a.notes).read_text(encoding="utf-8")) if Path(a.notes).exists() else {}
+    if a.refresh:
+        names = a.characters or sorted(
+            p.parent.name for p in (ROOT / "design" / "packets").glob("*/scores.json")
+        )
+    else:
+        names = list(all_briefs()) if a.all else a.characters
     if not names:
         ap.error("name a character or pass --all")
-    notes = json.loads(Path(a.notes).read_text(encoding="utf-8")) if Path(a.notes).exists() else {}
     for ch in names:
-        s = packet(ch, notes)
+        s = refresh(ch, notes) if a.refresh else packet(ch, notes)
         print(json.dumps({k: s[k] for k in ("character", "version", "score", "ready", "hard_failures")}))
     index()
     return 0

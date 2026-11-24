@@ -401,6 +401,46 @@ def test_the_packet_index_is_written_from_the_packets_and_matches_main(tmp_path)
         assert f"({char}/README.md) | {sc['version']} |" in text
 
 
+def test_every_packet_shows_its_designs_current_scores():
+    """For five days the packets the owner reads showed Tembo, Neema and Bibi Kobe failing `motion:foot_plant`
+    (8 / 9) after the rig fixed it, and Kiki's and Zuri's pages described v5 / v3 (cloud review 11-24 00:36): a
+    packet kept the rig stress record it was built with. Each packet must now match a re-score of the design
+    with the current rubric and rig stress record (`design_packet.py --refresh`; `rig_stress_test.py` runs it)."""
+    import importlib.util
+
+    root = Path(__file__).resolve().parents[1]
+    spec = importlib.util.spec_from_file_location("design_packet", root / "scripts" / "design_packet.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    notes = json.loads((root / "design" / "packets" / "notes.json").read_text(encoding="utf-8"))
+    packets = sorted((root / "design" / "packets").glob("*/scores.json"))
+    assert len(packets) == 5
+    for p in packets:
+        char = p.parent.name
+        sc = json.loads(p.read_text(encoding="utf-8"))
+        cur = mod.current_score(char)
+        hint = f"{char}: run scripts/design_packet.py --refresh"
+        assert sc["version"] == cur["version"], hint
+        assert (sc["score"], sc["ready"], sc["hard_failures"]) == (
+            cur["score"],
+            cur["ready"],
+            cur["hard_failures"],
+        ), hint
+        rec = {(c["id"], c["passed"], c["message"]) for c in cur["checks"] if c["group"] == "motion"}
+        assert {(c["id"], c["passed"], c["message"]) for c in sc["motion_checks"]} == rec, hint
+        assert [c["id"] for c in sc["failed_checks"]] == [
+            c["id"] for c in cur["checks"] if not c["passed"]
+        ], hint
+        readme = (p.parent / "README.md").read_text(encoding="utf-8")
+        assert f"design {sc['version']}" in readme.splitlines()[0], hint
+        # a page that names an older version in its summary describes a design that is no longer the packet's
+        older = {f"v{i}" for i in range(1, int(sc["version"][1:]))}
+        first = notes[char]["summary"].split(" ")[0].strip(":(,")
+        assert first not in older, (
+            f"{char}: notes.json summary describes {first}, the packet is {sc['version']}"
+        )
+
+
 def _hard(r) -> set[str]:
     return set(r.hard_failures)
 

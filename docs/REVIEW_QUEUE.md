@@ -11,7 +11,7 @@ that raised it.
 
 ## P0-FILM — the final savannah film (rendered 11-18; scored 7/10, not done) — [review 11-19 00:36](reviews/2026-11-19T0036Z.md)
 
-*Status 11-23 21:36 (cloud): still no owner reply (no laptop commit since 11-18); main green, the design lock holds for all five. New: the rig stress take acts its line as the film does, and a sentinel carried nose-up past the locked 12° levels its head to talk (#121): Kiki v8 no longer speaks to the sky; every locked design and proposal still passes every motion check. Each run's status is in its review file under `docs/reviews/`. — [review 11-23 21:36](reviews/2026-11-23T2136Z.md)*
+*Status 11-24 00:36 (cloud): still no owner reply (no laptop commit since 11-18); main green, the design lock holds for all five. New: the owner's design packets were stale (Tembo, Neema, Bibi Kobe showed a `foot_plant` failure fixed on 11-18; Kiki's and Zuri's pages described v5 / v3): `design_packet.py --refresh` re-scores them from the current rig stress record and rubric, and a test keeps them current (#122). Each run's status is in its review file under `docs/reviews/`. — [review 11-24 00:36](reviews/2026-11-24T0036Z.md)*
 
 Scores: story 8, character design 7, motion 7, visuals 7, mix 7; voices and music not heard in the cloud (the owner's ears needed). Work these after the owner has watched the film, in this order:
 

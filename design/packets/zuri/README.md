@@ -1,10 +1,10 @@
 # Zuri (zebra), design v4
 
-v3 (owner review 11-17): a stockier zebra: deeper chest, thicker neck and legs, a bigger head, a short bristly striped mane that follows the neck from withers to poll (a lofted ridge skinned to the neck, so it bends with it), real hooves (flat sole, sloped front wall, narrower coronet). Lids drawn up at rest; expressions change the face as for all five.
+Locked at v4 by your 11-18 plan: v3's stockier zebra (deeper chest, thicker neck and legs, bigger head, real hooves) with a soft brush mane in place of the saw-toothed crest. Lids drawn up at rest; expressions change the face as for all five.
 
 | | |
 |---|---|
-| Rubric | **10.0** / 10, not ready |
+| Rubric | **9.86** / 10, not ready (re-scored with today's rubric and rig stress record; 10.0 when rendered) |
 | Silhouette reads as | — |
 | 96 px thumbnail reads as | — |
 | Appeal (critic) | — |
@@ -20,14 +20,15 @@ v3 (owner review 11-17): a stockier zebra: deeper chest, thicker neck and legs, 
 
 ## Failed checks
 
-* none
+* `shape:mane_reach`: the mane runs 76% of the way from the withers to the poll (min 85%): it stops short of the head
+
+Not scored (added to the rubric after this sheet was rendered; a re-render scores them): `face:eye_outline`, `face:brow_outline`, `materials:stripe_rings`. Not counted as passed; the eye and brow outlines were measured on later renders (DECISIONS #89, #115): open in docs/REVIEW_QUEUE.md; the stripe rings were measured on a later render (DECISIONS #96).
 
 ## Still open
 
-* Hard failure, recorded honestly: on the silhouette alone I read 'zebra, but a donkey is the nearest other read', and the rubric counts that as ambiguous with a known confusion (donkey). The thumbnail reads as a zebra. The pony read from v2 is gone.
-* Appeal 7: the face is calm but not yet charming at sheet size; 'happy' changes 3.7 % of the face (a dark mouth on a dark muzzle).
-* The cloud reviewer (11-18) finds the toothed mane a little 'saw-back'; it can be softened into more of a brush if you agree.
-* Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes.
+* Locked: changes now need your sign-off (design/zuri/approved.json).
+* Species read, by a reader with no context (cloud 11-22): zebra 50 from the silhouette (horse, donkey next) and 95 from the thumbnail. The stripes carry her; the body and legs are a horse's. No critique is recorded for this sheet, so the rubric says 'not ready' (pending the species read).
+* The mane stops about halfway up the neck (`shape:mane_reach`, soft, above). A proposal runs it to the poll with filly proportions: design/proposals/zuri-v5/ (mane reach 0.86, a slightly bigger head and shorter barrel; blind read zebra 60; passes every motion check). Your call: v5 or keep v4.
 
 ## Runner-ups
 

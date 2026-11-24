@@ -1,25 +1,23 @@
 {
  "kiki": {
   "name": "Kiki",
-  "summary": "v5 (owner review 11-17): soft, lighter brown eye patches instead of raccoon rings; faint darker back bands; on all fours a lower, longer body with hunched shoulders (Species.hunch). Expressions now change the face: happy has smiling (lower-lid) eyes and a raised mouth, surprised has wide eyes, shrunk pupils and lifted brows.",
+  "summary": "Locked at v6 by your 11-18 plan: v4's shorter, higher-shouldered body on all fours with v5's soft brown eye patches. The sentinel stands straight, fore paws tucked high on the chest, the tail as a tripod. Expressions change the face: happy has smiling (lower-lid) eyes and a raised mouth, surprised has wide eyes, shrunk pupils and lifted brows.",
   "motion": "she walks on all fours, turns toward the camera, rises back into the sentinel (her sit/stand), turns her head left and right, runs through every expression, then says her line",
   "open": [
-   "Your call needed: the cloud reviewer (11-18) reads the lower, longer, hunched body on all fours as a weasel/mongoose from the side and prefers v4's shorter, higher-shouldered body. v5 follows your note; say which way.",
-   "Appeal 7: the critic still wants more charm in the face before 'ready'.",
-   "The patches are deliberately soft; at 96 px they read as shading round the eyes rather than a mask.",
-   "Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes."
+   "Locked: changes now need your sign-off (design/kiki/approved.json).",
+   "Species read, by a reader with no context (cloud 11-22): meerkat 70 from the silhouette (prairie dog, otter next) and 60 from the 96 px thumbnail (mongoose, weasel next). A weak read; no critique is recorded for this sheet, so the rubric says 'not ready' (pending the species read).",
+   "On all fours she still reads as a mongoose. A picture for your call: design/proposals/kiki-v8/ (a darker crescent mask, a straighter, taller sentinel that levels its head to talk; the all-fours body unchanged). It passes every motion check. Say yes / no to the mask and the stance."
   ],
-  "runners": "Both runner-ups are small head/eye/ear morphs from the re-run loop, scored 10.0 without a species read, so they aren't comparable with the current design's score.",
+  "runners": "Both runner-ups are small head/eye/ear morphs from the loop, scored 10.0 without a species read, so they aren't comparable with the current design's score.",
   "ask": "nothing: locked v6 (v4 body, v5 patches) per your 11-18 plan; notes still welcome"
  },
  "zuri": {
   "name": "Zuri",
-  "summary": "v3 (owner review 11-17): a stockier zebra: deeper chest, thicker neck and legs, a bigger head, a short bristly striped mane that follows the neck from withers to poll (a lofted ridge skinned to the neck, so it bends with it), real hooves (flat sole, sloped front wall, narrower coronet). Lids drawn up at rest; expressions change the face as for all five.",
+  "summary": "Locked at v4 by your 11-18 plan: v3's stockier zebra (deeper chest, thicker neck and legs, bigger head, real hooves) with a soft brush mane in place of the saw-toothed crest. Lids drawn up at rest; expressions change the face as for all five.",
   "open": [
-   "Hard failure, recorded honestly: on the silhouette alone I read 'zebra, but a donkey is the nearest other read', and the rubric counts that as ambiguous with a known confusion (donkey). The thumbnail reads as a zebra. The pony read from v2 is gone.",
-   "Appeal 7: the face is calm but not yet charming at sheet size; 'happy' changes 3.7 % of the face (a dark mouth on a dark muzzle).",
-   "The cloud reviewer (11-18) finds the toothed mane a little 'saw-back'; it can be softened into more of a brush if you agree.",
-   "Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes."
+   "Locked: changes now need your sign-off (design/zuri/approved.json).",
+   "Species read, by a reader with no context (cloud 11-22): zebra 50 from the silhouette (horse, donkey next) and 95 from the thumbnail. The stripes carry her; the body and legs are a horse's. No critique is recorded for this sheet, so the rubric says 'not ready' (pending the species read).",
+   "The mane stops about halfway up the neck (`shape:mane_reach`, soft, above). A proposal runs it to the poll with filly proportions: design/proposals/zuri-v5/ (mane reach 0.86, a slightly bigger head and shorter barrel; blind read zebra 60; passes every motion check). Your call: v5 or keep v4."
   ],
   "runners": "Runner-up 1 is a bigger head and eyes; runner-up 2 has bigger eyes, a shorter snout and a thinner neck. Both scored 10.0 without a species read.",
   "ask": "nothing: locked v4 (brush mane) per your 11-18 plan; notes still welcome"
@@ -30,8 +28,9 @@
   "motion": "she walks, turns about 18 degrees toward the camera (she walks 3.6 cm/s, so a full turn would take 16 s; turning on the spot isn't planned yet), bows and comes back up (she has no sit pose), turns her head, runs through every expression, then says her line",
   "open": [
    "Locked: changes now need your sign-off (design/bibi_kobe/approved.json).",
+   "The shell still reads rounder than a dome (`shape:shell_dome`, soft, above). A proposal fixes it without touching the rest: design/proposals/bibi_kobe-v4/ (dome 0.28, blind read tortoise 90 / 92; passes every motion check). Your call: v4 or keep v3.",
    "Motion: she still can't turn on the spot, and has no sit pose.",
-   "Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes."
+   "Motion clip: cut from the 11-17 take, before the feet fix (#69/#70); the rig stress record and the checks above are from the current rig, where every planted sole stays under half the foot's radius. The laptop's re-rendered take replaces the clip on the next `design_packet.py` run there."
   ],
   "runners": "Both runner-ups are small head and eye morphs, scored 10.0 by the loop without a species read, so they aren't comparable with the current design's score."
  },
@@ -41,9 +40,9 @@
   "motion": "he walks, turns toward the camera, bows and comes back up (no sit pose on this rig), turns his head, runs through every expression, then says his line",
   "open": [
    "Locked: changes now need your sign-off (design/tembo/approved.json).",
-   "Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes."
+   "Motion clip: cut from the 11-17 take, before the feet fix (#69/#70); the rig stress record and the checks above are from the current rig, where every planted sole stays under half the foot's radius. The laptop's re-rendered take replaces the clip on the next `design_packet.py` run there."
   ],
-  "runners": "Both runner-ups are small head and eye morphs, scored 10.0 by the loop without a species read. The current design is ready on the rubric (9.84, with the recorded critique)."
+  "runners": "Both runner-ups are small head and eye morphs, scored 10.0 by the loop without a species read, so they aren't comparable with the current design's score."
  },
  "neema": {
   "name": "Neema",
@@ -52,7 +51,7 @@
   "open": [
    "Locked: changes now need your sign-off (design/neema/approved.json).",
    "Re-sheeted 11-18 with the hoof mesh every hoofed species now gets (the locked parameters are unchanged). Still open from the cloud review: pole legs with no knee.",
-   "Feet: fixed in the rig. Each foot hangs level from the ankle (DECISIONS #69) and the meerkat's hind paws pivot at the heel into the sentinel (#70), so `foot_plant` is now a hard check and passes for all five (planted soles stray 1.6-23 mm per stance, all under half the foot's radius). The motion clip here predates the fix until the laptop re-renders the stress takes."
+   "Motion clip: cut from the 11-17 take, before the feet fix (#69/#70); the rig stress record and the checks above are from the current rig, where every planted sole stays under half the foot's radius. The laptop's re-rendered take replaces the clip on the next `design_packet.py` run there."
   ],
   "runners": "Runner-up 1 is a smaller head with bigger eyes and ears; runner-up 2 is a slightly bigger head, smaller ears, longer legs and a lighter coat. The loop scored them 9.96 and 9.91 without a species read."
  }
