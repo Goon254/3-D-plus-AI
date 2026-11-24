@@ -40,6 +40,7 @@ from PIL import Image  # noqa: E402
 
 from animatica.creatures.species import SPECIES  # noqa: E402
 from animatica.design.brief import all_briefs, load_brief  # noqa: E402
+from animatica.design.critic import blind_verdict, load_blind_read  # noqa: E402
 from animatica.design.rubric import score as rubric_score  # noqa: E402
 from animatica.design.variants import apply_morph, morph_from_dict  # noqa: E402
 
@@ -49,6 +50,50 @@ CLIP = 10.0  # seconds
 def current_version(char: str) -> Path:
     vs = [p for p in (ROOT / "design" / char).glob("v*") if re.fullmatch(r"v\d+", p.name)]
     return max(vs, key=lambda p: int(p.name[1:]))
+
+
+def blind_summary(char: str, version: str, root: Path | None = None) -> dict[str, Any] | None:
+    """The current design's recorded blind read (DECISIONS #111) with its verdict per view, or None when none is
+    recorded or a re-render voided it. Shown beside the critique: the critique's reader knew the brief."""
+    read = load_blind_read((root or ROOT) / "design" / char / version)
+    if read is None:
+        return None
+    verdict = blind_verdict(load_brief(char), read)
+    out: dict[str, Any] = {"reader": read.get("reader", "")}
+    for view in ("silhouette", "thumbnail"):
+        a = read[view]
+        out[view] = {
+            "animal": a["animal"],
+            "confidence": a["confidence"],
+            "alternatives": a.get("alternatives", []),
+            "verdict": verdict[view],
+        }
+    return out
+
+
+def blind_cell(b: dict[str, Any] | None, *, short: bool = False) -> str:
+    """'meerkat 70 (weak; prairie dog, otter next)' per view, silhouette / thumbnail."""
+    if not b:
+        return "not recorded"
+    parts = []
+    for view in ("silhouette", "thumbnail"):
+        a = b[view]
+        if short:
+            parts.append(f"{a['animal']} {a['confidence']:g} ({a['verdict']})")
+        else:
+            alts = ", ".join(a["alternatives"])
+            parts.append(
+                f"{a['animal']} {a['confidence']:g} ({a['verdict']}" + (f"; {alts} next)" if alts else ")")
+            )
+    return " / ".join(parts)
+
+
+def ready_reason(sc: dict[str, Any]) -> str:
+    """Why a design is not ready: its hard failures, failed critic checks, else what is still pending."""
+    why = sc["hard_failures"] or [c["id"] for c in sc["failed_checks"] if c["id"].startswith("critic:")]
+    if why:
+        return ", ".join(f"`{w}`" for w in why)
+    return ", ".join(f"{p} pending" for p in sc.get("pending", []))
 
 
 def clip(src: Path, dst: Path, start: float) -> None:
@@ -160,6 +205,7 @@ def write_packet(
             k: (score.get("critique") or {}).get(k)
             for k in ("silhouette_species", "thumbnail_species", "appeal")
         },
+        "blind_read": blind_summary(char, score["version"]),
         "image_metrics": score["image_metrics"],
         "runner_ups": runners,
         "motion_test": {
@@ -186,15 +232,17 @@ def write_packet(
         "",
         "| | |",
         "|---|---|",
-        f"| Rubric | **{score['score']}** / 10, {'ready' if score['ready'] else 'not ready'}"
+        f"| Rubric | **{score['score']}** / 10, "
+        + ("ready" if score["ready"] else "not ready" + (f": {r}" if (r := ready_reason(scores)) else ""))
         + (
             f" (re-scored with today's rubric and rig stress record; {score['rendered_score']} when rendered)"
             if score["score"] != score["rendered_score"]
             else ""
         )
         + " |",
-        f"| Silhouette reads as | {crit['silhouette_species'] or '—'} |",
-        f"| 96 px thumbnail reads as | {crit['thumbnail_species'] or '—'} |",
+        f"| Silhouette reads as (critic) | {crit['silhouette_species'] or '— (no recorded critique)'} |",
+        f"| 96 px thumbnail reads as (critic) | {crit['thumbnail_species'] or '— (no recorded critique)'} |",
+        f"| Blind read, no context (silhouette / thumbnail) | {blind_cell(scores['blind_read'])} |",
         f"| Appeal (critic) | {crit['appeal'] if crit['appeal'] is not None else '—'} |",
         f"| Rig stress test | {sum(c['passed'] for c in scores['motion_checks'])} / {len(scores['motion_checks'])} checks pass |",
         "",
@@ -240,9 +288,12 @@ questions in `notes.json` (`design_packet.py --index` rebuilds it alone), so it 
 
 INDEX_FOOT = """
 Read the scores this way: "ready" needs 9.0+, no hard failure, the species read and appeal 8+. The species read and
-appeal come from a recorded critique (no live vision key on this machine). The runner-ups' 10.0s were scored
-*without* a species read, so they don't compete with the current designs' numbers. An approved design is locked to
-its species parameters (`design/<char>/approved.json`); production may not change it.
+appeal come from a recorded critique (no live vision key on this machine), whose reader knew the brief. The blind
+read is a separate reader who saw only the silhouette, then the 96 px thumbnail, and named the animal with a
+first-instinct confidence: "clear" is 75+, "weak" is named but unsure (DECISIONS #111); it does not change the
+score. The runner-ups' 10.0s were scored *without* a species read, so they don't compete with the current designs'
+numbers. An approved design is locked to its species parameters (`design/<char>/approved.json`); production may
+not change it.
 """
 
 
@@ -339,8 +390,8 @@ def index(root: Path | None = None) -> str:
     notes = json.loads(npath.read_text(encoding="utf-8")) if npath.exists() else {}
     pending = pending_proposals(base)
     rows = [
-        "| Character | Design | Owner | Rubric | Ready | Rig stress | Asks of you |",
-        "|---|---|---|---|---|---|---|",
+        "| Character | Design | Owner | Rubric | Ready | Blind read (silhouette / thumbnail) | Rig stress | Asks of you |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for sp in sorted(packets.glob("*/scores.json")):
         char = sp.parent.name
@@ -357,10 +408,8 @@ def index(root: Path | None = None) -> str:
         if sc["ready"]:
             ready = "yes"
         else:
-            why = sc["hard_failures"] or [
-                c["id"] for c in sc["failed_checks"] if c["id"].startswith("critic:")
-            ]
-            ready = "no: " + ", ".join(f"`{w}`" for w in why) if why else "no"
+            why = ready_reason(sc)
+            ready = f"no: {why}" if why else "no"
         mc = sc["motion_checks"]
         ask = _ask_cell(
             pending.get(char, []),
@@ -369,7 +418,7 @@ def index(root: Path | None = None) -> str:
         )
         rows.append(
             f"| [{n.get('name', char)}]({char}/README.md) | {sc['version']} | {owner} | {sc['score']} | {ready} "
-            f"| {sum(c['passed'] for c in mc)} / {len(mc)} | {ask} |"
+            f"| {blind_cell(sc.get('blind_read'), short=True)} | {sum(c['passed'] for c in mc)} / {len(mc)} | {ask} |"
         )
     names = {c: v.get("name", c) for c, v in notes.items() if isinstance(v, dict)}
     waiting = waiting_section(pending, notes.get("_questions", []), names)

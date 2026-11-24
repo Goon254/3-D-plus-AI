@@ -15,15 +15,18 @@ questions in `notes.json` (`design_packet.py --index` rebuilds it alone), so it 
 * **Neema's and Zuri's resting brows** (all five fail the soft `face:brow_outline`: the far brow is drawn against the backdrop in 3/4): lowering the resting brows fixes it at face size (Neema `brow_bias` 0.3 → 0.0: face view 0.53 → 0.10; Zuri −0.2: 0.38 → 0.25) but undoes your 11-17 "friendlier brows" lift. Lower them, or keep them? ([board](../../docs/reviews/assets/2026-11-23T0036Z-eye-brow-sweep.jpg), DECISIONS #116)
 * **Should the full-body 3/4 view count in the brow check?** There the head is ~45 px tall and a brow ~5 px long, so 25 % is 1–2 px; no design change moved it (DECISIONS #116).
 
-| Character | Design | Owner | Rubric | Ready | Rig stress | Asks of you |
-|---|---|---|---|---|---|---|
-| [Bibi Kobe](bibi_kobe/README.md) | v3 | **approved** v3 | 9.72 | yes | 11 / 11 | **your call**: [v4](../proposals/bibi_kobe-v4/) or keep v3? |
-| [Kiki](kiki/README.md) | v6 | **approved** v6 | 10.0 | no | 13 / 13 | **your yes / no**: [v8](../proposals/kiki-v8/) shows a fix on v6 (not a replacement) |
-| [Neema](neema/README.md) | v3 | **approved** v3 | 9.9 | yes | 11 / 11 | locked v3; the resting-brow question under Waiting on you |
-| [Tembo](tembo/README.md) | v3 | **approved** v3 | 9.89 | yes | 11 / 11 | nothing: locked |
-| [Zuri](zuri/README.md) | v4 | **approved** v4 | 9.86 | no | 11 / 11 | **your call**: [v5](../proposals/zuri-v5/) or keep v4? |
+| Character | Design | Owner | Rubric | Ready | Blind read (silhouette / thumbnail) | Rig stress | Asks of you |
+|---|---|---|---|---|---|---|---|
+| [Bibi Kobe](bibi_kobe/README.md) | v3 | **approved** v3 | 9.72 | yes | tortoise 85 (clear) / tortoise 93 (clear) | 11 / 11 | **your call**: [v4](../proposals/bibi_kobe-v4/) or keep v3? |
+| [Kiki](kiki/README.md) | v6 | **approved** v6 | 10.0 | no: species read pending | meerkat 70 (weak) / meerkat 60 (weak) | 13 / 13 | **your yes / no**: [v8](../proposals/kiki-v8/) shows a fix on v6 (not a replacement) |
+| [Neema](neema/README.md) | v3 | **approved** v3 | 9.9 | yes | giraffe 92 (clear) / giraffe 95 (clear) | 11 / 11 | locked v3; the resting-brow question under Waiting on you |
+| [Tembo](tembo/README.md) | v3 | **approved** v3 | 9.89 | yes | elephant 85 (clear) / elephant 90 (clear) | 11 / 11 | nothing: locked |
+| [Zuri](zuri/README.md) | v4 | **approved** v4 | 9.86 | no: species read pending | zebra 50 (weak) / zebra 95 (clear) | 11 / 11 | **your call**: [v5](../proposals/zuri-v5/) or keep v4? |
 
 Read the scores this way: "ready" needs 9.0+, no hard failure, the species read and appeal 8+. The species read and
-appeal come from a recorded critique (no live vision key on this machine). The runner-ups' 10.0s were scored
-*without* a species read, so they don't compete with the current designs' numbers. An approved design is locked to
-its species parameters (`design/<char>/approved.json`); production may not change it.
+appeal come from a recorded critique (no live vision key on this machine), whose reader knew the brief. The blind
+read is a separate reader who saw only the silhouette, then the 96 px thumbnail, and named the animal with a
+first-instinct confidence: "clear" is 75+, "weak" is named but unsure (DECISIONS #111); it does not change the
+score. The runner-ups' 10.0s were scored *without* a species read, so they don't compete with the current designs'
+numbers. An approved design is locked to its species parameters (`design/<char>/approved.json`); production may
+not change it.

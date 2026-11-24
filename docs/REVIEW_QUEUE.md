@@ -11,7 +11,7 @@ that raised it.
 
 ## P0-FILM — the final savannah film (rendered 11-18; scored 7/10, not done) — [review 11-19 00:36](reviews/2026-11-19T0036Z.md)
 
-*Status 11-24 03:36 (cloud): still no owner reply (no laptop commit since 11-18); main green, the design lock holds for all five. New: the packets' index the owner opens first said "nothing" under "Asks of you" for all five while three proposals and two brow questions waited on him; it now opens with "Waiting on you", generated from `design/proposals/` and `notes.json` (#123). Commons references blocked from the cloud a third time. Each run's status is in its review file under `docs/reviews/`. — [review 11-24 03:36](reviews/2026-11-24T0336Z.md)*
+*Status 11-24 06:36 (cloud): still no owner reply (no laptop commit since 11-18); main green (387 passed), the design lock holds for all five. New: every packet page and the index show the recorded blind read with its verdict, and a "not ready" says why (Kiki and Zuri: "species read pending"), so a 10.0 that is not ready no longer appears without a reason (#124). Each run's status is in its review file under `docs/reviews/`. — [review 11-24 06:36](reviews/2026-11-24T0636Z.md)*
 
 Scores: story 8, character design 7, motion 7, visuals 7, mix 7; voices and music not heard in the cloud (the owner's ears needed). Work these after the owner has watched the film, in this order:
 

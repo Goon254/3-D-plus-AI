@@ -4,9 +4,10 @@ Locked at v6 by your 11-18 plan: v4's shorter, higher-shouldered body on all fou
 
 | | |
 |---|---|
-| Rubric | **10.0** / 10, not ready |
-| Silhouette reads as | — |
-| 96 px thumbnail reads as | — |
+| Rubric | **10.0** / 10, not ready: species read pending |
+| Silhouette reads as (critic) | — (no recorded critique) |
+| 96 px thumbnail reads as (critic) | — (no recorded critique) |
+| Blind read, no context (silhouette / thumbnail) | meerkat 70 (weak; prairie dog, otter next) / meerkat 60 (weak; mongoose, weasel next) |
 | Appeal (critic) | — |
 | Rig stress test | 13 / 13 checks pass |
 

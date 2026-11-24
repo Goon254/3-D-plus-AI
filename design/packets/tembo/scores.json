@@ -74,6 +74,27 @@
   "thumbnail_species": "baby elephant",
   "appeal": 8
  },
+ "blind_read": {
+  "reader": "sub-agent, no context (cloud 2026-11-22 09:36)",
+  "silhouette": {
+   "animal": "elephant",
+   "confidence": 85.0,
+   "alternatives": [
+    "mammoth",
+    "rhino"
+   ],
+   "verdict": "clear"
+  },
+  "thumbnail": {
+   "animal": "elephant",
+   "confidence": 90.0,
+   "alternatives": [
+    "mammoth",
+    "hippo"
+   ],
+   "verdict": "clear"
+  }
+ },
  "image_metrics": {
   "floating_parts": 0,
   "neck_notch": 0.2927,

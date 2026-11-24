@@ -86,6 +86,27 @@
   "thumbnail_species": null,
   "appeal": null
  },
+ "blind_read": {
+  "reader": "sub-agent, no context (cloud 2026-11-22 09:36)",
+  "silhouette": {
+   "animal": "meerkat",
+   "confidence": 70.0,
+   "alternatives": [
+    "prairie dog",
+    "otter"
+   ],
+   "verdict": "weak"
+  },
+  "thumbnail": {
+   "animal": "meerkat",
+   "confidence": 60.0,
+   "alternatives": [
+    "mongoose",
+    "weasel"
+   ],
+   "verdict": "weak"
+  }
+ },
  "image_metrics": {
   "floating_parts": 0,
   "neck_notch": 0.2838,

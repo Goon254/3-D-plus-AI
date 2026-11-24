@@ -4,9 +4,10 @@ Locked at v4 by your 11-18 plan: v3's stockier zebra (deeper chest, thicker neck
 
 | | |
 |---|---|
-| Rubric | **9.86** / 10, not ready (re-scored with today's rubric and rig stress record; 10.0 when rendered) |
-| Silhouette reads as | — |
-| 96 px thumbnail reads as | — |
+| Rubric | **9.86** / 10, not ready: species read pending (re-scored with today's rubric and rig stress record; 10.0 when rendered) |
+| Silhouette reads as (critic) | — (no recorded critique) |
+| 96 px thumbnail reads as (critic) | — (no recorded critique) |
+| Blind read, no context (silhouette / thumbnail) | zebra 50 (weak; horse, donkey next) / zebra 95 (clear; horse, okapi next) |
 | Appeal (critic) | — |
 | Rig stress test | 11 / 11 checks pass |
 

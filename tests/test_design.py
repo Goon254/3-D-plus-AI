@@ -809,3 +809,39 @@ def test_proposals_carry_their_own_rig_stress_report():
             != json.loads(locked_rep.read_text("utf-8"))["fingerprint"]["species"]
         )
         assert not stress_summary(json.loads(locked_rep.read_text("utf-8")), sp)["fresh"], locked.name
+
+
+def test_every_packet_shows_its_designs_blind_read_and_why_it_is_not_ready():
+    """Kiki's and Zuri's pages said "10.0 / 10, not ready" with "—" under "reads as", while a blind read of the same
+    images was recorded (meerkat 70 / 60, zebra 50 / 95, DECISIONS #111) and only quoted in prose (cloud review 11-24
+    06:36). Every packet and the index must show the recorded blind read with its verdict, and a "not ready" must
+    say why (DECISIONS #124)."""
+    import importlib.util
+
+    from animatica.design.critic import load_blind_read
+
+    root = Path(__file__).resolve().parents[1]
+    spec = importlib.util.spec_from_file_location("design_packet", root / "scripts" / "design_packet.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    index = (root / "design" / "packets" / "README.md").read_text(encoding="utf-8")
+    for p in sorted((root / "design" / "packets").glob("*/scores.json")):
+        char = p.parent.name
+        sc = json.loads(p.read_text(encoding="utf-8"))
+        hint = f"{char}: run scripts/design_packet.py --refresh"
+        read = load_blind_read(root / "design" / char / sc["version"])
+        assert read is not None, f"{char} {sc['version']}: no current blind read"
+        assert sc["blind_read"] == mod.blind_summary(char, sc["version"]), hint
+        for view in ("silhouette", "thumbnail"):
+            assert sc["blind_read"][view]["animal"] == read[view]["animal"]
+            assert sc["blind_read"][view]["verdict"] in ("clear", "weak", "misread")
+        readme = (p.parent / "README.md").read_text(encoding="utf-8")
+        assert mod.blind_cell(sc["blind_read"]) in readme, hint
+        assert mod.blind_cell(sc["blind_read"], short=True) in index, "run scripts/design_packet.py --index"
+        rubric = next(line for line in readme.splitlines() if line.startswith("| Rubric |"))
+        if not sc["ready"]:
+            assert "not ready: " in rubric, f"{char}: a 'not ready' must say why"
+    assert mod.ready_reason({"hard_failures": [], "failed_checks": [], "pending": ["species read"]}) == (
+        "species read pending"
+    )
+    assert mod.blind_cell(None) == "not recorded"

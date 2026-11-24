@@ -5,8 +5,9 @@ Approved and locked at v3 (owner review 11-17): friendlier brows (smaller, tilte
 | | |
 |---|---|
 | Rubric | **9.9** / 10, ready (re-scored with today's rubric and rig stress record; 9.61 when rendered) |
-| Silhouette reads as | giraffe |
-| 96 px thumbnail reads as | giraffe |
+| Silhouette reads as (critic) | giraffe |
+| 96 px thumbnail reads as (critic) | giraffe |
+| Blind read, no context (silhouette / thumbnail) | giraffe 92 (clear; llama, okapi next) / giraffe 95 (clear; okapi, llama next) |
 | Appeal (critic) | 8 |
 | Rig stress test | 11 / 11 checks pass |
 

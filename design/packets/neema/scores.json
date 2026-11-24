@@ -74,6 +74,27 @@
   "thumbnail_species": "giraffe",
   "appeal": 8
  },
+ "blind_read": {
+  "reader": "sub-agent, no context (cloud 2026-11-22 09:36)",
+  "silhouette": {
+   "animal": "giraffe",
+   "confidence": 92.0,
+   "alternatives": [
+    "llama",
+    "okapi"
+   ],
+   "verdict": "clear"
+  },
+  "thumbnail": {
+   "animal": "giraffe",
+   "confidence": 95.0,
+   "alternatives": [
+    "okapi",
+    "llama"
+   ],
+   "verdict": "clear"
+  }
+ },
  "image_metrics": {
   "floating_parts": 0,
   "neck_notch": 0.4844,

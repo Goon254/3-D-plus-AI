@@ -5,8 +5,9 @@ Approved and locked at v3 (owner review 11-17): the skirt-like rim flare is redu
 | | |
 |---|---|
 | Rubric | **9.72** / 10, ready (re-scored with today's rubric and rig stress record; 9.53 when rendered) |
-| Silhouette reads as | tortoise |
-| 96 px thumbnail reads as | leopard tortoise |
+| Silhouette reads as (critic) | tortoise |
+| 96 px thumbnail reads as (critic) | leopard tortoise |
+| Blind read, no context (silhouette / thumbnail) | tortoise 85 (clear; turtle, armadillo next) / tortoise 93 (clear; turtle, box turtle next) |
 | Appeal (critic) | 8 |
 | Rig stress test | 11 / 11 checks pass |
 

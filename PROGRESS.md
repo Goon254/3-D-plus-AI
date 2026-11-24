@@ -62,6 +62,10 @@ scene planner (continuity-checked) and cue sheet; the scene and animatic scripts
 * An `ANTHROPIC_API_KEY` would let the story engine, the vision critic and the director pass run live.
 * Nothing failed twice today without a workaround (the SC 8 tortoise close-up took two fixes and is weak, not broken).
 
+### Cloud build 11-24 06:36 UTC
+
+[Review](docs/reviews/2026-11-24T0636Z.md), DECISIONS #124. Still no reply from you; nothing in the film or the approved designs changed. Kiki's and Zuri's packet pages said "10.0 / 10, not ready" with a dash where the species read goes. Every page and the [index](design/packets/README.md) now show the blind read (a reader who saw only the silhouette and the thumbnail: Tembo, Neema, Bibi Kobe clear; Kiki weak; Zuri weak in silhouette) and say why a design is not ready. Scores unchanged. **Needs you**: unchanged (the "Waiting on you" list; watch the film and the trailer).
+
 ### Cloud build 11-24 03:36 UTC
 
 [Review](docs/reviews/2026-11-24T0336Z.md), DECISIONS #123. Still no reply from you; nothing in the film or the approved designs changed. The first page you'd open, [`design/packets/README.md`](design/packets/README.md), said "nothing" under "Asks of you" for every character although three proposals were waiting for you. It now opens with a short **Waiting on you** list built from the proposals themselves, so it stays current. **Needs you**: that list (Bibi Kobe v4 or v3, Zuri v5 or v4, yes / no on Kiki v8's mask and stance, two brow questions); watch the film and the trailer.

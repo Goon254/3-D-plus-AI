@@ -80,6 +80,27 @@
   "thumbnail_species": "leopard tortoise",
   "appeal": 8
  },
+ "blind_read": {
+  "reader": "sub-agent, no context (cloud 2026-11-22 09:36)",
+  "silhouette": {
+   "animal": "tortoise",
+   "confidence": 85.0,
+   "alternatives": [
+    "turtle",
+    "armadillo"
+   ],
+   "verdict": "clear"
+  },
+  "thumbnail": {
+   "animal": "tortoise",
+   "confidence": 93.0,
+   "alternatives": [
+    "turtle",
+    "box turtle"
+   ],
+   "verdict": "clear"
+  }
+ },
  "image_metrics": {
   "floating_parts": 0,
   "neck_notch": 0.0,
