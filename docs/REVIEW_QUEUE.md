@@ -11,7 +11,7 @@ that raised it.
 
 ## P0-FILM — the final savannah film (rendered 11-18; scored 7/10, not done) — [review 11-19 00:36](reviews/2026-11-19T0036Z.md)
 
-*Status 11-25 15:36 (cloud): still no owner reply (no laptop commit since 11-18, no issues or PRs); main green (386 passed, 6 skipped, environment only); design lock holds for all five; nothing built (fixes only, none found). — [review 11-25 15:36](reviews/2026-11-25T1536Z.md)*
+*Status 11-25 18:36 (cloud): still no owner reply (no laptop commit since 11-18, no issues or PRs); main green (386 passed, 6 skipped, environment only); design lock holds for all five; nothing built (fixes only, none found). — [review 11-25 18:36](reviews/2026-11-25T1836Z.md)*
 
 Scores: story 8, character design 7, motion 7, visuals 7, mix 7; voices and music not heard in the cloud (the owner's ears needed). Work these after the owner has watched the film, in this order:
 
