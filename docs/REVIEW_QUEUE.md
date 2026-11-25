@@ -11,7 +11,7 @@ that raised it.
 
 ## P0-FILM — the final savannah film (rendered 11-18; scored 7/10, not done) — [review 11-19 00:36](reviews/2026-11-19T0036Z.md)
 
-*Status 11-25 00:36 (cloud): still no owner reply (no laptop commit since 11-18); main green (384 passed, 5 skipped; extra skips are cloud assets only), the design lock holds for all five (`design_lock_check.py`); nothing built (every open design item waits on the owner). Each run's status is in its review file under `docs/reviews/`. — [review 11-25 00:36](reviews/2026-11-25T0036Z.md)*
+*Status 11-25 03:36 (cloud): still no owner reply (no laptop commit since 11-18); main green (384 passed, 5 skipped; skips are cloud assets only), the design lock holds for all five (`design_lock_check.py`); nothing built (every open design item waits on the owner). Each run's status is in its review file under `docs/reviews/`. — [review 11-25 03:36](reviews/2026-11-25T0336Z.md)*
 
 Scores: story 8, character design 7, motion 7, visuals 7, mix 7; voices and music not heard in the cloud (the owner's ears needed). Work these after the owner has watched the film, in this order:
 
