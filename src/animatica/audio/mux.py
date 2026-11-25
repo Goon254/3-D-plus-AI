@@ -304,11 +304,12 @@ def master(
     out_args: tuple[str, ...] = ("-c:a", "aac", "-b:a", "192k", "-ar", "48000"),
     ceiling_db: float = TP_CEILING_DB,
     tries: int = 4,
-) -> dict[str, float]:
+) -> dict:
     """Two-pass loudnorm to ``lufs``, then the true-peak limiter, encoded with ``out_args`` (any video stream
-    is copied), and **measured on the encoded file**: while its true peak is over ``ceiling_db`` the limiter
-    is lowered by the excess and the file is encoded again. Returns the final measurement plus the
-    ``limit_db`` used and the input's loudness."""
+    is copied), and **measured on the encoded file**: while its true peak is over ``ceiling_db`` the file is
+    encoded again, first (native AAC) with the "fast" coder at the same limit, then with the limiter lowered
+    by the excess. Returns the final measurement plus the ``limit_db`` used, the input's loudness and the
+    ``aac_coder`` forced ("" when the encoder's default passed)."""
     t = f"I={lufs}:TP={ceiling_db}:LRA=11"
     r = subprocess.run(
         [
@@ -332,6 +333,7 @@ def master(
         f"measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true"
     )
     limit = LIMIT_DB
+    args = list(out_args)
     got: dict[str, float] = {}
     for _ in range(tries):
         subprocess.run(
@@ -347,12 +349,24 @@ def master(
                 "-af",
                 f"{norm},{true_peak_limiter(limit)}",
             ]
-            + list(out_args)
+            + args
             + ["-movflags", "+faststart", str(dst)],
             check=True,
         )
         got = loudness(dst)
         if got.get("tp", 0.0) <= ceiling_db:
             break
+        if _native_aac(args) and "-aac_coder" not in args:
+            # ffmpeg's default AAC coder (twoloop) overshoots hard transients by up to ~7 dB, chaotically: a lower
+            # limit can make it worse and costs loudness. The "fast" coder (the default in ffmpeg 4.0-4.3) keeps
+            # the limiter's peaks, so switch to it at the same limit instead of lowering the limit.
+            args += ["-aac_coder", "fast"]
+            continue
         limit -= got["tp"] - ceiling_db + 0.3
-    return {**got, "limit_db": round(limit, 2), "input_lufs": float(m["input_i"])}
+    coder = args[args.index("-aac_coder") + 1] if "-aac_coder" in args else ""
+    return {**got, "limit_db": round(limit, 2), "input_lufs": float(m["input_i"]), "aac_coder": coder}
+
+
+def _native_aac(args: list[str]) -> bool:
+    """Whether ``args`` encode with ffmpeg's native AAC encoder (``-c:a aac`` / ``-acodec aac``)."""
+    return any(a in ("-c:a", "-acodec", "-codec:a") and b == "aac" for a, b in zip(args, args[1:]))

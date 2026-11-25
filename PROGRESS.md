@@ -208,6 +208,7 @@ in SC 3, Tembo and Kiki in SC 6, Tembo and Bibi Kobe in SC 7; the SC 10 "Zuri on
 contact), and **the mix is limited and measured after encoding** (the +0.5 dBTP came from the web copy's second
 AAC pass). **Needs you / the laptop**: `python scripts/savannah_film.py --assemble` and `--trailer` to re-master
 the committed copies (minutes, no render); the marks move after you've given film notes.
+*Update 11-25 06:36 (DECISIONS #125):* the re-master is now robust on hard clicks (ffmpeg's default AAC coder overshot chaotically; `master()` falls back to the `fast` coder at the same limit). The mix report names the coder; if it says `fast`, please listen to the result.
 
 ### Cloud build 11-19 06:36 UTC
 

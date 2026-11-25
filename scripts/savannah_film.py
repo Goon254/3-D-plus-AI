@@ -136,6 +136,7 @@ def loudnorm(src: Path, dst: Path) -> dict:
         "lufs": got.get("i"),
         "true_peak_dbtp": got.get("tp"),
         "limit_db": got["limit_db"],
+        "aac_coder": got.get("aac_coder", ""),
     }
 
 
